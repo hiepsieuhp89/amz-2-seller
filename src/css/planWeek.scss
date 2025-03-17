@@ -1,0 +1,93 @@
+@media print {
+  
+  .print-only {
+    display: block !important;
+  }
+  .printable-div {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  .main_content{
+    .solider_print{
+      padding-left: 100px;
+      font-size: 20px;
+    }
+    .quanso_print{
+      padding-left: 100px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .solider_member{
+      padding: 0px 20px 0px 20px;
+    }
+  }
+  
+
+  body,
+  html {
+    width: 100%;
+    height: auto;
+    margin: 0 1px 0px 3px;
+    padding: 0 4px 0 4px;
+    overflow: hidden;
+  }
+
+  * {
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+  .ant-pagination {
+    display: none !important;
+  }
+  .ant-table-thead {
+    .ant-table-cell {
+      background-color: #fafafa !important;
+      border-radius: unset !important;
+    }
+  }
+
+  .search_value {
+    display: none;
+  }
+  // .solider_member{
+  //   .ant-table-content{
+  //     overflow:  hidden !important;
+  //   }
+  // }
+}
+.print-only {
+  display: none;
+}
+.table_next_plant {
+  .ant-table-thead {
+    .ant-table-cell {
+      background-color: #dbe8fe;
+      border-radius: unset !important;
+    }
+    
+  }
+}
+.table_next_plant, .table_solider{
+  .ant-form-item{
+    margin-bottom: 0px !important;
+  }
+
+}
+
+.select_commandant{
+  .ant-select-selector{
+    border-radius: unset !important;;
+  }
+  label{
+    padding-right: 40px !important;
+  }
+}
+.select_dutyofficer{
+  .ant-select-selector{
+    border-radius: unset !important;;
+  }
+  label{
+    padding-right: 0px !important;
+  }
+}

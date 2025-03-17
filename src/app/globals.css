@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* :root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+} */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;  
+ 
+}
+.ant-table-body {
+  scrollbar-width: thin !important;
+}
+.ant-picker-outlined {
+  border-radius: unset !important;
+}
+/* Thay đổi kích thước thanh cuộn cho các trình duyệt Webkit (Chrome, Safari, Edge,...) */
+::-webkit-scrollbar {
+  width: 8px; /* Đặt chiều rộng của thanh cuộn ngang */
+  height: 8px; /* Đặt chiều cao của thanh cuộn dọc */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2); /* Màu của thanh cuộn */
+  border-radius: 10px; /* Bo tròn góc thanh cuộn */
+}
+
+::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.1); /* Màu nền của vùng cuộn */
+}
+.ant-table-cell::before{
+  background-color: #000000!important;
+  opacity: 10%;
+}
+.ant-switch-checked {
+  background-color: #36A492 !important; 
+}
+
+.ant-input-affix-wrapper{
+  border-start-start-radius:0px !important;
+  border-end-start-radius:0px !important
+  
+}
+
+@media only screen and (max-width: 1560px) {
+  .input_search {
+   width: 50% !important;
+  }
+}
+@media only screen and (min-width: 1560px) {
+  .input_search {
+   width: 100% !important;
+  }
+}
+
+
+.ant-empty-description,.ant-select-item-empty{
+  font-weight: 700!important;
+  font-size: 16px !important;
+  color: #e5e7eb !important;
+}
+.ant-table-wrapper .ant-table{
+  scrollbar-color: unset !important;;
+}
+.ant-table-wrapper .ant-table:hover{
+  cursor: pointer !important;;
+}
+
