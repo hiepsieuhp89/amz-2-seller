@@ -1,15 +1,13 @@
 'use client';
 
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Form, Input } from 'antd';
 import { useRouter } from 'next/navigation';
-import { FormProps } from 'rc-field-form';
 import { setCookies } from '@/helper';
 import { useContext, useState } from 'react';
-import Image from 'next/image';
 import { useSignIn } from '@/hooks/authentication';
 import { ISignIn } from '@/interface/request/authentication';
 import MessageClientContext from '@/provider/MessageProvider';
+import { FormProps } from 'antd/lib';
 
 type FieldType = {
   username: string;
@@ -27,9 +25,9 @@ const SignInForm = () => {
         username: values.username,
         password: values.password
       }
-
       const response = await mutateAsync(payload);
-      setCookies(response?.data?.access_token)
+      setCookies(response?.data?.accessToken)
+      console.log('response', response)
       router.push('/home/seller')
     } catch (error: any) {
       handleErrorMessage(error?.response?.data?.message)
@@ -38,28 +36,26 @@ const SignInForm = () => {
 
   return (
     <>
-      <div className="mb-2 w-full">
-        <div className='flex justify-center pt-2'>
-          <Image src={'/images/logos/logo.png'} width={100} height={100} alt='logo' />
-        </div>
-      </div>
+      <h1 className='text-[28px] font-medium'>
+        Sign In
+      </h1>
       <Form
-        name="normal_login"
-        className="login-form"
-        onFinish={onFinish}
+        name="normal_login" onFinish={onFinish}
+        layout='vertical'
       >
         <Form.Item
+          label={<strong>Email</strong>}
           name="username"
           rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
         >
-          <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" />
+          <Input placeholder="Tên đăng nhập" />
         </Form.Item>
         <Form.Item
+          label={<strong>mật khẩu</strong>}
           name="password"
           rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
         >
           <Input.Password
-            prefix={<LockOutlined />}
             type="password"
             placeholder="Mật khẩu"
           />
@@ -69,7 +65,7 @@ const SignInForm = () => {
           <Button
             type="primary"
             htmlType="submit"
-            className="login-form-button bg-[#17A2B8] w-full uppercase font-bold h-[40px]"
+            className="login-form-button w-full  !font-medium !h-[32px]"
             loading={isPending}
           >
             Đăng nhập

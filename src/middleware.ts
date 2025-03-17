@@ -10,12 +10,13 @@ const isSessionActive = (request: NextRequest): string => {
 const middleware = (request: NextRequest) => {
     const url = request.nextUrl.clone(); 
     const path = url.pathname;
-    if (!isSessionActive(request) && path !== '/sign-in') {
+    if (!isSessionActive(request) && path !== '/sign-in' &&
+    !path.includes('sign-up')) {
         url.pathname = '/sign-in';  
         return NextResponse.redirect(url);
     }
     if (isSessionActive(request) && (path === '/sign-in'||path.includes('sign-up'))) {
-        url.pathname = '/not-found';
+        url.pathname = '/home/seller';
         return NextResponse.redirect(url);
     }
     return NextResponse.next();

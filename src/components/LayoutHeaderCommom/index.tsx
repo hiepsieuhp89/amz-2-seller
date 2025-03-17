@@ -51,7 +51,7 @@ export default function LayoutHeaderCommon() {
   return (
     <header className="bg-[#4376A0] text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full z-10 shadow-md">
       <div className="flex items-center gap-2 pl-12">
-        <Image src={assets.logo} width={41} height={48} alt='logo' />
+        {/* <Image src={assets.logo} width={41} height={48} alt='logo' /> */}
         <p className='font-semibold'> Ãmazon</p>
       </div>
       <div className="flex items-center">

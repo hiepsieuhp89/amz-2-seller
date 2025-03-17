@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 import { svgs } from "@/const/svgs";
-import { assets } from "@/const/assets";
 import BaseModal from "../BaseModal/BaseModal";
 import FormItem from "antd/es/form/FormItem";
 import ModalAction from "../ModalConfirmDelete/ModalAction";
@@ -50,7 +49,10 @@ const AvatarDropdown = () => {
   }, []);
 
   const handleClickLogout = () => {
-    setIsLogout(true);
+    queryClient.clear();
+    cookies.remove("accessToken");
+    localStorage.clear();
+    router.push("/sign-in");
   };
 
   const items: MenuProps["items"] = [
@@ -100,7 +102,7 @@ const AvatarDropdown = () => {
       >
         <div className="flex items-center gap-1 cursor-pointer">
           <Image
-            src={assets.avatarDefault}
+            src={'/imgs/avatarDefault.png'}
             width={45}
             height={45}
             className="rounded-full w-[45px] h-[45px] object-cover cursor-pointer"

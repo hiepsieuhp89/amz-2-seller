@@ -33,13 +33,7 @@ body {
 } */
 
 html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;  
- 
-}
+
 .ant-table-body {
   scrollbar-width: thin !important;
 }
@@ -98,3 +92,16 @@ body {
   cursor: pointer !important;;
 }
 
+.ant-input {
+  border-radius: 0px !important;
+}
+
+.ant-input-affix-wrapper {
+  border-radius: 0px !important;
+}
+.login-form-button {
+  background: linear-gradient(#f6dd9e, #f0c24d) !important;
+  border: 0.075em solid #878787 !important;
+  border-radius: 0.1em !important;
+  color: #000000 !important;
+}
