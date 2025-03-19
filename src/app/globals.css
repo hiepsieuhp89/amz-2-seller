@@ -80,3 +80,9 @@ html,
   background-color: #353542 !important;
   border-radius: 6px !important;
 }
+.ant-input{
+  border-radius: 4px !important;
+}
+.ant-select-selector{
+  border-radius: 4px !important;
+}

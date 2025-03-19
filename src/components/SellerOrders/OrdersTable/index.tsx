@@ -69,11 +69,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
             key: "deliveryStatus",
             width: '30%',
             render: (_, record) => (
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-2">
                     <Badge
                         className="mb-2 self-start"
                         count={
-                            <div className="animate-gradient bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 text-gray-600 px-2 py-1 rounded">
+                            <div className="animate-gradient bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 text-gray-600 px-2 py-1 rounded font-medium text-sm">
                                 🕙 Đang chờ xử lý
                             </div>
                         }
@@ -82,7 +82,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
                         <Badge
                             className="self-start"
                             count={
-                                <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded">
+                                <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded font-medium text-sm">
                                     ⚠ Đơn hàng chậm: <strong className="mx-1">{record.delayTime}</strong>
                                 </div>
                             }
@@ -97,21 +97,21 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
             width: '10%',
             render: () => (
                 <div className="flex gap-2 justify-center">
-                    <Button type="text" icon={<EyeOutlined />} className="text-blue-500" />
-                    <Button type="text" icon={<DownloadOutlined />} className="text-yellow-500" />
+                    <Button type="primary" shape="circle" icon={<EyeOutlined />} className="text-blue-500" />
+                    <Button type="primary" shape="circle" icon={<DownloadOutlined />} className="text-yellow-500" />
                 </div>
             ),
         },
     ];
 
     return (
-        <div className="bg-white border rounded-[4px]">
-            <div className="mb-4 flex justify-between items-center">
-                <div className="font-medium text-lg">Đơn hàng</div>
+        <div className="bg-white rounded-[4px] border">
+            <div className="px-6 py-3 flex justify-between items-center">
+                <div className="font-medium text-base">Đơn hàng</div>
                 <div className="flex gap-2">
                     <Select 
                         placeholder="Lọc theo trạng thái phân phối" 
-                        style={{ width: 250 }} 
+                        style={{ width: 250, borderRadius: 0 }} 
                         onChange={onFilterChange}
                     >
                         <Option value="">Lọc theo trạng thái phân phối</Option>
@@ -134,7 +134,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
                 dataSource={data}
                 pagination={false}
                 rowKey="key"
-                className="border rounded-md"
+                className="border-t"
                 expandable={{
                     expandedRowKeys,
                     expandIcon: () => null,

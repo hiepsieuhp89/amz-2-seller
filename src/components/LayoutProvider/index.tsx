@@ -48,7 +48,11 @@ export const LayoutProvider = ({
           </div>
         </div>
         
-        <button className={styles.toggleButton} onClick={toggleSidebar}>
+        <button 
+        style={{
+          position: "fixed",
+        }}
+        className={styles.toggleButton} onClick={toggleSidebar}>
           {isSidebarOpen ? 
             <FontAwesomeIcon icon={faBars} fontSize={30} /> : 
             <FontAwesomeIcon icon={faXmark} fontSize={30} />
