@@ -1,128 +1,232 @@
-'use client';
-import { usePathname, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import styles from './styles.module.scss'; // Import file CSS
-import { DashboardSuperAdminIcons } from '../Icons';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleDown, faAngleUp, faKey, faLock, faMobile, faPhone, faUserEdit } from "@fortawesome/free-solid-svg-icons";
-
+"use client"
+import { usePathname, useRouter } from "next/navigation"
+import type React from "react"
+import { useEffect, useState } from "react"
+import {
+  HomeOutlined,
+  ShopOutlined,
+  FolderOutlined,
+  StarOutlined,
+  MessageOutlined,
+  ShoppingOutlined,
+  SettingOutlined,
+  HistoryOutlined,
+  RightOutlined,
+  DownOutlined,
+} from "@ant-design/icons"
+import { Input, Menu, Badge } from "antd"
+import type { MenuProps } from "antd"
+import styles from "./styles.module.scss"
 
 interface LayoutGAProps {
-  isSidebarOpen: boolean;
+  isSidebarOpen: boolean
 }
 
 function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [path, setPath] = useState(`home/seller`);
-  const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null); // Track active submenu
+  const router = useRouter()
+  const pathname = usePathname()
+  const [path, setPath] = useState(`home/seller`)
+  const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
 
   const menu = [
     {
-      name: 'Dashboard',
-      icon: <DashboardSuperAdminIcons.queues />,
-      selectedIcon: <DashboardSuperAdminIcons.queues color="#E7F1FB" />,
-      path: `/admin/datas`,
+      key: "dashboard",
+      name: "Bảng điều khiển",
+      icon: <HomeOutlined />,
+      path: `/seller/dashboard`,
     },
     {
-      name: 'Kế hoạch công tác tuần',
-      icon: <DashboardSuperAdminIcons.package />,
-      selectedIcon: <DashboardSuperAdminIcons.queues color="#E7F1FB" />,
-      path: `/ra/plan_week`,
+      key: "storehouse",
+      name: "Storehouse",
+      icon: <ShopOutlined />,
+      path: `/seller/products/storehouse`,
     },
     {
-      name: 'Quản lý quân số',
-      icon: <DashboardSuperAdminIcons.queues />,
-      selectedIcon: <DashboardSuperAdminIcons.queues color="#E7F1FB" />,
-      hasSubMenu: true,
-      subMenu: [
-        { name: 'Quản lý quân số tuần', path: '/plan_week/1' },
-        { name: 'Kế hoạch QP cán bộ TT', path: '/admin/dataa/detail2' },
-        { name: 'Thống kê chất lượng', path: '/admin/dataa/detail3' },
-        { name: 'QL quân số huấn luyện', path: '/admin/dataa/detail4' },
-        { name: 'Quản lý cán bộ TT', path: '/admin/dataa/detail5' },
-        { name: 'Quản lý NVKT TT', path: '/admin/dataa/detail6' },
+      key: "products",
+      name: "Các sản phẩm",
+      icon: <FolderOutlined />,
+      path: `/seller/products`,
+    },
+    {
+      key: "reviews",
+      name: "Đánh giá sản phẩm",
+      icon: <StarOutlined />,
+      path: `/seller/reviews`,
+    },
+    {
+      key: "orders",
+      name: "Đơn hàng",
+      icon: <ShoppingOutlined />,
+      path: `/seller/orders`,
+      badge: {
+        text: "Đang chờ xử lý",
+        count: 1,
+        color: "#f08806",
+      },
+    },
+    {
+      key: "conversations",
+      name: "Cuộc trò chuyện",
+      icon: <MessageOutlined />,
+      path: `/seller/conversations`,
+      badge: {
+        count: 1,
+        color: "#f08806",
+      },
+    },
+    {
+      key: "account-packages",
+      name: "Gói tài khoản",
+      icon: <ShoppingOutlined />,
+      children: [
+        { key: "seller-packages", name: "Gói tài khoản", path: "/seller/seller-packages" },
+        { key: "packages-payment", name: "Gói đã mua", path: "/seller/packages-payment-list" },
       ],
     },
     {
-      name: 'Quản lý công văn đi-đến',
-      icon: <DashboardSuperAdminIcons.company />,
-      selectedIcon: <DashboardSuperAdminIcons.company color="#E7F1FB" />,
+      key: "marketing-packages",
+      name: "Gói tiếp thị",
+      icon: <ShoppingOutlined />,
+      children: [
+        { key: "spread-packages", name: "Gói tài khoản", path: "/seller/spread-packages" },
+        { key: "spread-packages-payment", name: "Gói đã mua", path: "/seller/spread-packages-payment-list" },
+      ],
     },
-  ];
+    {
+      key: "shop-settings",
+      name: "Cài đặt cửa hàng",
+      icon: <SettingOutlined />,
+      path: `/seller/shop`,
+    },
+    {
+      key: "payment-history",
+      name: "Lịch sử thanh toán",
+      icon: <HistoryOutlined />,
+      path: `/seller/money-withdraw-requests`,
+    },
+  ]
 
   useEffect(() => {
-    setPath(pathname);
-  }, [pathname]);
+    setPath(pathname)
+  }, [pathname])
 
-  const isActive = (menuPath: string | undefined, subMenuPath?: string) => {
-    if (!menuPath) return false; // Handle undefined values
-    if (subMenuPath) {
-      return path.includes(subMenuPath);
-    }
-    return path.includes(menuPath);
-  };
+  const isActive = (menuPath: string | undefined) => {
+    if (!menuPath) return false
+    return path.includes(menuPath)
+  }
 
-  const handleMenuClick = (me: any) => {
-    if (me.hasSubMenu) {
-      // Toggle submenu open or close
-      setActiveSubMenu(activeSubMenu === me.name ? null : me.name);
-    } else {
-      router.push(me.path);
-      setPath(me.path);
+  const handleMenuClick = (key: string) => {
+    const selectedItem = menu.find((item) => item.key === key)
+    if (selectedItem && !selectedItem.children) {
+      router.push(selectedItem.path)
+      setPath(selectedItem.path)
     }
-  };
+  }
 
   const handleSubMenuClick = (subPath: string) => {
-    router.push(subPath);
-    setPath(subPath);
-  };
+    router.push(subPath)
+    setPath(subPath)
+  }
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
+  }
+
+  const filteredMenu = searchTerm
+    ? menu.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    : menu
+
+  const getMenuItems = (): MenuProps["items"] => {
+    return filteredMenu.map((item) => {
+      if (item.children) {
+        return {
+          key: item.key,
+          icon: item.icon,
+          label: item.name,
+          children: item.children.map((child) => ({
+            key: child.key,
+            label: child.name,
+            onClick: () => handleSubMenuClick(child.path),
+          })),
+          expandIcon: ({ isOpen }) => (isOpen ? <DownOutlined /> : <RightOutlined />),
+        }
+      }
+
+      let label: React.ReactNode = item.name
+      if (item.badge) {
+        label = (
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", paddingRight: "4px" }}>
+            <span>{item.name}</span>
+            {item.badge.text ? (
+              <Badge
+                count={item.badge.text}
+                style={{ backgroundColor: item.badge.color, fontSize: "12px", padding: "0 8px" }}
+              />
+            ) : (
+              <Badge count={item.badge.count} style={{ backgroundColor: item.badge.color }} />
+            )}
+          </div>
+        )
+      }
+
+      return {
+        key: item.key,
+        icon: item.icon,
+        label,
+        onClick: () => handleMenuClick(item.key),
+      }
+    })
+  }
 
   return (
-    <div className={isSidebarOpen ? styles.menuLeft : styles.menuLeftHidenLable}>
-      {menu.map((me, index) => (
-        <div key={index} className={styles.item}>
-          <div
-            className={isActive(me?.path, undefined) ? styles.itemMenuActive : styles.itemMenu}
-            onClick={() => handleMenuClick(me)}
-          >
-            <div className={styles.iconContainer}>
-              {isActive(me?.path, undefined) ? me.selectedIcon : me.icon}
-              {isSidebarOpen && (
-                <span
-                  className={`${isActive(me.path, undefined) ? 'text-blue-medium' : 'text-black-dark'} text-base font-medium`}
-                >
-                  <p className="pl-2">{me.name}</p>
-                </span>
-              )}
-              {me.hasSubMenu && (
-                <span className={styles.arrowIcon}>
-                  {activeSubMenu === me.name ? <FontAwesomeIcon icon={faAngleUp} /> : <FontAwesomeIcon icon={faAngleDown} />}
-                </span>
-              )}
-            </div>
-          </div>
-          {me.hasSubMenu && activeSubMenu === me.name && (
-            <div className={styles.subMenu}>
-              {me.subMenu.map((sub, subIndex) => (
-                <div
-                  key={subIndex}
-                  className={isActive(sub.path, undefined) ? styles.itemMenuActive : styles.itemMenu}
-                  onClick={() => handleSubMenuClick(sub.path)}
-                >
-                  <p
-                    className={`${isActive(sub.path, undefined) ? 'text-blue-medium' : 'text-black'} font-semibold text-sm pl-[46px] py-1`}
-                  >
-                    {sub.name}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
+    <div
+      className="sidebar"
+      style={{
+        width: isSidebarOpen ? "280px" : "80px",
+        backgroundColor: "#1e1e2d",
+        height: "100%",
+        transition: "width 0.3s",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        marginTop: "68px",
+      }}
+    >
+      {isSidebarOpen && (
+        <div style={{ padding: "16px", flexShrink: 0 }}>
+          <Input
+            placeholder="Tìm kiếm trong menu"
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              border: "none",
+              color: "white",
+              borderRadius: "4px",
+            }}
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
         </div>
-      ))}
+      )}
+
+      <div style={{ flexGrow: 1, overflowY: "auto", overflowX: "hidden" }}>
+        <Menu
+          mode="inline"
+          theme="dark"
+          style={{
+            backgroundColor: "#1e1e2d",
+            borderRight: "none",
+            width: isSidebarOpen ? "280px" : "80px",
+          }}
+          defaultSelectedKeys={[menu.find((item) => isActive(item.path))?.key || ""]}
+          defaultOpenKeys={[activeSubMenu || ""]}
+          items={getMenuItems()}
+          inlineCollapsed={!isSidebarOpen}
+        />
+      </div>
     </div>
-  );
+  )
 }
 
-export default LayoutPage;
+export default LayoutPage
+

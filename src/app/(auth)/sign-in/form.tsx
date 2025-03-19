@@ -20,14 +20,12 @@ const SignInForm = () => {
   const { handleErrorMessage } = useContext(MessageClientContext);
   const onFinish: FormProps<FieldType>['onFinish'] = async (values: FieldType) => {
     try {
-
       const payload: ISignIn = {
         username: values.username,
         password: values.password
       }
       const response = await mutateAsync(payload);
       setCookies(response?.data?.accessToken)
-      console.log('response', response)
       router.push('/home/seller')
     } catch (error: any) {
       handleErrorMessage(error?.response?.data?.message)

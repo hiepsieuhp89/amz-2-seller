@@ -1,12 +1,9 @@
-import SellerProducts from '@/components/SellerProducts'
-import React from 'react'
+import SellerProducts from "@/components/SellerProducts";
 
-function Home() {
+export default function SellerProductsPage() {
     return (
         <div className="min-h-screen bg-gray-50 p-4">
             <SellerProducts />
         </div>
     )
 }
-
-export default Home

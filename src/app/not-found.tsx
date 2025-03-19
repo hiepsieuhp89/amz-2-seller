@@ -1,15 +1,8 @@
 "use client";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function NotFound() {
   const router = useRouter();
-  const [role, setRole] = useState(null);
-
-  const currentParams = typeof window !== "undefined" ? window.location.origin : ''
-
-
   return (
     <div>
 

@@ -1,108 +1,36 @@
-  .menuLeft {
-    width: 280px;
-    border-right: 1px solid #dcdcdc;
-    padding: 10px 0;
-    background-color: #ffffff;
-    margin-top: 70px;
-    .item {
-      padding: 10px 0px 10px 0px;
-      cursor: pointer;
-    }
-    .itemMenu {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      padding: 10px 8px;
-    }
-    .itemMenuActive {
-      background: #E7F1FB;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      padding: 10px 8px;
-      border-right: 4px solid #4376a0; 
-  }
- 
-  }
-  .iconContainer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-left: 10px;
-  }
-  
+/* Add this to your global CSS or create a new CSS module */
 
-  
-  .item {
-    padding: 10px 15px; 
-    cursor: pointer;
-  }
-  
-  .itemMenu, .itemMenuActive {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .itemMenuActive {
-    background-color: #E7F1FB; 
-  }
-  
-  // .subMenu {
-  //   margin-left: 12px;
-  //   padding-left: 10px; 
-  
-  // }
-  
-  .subMenuItem {
-    padding: 8px 0; 
-    cursor: pointer;
-    color: #000000;
-    font-size: 14px;
-    font-weight: 500;
-    margin-top: 4px;
-  }
-  
-  .subMenuItem:hover {
-    background-color: #E7F1F8; 
-    border-right: 4px solid #4376a0; 
-  }
-  
-  .iconContainer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  .arrowIcon {
-    margin-left: auto; 
-    padding-left: 60px;
-  }
-  
+.ant-menu.ant-menu-dark {
+  background-color: #1e1e2d;
+}
 
-  .menuLeftHidenLable {
-    width: 60px;
-    border-right: 1px solid #dcdcdc;
-    padding: 10px 0;
-    background-color: #ffffff;
-    margin-top: 70px;
-    .item {
-      padding: 10px 0px 10px 0px;
-      cursor: pointer;
-    }
-    .itemMenu {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      padding: 10px 8px;
-    }
-    .itemMenuActive {
-      background: #E7F1FB;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      padding: 10px 8px;
-      border-right: 4px solid #4376a0; 
-  }
- 
-  }
+.ant-menu-dark .ant-menu-item-selected {
+  background-color: #2d2d3f !important;
+  border-right: 3px solid #f08806;
+}
+
+.ant-menu-dark .ant-menu-submenu-title:hover,
+.ant-menu-dark .ant-menu-item:hover {
+  background-color: #2d2d3f !important;
+}
+
+.ant-menu-dark .ant-menu-submenu-selected > .ant-menu-submenu-title {
+  color: white;
+}
+
+.ant-menu-dark .ant-menu-item-icon {
+  color: #a0a0a0;
+}
+
+.ant-menu-dark .ant-menu-item-selected .ant-menu-item-icon {
+  color: white;
+}
+
+.ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ant-menu-inline-collapsed .ant-badge {
+  display: none;
+}
+
