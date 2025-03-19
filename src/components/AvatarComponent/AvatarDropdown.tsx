@@ -4,10 +4,6 @@ import cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
-import { svgs } from "@/const/svgs";
-import BaseModal from "../BaseModal/BaseModal";
-import FormItem from "antd/es/form/FormItem";
-import ModalAction from "../ModalConfirmDelete/ModalAction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 

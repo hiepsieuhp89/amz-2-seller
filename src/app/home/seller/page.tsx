@@ -1,12 +1,10 @@
-import SellerProducts from '@/components/SellerProducts'
+import SellerDashboard from '@/components/SellerDashboard'
 import React from 'react'
 
-function Home() {
+function HomePage() {
     return (
-        <div className="min-h-screen bg-gray-50 p-4">
-            <SellerProducts />
-        </div>
+            <SellerDashboard />
     )
 }
 
-export default Home
+export default HomePage
