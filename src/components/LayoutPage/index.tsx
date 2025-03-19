@@ -16,7 +16,6 @@ import {
 } from "@ant-design/icons"
 import { Input, Menu, Badge } from "antd"
 import type { MenuProps } from "antd"
-import styles from "./styles.module.scss"
 
 interface LayoutGAProps {
   isSidebarOpen: boolean
@@ -143,28 +142,43 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
         return {
           key: item.key,
           icon: item.icon,
-          label: item.name,
+          label: <span className="font-semibold">{item.name}</span>,
           children: item.children.map((child) => ({
             key: child.key,
-            label: child.name,
+            label: <span className="font-semibold">{child.name}</span>,
             onClick: () => handleSubMenuClick(child.path),
           })),
           expandIcon: ({ isOpen }) => (isOpen ? <DownOutlined /> : <RightOutlined />),
         }
       }
 
-      let label: React.ReactNode = item.name
+      let label: React.ReactNode = <span className="font-semibold">{item.name}</span>
       if (item.badge) {
         label = (
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", paddingRight: "4px" }}>
-            <span>{item.name}</span>
+            <span className="font-semibold">{item.name}</span>
             {item.badge.text ? (
               <Badge
                 count={item.badge.text}
-                style={{ backgroundColor: item.badge.color, fontSize: "12px", padding: "0 8px" }}
+                style={{ 
+                  backgroundColor: item.badge.color, 
+                  fontSize: "12px", 
+                  padding: "0 8px", 
+                  borderRadius: "4px", 
+                  boxShadow: "0 0 4px rgba(255, 255, 255, 0.3)",
+                }}
+                className="ant-badge-no-border"
               />
             ) : (
-              <Badge count={item.badge.count} style={{ backgroundColor: item.badge.color }} />
+              <Badge 
+                count={item.badge.count} 
+                style={{ 
+                  backgroundColor: item.badge.color, 
+                  borderRadius: "4px", 
+                  boxShadow: "0 0 4px rgba(255, 255, 255, 0.3)"
+                }}
+                className="ant-badge-no-border"
+              />
             )}
           </div>
         )

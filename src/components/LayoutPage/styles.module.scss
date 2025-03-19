@@ -1,12 +1,13 @@
-/* Add this to your global CSS or create a new CSS module */
+/* Custom styles for Ant Design menu */
 
 .ant-menu.ant-menu-dark {
   background-color: #1e1e2d;
 }
 
 .ant-menu-dark .ant-menu-item-selected {
-  background-color: #2d2d3f !important;
+  background-color: #252c35 !important;
   border-right: 3px solid #f08806;
+  border-radius: 4px;
 }
 
 .ant-menu-dark .ant-menu-submenu-title:hover,
@@ -32,5 +33,10 @@
 
 .ant-menu-inline-collapsed .ant-badge {
   display: none;
+}
+
+.item.active {
+  border-radius: 4px;
+  background-color: #1e1e2d10;
 }
 

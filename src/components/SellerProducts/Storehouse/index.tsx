@@ -19,39 +19,48 @@ interface Product {
 
 const Storehouse: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(mockData)
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([])
   const [keyword, setKeyword] = useState("")
   const [minPrice, setMinPrice] = useState<number | undefined>()
   const [maxPrice, setMaxPrice] = useState<number | undefined>()
   const [quantity, setQuantity] = useState<number | undefined>()
   const [totalSelectedProducts, setTotalSelectedProducts] = useState(0)
+  const [originalProducts, setOriginalProducts] = useState<Product[]>([])
+
   useEffect(() => {
     setProducts(mockData)
+    setOriginalProducts(mockData)
     setFilteredProducts(mockData)
   }, [])
 
   const filterProducts = () => {
-    let filtered = [...products]
+    if (keyword || minPrice !== undefined || maxPrice !== undefined) {
+      let filtered = [...originalProducts]
 
-    if (keyword) {
-      filtered = filtered.filter((product) => product.name.toLowerCase().includes(keyword.toLowerCase()))
+      if (keyword) {
+        filtered = filtered.filter((product) => product.name.toLowerCase().includes(keyword.toLowerCase()))
+      }
+
+      if (minPrice !== undefined) {
+        filtered = filtered.filter((product) => product.sellingPrice >= minPrice)
+      }
+
+      if (maxPrice !== undefined) {
+        filtered = filtered.filter((product) => product.sellingPrice <= maxPrice)
+      }
+
+      setFilteredProducts(filtered)
+    } else {
+      setFilteredProducts(originalProducts)
     }
-
-    if (minPrice !== undefined) {
-      filtered = filtered.filter((product) => product.sellingPrice >= minPrice)
-    }
-
-    if (maxPrice !== undefined) {
-      filtered = filtered.filter((product) => product.sellingPrice <= maxPrice)
-    }
-
-    setFilteredProducts(filtered)
   }
 
   useEffect(() => {
-    filterProducts()
-  }, [keyword, minPrice, maxPrice])
+    if (originalProducts.length > 0) {
+      filterProducts()
+    }
+  }, [keyword, minPrice, maxPrice, originalProducts])
 
   const addProduct = (product: Product) => {
     setSelectedProducts([...selectedProducts, product])
