@@ -7,7 +7,6 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Thêm cấu hình để không sử dụng symlinks
   experimental: {
     outputFileTracingRoot: process.cwd(),
     outputFileTracingExcludes: {

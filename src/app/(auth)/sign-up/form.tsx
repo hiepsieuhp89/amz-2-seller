@@ -1,47 +1,56 @@
 'use client';
 
-import { Button, Divider, Form, Input } from 'antd';
+import { Button, Divider, Form, Input, message } from 'antd';
 import { useRouter } from 'next/navigation';
 import { setCookies } from '@/helper';
-import { useContext, useState } from 'react';
-import { useSignIn } from '@/hooks/authentication';
-import { ISignIn } from '@/interface/request/authentication';
-import MessageClientContext from '@/provider/MessageProvider';
+import { useRegister } from '@/hooks/authentication';
+import { IRegister } from '@/interface/request/authentication';
 import { FormProps } from 'antd/lib';
-import Link from 'next/link';
+import { useUser } from '@/context/useUserContext';
 
 type FieldType = {
   username: string;
+  email: string;
+  phone: string;
   password: string;
+  fullName: string;
+  invitationCode: string;
 };
 
 const SignUpForm = () => {
   const router = useRouter();
-  const { mutateAsync, isPending } = useSignIn()
-  const { handleErrorMessage } = useContext(MessageClientContext);
+  const { mutateAsync, isPending } = useRegister();
+  const { loginUser } = useUser()
+  const [messageApi, contextHolder] = message.useMessage();
   const onFinish: FormProps<FieldType>['onFinish'] = async (values: FieldType) => {
     try {
-
-      const payload: ISignIn = {
+      const payload: IRegister = {
         username: values.username,
-        password: values.password
+        email: values.email,
+        phone: values.phone,
+        password: values.password,
+        fullName: values.fullName,
+        invitationCode: values.invitationCode
       }
       const response = await mutateAsync(payload);
-      setCookies(response?.data?.accessToken)
-      console.log('response', response)
-      router.push('/home/seller')
+      loginUser(response?.data?.user, response?.data?.accessToken)
+      messageApi.success('Đăng ký tài khoản thành công!');
+      setCookies(response?.data?.accessToken);
+      router.push('/home/seller');
     } catch (error: any) {
-      handleErrorMessage(error?.response?.data?.message)
+      messageApi.error(error?.response?.data?.message || 'Có lỗi xảy ra khi đăng ký');
     }
   };
 
   return (
     <>
+      {contextHolder}
       <h1 className='text-[28px] font-medium'>
         Tạo tài khoản seller
       </h1>
       <Form
-        name="normal_login" onFinish={onFinish}
+        name="register_form" 
+        onFinish={onFinish}
         layout='vertical'
       >
         <Form.Item
@@ -52,17 +61,37 @@ const SignUpForm = () => {
         >
           <Input />
         </Form.Item>
+
         <Form.Item
           label={<strong>Email</strong>}
           className='!mb-3'
           name="email"
           rules={[
-            { required: true, message: 'Vui lòng nhập tên đăng nhập!' },
+            { required: true, message: 'Vui lòng nhập email!' },
             { type: 'email', message: 'Vui lòng nhập email hợp lệ!' }
           ]}
         >
           <Input />
         </Form.Item>
+
+        <Form.Item
+          label={<strong>Số điện thoại</strong>}
+          className='!mb-3'
+          name="phone"
+          rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          label={<strong>Họ và tên</strong>}
+          className='!mb-3'
+          name="fullName"
+          rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
+        >
+          <Input />
+        </Form.Item>
+
         <Form.Item
           label={<strong>mật khẩu</strong>}
           className='!mb-4'
@@ -98,7 +127,7 @@ const SignUpForm = () => {
         </Form.Item>
         <Form.Item
           label={<strong>Mã mời</strong>}
-          name="code"
+          name="invitationCode"
           className='!mb-4'
           rules={[{ required: true, message: 'Vui lòng nhập mã mời!' }]}
         >

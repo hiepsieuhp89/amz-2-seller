@@ -1,116 +1,83 @@
-import { MenuProps, Dropdown, Form, Button } from "antd";
-import React, { useEffect, useState } from "react";
-import cookies from "js-cookie";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { useQueryClient } from "@tanstack/react-query";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
+"use client"
+
+import { type MenuProps, Dropdown, Avatar, Space, Typography } from "antd"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import {  UserOutlined, LockOutlined, LogoutOutlined } from "@ant-design/icons"
+import { useUser } from "@/context/useUserContext"
+
+const { Text, Title } = Typography
 
 const AvatarDropdown = () => {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-  const [isLogout, setIsLogout] = useState<boolean>(false);
-
-  const [username, setUsername] = useState(null);
-
-  const [form] = Form.useForm();
-
-
-
-  const [role, setRole] = useState(null);
-  const [department, setDepartment] = useState(null);
-
-  const logout = () => {
-    queryClient.clear();
-    cookies.remove("accessToken");
-    cookies.remove("refreshToken");
-    localStorage.clear();
-    localStorage.setItem("logout-event", "logout" + Math.random());
-    router.push("/sign-in");
-  };
-
-  useEffect(() => {
-    const handleStorageChange = (event: any) => {
-      if (event.key === "logout-event") {
-        router.push("/sign-in");
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
-
+  const router = useRouter()
+  const { user, logoutUser } = useUser()
   const handleClickLogout = () => {
-    queryClient.clear();
-    cookies.remove("accessToken");
-    localStorage.clear();
-    router.push("/sign-in");
-  };
+    logoutUser()
+  }
+
+  const getFirstLetter = () => {
+    return user?.username ? user.username.charAt(0).toUpperCase() : "U"
+  }
+
+  // Determine avatar color based on role
+  const getAvatarColor = () => {
+    return user?.role === "admin" ? "#1677ff" : "#52c41a"
+  }
 
   const items: MenuProps["items"] = [
     {
-      label: (
-        <a className="cursor-pointer" >
-          Thông tin tài khoản
-        </a>
-      ),
       key: "0",
+      label: "Thông tin tài khoản",
+      icon: <UserOutlined />,
     },
     {
       type: "divider",
     },
     {
-      label: (
-        <a className="cursor-pointer" >
-          Đổi mật khẩu
-        </a>
-      ),
       key: "1",
+      label: "Đổi mật khẩu",
+      icon: <LockOutlined />,
     },
     {
       type: "divider",
     },
     {
-      label: (
-        <a
-          className="cursor-pointer !text-red-error font-semibold"
-          onClick={handleClickLogout}
-        >
-          Đăng xuất
-        </a>
-      ),
       key: "2",
+      label: (
+        <Text type="danger" strong>
+          Đăng xuất
+        </Text>
+      ),
+      icon: <LogoutOutlined style={{ color: "#ff4d4f" }} />,
+      onClick: handleClickLogout,
     },
-  ];
-
+  ]
   return (
-    <>
-      <Dropdown
-        menu={{
-          items,
-        }}
-        trigger={["click"]}
-        placement="bottomRight"
-      >
-        <div className="flex items-center gap-1 cursor-pointer">
-          <Image
-            src={'/imgs/avatarDefault.png'}
-            width={45}
-            height={45}
-            className="rounded-full w-[45px] h-[45px] object-cover cursor-pointer"
-            alt="avatar"
-          />
-          <span>{username}</span>
-          <FontAwesomeIcon icon={faAngleDown} />
+    <Dropdown menu={{ items }} trigger={["click"]} placement="bottomRight" arrow>
+      <Space className="cursor-pointer rounded-md transition-all">
+        <Avatar
+          size={45}
+          style={{
+            backgroundColor: getAvatarColor(),
+            fontSize: "18px",
+            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {getFirstLetter()}
+        </Avatar>
+        <div className="flex flex-col">
+          <Text strong className="!text-white">{user?.username}</Text>
+          <Text type={user?.role === "admin" ? "secondary" : "success"}>
+            {user?.role === "admin" ? "Admin" : "Người dùng"}
+          </Text>
         </div>
-      </Dropdown>
+      </Space>
+    </Dropdown>
+  )
+}
 
-    </>
-  );
-};
+export default AvatarDropdown
 
-export default AvatarDropdown;

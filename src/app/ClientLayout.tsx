@@ -5,6 +5,7 @@ import { ConfigProvider, ThemeConfig } from 'antd';
 import WrapMessage from '@/components/WrapMessage';
 import { usePathname } from 'next/navigation';
 import LayoutProvider from '@/components/LayoutProvider';
+import { UserProvider } from '@/context/useUserContext';
 
 function PathChecker({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -46,11 +47,13 @@ export default function ClientLayout({
         <body>
           <AntdRegistry>
             <ConfigProvider theme={theme}>
-              <WrapMessage>
-                <PathChecker>
-                  {children}
-                </PathChecker>
-              </WrapMessage>
+              <UserProvider>
+                <WrapMessage>
+                  <PathChecker>
+                    {children}
+                  </PathChecker>
+                </WrapMessage>
+              </UserProvider>
             </ConfigProvider>
           </AntdRegistry>
         </body>
