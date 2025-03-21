@@ -32,36 +32,36 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     {
       key: "/seller/dashboard",
       name: "Bảng điều khiển",
-      icon: <Icon path={mdiHomeOutline} size={0.7} />,
-      activeIcon: <Icon path={mdiHome} size={0.7} />,
+      icon: <Icon path={mdiHomeOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiHome} size={0.8} />,
       path: `/seller/dashboard`,
     },
     {
       key: "/seller/products/storehouse",
       name: "Storehouse",
-      icon: <Icon path={mdiStoreOutline} size={0.7} />,
-      activeIcon: <Icon path={mdiStore} size={0.7} />,
+      icon: <Icon path={mdiStoreOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiStore} size={0.8} />,
       path: `/seller/products/storehouse`,
     },
     {
       key: "/seller/products",
       name: "Các sản phẩm",
-      icon: <Icon path={mdiFolderOutline} size={0.7} />,
-      activeIcon: <Icon path={mdiFolder} size={0.7} />,
+      icon: <Icon path={mdiFolderOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiFolder} size={0.8} />,
       path: `/seller/products`,
     },
     {
       key: "/seller/reviews",
       name: "Đánh giá sản phẩm",
-      icon: <Icon path={mdiStarOutline} size={0.7} />,
-      activeIcon: <Icon path={mdiStar} size={0.7} />,
+      icon: <Icon path={mdiStarOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiStar} size={0.8} />,
       path: "/seller/reviews",
     },
     {
       key: "/seller/orders",
       name: "Đơn hàng",
-      icon: <Icon path={mdiCartOutline} size={0.7} />,
-      activeIcon: <Icon path={mdiCart} size={0.7} />,
+      icon: <Icon path={mdiCartOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiCart} size={0.8} />,
       path: `/seller/orders`,
       badge: {
         text: "Đang chờ xử lý",
@@ -72,8 +72,8 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     {
       key: "/seller/conversations",
       name: "Cuộc trò chuyện",
-      icon: <Icon path={mdiCommentTextOutline} size={0.7} />,
-      activeIcon: <Icon path={mdiCommentText} size={0.7} />,
+      icon: <Icon path={mdiCommentTextOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiCommentText} size={0.8} />,
       path: "/seller/conversations",
       badge: {
         count: 1,
@@ -83,8 +83,8 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     {
       key: "/seller/account-packages",
       name: "Gói tài khoản",
-      icon: <Icon path={mdiCartOutline} size={0.7} />,
-      activeIcon: <Icon path={mdiCart} size={0.7} />,
+      icon: <Icon path={mdiCartOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiCart} size={0.8} />,
       children: [
         { key: "seller-packages", name: "Gói tài khoản", path: "/seller/seller-packages" },
         { key: "packages-payment", name: "Gói đã mua", path: "/seller/packages-payment-list" },
@@ -93,8 +93,8 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     {
       key: "/seller/marketing-packages",
       name: "Gói tiếp thị",
-      icon: <Icon path={mdiCartOutline} size={0.7} />,
-      activeIcon: <Icon path={mdiCart} size={0.7} />,
+      icon: <Icon path={mdiCartOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiCart} size={0.8} />,
       children: [
         { key: "spread-packages", name: "Gói tài khoản", path: "/seller/spread-packages" },
         { key: "spread-packages-payment", name: "Gói đã mua", path: "/seller/spread-packages-payment-list" },
@@ -103,15 +103,15 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     {
       key: "/seller/shop-settings",
       name: "Cài đặt cửa hàng",
-      icon: <Icon path={mdiCogOutline} size={0.7} />,
-      activeIcon: <Icon path={mdiCog} size={0.7} />,
+      icon: <Icon path={mdiCogOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiCog} size={0.8} />,
       path: "/seller/shop",
     },
     {
       key: "/seller/payment-history",
       name: "Lịch sử thanh toán",
-      icon: <Icon path={mdiClockTimeThreeOutline} size={0.7} />,
-      activeIcon: <Icon path={mdiClockTimeThree} size={0.7} />,
+      icon: <Icon path={mdiClockTimeThreeOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiClockTimeThree} size={0.8} />,
       path: "/seller/payment-history",
     },
   ]
@@ -174,7 +174,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
             label: <span className="font-semibold">{child.name}</span>,
             onClick: () => handleSubMenuClick(child.path),
           })),
-          expandIcon: ({ isOpen }) => (isOpen ? <Icon path={mdiChevronDown} size={0.7} /> : <Icon path={mdiChevronRight} size={0.7} />),
+          expandIcon: ({ isOpen }) => (isOpen ? <Icon path={mdiChevronDown} size={0.8} /> : <Icon path={mdiChevronRight} size={0.8} />),
         }
       }
 
