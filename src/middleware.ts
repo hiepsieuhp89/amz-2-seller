@@ -9,13 +9,18 @@ export function middleware(request: NextRequest) {
   
   const isPublicRoute = path === '/sign-in' || path.includes('sign-up');
   
+  if (path === '/') {
+    url.pathname = '/seller/dashboard';
+    return NextResponse.redirect(url);
+  }
+  
   if (!hasAccessToken && !isPublicRoute) {
     url.pathname = '/sign-in';
     return NextResponse.redirect(url);
   }
   
   if (hasAccessToken && isPublicRoute) {
-    url.pathname = '/home/seller';
+    url.pathname = '/seller/dashboard';
     return NextResponse.redirect(url);
   }
   
