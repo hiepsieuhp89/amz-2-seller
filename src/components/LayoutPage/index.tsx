@@ -24,7 +24,7 @@ interface LayoutGAProps {
 function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const [path, setPath] = useState(`home/seller`)
+  const [path, setPath] = useState(`seller/dashboard`)
   const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
 
