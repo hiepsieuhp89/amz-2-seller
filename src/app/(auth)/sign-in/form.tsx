@@ -31,7 +31,7 @@ const SignInForm = () => {
       if (data?.accessToken) {
         setCookies(data.accessToken);
         loginUser(data?.user, data?.accessToken)
-        router.push('/home/seller');
+        router.push('/seller/dashboard');
       }
     } catch (error: any) {
       handleErrorMessage(error?.response?.data?.message || 'Đăng nhập thất bại');
