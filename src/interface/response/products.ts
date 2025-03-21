@@ -2,54 +2,48 @@ export interface IProduct {
     id: string
     name: string
     description: string
-    price: number
-    category: string
-    categoryId: string
+    price: number | string
+    salePrice: string
     stock: number
+    category?: string
+    categoryId?: string
     images?: string[]
-    profit?: number 
+    profit?: number
     createdAt: string
     updatedAt: string
     deletedAt: string | null
-    salePrice: number
+    image?: string
+    purchasePrice?: number
+    imageUrl?: string
+    shopProducts?: any[]
 }
 
 export interface IProductResponse {
+    status: boolean
     message: string
-    statusCode: number
+    statusCode?: number
     data: {
         product: IProduct
     }
+    errors?: any | null
+    timestamp?: string
 }
 
 export interface IProductsListResponse {
+    status: boolean
     message: string
-    statusCode: number
+    statusCode?: number
     data: {
-        pagination: {
-            total: number
-            page: number
-            limit: number
-            totalPages: number
-        },
-        meta: {
-            pageCount: number
-            totalItems: number
-            itemsPerPage: number
-            totalPages: number
-            currentPage: number
-            hasNextPage: boolean
-            hasPreviousPage: boolean
-        } ,
         data: IProduct[]
-    },
-    meta:{
-        page: number,
-        take: number,
-        itemCount: number,
-        pageCount: number,
-        hasPreviousPage: boolean,
-        hasNextPage: boolean
-      }
+        meta: {
+            page: number
+            take: number
+            itemCount: number
+            pageCount: number
+            hasPreviousPage: boolean
+            hasNextPage: boolean
+        }
+    }
+    errors?: any | null
+    timestamp?: string
 }
-

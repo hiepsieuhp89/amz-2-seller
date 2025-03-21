@@ -1,7 +1,7 @@
 "use client"
 
 import { type MenuProps, Dropdown, Avatar, Space, Typography } from "antd"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import {  UserOutlined, LockOutlined, LogoutOutlined } from "@ant-design/icons"
 import { useUser } from "@/context/useUserContext"
@@ -11,6 +11,12 @@ const { Text, Title } = Typography
 const AvatarDropdown = () => {
   const router = useRouter()
   const { user, logoutUser } = useUser()
+  const [isClient, setIsClient] = useState(false)
+  
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+  
   const handleClickLogout = () => {
     logoutUser()
   }
@@ -19,7 +25,6 @@ const AvatarDropdown = () => {
     return user?.username ? user.username.charAt(0).toUpperCase() : "U"
   }
 
-  // Determine avatar color based on role
   const getAvatarColor = () => {
     return user?.role === "admin" ? "#1677ff" : "#52c41a"
   }
@@ -52,6 +57,11 @@ const AvatarDropdown = () => {
       onClick: handleClickLogout,
     },
   ]
+
+  if (!isClient) {
+    return <div className="avatar-placeholder"></div>
+  }
+
   return (
     <Dropdown menu={{ items }} trigger={["click"]} placement="bottomRight" arrow>
       <Space className="cursor-pointer rounded-md transition-all">
@@ -70,8 +80,10 @@ const AvatarDropdown = () => {
         </Avatar>
         <div className="flex flex-col">
           <Text strong className="!text-white">{user?.username}</Text>
-          <Text type={user?.role === "admin" ? "secondary" : "success"}>
-            {user?.role === "admin" ? "Admin" : "Người dùng"}
+          <Text 
+          className="!text-xs"
+          type={user?.role === "admin" ? "secondary" : "success"}>
+            {user?.role === "admin" ? "Admin" : "Seller"}
           </Text>
         </div>
       </Space>

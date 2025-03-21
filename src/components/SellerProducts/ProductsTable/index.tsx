@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react"
 import { Table, Input, Checkbox, Button, Space, Tag, Typography, Row, Col, Pagination } from "antd"
 import { SearchOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons"
 import { IProduct } from "@/interface/response/products"
-import { useProducts } from "@/hooks/products"
 import "./styles.css"
+import { useShopProducts } from "@/hooks/products"
 
 type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
 
@@ -23,11 +23,11 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
     const [currentPage, setCurrentPage] = useState(1)
     const [searchText, setSearchText] = useState<string>("");
     
-    const { productsData, isLoading, refetch } = useProducts({
+    const {shopProductsData , isLoading, refetch } = useShopProducts({
         page: currentPage,
     })
-    const products = productsData?.data?.data || []
-    console.log(productsData)
+    const products = shopProductsData?.data?.data || []
+    console.log(shopProductsData)
     useEffect(() => {
         refetch()
     }, [currentPage, refetch])
@@ -169,7 +169,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
                     current={currentPage}
                     onChange={handlePaginationChange}
                     showSizeChanger
-                    total={productsData?.data?.meta?.pageCount} 
+                    total={shopProductsData?.data?.meta?.pageCount} 
                 />
             </div>
         </div>

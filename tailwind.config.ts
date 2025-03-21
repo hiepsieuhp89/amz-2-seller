@@ -26,7 +26,15 @@ const config: Config = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       colors: {
-        primary: '#4376A0',
+        primary: '#232F3E',
+        // Các màu tối chính
+        'main-dark-blue': '#131921',
+        'main-charcoal-blue': '#232F3E',
+        // Màu xám, dành cho background và disabled icon
+        'main-gunmetal-blue': '#252C35',
+        // Màu cam logo Amazon
+        'main-golden-orange': '#FCAF17',
+        
         'gray-light': '#7579E70D',
         'gray-dark': '#636364',
         'border-primary': '#DCDCDC',
