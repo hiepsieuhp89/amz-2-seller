@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import AvatarDropdown from '../AvatarComponent/AvatarDropdown';
+import Image from 'next/image';
 export default function LayoutHeaderCommon() {
   const router = useRouter();
 
@@ -38,9 +39,17 @@ export default function LayoutHeaderCommon() {
     });
   }
   return (
-    <header className="bg-[#4376A0] text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full z-10 shadow-md">
-      <div className="flex items-center gap-2 pl-12">
-        <p className='font-semibold'>Amazon</p>
+    <header className="bg-main-dark-blue text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full z-10 shadow-md">
+      <div className="relative h-8 left-[64px] top-1/2">
+        <Image
+          quality={100}
+          draggable={false}
+          src="/images/logo.png"
+          alt="logo"
+          width={100}
+          height={100}
+          className='h-full w-full object-contain'
+        />
       </div>
       <div className="flex items-center">
         <div className="ml-8 flex items-center gap-2 pr-6">

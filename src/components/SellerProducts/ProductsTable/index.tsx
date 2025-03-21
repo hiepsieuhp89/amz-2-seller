@@ -1,42 +1,43 @@
 "use client"
 
-import React, { useState } from "react"
-import { Table, Input, Card, Checkbox, Button, Space, Tag, Typography, Row, Col } from "antd"
-import { SearchOutlined, PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons"
-import styles from "./ProductsTable.module.scss"
+import React, { useEffect, useState } from "react"
+import { Table, Input, Checkbox, Button, Space, Tag, Typography, Row, Col, Pagination } from "antd"
+import { SearchOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons"
+import { IProduct } from "@/interface/response/products"
+import "./styles.css"
+import { useShopProducts } from "@/hooks/products"
 
-// Định nghĩa kiểu Breakpoint
 type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
 
-interface Product {
-    id: number
-    name: string
-    quantity: number
-    costPrice: string
-    sellingPrice: string
-    profit: string
-    status: string
-    url?: string
-}
-
 interface ProductsTableProps {
-    products: Product[]
     onSearch: (value: string) => void
     selectedRowKeys: React.Key[]
     onSelectChange: (selectedRowKeys: React.Key[]) => void
 }
 
 export const ProductsTable: React.FC<ProductsTableProps> = ({
-    products,
     onSearch,
     selectedRowKeys,
     onSelectChange,
 }) => {
+    const [currentPage, setCurrentPage] = useState(1)
     const [searchText, setSearchText] = useState<string>("");
-
+    
+    const {shopProductsData , isLoading, refetch } = useShopProducts({
+        page: currentPage,
+    })
+    const products = shopProductsData?.data?.data || []
+    console.log(shopProductsData)
+    useEffect(() => {
+        refetch()
+    }, [currentPage, refetch])
     const handleSearch = (value: string) => {
         setSearchText(value);
         onSearch(value);
+    };
+
+    const handlePaginationChange = (page: number) => {
+        setCurrentPage(page);
     };
 
     const columns = [
@@ -55,7 +56,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
             ),
             dataIndex: "id",
             key: "selection",
-            render: (_: any, record: Product) => (
+            render: (_: any, record: IProduct) => (
                 <Checkbox
                     checked={selectedRowKeys.includes(record.id)}
                     onChange={(e) => {
@@ -74,50 +75,58 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
             title: "Tên",
             dataIndex: "name",
             key: "name",
-            render: (text: string, record: Product) => (
-                <Typography.Link href={`#/product/${record.id}`}>
-                    {text}
-                </Typography.Link>
+            render: (text: string, record: IProduct) => (
+                <Typography.Paragraph >
+                    <strong>Sản phẩm:</strong> {text} | <strong>Mô tả:</strong> {record?.description}
+                </Typography.Paragraph>
             ),
             width: "30%",
         },
         {
             title: "Số lượng hiện tại",
-            dataIndex: "quantity",
-            key: "quantity",
+            dataIndex: "stock",
+            key: "stock",
+            render: (stock: number) => <Typography.Text>{stock}</Typography.Text>,
             responsive: ["md" as Breakpoint],
         },
         {
             title: "Giá nhập",
-            dataIndex: "costPrice",
-            key: "costPrice",
+            dataIndex: "price",
+            key: "price",
+            render: (price: string) => <Typography.Text>${price}</Typography.Text>,
             responsive: ["md" as Breakpoint],
         },
         {
             title: "Giá bán",
-            dataIndex: "sellingPrice",
-            key: "sellingPrice",
+            dataIndex: "salePrice",
+            key: "salePrice",
+            render: (salePrice: string) => <Typography.Text>${salePrice}</Typography.Text>,
             responsive: ["md" as Breakpoint],
         },
         {
             title: "Lợi nhuận",
-            dataIndex: "profit",
             key: "profit",
-            render: (text: string) => <Typography.Text type="danger">{text}</Typography.Text>,
+            render: (_: any, record: IProduct) => {
+                const profit = Number(record.price) - Number(record.salePrice);
+                return <Typography.Text type={profit >= 0 ? "danger" : "success"}>
+                    ${Math.abs(profit).toFixed(2)}
+                </Typography.Text>
+            },
         },
         {
-            title: "Được phát hành",
-            dataIndex: "status",
+            title: "Trạng thái",
             key: "status",
             responsive: ["md" as Breakpoint],
-            render: (status: string) => (
-                <Tag color={status === "Đang bán" ? "success" : "warning"}>{status}</Tag>
+            render: (_: any, record: IProduct) => (
+                <Tag color={record?.deletedAt === null ? "success" : "warning"}>
+                    {record?.deletedAt === null ? "Đang bán" : "Ngừng bán"}
+                </Tag>
             ),
         },
         {
             title: "Hành động",
             key: "action",
-            render: (_: any, record: Product) => (
+            render: (_: any, record: IProduct) => (
                 <Space size="small">
                     <Button type="text" icon={<EditOutlined />} size="small" />
                     <Button type="text" icon={<DeleteOutlined />} size="small" danger />
@@ -148,20 +157,21 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
                 rowKey="id"
                 columns={columns}
                 dataSource={products}
-                pagination={{
-                    pageSize: 10,
-                    showSizeChanger: true,
-                    showTotal: (total) => `Tổng cộng ${total} sản phẩm`,
-                }}
-                rowSelection={{
-                    selectedRowKeys,
-                    onChange: onSelectChange,
-                    columnWidth: 60,
-                    renderCell: () => null, // Hide default checkbox
-                }}
+                loading={isLoading}
+                pagination={false}
                 scroll={{ x: 'max-content' }}
                 size="middle"
             />
+            
+            {/* ant-select-selector */}
+            <div className="flex justify-end mt-4 mb-4 px-4">
+                <Pagination
+                    current={currentPage}
+                    onChange={handlePaginationChange}
+                    showSizeChanger
+                    total={shopProductsData?.data?.meta?.pageCount} 
+                />
+            </div>
         </div>
     )
 }

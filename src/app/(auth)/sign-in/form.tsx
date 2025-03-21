@@ -8,6 +8,7 @@ import { useSignIn } from '@/hooks/authentication';
 import { ISignIn } from '@/interface/request/authentication';
 import MessageClientContext from '@/provider/MessageProvider';
 import { FormProps } from 'antd/lib';
+import { useUser } from '@/context/useUserContext';
 
 type FieldType = {
   username: string;
@@ -16,19 +17,24 @@ type FieldType = {
 
 const SignInForm = () => {
   const router = useRouter();
-  const { mutateAsync, isPending } = useSignIn()
+  const { mutateAsync, isPending } = useSignIn();
   const { handleErrorMessage } = useContext(MessageClientContext);
+  const { loginUser } = useUser()
   const onFinish: FormProps<FieldType>['onFinish'] = async (values: FieldType) => {
     try {
       const payload: ISignIn = {
         username: values.username,
-        password: values.password
+        password: values.password,
+        gate: "website"
+      };
+      const { data } = await mutateAsync(payload);
+      if (data?.accessToken) {
+        setCookies(data.accessToken);
+        loginUser(data?.user, data?.accessToken)
+        router.push('/seller/dashboard');
       }
-      const response = await mutateAsync(payload);
-      setCookies(response?.data?.accessToken)
-      router.push('/home/seller')
     } catch (error: any) {
-      handleErrorMessage(error?.response?.data?.message)
+      handleErrorMessage(error?.response?.data?.message || 'Đăng nhập thất bại');
     }
   };
 
@@ -49,7 +55,7 @@ const SignInForm = () => {
           <Input placeholder="Tên đăng nhập" />
         </Form.Item>
         <Form.Item
-          label={<strong>mật khẩu</strong>}
+          label={<strong>Mật khẩu</strong>}
           name="password"
           rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
         >

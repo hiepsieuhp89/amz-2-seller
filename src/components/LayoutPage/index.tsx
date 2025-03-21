@@ -2,21 +2,21 @@
 import { usePathname, useRouter } from "next/navigation"
 import type React from "react"
 import { useEffect, useState } from "react"
+import Icon from "@mdi/react"
 import {
-  HomeOutlined,
-  ShopOutlined,
-  FolderOutlined,
-  StarOutlined,
-  MessageOutlined,
-  ShoppingOutlined,
-  SettingOutlined,
-  HistoryOutlined,
-  RightOutlined,
-  DownOutlined,
-} from "@ant-design/icons"
+  mdiHomeOutline, mdiHome,
+  mdiStoreOutline, mdiStore,
+  mdiFolderOutline, mdiFolder,
+  mdiStarOutline, mdiStar,
+  mdiCommentTextOutline, mdiCommentText,
+  mdiCartOutline, mdiCart,
+  mdiCogOutline, mdiCog,
+  mdiClockTimeThreeOutline, mdiClockTimeThree,
+  mdiChevronRight, mdiChevronDown
+} from "@mdi/js"
 import { Input, Menu, Badge } from "antd"
 import type { MenuProps } from "antd"
-
+import "./styles.css"
 interface LayoutGAProps {
   isSidebarOpen: boolean
 }
@@ -24,39 +24,44 @@ interface LayoutGAProps {
 function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const [path, setPath] = useState(`home/seller`)
+  const [path, setPath] = useState(`seller/dashboard`)
   const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
 
   const menu = [
     {
-      key: "dashboard",
+      key: "/seller/dashboard",
       name: "Bảng điều khiển",
-      icon: <HomeOutlined />,
+      icon: <Icon path={mdiHomeOutline} size={0.7} />,
+      activeIcon: <Icon path={mdiHome} size={0.7} />,
       path: `/seller/dashboard`,
     },
     {
-      key: "storehouse",
+      key: "/seller/products/storehouse",
       name: "Storehouse",
-      icon: <ShopOutlined />,
+      icon: <Icon path={mdiStoreOutline} size={0.7} />,
+      activeIcon: <Icon path={mdiStore} size={0.7} />,
       path: `/seller/products/storehouse`,
     },
     {
-      key: "products",
+      key: "/seller/products",
       name: "Các sản phẩm",
-      icon: <FolderOutlined />,
+      icon: <Icon path={mdiFolderOutline} size={0.7} />,
+      activeIcon: <Icon path={mdiFolder} size={0.7} />,
       path: `/seller/products`,
     },
     {
-      key: "reviews",
+      key: "/seller/reviews",
       name: "Đánh giá sản phẩm",
-      icon: <StarOutlined />,
-      path: `/seller/reviews`,
+      icon: <Icon path={mdiStarOutline} size={0.7} />,
+      activeIcon: <Icon path={mdiStar} size={0.7} />,
+      path: "/seller/reviews",
     },
     {
-      key: "orders",
+      key: "/seller/orders",
       name: "Đơn hàng",
-      icon: <ShoppingOutlined />,
+      icon: <Icon path={mdiCartOutline} size={0.7} />,
+      activeIcon: <Icon path={mdiCart} size={0.7} />,
       path: `/seller/orders`,
       badge: {
         text: "Đang chờ xử lý",
@@ -65,44 +70,49 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       },
     },
     {
-      key: "conversations",
+      key: "/seller/conversations",
       name: "Cuộc trò chuyện",
-      icon: <MessageOutlined />,
-      path: `/seller/conversations`,
+      icon: <Icon path={mdiCommentTextOutline} size={0.7} />,
+      activeIcon: <Icon path={mdiCommentText} size={0.7} />,
+      path: "/seller/conversations",
       badge: {
         count: 1,
         color: "#f08806",
       },
     },
     {
-      key: "account-packages",
+      key: "/seller/account-packages",
       name: "Gói tài khoản",
-      icon: <ShoppingOutlined />,
+      icon: <Icon path={mdiCartOutline} size={0.7} />,
+      activeIcon: <Icon path={mdiCart} size={0.7} />,
       children: [
         { key: "seller-packages", name: "Gói tài khoản", path: "/seller/seller-packages" },
         { key: "packages-payment", name: "Gói đã mua", path: "/seller/packages-payment-list" },
       ],
     },
     {
-      key: "marketing-packages",
+      key: "/seller/marketing-packages",
       name: "Gói tiếp thị",
-      icon: <ShoppingOutlined />,
+      icon: <Icon path={mdiCartOutline} size={0.7} />,
+      activeIcon: <Icon path={mdiCart} size={0.7} />,
       children: [
         { key: "spread-packages", name: "Gói tài khoản", path: "/seller/spread-packages" },
         { key: "spread-packages-payment", name: "Gói đã mua", path: "/seller/spread-packages-payment-list" },
       ],
     },
     {
-      key: "shop-settings",
+      key: "/seller/shop-settings",
       name: "Cài đặt cửa hàng",
-      icon: <SettingOutlined />,
-      path: `/seller/shop`,
+      icon: <Icon path={mdiCogOutline} size={0.7} />,
+      activeIcon: <Icon path={mdiCog} size={0.7} />,
+      path: "/seller/shop",
     },
     {
-      key: "payment-history",
+      key: "/seller/payment-history",
       name: "Lịch sử thanh toán",
-      icon: <HistoryOutlined />,
-      path: `/seller/money-withdraw-requests`,
+      icon: <Icon path={mdiClockTimeThreeOutline} size={0.7} />,
+      activeIcon: <Icon path={mdiClockTimeThree} size={0.7} />,
+      path: "/seller/payment-history",
     },
   ]
 
@@ -112,7 +122,20 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
 
   const isActive = (menuPath: string | undefined) => {
     if (!menuPath) return false
-    return path.includes(menuPath)
+
+    // Trường hợp đường dẫn chính xác trùng khớp
+    if (path === menuPath) return true;
+
+    // Kiểm tra xem có menu item nào khác phù hợp với đường dẫn hiện tại hơn không
+    for (const item of menu) {
+      if (item.path && path.startsWith(item.path) && item.path.length > menuPath.length) {
+        // Có menu khác phù hợp hơn (dài hơn)
+        return false;
+      }
+    }
+
+    // Kiểm tra nếu là đường dẫn con
+    return path.startsWith(menuPath) && path.charAt(menuPath.length) === '/';
   }
 
   const handleMenuClick = (key: string) => {
@@ -138,17 +161,20 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
 
   const getMenuItems = (): MenuProps["items"] => {
     return filteredMenu.map((item) => {
+      const isItemActive = isActive(item.path);
+      const displayIcon = isItemActive ? item.activeIcon : item.icon;
+
       if (item.children) {
         return {
           key: item.key,
-          icon: item.icon,
+          icon: displayIcon,
           label: <span className="font-semibold">{item.name}</span>,
           children: item.children.map((child) => ({
             key: child.key,
             label: <span className="font-semibold">{child.name}</span>,
             onClick: () => handleSubMenuClick(child.path),
           })),
-          expandIcon: ({ isOpen }) => (isOpen ? <DownOutlined /> : <RightOutlined />),
+          expandIcon: ({ isOpen }) => (isOpen ? <Icon path={mdiChevronDown} size={0.7} /> : <Icon path={mdiChevronRight} size={0.7} />),
         }
       }
 
@@ -160,21 +186,21 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
             {item.badge.text ? (
               <Badge
                 count={item.badge.text}
-                style={{ 
-                  backgroundColor: item.badge.color, 
-                  fontSize: "12px", 
-                  padding: "0 8px", 
-                  borderRadius: "4px", 
+                style={{
+                  backgroundColor: item.badge.color,
+                  fontSize: "12px",
+                  padding: "0 8px",
+                  borderRadius: "4px",
                   boxShadow: "0 0 4px rgba(255, 255, 255, 0.3)",
                 }}
                 className="ant-badge-no-border"
               />
             ) : (
-              <Badge 
-                count={item.badge.count} 
-                style={{ 
-                  backgroundColor: item.badge.color, 
-                  borderRadius: "4px", 
+              <Badge
+                count={item.badge.count}
+                style={{
+                  backgroundColor: item.badge.color,
+                  borderRadius: "4px",
                   boxShadow: "0 0 4px rgba(255, 255, 255, 0.3)"
                 }}
                 className="ant-badge-no-border"
@@ -186,7 +212,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
 
       return {
         key: item.key,
-        icon: item.icon,
+        icon: displayIcon,
         label,
         onClick: () => handleMenuClick(item.key),
       }
@@ -198,45 +224,48 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       className="sidebar"
       style={{
         width: isSidebarOpen ? "280px" : "80px",
-        backgroundColor: "#1e1e2d",
+        backgroundColor: "#131921",
         height: "100%",
         transition: "width 0.3s",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        marginTop: "68px",
       }}
     >
-      {isSidebarOpen && (
-        <div style={{ padding: "16px", flexShrink: 0 }}>
-          <Input
-            placeholder="Tìm kiếm trong menu"
+      <div
+        style={{
+          transition: "width 0.3s",
+        }}
+        className={`fixed top-0 left-0 w-full h-full flex flex-col pt-[68px]`}>
+        <div className={`${isSidebarOpen ? "w-fit overflow-y-auto" : "w-fit overflow-hidden"}`}>
+          {isSidebarOpen && <div className="p-2 w-full flex-1 bg-main-dark-blue">
+            <Input
+              placeholder="Tìm kiếm trong menu"
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                border: "none",
+                color: "white",
+                borderRadius: "4px",
+                width: "100%",
+              }}
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+          </div>}
+          <Menu
+            mode="inline"
+            theme="dark"
             style={{
-              backgroundColor: "rgba(255, 255, 255, 0.1)",
-              border: "none",
-              color: "white",
-              borderRadius: "4px",
+              backgroundColor: "#131921",
+              borderRight: "none",
+              width: isSidebarOpen ? "280px" : "80px",
             }}
-            value={searchTerm}
-            onChange={handleSearchChange}
+            defaultSelectedKeys={[menu.find((item) => isActive(item.path))?.key || ""]}
+            defaultOpenKeys={[activeSubMenu || ""]}
+            items={getMenuItems()}
+            inlineCollapsed={!isSidebarOpen}
           />
         </div>
-      )}
-
-      <div style={{ flexGrow: 1, overflowY: "auto", overflowX: "hidden" }}>
-        <Menu
-          mode="inline"
-          theme="dark"
-          style={{
-            backgroundColor: "#1e1e2d",
-            borderRight: "none",
-            width: isSidebarOpen ? "280px" : "80px",
-          }}
-          defaultSelectedKeys={[menu.find((item) => isActive(item.path))?.key || ""]}
-          defaultOpenKeys={[activeSubMenu || ""]}
-          items={getMenuItems()}
-          inlineCollapsed={!isSidebarOpen}
-        />
       </div>
     </div>
   )

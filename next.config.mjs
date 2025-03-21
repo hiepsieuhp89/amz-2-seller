@@ -7,7 +7,6 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Thêm cấu hình để không sử dụng symlinks
   experimental: {
     outputFileTracingRoot: process.cwd(),
     outputFileTracingExcludes: {
@@ -15,7 +14,19 @@ const nextConfig = {
         'node_modules/**/*',
       ],
     },
-  }
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
