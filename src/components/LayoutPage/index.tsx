@@ -219,6 +219,9 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     })
   }
 
+  const starSvg = <svg viewBox="0 0 576 512" width="20" fill="gold">
+    <path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path>
+  </svg>
   return (
     <div
       className="sidebar"
@@ -238,20 +241,55 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
         }}
         className={`fixed top-0 left-0 w-full h-full flex flex-col pt-[68px]`}>
         <div className={`${isSidebarOpen ? "w-fit overflow-y-auto" : "w-fit overflow-hidden"}`}>
-          {isSidebarOpen && <div className="p-2 w-full flex-1 bg-main-dark-blue">
-            <Input
-              placeholder="Tìm kiếm trong menu"
-              style={{
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-                border: "none",
-                color: "white",
-                borderRadius: "4px",
-                width: "100%",
-              }}
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-          </div>}
+          {isSidebarOpen && (
+            <div className="flex flex-col items-center p-4 text-white gap-4">
+              {/* Shop Link */}
+              <div className="text-[#ff9900] flex items-center cursor-pointer">
+                <span className="font-semibold text-sm">Ghé thăm cửa hàng</span>
+                <span className="ml-1">→</span>
+              </div>
+
+              <div className="flex flex-col gap-0 w-full items-center">
+                {/* Shop Info */}
+                <div className="flex items-center">
+                  <span className="text-lg font-medium">Trang Shop</span>
+                  <span className="ml-2 text-green-500">✓</span>
+                </div>
+
+                {/* Email */}
+                <div className="text-sm text-gray-300">
+                  trangtrang220921@gmail.com
+                </div>
+              </div>
+
+              {/* Rating Stars */}
+              <div className="flex">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span key={star} className="text-yellow-400 text-xl">{starSvg}</span>
+                ))}
+              </div>
+
+              {/* Trust Score */}
+              <div className="mb-4">
+                <span className="text-white font-semibold">Điểm Uy Tín: </span>
+                <span className="text-green-400">100</span>
+              </div>
+
+              {/* Search Box */}
+              <Input
+                placeholder="Tìm kiếm trong menu"
+                style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  border: "none",
+                  color: "white",
+                  borderRadius: "4px",
+                  width: "100%",
+                }}
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+            </div>
+          )}
           <Menu
             mode="inline"
             theme="dark"
