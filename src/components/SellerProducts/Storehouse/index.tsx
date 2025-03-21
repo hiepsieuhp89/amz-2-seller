@@ -1,102 +1,108 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { Input, Button, Card, Badge, Empty } from "antd"
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons"
-import styles from "./storehouse.module.scss"
-import { mockData } from "./mockData"
+import type React from "react";
+import { useState, useEffect } from "react";
+import { Input, Button, Card, Badge, Empty } from "antd";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import styles from "./storehouse.module.scss";
+import { mockData } from "./mockData";
 
 interface Product {
-  id: string
-  name: string
-  image: string
-  stock: number
-  sellingPrice: number
-  purchasePrice: number
-  profit: number
+  id: string;
+  name: string;
+  image: string;
+  stock: number;
+  sellingPrice: number;
+  purchasePrice: number;
+  profit: number;
 }
 
 const Storehouse: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(mockData)
-  const [selectedProducts, setSelectedProducts] = useState<Product[]>([])
-  const [keyword, setKeyword] = useState("")
-  const [minPrice, setMinPrice] = useState<number | undefined>()
-  const [maxPrice, setMaxPrice] = useState<number | undefined>()
-  const [quantity, setQuantity] = useState<number | undefined>()
-  const [totalSelectedProducts, setTotalSelectedProducts] = useState(0)
-  const [originalProducts, setOriginalProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(mockData);
+  const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
+  const [keyword, setKeyword] = useState("");
+  const [minPrice, setMinPrice] = useState<number | undefined>();
+  const [maxPrice, setMaxPrice] = useState<number | undefined>();
+  const [quantity, setQuantity] = useState<number | undefined>();
+  const [totalSelectedProducts, setTotalSelectedProducts] = useState(0);
+  const [originalProducts, setOriginalProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    setProducts(mockData)
-    setOriginalProducts(mockData)
-    setFilteredProducts(mockData)
-  }, [])
+    setProducts(mockData);
+    setOriginalProducts(mockData);
+    setFilteredProducts(mockData);
+  }, []);
 
   const filterProducts = () => {
     if (keyword || minPrice !== undefined || maxPrice !== undefined) {
-      let filtered = [...originalProducts]
+      let filtered = [...originalProducts];
 
       if (keyword) {
-        filtered = filtered.filter((product) => product.name.toLowerCase().includes(keyword.toLowerCase()))
+        filtered = filtered.filter((product) =>
+          product.name.toLowerCase().includes(keyword.toLowerCase())
+        );
       }
 
       if (minPrice !== undefined) {
-        filtered = filtered.filter((product) => product.sellingPrice >= minPrice)
+        filtered = filtered.filter(
+          (product) => product.sellingPrice >= minPrice
+        );
       }
 
       if (maxPrice !== undefined) {
-        filtered = filtered.filter((product) => product.sellingPrice <= maxPrice)
+        filtered = filtered.filter(
+          (product) => product.sellingPrice <= maxPrice
+        );
       }
 
-      setFilteredProducts(filtered)
+      setFilteredProducts(filtered);
     } else {
-      setFilteredProducts(originalProducts)
+      setFilteredProducts(originalProducts);
     }
-  }
+  };
 
   useEffect(() => {
     if (originalProducts.length > 0) {
-      filterProducts()
+      filterProducts();
     }
-  }, [keyword, minPrice, maxPrice, originalProducts])
+  }, [keyword, minPrice, maxPrice, originalProducts]);
 
   const addProduct = (product: Product) => {
-    setSelectedProducts([...selectedProducts, product])
-    setTotalSelectedProducts(totalSelectedProducts + 1)
-  }
+    setSelectedProducts([...selectedProducts, product]);
+    setTotalSelectedProducts(totalSelectedProducts + 1);
+  };
 
   const removeProduct = (index: number) => {
-    const newSelectedProducts = [...selectedProducts]
-    newSelectedProducts.splice(index, 1)
-    setSelectedProducts(newSelectedProducts)
-    setTotalSelectedProducts(totalSelectedProducts - 1)
-  }
+    const newSelectedProducts = [...selectedProducts];
+    newSelectedProducts.splice(index, 1);
+    setSelectedProducts(newSelectedProducts);
+    setTotalSelectedProducts(totalSelectedProducts - 1);
+  };
 
   const selectRandomProducts = () => {
-    if (!quantity || quantity <= 0 || quantity > products.length) return
+    if (!quantity || quantity <= 0 || quantity > products.length) return;
 
-    const shuffled = [...products].sort(() => 0.5 - Math.random())
-    const randomProducts = shuffled.slice(0, quantity)
+    const shuffled = [...products].sort(() => 0.5 - Math.random());
+    const randomProducts = shuffled.slice(0, quantity);
 
-    setSelectedProducts(randomProducts)
-    setTotalSelectedProducts(randomProducts.length)
-  }
+    setSelectedProducts(randomProducts);
+    setTotalSelectedProducts(randomProducts.length);
+  };
 
   const addAllSelectedProducts = () => {
     // This would typically send the selected products to an API
-    console.log("Adding products:", selectedProducts)
+    console.log("Adding products:", selectedProducts);
     // Reset selection after adding
-    setSelectedProducts([])
-    setTotalSelectedProducts(0)
-  }
+    setSelectedProducts([]);
+    setTotalSelectedProducts(0);
+  };
 
   return (
     <section className={styles.storehouse}>
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="md:flex-1">
+      <div className="container mx-auto px-4 py-4 h-full">
+        <div className="flex flex-col md:flex-row gap-4 h-full">
+          <div className="flex-1 ">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
               <Input
                 placeholder="Tìm kiếm sản phẩm"
@@ -110,18 +116,26 @@ const Storehouse: React.FC = () => {
                 placeholder="Giá bắt đầu"
                 className="h-10"
                 value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) =>
+                  setMinPrice(
+                    e.target.value ? Number(e.target.value) : undefined
+                  )
+                }
               />
               <Input
                 type="number"
                 placeholder="Giá kết thúc"
                 className="h-10"
                 value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) =>
+                  setMaxPrice(
+                    e.target.value ? Number(e.target.value) : undefined
+                  )
+                }
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[390px] overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 overflow-y-auto">
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <div key={product.id} className={styles.productCard}>
@@ -148,20 +162,32 @@ const Storehouse: React.FC = () => {
                       <div className={styles.productName}>{product.name}</div>
                       <div className={styles.priceInfo}>
                         <span>
-                          Giá bán: <span className="text-success">{product.sellingPrice.toFixed(2)}</span>
+                          Giá bán:{" "}
+                          <span className="text-success">
+                            {product.sellingPrice.toFixed(2)}
+                          </span>
                         </span>
                       </div>
                       <div className={styles.priceInfo}>
                         <span>
-                          Giá nhập: <span className="text-warning">{product.purchasePrice.toFixed(2)}</span>
+                          Giá nhập:{" "}
+                          <span className="text-warning">
+                            {product.purchasePrice.toFixed(2)}
+                          </span>
                         </span>
                       </div>
                       <div className={styles.priceInfo}>
                         <span>
-                          Lợi nhuận: <span className="text-danger font-bold">${product.profit.toFixed(2)}</span>
+                          Lợi nhuận:{" "}
+                          <span className="text-danger font-bold">
+                            ${product.profit.toFixed(2)}
+                          </span>
                         </span>
                       </div>
-                      <div className={styles.addButton} onClick={() => addProduct(product)}>
+                      <div
+                        className={styles.addButton}
+                        onClick={() => addProduct(product)}
+                      >
                         <div className={styles.overlay}></div>
                         <PlusOutlined className={styles.plusIcon} />
                       </div>
@@ -175,7 +201,11 @@ const Storehouse: React.FC = () => {
 
             {filteredProducts.length > 12 && (
               <div className="text-center mt-4">
-                <Button type="primary" ghost onClick={() => console.log("Load more")}>
+                <Button
+                  type="primary"
+                  ghost
+                  onClick={() => console.log("Load more")}
+                >
                   Tải thêm
                 </Button>
               </div>
@@ -189,11 +219,19 @@ const Storehouse: React.FC = () => {
                 placeholder="Số lượng"
                 className="h-10"
                 value={quantity}
-                onChange={(e) => setQuantity(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) =>
+                  setQuantity(
+                    e.target.value ? Number(e.target.value) : undefined
+                  )
+                }
                 maxLength={2}
                 onKeyDown={(e) => e.key === "Enter" && selectRandomProducts()}
               />
-              <Button type="primary" className="h-10 flex-1 !rounded-[4px]" onClick={selectRandomProducts}>
+              <Button
+                type="primary"
+                className="h-10 flex-1 !rounded-[4px]"
+                onClick={selectRandomProducts}
+              >
                 Chọn sản phẩm ngẫu nhiên
               </Button>
             </div>
@@ -201,7 +239,8 @@ const Storehouse: React.FC = () => {
             {totalSelectedProducts > 0 && (
               <div className="text-center my-3">
                 <h5>
-                  Tổng sản phẩm đã chọn: <strong>{totalSelectedProducts}</strong>
+                  Tổng sản phẩm đã chọn:{" "}
+                  <strong>{totalSelectedProducts}</strong>
                 </h5>
               </div>
             )}
@@ -211,7 +250,10 @@ const Storehouse: React.FC = () => {
                 {selectedProducts.length > 0 ? (
                   <ul className="list-group list-group-flush">
                     {selectedProducts.map((product, index) => (
-                      <li key={`${product.id}-${index}`} className={styles.selectedItem}>
+                      <li
+                        key={`${product.id}-${index}`}
+                        className={styles.selectedItem}
+                      >
                         <div className="flex items-center">
                           <img
                             src={product.image || "/placeholder.svg"}
@@ -219,12 +261,20 @@ const Storehouse: React.FC = () => {
                             className="w-12 h-12 object-cover mr-2"
                           />
                           <div className="flex-1">
-                            <div className="text-sm font-medium truncate">{product.name}</div>
+                            <div className="text-sm font-medium truncate">
+                              {product.name}
+                            </div>
                             <div className="text-xs">
-                              <span className="text-success">${product.sellingPrice.toFixed(2)}</span>
+                              <span className="text-success">
+                                ${product.sellingPrice.toFixed(2)}
+                              </span>
                             </div>
                           </div>
-                          <Button type="text" danger onClick={() => removeProduct(index)}>
+                          <Button
+                            type="text"
+                            danger
+                            onClick={() => removeProduct(index)}
+                          >
                             Xóa
                           </Button>
                         </div>
@@ -251,8 +301,7 @@ const Storehouse: React.FC = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Storehouse
-
+export default Storehouse;
