@@ -144,7 +144,7 @@ const ShopBannerSettings: React.FC<ShopBannerSettingsProps> = ({ shopData, onSav
 
         <div className="flex justify-end">
           <Button type="primary" htmlType="submit" size="small" className="bg-blue-500 !rounded-[4px] w-[90px] !h-9">
-            Tiết kiệm
+            Lưu
           </Button>
         </div>
       </Form>
