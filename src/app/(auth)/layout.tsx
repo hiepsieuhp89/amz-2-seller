@@ -1,10 +1,9 @@
 'use client'
-import React, { Suspense } from 'react';
-import styles from './styles.module.scss';
-import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import React from 'react';
+import styles from './styles.module.scss';
 
 
 
@@ -17,7 +16,7 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
     >
 
       <div className='py-3'>
-        <Image src={'/images/amz.svg'} width={178} height={76} alt='' />
+        <Image src={'/images/icon.png'} width={178} height={76} alt='' />
       </div>
 
 

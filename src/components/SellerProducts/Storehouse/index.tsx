@@ -24,7 +24,7 @@ const Storehouse = () => {
   const [maxPrice, setMaxPrice] = useState<number | undefined>()
   const [quantity, setQuantity] = useState<number | undefined>()
   const [totalSelectedProducts, setTotalSelectedProducts] = useState(0)
- 
+
   const filterProducts = () => {
     if (keyword || minPrice !== undefined || maxPrice !== undefined) {
       let filtered = [...productsData?.data?.data || []]
@@ -57,12 +57,12 @@ const Storehouse = () => {
   const addProduct = (product: IProduct) => {
     // Kiểm tra xem sản phẩm đã tồn tại trong danh sách đã chọn chưa
     const productExists = selectedProducts.some(item => item.id === product.id);
-    
+
     if (productExists) {
       message.warning("Sản phẩm đã tồn tại trong danh sách");
       return;
     }
-    
+
     setSelectedProducts([...selectedProducts, product])
     setTotalSelectedProducts(totalSelectedProducts + 1)
   }
@@ -86,7 +86,7 @@ const Storehouse = () => {
 
   const addAllSelectedProducts = () => {
     const productIds = selectedProducts.map(product => product.id)
-    
+
     addShopProducts(
       { productIds: productIds },
       {
@@ -116,7 +116,7 @@ const Storehouse = () => {
     <section className={styles.storehouse}>
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row gap-4">
-          <div className="md:flex-1">
+          <div className="md:flex-1 flex flex-col h-full">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
               <Input
                 placeholder="Tìm kiếm sản phẩm"
@@ -141,7 +141,7 @@ const Storehouse = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[390px] overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[calc(100vh-210px)] flex-1 flex-grow overflow-y-auto">
               {isLoading ? (
                 <div className="col-span-2 flex justify-center items-center h-full">
                   <Spin size="small" />
@@ -178,7 +178,7 @@ const Storehouse = () => {
                       }
                     >
                       <div className={styles.productName}>
-                        Tên sản phẩm:{" "} 
+                        Tên sản phẩm:{" "}
                         {product.name}
                       </div>
                       <div className={styles.productDescription}>
@@ -249,8 +249,8 @@ const Storehouse = () => {
               </div>
             )}
 
-            <Card 
-              className="mb-3 !rounded-[8px] overflow-hidden shadow-md" 
+            <Card
+              className="mb-3 !rounded-[8px] overflow-hidden shadow-md"
               headStyle={{ backgroundColor: '#f7f7f7', borderBottom: '1px solid #eee' }}
             >
               <div className={styles.selectedProducts}>
@@ -276,10 +276,10 @@ const Storehouse = () => {
                               <span className="text-red-600 font-medium">Lợi nhuận: ${(Number(product.salePrice) - Number(product.price)).toFixed(2)}</span>
                             </div>
                           </div>
-                          <Button 
-                            type="text" 
+                          <Button
+                            type="text"
                             size="small"
-                            danger 
+                            danger
                             shape="circle"
                             icon={<DeleteOutlined />}
                             onClick={() => removeProduct(index)}

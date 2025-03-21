@@ -4,8 +4,11 @@ import ClientLayout from './ClientLayout';
 import NextTopLoader from 'nextjs-toploader';
 
 export const metadata: Metadata = {
-  title: 'PKKQ',
-  description: 'PKKQ',
+  title: 'Amazon',
+  description: 'Amazon',
+  icons: {
+    icon: '/images/icon.png',
+  },
 };
 
 export default function RootLayout({
