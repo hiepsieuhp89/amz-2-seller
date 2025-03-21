@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import type React from "react"
 import { useState, useEffect } from "react"
@@ -30,9 +30,7 @@ const Storehouse = () => {
       let filtered = [...productsData?.data?.data || []]
 
       if (keyword) {
-        filtered = filtered.filter((product) =>
-          product.name.toLowerCase().includes(keyword.toLowerCase())
-        );
+        filtered = filtered.filter((product) => product.name.toLowerCase().includes(keyword.toLowerCase()))
       }
 
       if (minPrice !== undefined) {
@@ -43,11 +41,11 @@ const Storehouse = () => {
         filtered = filtered.filter((product) => Number(product.salePrice) <= maxPrice)
       }
 
-      setFilteredProducts(filtered);
+      setFilteredProducts(filtered)
     } else {
       setFilteredProducts(productsData?.data?.data || [])
     }
-  };
+  }
 
   useEffect(() => {
     if ((productsData?.data?.data as any)?.length > 0) {
@@ -70,21 +68,21 @@ const Storehouse = () => {
   }
 
   const removeProduct = (index: number) => {
-    const newSelectedProducts = [...selectedProducts];
-    newSelectedProducts.splice(index, 1);
-    setSelectedProducts(newSelectedProducts);
-    setTotalSelectedProducts(totalSelectedProducts - 1);
-  };
+    const newSelectedProducts = [...selectedProducts]
+    newSelectedProducts.splice(index, 1)
+    setSelectedProducts(newSelectedProducts)
+    setTotalSelectedProducts(totalSelectedProducts - 1)
+  }
 
   const selectRandomProducts = () => {
-    if (!quantity || quantity <= 0 || quantity > products.length) return;
+    if (!quantity || quantity <= 0 || quantity > products.length) return
 
-    const shuffled = [...products].sort(() => 0.5 - Math.random());
-    const randomProducts = shuffled.slice(0, quantity);
+    const shuffled = [...products].sort(() => 0.5 - Math.random())
+    const randomProducts = shuffled.slice(0, quantity)
 
-    setSelectedProducts(randomProducts);
-    setTotalSelectedProducts(randomProducts.length);
-  };
+    setSelectedProducts(randomProducts)
+    setTotalSelectedProducts(randomProducts.length)
+  }
 
   const addAllSelectedProducts = () => {
     const productIds = selectedProducts.map(product => product.id)
@@ -132,22 +130,14 @@ const Storehouse = () => {
                 placeholder="Giá bắt đầu"
                 className="h-10"
                 value={minPrice}
-                onChange={(e) =>
-                  setMinPrice(
-                    e.target.value ? Number(e.target.value) : undefined
-                  )
-                }
+                onChange={(e) => setMinPrice(e.target.value ? Number(e.target.value) : undefined)}
               />
               <Input
                 type="number"
                 placeholder="Giá kết thúc"
                 className="h-10"
                 value={maxPrice}
-                onChange={(e) =>
-                  setMaxPrice(
-                    e.target.value ? Number(e.target.value) : undefined
-                  )
-                }
+                onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : undefined)}
               />
             </div>
 
@@ -211,10 +201,6 @@ const Storehouse = () => {
                         className={styles.addButton}
                         onClick={() => addProduct(product)}
                       >
-                      <div
-                        className={styles.addButton}
-                        onClick={() => addProduct(product)}
-                      >
                         <div className={styles.overlay}></div>
                         <PlusOutlined className={styles.plusIcon} />
                       </div>
@@ -246,19 +232,11 @@ const Storehouse = () => {
                 placeholder="Số lượng"
                 className="h-10"
                 value={quantity}
-                onChange={(e) =>
-                  setQuantity(
-                    e.target.value ? Number(e.target.value) : undefined
-                  )
-                }
+                onChange={(e) => setQuantity(e.target.value ? Number(e.target.value) : undefined)}
                 maxLength={2}
                 onKeyDown={(e) => e.key === "Enter" && selectRandomProducts()}
               />
-              <Button
-                type="primary"
-                className="h-10 flex-1 !rounded-[4px]"
-                onClick={selectRandomProducts}
-              >
+              <Button type="primary" className="h-10 flex-1 !rounded-[4px]" onClick={selectRandomProducts}>
                 Chọn sản phẩm ngẫu nhiên
               </Button>
             </div>
@@ -266,8 +244,7 @@ const Storehouse = () => {
             {totalSelectedProducts > 0 && (
               <div className="text-center my-3">
                 <h5>
-                  Tổng sản phẩm đã chọn:{" "}
-                  <strong>{totalSelectedProducts}</strong>
+                  Tổng sản phẩm đã chọn: <strong>{totalSelectedProducts}</strong>
                 </h5>
               </div>
             )}
@@ -333,7 +310,8 @@ const Storehouse = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Storehouse;
+export default Storehouse
+
