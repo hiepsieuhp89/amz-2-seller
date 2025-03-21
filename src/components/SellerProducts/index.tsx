@@ -5,21 +5,14 @@ import { useState } from "react"
 import { Typography } from "antd"
 import { ProductsStats } from "./ProductsStats"
 import { ProductsTable } from "./ProductsTable"
-import { mockProducts } from "./mockData"
-import { Pagination } from "antd"
+import { IProduct } from "@/interface/response/products"
 
 const SellerProducts = () => {
-  const [products, setProducts] = useState(mockProducts)
   const [searchQuery, setSearchQuery] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
 
   const handleSearch = (value: string) => {
     setSearchQuery(value)
-  }
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
   }
 
   const handleSelectChange = (newSelectedRowKeys: React.Key[]) => {
@@ -33,35 +26,14 @@ const SellerProducts = () => {
         Các sản phẩm
       </Typography.Title>
     </div>
-
       <div className="mb-4">
         <ProductsStats />
       </div>
-
       <ProductsTable
-        products={products}
         onSearch={handleSearch}
         selectedRowKeys={selectedRowKeys}
         onSelectChange={handleSelectChange}
       />
-
-      <div className="flex justify-center mt-4">
-        <Pagination
-          current={currentPage}
-          onChange={handlePageChange}
-          total={50}
-          showSizeChanger={false}
-          itemRender={(page, type, originalElement) => {
-            if (type === "prev") {
-              return <a>‹</a>
-            }
-            if (type === "next") {
-              return <a>›</a>
-            }
-            return originalElement
-          }}
-        />
-      </div>
     </div>
   )
 }
