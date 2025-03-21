@@ -5,8 +5,8 @@ import { Table, Input, Checkbox, Button, Space, Tag, Typography, Row, Col, Pagin
 import { SearchOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons"
 import { IProduct } from "@/interface/response/products"
 import { useProducts } from "@/hooks/products"
+import "./styles.css"
 
-// Định nghĩa kiểu Breakpoint
 type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
 
 interface ProductsTableProps {
@@ -159,22 +159,17 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
                 dataSource={products}
                 loading={isLoading}
                 pagination={false}
-                rowSelection={{
-                    selectedRowKeys,
-                    onChange: onSelectChange,
-                    columnWidth: 60,
-                    renderCell: () => null, // Hide default checkbox
-                }}
                 scroll={{ x: 'max-content' }}
                 size="middle"
             />
             
+            {/* ant-select-selector */}
             <div className="flex justify-end mt-4 mb-4 px-4">
                 <Pagination
                     current={currentPage}
                     onChange={handlePaginationChange}
                     showSizeChanger
-                    total={productsData?.data?.meta?.hasNextPage ? 2 : 1} 
+                    total={productsData?.data?.meta?.pageCount} 
                 />
             </div>
         </div>

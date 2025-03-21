@@ -33,7 +33,7 @@ export interface IProductsListResponse {
             totalPages: number
         },
         meta: {
-            itemCount: number
+            pageCount: number
             totalItems: number
             itemsPerPage: number
             totalPages: number
