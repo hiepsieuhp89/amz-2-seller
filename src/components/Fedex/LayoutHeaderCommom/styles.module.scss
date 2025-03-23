@@ -1,0 +1,24 @@
+  .menuLeft {
+    width: 280px;
+    border-right: 1px solid #dcdcdc;
+    padding: 10px 0;
+    background-color: #ffffff;
+    .item {
+      padding: 10px 0px 10px 12px;
+      cursor: pointer;
+    }
+    .itemMenu {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 8px;
+    }
+    .itemMenuActive {
+      background: #7579e71a;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 8px;
+      border-right: 4px solid #003366; 
+  }
+  }

@@ -1,21 +1,29 @@
 "use client"
+import {
+  mdiCart,
+  mdiCartOutline,
+  mdiChevronDown,
+  mdiChevronRight,
+  mdiCog,
+  mdiCogOutline,
+  mdiCommentText,
+  mdiCommentTextOutline,
+  mdiFolder,
+  mdiFolderOutline,
+  mdiHome,
+  mdiHomeOutline,
+  mdiPackageVariantClosed, mdiPackageVariantClosedCheck,
+  mdiStar,
+  mdiStarOutline,
+  mdiStore,
+  mdiStoreOutline
+} from "@mdi/js"
+import Icon from "@mdi/react"
+import type { MenuProps } from "antd"
+import { Badge, Input, Menu } from "antd"
 import { usePathname, useRouter } from "next/navigation"
 import type React from "react"
 import { useEffect, useState } from "react"
-import Icon from "@mdi/react"
-import {
-  mdiHomeOutline, mdiHome,
-  mdiStoreOutline, mdiStore,
-  mdiFolderOutline, mdiFolder,
-  mdiStarOutline, mdiStar,
-  mdiCommentTextOutline, mdiCommentText,
-  mdiCartOutline, mdiCart,
-  mdiCogOutline, mdiCog,
-  mdiClockTimeThreeOutline, mdiClockTimeThree,
-  mdiChevronRight, mdiChevronDown
-} from "@mdi/js"
-import { Input, Menu, Badge } from "antd"
-import type { MenuProps } from "antd"
 import "./styles.css"
 interface LayoutGAProps {
   isSidebarOpen: boolean
@@ -109,10 +117,10 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     },
     {
       key: "/seller/payment-history",
-      name: "Lịch sử thanh toán",
-      icon: <Icon path={mdiClockTimeThreeOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiClockTimeThree} size={0.8} />,
-      path: "/seller/payment-history",
+      name: "Quản lý Fedex",
+      icon: <Icon path={mdiPackageVariantClosed} size={0.8} />,
+      activeIcon: <Icon path={mdiPackageVariantClosedCheck} size={0.8} />,
+      path: "/fedex",
     },
   ]
 
