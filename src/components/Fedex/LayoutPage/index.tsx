@@ -97,9 +97,17 @@ function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
             <div className="flex flex-col items-center p-4 text-white gap-4">
               {/* User Info */}
               <div className="flex flex-col gap-0 w-full items-center">
-                <div className="flex items-center">
+                <div className="flex items-center gap-1">
                   <span className="text-lg font-medium">Trang Shop</span>
-                  <span className="ml-2 text-green-500">✓</span>
+                  <div className="h-7 w-7 relative">
+                    <Image
+                      draggable={false}
+                      quality={100}
+                      height={100}
+                      width={100}
+                      className="object-cover"
+                      src={"/images/tick-icon.png"} alt="logo" />
+                  </div>
                 </div>
                 <div className="text-sm text-gray-200 mb-4">
                   trangtrang220921@gmail.com

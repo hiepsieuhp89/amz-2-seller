@@ -2,10 +2,11 @@
 
 import type React from "react"
 import { useState } from "react"
-import { Table, Badge, Button, Tooltip, Input, Select, Card, Row, Col, Typography } from "antd"
+import { Table, Badge, Button, Tooltip, Input, Select, Card, Row, Col, Typography, Modal, Form } from "antd"
 import { EyeOutlined, DownloadOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons"
 import type { ColumnsType } from "antd/es/table"
-
+import Icon from '@mdi/react';
+import { mdiCashClock } from '@mdi/js';
 const { Option } = Select
 
 interface OrderData {
@@ -28,6 +29,8 @@ interface OrdersTableProps {
 
 const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearch }) => {
     const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
+    const [isModalVisible, setIsModalVisible] = useState(false)
+    const [isBulkModalVisible, setIsBulkModalVisible] = useState(false)
 
     const toggleExpand = (key: string) => {
         if (expandedRowKeys.includes(key)) {
@@ -35,6 +38,22 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
         } else {
             setExpandedRowKeys([...expandedRowKeys, key])
         }
+    }
+
+    const showModal = () => {
+        setIsModalVisible(true)
+    }
+
+    const handleCancel = () => {
+        setIsModalVisible(false)
+    }
+
+    const showBulkModal = () => {
+        setIsBulkModalVisible(true)
+    }
+
+    const handleBulkCancel = () => {
+        setIsBulkModalVisible(false)
     }
 
     const columns: ColumnsType<OrderData> = [
@@ -96,9 +115,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
             key: "action",
             width: '10%',
             render: () => (
-                <div className="flex gap-2 justify-center">
-                    <Button type="primary" shape="circle" icon={<EyeOutlined />} className="text-blue-500" />
-                    <Button type="primary" shape="circle" icon={<DownloadOutlined />} className="text-yellow-500" />
+                <div className="flex items-center justify-center">
+                    <Button
+                        size="middle"
+                        type="primary"
+                        shape="circle"
+                        icon={<Icon path={mdiCashClock} size={0.8} />}
+                        className="text-blue-500 flex items-center justify-center"
+                        onClick={showModal} />
                 </div>
             ),
         },
@@ -109,9 +133,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
             <div className="px-6 py-3 flex justify-between items-center">
                 <div className="font-medium text-base">Đơn hàng</div>
                 <div className="flex gap-2">
-                    <Select 
-                        placeholder="Lọc theo trạng thái phân phối" 
-                        style={{ width: 250, borderRadius: 0 }} 
+                    <Select
+                        placeholder="Lọc theo trạng thái phân phối"
+                        style={{ width: 250, borderRadius: 0 }}
                         onChange={onFilterChange}
                     >
                         <Option value="">Lọc theo trạng thái phân phối</Option>
@@ -122,24 +146,45 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
                         <Option value="cancelled">Đã huỷ</Option>
                     </Select>
                     <Input
+                        className="placeholder-gray-400"
                         placeholder="Nhập Mã đơn hàng và nhấn Enter"
                         style={{ width: 250 }}
                         onPressEnter={(e) => onSearch((e.target as HTMLInputElement).value)}
                     />
+                    <Button
+                        className="!rounded-[4px]"
+                        type="primary"
+                        htmlType="submit"
+                        onClick={showBulkModal}
+                    >
+                        Thanh toán tất cả
+                    </Button>
+                    <Button
+                        className="!rounded-[4px]"
+                        type="primary"
+                        htmlType="submit"
+                        onClick={showBulkModal}
+                    >
+                        Thanh toán những đơn đã chọn
+                    </Button>
                 </div>
             </div>
-            
+
             <Table
                 columns={columns}
                 dataSource={data}
                 pagination={false}
                 rowKey="key"
                 className="border-t"
+                style={{
+                    border: '1px solid #f0f0f0',
+                    borderRadius: '4px'
+                }}
                 expandable={{
                     expandedRowKeys,
                     expandIcon: () => null,
                     expandedRowRender: (record) => (
-                        <div className="p-4 bg-gray-50">
+                        <div className="p-4 bg-gray-50" style={{ borderTop: '1px solid #f0f0f0' }}>
                             <p>
                                 <strong>Khách hàng:</strong> Ryan Nash
                             </p>
@@ -154,6 +199,167 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
                     ),
                 }}
             />
+
+            <Modal
+                title="Thanh toán đơn hàng"
+                visible={isModalVisible}
+                onCancel={handleCancel}
+                footer={null}
+                className="!rounded-[4px]"
+            >
+                <Form
+                    action="https://logistic.shop-worldwide-amz.top/seller/order/pay_bulk_orders"
+                    method="POST"
+                >
+                    <div className="modal-body">
+                        <Table
+                            className="border mt-4"
+                            style={{
+                                border: '1px solid #f0f0f0',
+                                borderRadius: '4px'
+                            }}
+                            dataSource={[
+                                {
+                                    key: '1',
+                                    label: 'Mã đặt hàng:',
+                                    value: '20250318-06264665'
+                                },
+                                {
+                                    key: '2',
+                                    label: 'Số Tiền Cần Thanh Toán',
+                                    value: '$11.00'
+                                }
+                            ]}
+                            pagination={false}
+                            showHeader={false}
+                            columns={[
+                                {
+                                    dataIndex: 'label',
+                                    key: 'label',
+                                    className: 'border-r'
+                                },
+                                {
+                                    dataIndex: 'value',
+                                    key: 'value',
+                                }
+                            ]}
+                        />
+
+                        <Table
+                            className="border mt-4"
+                            dataSource={[
+                                {
+                                    key: '1',
+                                    label: 'Số dư hiện tại',
+                                    value: '$0.00'
+                                }
+                            ]}
+                            pagination={false}
+                            showHeader={false}
+                            columns={[
+                                {
+                                    dataIndex: 'label',
+                                    key: 'label',
+                                    className: 'border-r'
+                                },
+                                {
+                                    dataIndex: 'value',
+                                    key: 'value',
+                                    render: (text) => <span className="text-danger">{text}</span>
+                                }
+                            ]}
+                        />
+
+                        <div className="form-group text-right mt-4">
+                            <Button
+                                className="!rounded-[4px]"
+                                type="primary"
+                                htmlType="submit"
+                            >
+                                Thanh toán
+                            </Button>
+                        </div>
+                    </div>
+                </Form>
+            </Modal>
+
+            <Modal
+                title="Thanh toán nhiều đơn hàng"
+                visible={isBulkModalVisible}
+                onCancel={handleBulkCancel}
+                footer={null}
+                className="!rounded-[4px]"
+            >
+                <Form
+                    action="https://logistic.shop-worldwide-amz.top/seller/order/pay_bulk_orders"
+                    method="POST"
+                >
+                    <div className="modal-body">
+                        <Table
+                            className="border mt-4"
+                            style={{
+                                border: '1px solid #f0f0f0',
+                                borderRadius: '4px'
+                            }}
+                            dataSource={[
+                                {
+                                    key: '1',
+                                    label: 'Số Tiền Cần Thanh Toán',
+                                    value: '$10.16'
+                                }
+                            ]}
+                            pagination={false}
+                            showHeader={false}
+                            columns={[
+                                {
+                                    dataIndex: 'label',
+                                    key: 'label',
+                                    className: 'border-r'
+                                },
+                                {
+                                    dataIndex: 'value',
+                                    key: 'value',
+                                }
+                            ]}
+                        />
+
+                        <Table
+                            className="border mt-4"
+                            dataSource={[
+                                {
+                                    key: '1',
+                                    label: 'Số dư hiện tại',
+                                    value: '$0.00'
+                                }
+                            ]}
+                            pagination={false}
+                            showHeader={false}
+                            columns={[
+                                {
+                                    dataIndex: 'label',
+                                    key: 'label',
+                                    className: 'border-r'
+                                },
+                                {
+                                    dataIndex: 'value',
+                                    key: 'value',
+                                    render: (text) => <span className="text-danger">{text}</span>
+                                }
+                            ]}
+                        />
+
+                        <div className="form-group text-right mt-4">
+                            <Button
+                                className="!rounded-[4px]"
+                                type="primary"
+                                htmlType="submit"
+                            >
+                                Thanh toán
+                            </Button>
+                        </div>
+                    </div>
+                </Form>
+            </Modal>
         </div>
     )
 }

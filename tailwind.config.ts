@@ -1,5 +1,7 @@
 import type { Config } from 'tailwindcss';
 const plugin = require('tailwindcss/plugin');
+const { fontFamily } = require('tailwindcss/defaultTheme')
+
 const config: Config = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -17,6 +19,19 @@ const config: Config = {
       xxxl: '1920px',
     },
     extend: {
+      fontFamily: {
+        sans: ['Amazon Ember', ...fontFamily.sans],
+      },
+      fontWeight: {
+        thin: '100',
+        light: '300',
+        normal: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
+        extrabold: '800',
+        black: '900',
+      },
       boxShadow: {
         'light-grey': '0 4px 6px rgba(211, 211, 211, 0.6)',
       },

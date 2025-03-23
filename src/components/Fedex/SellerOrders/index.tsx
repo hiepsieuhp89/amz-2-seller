@@ -4,10 +4,9 @@ import { Col, Row, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useContext, useState } from "react";
 import OrdersTable from "./OrdersTable";
-import { SwapOutlined } from "@ant-design/icons";
+import { PlusOutlined, SwapOutlined } from "@ant-design/icons";
 import { useUser } from "@/context/useUserContext";
 
-// Mock data
 const mockOrders = [
   {
     key: "1",
@@ -22,7 +21,6 @@ const mockOrders = [
   },
 ];
 
-// Mock wallet transaction data
 const mockWalletTransactions = [
   {
     key: "1",
@@ -116,46 +114,66 @@ const SellerOrders = () => {
   }
 
   const { user } = useUser()
-  console.log("user", user)
   return (
     <div className="pt-2">
       {/* Wallet Balance Section */}
       <div className="mt-2">
         {/* Wallet Cards */}
-        <Row gutter={16} className="mb-4">
-          <Col span={8}>
-            <Card className="bg-gradient-to-r from-pink-500 to-purple-500 text-white">
+        <Row gutter={16} className="mb-4 justify-center items-stretch flex-wrap gap-2">
+          <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+            <Card className="bg-gradient-to-r from-pink-500/60 to-purple-500/60 text-white h-full">
               <div className="flex flex-col items-center">
-                <div className="w-[30px] h-[30px] rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
+                <div className="w-[30px] h-full rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
                   <span className="text-xl">$</span>
                 </div>
-                <div className="text-xl font-bold">$12.70</div>
-                <div className="text-sm opacity-80">Số dư đang chờ xử lý</div>
+                <div className="text-xl font-bold">1</div>
+                <div className="text-sm opacity-80 text-center">Đơn hàng chưa thanh toán</div>
               </div>
             </Card>
           </Col>
-          <Col span={8}>
-            <Card className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
+          <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+            <Card className="bg-gradient-to-r from-indigo-600/60 to-blue-500/60 text-white h-full">
               <div className="flex flex-col items-center">
-                <div className="w-[30px] h-[30px] rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
+                <div className="w-[30px] h-full rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
+                  <span className="text-xl">$</span>
+                </div>
+                <div className="text-xl font-bold">$11.00</div>
+                <div className="text-sm opacity-80 text-center">Tổng tiền cần thanh toán</div>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+            <Card className="bg-gradient-to-r from-green-500/60 to-teal-500/60 text-white h-full">
+              <div className="flex flex-col items-center">
+                <div className="w-[30px] h-full rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
+                  <span className="text-xl">$</span>
+                </div>
+                <div className="text-xl font-bold">$2.54</div>
+                <div className="text-sm opacity-80 text-center">Tổng lợi nhuận</div>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+            <Card className="bg-gradient-to-r from-orange-500/60 to-yellow-500/60 text-white h-full">
+              <div className="flex flex-col items-center">
+                <div className="w-[30px] h-full rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
                   <span className="text-xl">$</span>
                 </div>
                 <div className="text-xl font-bold">$0.00</div>
-                <div className="text-sm opacity-80">Số dư trên Wallet</div>
+                <div className="text-sm opacity-80 text-center">Số dư logistic</div>
               </div>
             </Card>
           </Col>
-          <Col span={8}>
+          <Col xs={24} sm={12} md={8} lg={6} xl={4}>
             <Card
-              className="bg-white border border-gray-300 text-black h-full"
+              className="bg-white border border-gray-200 text-black h-full"
               onClick={handleCurrencyConversion}
             >
               <div className="flex flex-col items-center">
-                <div className="w-[30px] h-[30px] rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
-                  <SwapOutlined className="text-xl text-white" />
+                <div className="w-[60px] h-[60px] rounded-full bg-main-gunmetal-blue/50 flex items-center justify-center mb-3">
+                  <PlusOutlined className="!text-white text-2xl" />
                 </div>
-                <div className="text-xl font-bold">{" "}</div>
-                <div className="text-sm opacity-80">Quy đổi USD</div>
+                <div className="text-lg !text-primary font-semibold">Quy đổi USD</div>
               </div>
             </Card>
           </Col>
@@ -164,7 +182,7 @@ const SellerOrders = () => {
         {/* Wallet Balance History Table */}
         <div className="bg-white rounded-[4px] border my-4">
           <div className="px-6 py-3">
-            <div className="font-medium text-base">Biến động số dư ví</div>
+            <div className="text-base">Biến động số dư ví</div>
           </div>
           <Table
             columns={walletColumns}
