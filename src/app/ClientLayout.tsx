@@ -1,21 +1,15 @@
 "use client"
+import LayoutProvider from '@/components/LayoutProvider';
+import WrapMessage from '@/components/WrapMessage';
+import { UserProvider } from '@/context/useUserContext';
 import { ReactQueryClientProvider } from '@/provider/ReactQueryClientProvider';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { ConfigProvider, ThemeConfig } from 'antd';
-import WrapMessage from '@/components/WrapMessage';
 import { usePathname } from 'next/navigation';
-import LayoutProvider from '@/components/LayoutProvider';
-import { UserProvider } from '@/context/useUserContext';
-import FedexLayout from './FedexLayout';
 
 function PathChecker({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isDisplayMenu = pathname?.includes('seller');
-  const isDisplayFedexMenu = pathname?.includes('fedex');
-
-  if (isDisplayFedexMenu) {
-    return <FedexLayout>{children}</FedexLayout>;
-  }
 
   if (isDisplayMenu) {
     return <LayoutProvider>{children}</LayoutProvider>;

@@ -50,13 +50,6 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     //   path: `/seller/dashboard`,
     // },
     {
-      key: "/seller/products/pos-system",
-      name: "Hệ thống POS",
-      icon: <Icon path={mdiPrinterPosOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiPrinterPosOutline} size={0.8} color={"#FCAF17"} />,
-      path: `/seller/pos-system`,
-    },
-    {
       key: "/seller/products",
       name: "Các sản phẩm",
       icon: <Icon path={mdiFolderOutline} size={0.8} />,
@@ -65,19 +58,19 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     },
     {
       key: "/seller/products/storehouse",
-      name: "Kho sản phẩm",
+      name: "Storehouse",
       icon: <Icon path={mdiStoreOutline} size={0.8} />,
       activeIcon: <Icon path={mdiStoreOutline} size={0.8} color={"#FCAF17"} />,
       path: `/seller/products/storehouse`,
     },
     //
-    {
-      key: "/seller/selling-process",
-      name: "Việc bán hàng",
-      icon: <Icon path={mdiCash100} size={0.8} />,
-      activeIcon: <Icon path={mdiCash100} size={0.8} color={"#FCAF17"} />,
-      path: `/seller/selling-process`,
-    },
+    // {
+    //   key: "/seller/selling-process",
+    //   name: "Việc bán hàng",
+    //   icon: <Icon path={mdiCash100} size={0.8} />,
+    //   activeIcon: <Icon path={mdiCash100} size={0.8} color={"#FCAF17"} />,
+    //   path: `/seller/selling-process`,
+    // },
     {
       key: "/seller/customers",
       name: "Khách hàng",
@@ -92,28 +85,28 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       activeIcon: <Icon path={mdiAccountCogOutline} size={0.8} color={"#FCAF17"} />,
       path: `/seller/sellers`,
     },
-    {
-      key: "/seller/selling-functions",
-      name: "Chức năng của người bán",
-      icon: <Icon path={mdiAccountCogOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiAccountCogOutline} size={0.8} color={"#FCAF17"} />,
-      path: `/seller/selling-functions`,
-    },
-    {
-      key: "/seller/link-system",
-      name: "Hệ thống liên kết",
-      icon: <Icon path={mdiLinkBoxOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiLinkBoxOutline} size={0.8} color={"#FCAF17"} />,
-      path: `/seller/link-system`,
-    },
+    // {
+    //   key: "/seller/selling-functions",
+    //   name: "Chức năng của người bán",
+    //   icon: <Icon path={mdiAccountCogOutline} size={0.8} />,
+    //   activeIcon: <Icon path={mdiAccountCogOutline} size={0.8} color={"#FCAF17"} />,
+    //   path: `/seller/selling-functions`,
+    // },
+    // {
+    //   key: "/seller/link-system",
+    //   name: "Hệ thống liên kết",
+    //   icon: <Icon path={mdiLinkBoxOutline} size={0.8} />,
+    //   activeIcon: <Icon path={mdiLinkBoxOutline} size={0.8} color={"#FCAF17"} />,
+    //   path: `/seller/link-system`,
+    // },
     //
-    {
-      key: "/seller/reviews",
-      name: "Đánh giá sản phẩm",
-      icon: <Icon path={mdiStarOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiStarOutline} size={0.8} color={"#FCAF17"} />,
-      path: "/seller/reviews",
-    },
+    // {
+    //   key: "/seller/reviews",
+    //   name: "Đánh giá sản phẩm",
+    //   icon: <Icon path={mdiStarOutline} size={0.8} />,
+    //   activeIcon: <Icon path={mdiStarOutline} size={0.8} color={"#FCAF17"} />,
+    //   path: "/seller/reviews",
+    // },
     {
       key: "/seller/orders",
       name: "Đơn hàng",
@@ -126,17 +119,17 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
         color: "#f08806",
       },
     },
-    {
-      key: "/seller/conversations",
-      name: "Cuộc trò chuyện",
-      icon: <Icon path={mdiCommentTextOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiCommentTextOutline} size={0.8} color={"#FCAF17"} />,
-      path: "/seller/conversations",
-      badge: {
-        count: 1,
-        color: "#f08806",
-      },
-    },
+    // {
+    //   key: "/seller/conversations",
+    //   name: "Cuộc trò chuyện",
+    //   icon: <Icon path={mdiCommentTextOutline} size={0.8} />,
+    //   activeIcon: <Icon path={mdiCommentTextOutline} size={0.8} color={"#FCAF17"} />,
+    //   path: "/seller/conversations",
+    //   badge: {
+    //     count: 1,
+    //     color: "#f08806",
+    //   },
+    // },
     {
       key: "/seller/account-packages",
       name: "Gói tài khoản",
@@ -169,7 +162,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       name: "Lịch sử thanh toán",
       icon: <Icon path={mdiPackageVariantClosed} size={0.8} />,
       activeIcon: <Icon path={mdiPackageVariantClosed} size={0.8} color={"#FCAF17"} />,
-      path: "/fedex",
+      path: "/seller/money-withdraw-requests",
     },
   ]
 
