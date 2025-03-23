@@ -180,8 +180,15 @@ const Captcha = ({ onSuccess, onError }: CaptchaProps) => {
           <p className="text-2xl font-bold my-4">{textCaptcha.question}</p>
           <Input
             placeholder="Your answer"
-            onChange={(e) => handleCaptchaSubmit(e.target.value)}
+            onPressEnter={(e) => handleCaptchaSubmit((e.target as HTMLInputElement).value)}
           />
+          <Button 
+            type="primary" 
+            onClick={() => handleCaptchaSubmit((document.querySelector('input[placeholder="Your answer"]') as HTMLInputElement)?.value)}
+            className="mt-2 !rounded-sm !px-2 !py-1"
+          >
+            Submit
+          </Button>
         </div>
       )}
 
