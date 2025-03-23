@@ -329,8 +329,8 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
 
               {/* Trust Score */}
               <div className="mb-4">
-                <span className="text-white font-semibold">Điểm Uy Tín: </span>
-                <span className="text-green-400">100</span>
+                <span className="text-white font-semibold text-sm">Điểm uy tín: </span>
+                <span className="text-green-400 text-sm">100</span>
               </div>
 
               {/* Search Box */}
