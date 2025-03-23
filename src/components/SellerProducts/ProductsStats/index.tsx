@@ -1,8 +1,10 @@
 import type React from "react"
+import Icon from "@mdi/react"
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons"
 import { Button } from "antd"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { mdiPackageVariantClosed } from "@mdi/js"
 
 export const ProductsStats: React.FC = () => {
     const router = useRouter()
@@ -12,17 +14,17 @@ export const ProductsStats: React.FC = () => {
             <div className="relative bg-gradient-to-r from-[#c471ed] to-[#f64f59] rounded-lg overflow-hidden text-white">
                 <div className="flex flex-col items-center p-3">
                     <div className="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center mt-3">
-                        <UploadOutlined className="text-white text-xl" />
+                        <Icon path={mdiPackageVariantClosed} size={0.8} />
                     </div>
                     <div className="text-center pt-3 pb-3">
                         <div className="text-4xl font-bold">161</div>
-                        <div className="opacity-50">Tải lên còn lại</div>
+                        <div className="opacity-50">Tổng số sản phẩm đã thêm</div>
                     </div>
                 </div>
             </div>
 
             {/* Add New Product Card */}
-            <div 
+            <div
                 onClick={() => router.push("/seller/products/storehouse")}
                 className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-3 flex flex-col items-center justify-center cursor-pointer">
                 <div className="w-16 h-16 rounded-full bg-gray-400 flex items-center justify-center mb-3">
