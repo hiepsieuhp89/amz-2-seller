@@ -1,12 +1,12 @@
 'use client';
 
+import Captcha from '@/components/Captcha';
 import { useUser } from '@/context/useUserContext';
 import { setCookies } from '@/helper';
 import { useSignIn } from '@/hooks/authentication';
 import { ISignIn } from '@/interface/request/authentication';
 import MessageClientContext from '@/provider/MessageProvider';
-import { ReloadOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Spin } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { FormProps } from 'antd/lib';
 import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
@@ -118,47 +118,23 @@ const SignInForm = () => {
     }
   };
 
-  const handleCaptchaSubmit = async (userInput: string) => {
-    let isValid = false;
-
-    if (captchaType === 'image') {
-      isValid = userInput === captchaTarget;
-    } else if (captchaType === 'text') {
-      isValid = userInput === textCaptcha.answer;
-    } else if (captchaType === 'audio') {
-      isValid = userInput === audioCaptcha.answer;
-      // console.log(audioCaptcha);
-    }
-
-    if (isValid) {
-      setShowCaptcha(false);
-      // If captcha is correct, proceed with login
-      if (formValues) {
-        try {
-          const payload: ISignIn = {
-            username: formValues.username,
-            password: formValues.password,
-            gate: "website"
-          };
-          const { data } = await mutateAsync(payload);
-          if (data?.accessToken) {
-            setCookies(data.accessToken);
-            loginUser(data?.user, data?.accessToken);
-            router.push('/seller/dashboard');
-          }
-        } catch (error: any) {
-          handleErrorMessage(error?.response?.data?.message || 'Login failed');
+  const handleCaptchaSuccess = async () => {
+    setShowCaptcha(false);
+    if (formValues) {
+      try {
+        const payload: ISignIn = {
+          username: formValues.username,
+          password: formValues.password,
+          gate: "website"
+        };
+        const { data } = await mutateAsync(payload);
+        if (data?.accessToken) {
+          setCookies(data.accessToken);
+          loginUser(data?.user, data?.accessToken);
+          router.push('/seller/dashboard');
         }
-      }
-    } else {
-      handleErrorMessage('Verification failed. Please try again.');
-      // Regenerate the same type of captcha
-      if (captchaType === 'image') {
-        generateCaptcha();
-      } else if (captchaType === 'text') {
-        setTextCaptcha(generateTextCaptcha());
-      } else if (captchaType === 'audio') {
-        // setAudioCaptcha(generateAudioCaptcha());
+      } catch (error: any) {
+        handleErrorMessage(error?.response?.data?.message || 'Login failed');
       }
     }
   };
@@ -166,7 +142,6 @@ const SignInForm = () => {
   const onFinish: FormProps<FieldType>['onFinish'] = (values: FieldType) => {
     setFormValues(values);
     setShowCaptcha(true);
-    generateRandomCaptcha();
   };
 
   return (
@@ -201,7 +176,7 @@ const SignInForm = () => {
               <Button
                 type="primary"
                 htmlType="submit"
-                className="login-form-button w-full !font-medium !h-[32px]"
+                className="login-form-button w-full !font-medium !h-[32px] !rounded-sm !px-2 !py-1"
                 loading={isPending}
               >
                 Đăng nhập
@@ -210,105 +185,10 @@ const SignInForm = () => {
           </Form>
         </>
       ) : (
-        <div className="w-full max-w-[400px] mx-auto">
-          <h2 className="text-xl font-medium mb-4">Solve this puzzle to protect your account</h2>
-
-          {captchaType === 'image' && (
-            <div className="text-center mb-4">
-              <p>Select all images containing <strong>{captchaTarget}</strong></p>
-              <Button
-                icon={<ReloadOutlined />}
-                onClick={generateCaptcha}
-                className="mt-2"
-              >
-                Refresh
-              </Button>
-            </div>
-          )}
-
-          {captchaType === 'image' && captchaLoading ? (
-            <div className="flex justify-center py-8">
-              <Spin size="large" />
-            </div>
-          ) : (
-            captchaType === 'image' && (
-              <div className="grid grid-cols-3 gap-2">
-                {captchaImages.map((image) => (
-                  <div
-                    key={image.id}
-                    className="cursor-pointer border hover:border-blue-500 aspect-square"
-                    onClick={() => handleCaptchaSubmit(image.type)}
-                  >
-                    <img
-                      src={image.src}
-                      alt="Captcha image"
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                      onError={(e) => {
-                        // Updated fallback URLs with verified working images
-                        const fallbackUrls = {
-                          cat: 'https://images.pexels.com/photos/617278/pexels-photo-617278.jpeg?auto=compress&cs=tinysrgb&w=100',
-                          dog: 'https://images.pexels.com/photos/2023384/pexels-photo-2023384.jpeg?auto=compress&cs=tinysrgb&w=100',
-                          koala: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Koala_climbing_tree.jpg/100px-Koala_climbing_tree.jpg',
-                          bird: 'https://images.pexels.com/photos/1661179/pexels-photo-1661179.jpeg?auto=compress&cs=tinysrgb&w=100',
-                          fish: 'https://images.pexels.com/photos/2156311/pexels-photo-2156311.jpeg?auto=compress&cs=tinysrgb&w=100',
-                          rabbit: 'https://images.pexels.com/photos/4001296/pexels-photo-4001296.jpeg?auto=compress&cs=tinysrgb&w=100'
-                        };
-                        (e.target as HTMLImageElement).src = fallbackUrls[image.type as keyof typeof fallbackUrls] || 'https://picsum.photos/100/100';
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-            )
-          )}
-
-          {captchaType === 'text' && (
-            <div className="text-center">
-              <p>Solve the following math problem:</p>
-              <p className="text-2xl font-bold my-4">{textCaptcha.question}</p>
-              <Input
-                placeholder="Your answer"
-                onChange={(e) => handleCaptchaSubmit(e.target.value)}
-              />
-            </div>
-          )}
-
-          {captchaType === 'audio' && (
-            <div className="text-center">
-              <p>Listen and type the numbers you hear:</p>
-              <div className="my-4">
-                <audio controls>
-                  <source 
-                    src={`https://api.voicerss.org/?key=4c8646dd8c724b6ea29e3e8f6746eb78&hl=en-us&src=${encodeURIComponent(audioCaptcha.audioText)}`} 
-                    type="audio/mpeg"
-                  />
-                  Your browser does not support the audio element.
-                </audio>
-              </div>
-              <Input
-                placeholder="Type the numbers"
-                onPressEnter={(e) => handleCaptchaSubmit((e.target as HTMLInputElement).value)}
-              />
-              <Button 
-                type="primary" 
-                onClick={() => handleCaptchaSubmit((document.querySelector('input[placeholder="Type the numbers"]') as HTMLInputElement)?.value)}
-                className="mt-2"
-              >
-                Submit
-              </Button>
-            </div>
-          )}
-
-          <div className="mt-4 text-center">
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={generateRandomCaptcha}
-            >
-              Try another type
-            </Button>
-          </div>
-        </div>
+        <Captcha 
+          onSuccess={handleCaptchaSuccess}
+          onError={handleErrorMessage}
+        />
       )}
     </>
   );

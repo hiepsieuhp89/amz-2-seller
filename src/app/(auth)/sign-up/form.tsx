@@ -1,12 +1,14 @@
 'use client';
 
-import { Button, Divider, Form, Input, message } from 'antd';
-import { useRouter } from 'next/navigation';
+import Captcha from '@/components/Captcha';
+import { useUser } from '@/context/useUserContext';
 import { setCookies } from '@/helper';
 import { useRegister } from '@/hooks/authentication';
 import { IRegister } from '@/interface/request/authentication';
+import { Button, Divider, Form, Input, message } from 'antd';
 import { FormProps } from 'antd/lib';
-import { useUser } from '@/context/useUserContext';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 type FieldType = {
   username: string;
@@ -22,34 +24,52 @@ const SignUpForm = () => {
   const { mutateAsync, isPending } = useRegister();
   const { loginUser } = useUser()
   const [messageApi, contextHolder] = message.useMessage();
-  const onFinish: FormProps<FieldType>['onFinish'] = async (values: FieldType) => {
-    try {
-      const payload: IRegister = {
-        username: values.username,
-        email: values.email,
-        phone: values.phone,
-        password: values.password,
-        fullName: values.fullName,
-        invitationCode: values.invitationCode
+  const [showCaptcha, setShowCaptcha] = useState(false);
+  const [formValues, setFormValues] = useState<FieldType | null>(null);
+
+  const handleCaptchaSuccess = async () => {
+    setShowCaptcha(false);
+    if (formValues) {
+      try {
+        const payload: IRegister = {
+          username: formValues.username,
+          email: formValues.email,
+          phone: formValues.phone,
+          password: formValues.password,
+          fullName: formValues.fullName,
+          invitationCode: formValues.invitationCode
+        };
+        const response = await mutateAsync(payload);
+        loginUser(response?.data?.user, response?.data?.accessToken);
+        messageApi.success('Đăng ký tài khoản thành công!');
+        setCookies(response?.data?.accessToken);
+        router.push('/seller/dashboard');
+      } catch (error: any) {
+        messageApi.error(error?.response?.data?.message || 'Có lỗi xảy ra khi đăng ký');
       }
-      const response = await mutateAsync(payload);
-      loginUser(response?.data?.user, response?.data?.accessToken)
-      messageApi.success('Đăng ký tài khoản thành công!');
-      setCookies(response?.data?.accessToken);
-      router.push('/seller/dashboard');
-    } catch (error: any) {
-      messageApi.error(error?.response?.data?.message || 'Có lỗi xảy ra khi đăng ký');
     }
+  };
+
+  const onFinish: FormProps<FieldType>['onFinish'] = (values: FieldType) => {
+    setFormValues(values);
+    setShowCaptcha(true);
   };
 
   return (
     <>
       {contextHolder}
-      <h1 className='text-[28px] font-medium'>
-        Tạo tài khoản seller
-      </h1>
+      {!showCaptcha ? (
+        <h1 className='text-[28px] font-medium'>
+          Tạo tài khoản seller
+        </h1>
+      ) : (
+        <Captcha
+          onSuccess={handleCaptchaSuccess}
+          onError={(message: string) => messageApi.error(message)}
+        />
+      )}
       <Form
-        name="register_form" 
+        name="register_form"
         onFinish={onFinish}
         layout='vertical'
       >
