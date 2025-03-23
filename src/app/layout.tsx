@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import './font.css';
+// import './font.css';
 import ClientLayout from './ClientLayout';
 import NextTopLoader from 'nextjs-toploader';
 
