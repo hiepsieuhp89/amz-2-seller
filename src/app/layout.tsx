@@ -5,7 +5,7 @@ import NextTopLoader from 'nextjs-toploader';
 
 export const metadata: Metadata = {
   title: 'Amazon',
-  description: 'Amazon',
+  description: 'Amazon.com Official Site — Browse & discover millions of products. Read customer reviews and find best sellers. Yes, we ship to you. Shop top brands in electronics, clothing, books & more.',
   icons: {
     icon: '/images/icon.png',
   },
