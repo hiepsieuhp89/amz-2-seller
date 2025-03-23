@@ -26,6 +26,8 @@ export interface IUpdateUser {
   phone?: string
   address?: string
   avatar?: string
+  storeName?: string
+  storeAddress?: string
 }
 
 export interface IChangePassword {

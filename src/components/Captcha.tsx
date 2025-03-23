@@ -2,7 +2,7 @@
 
 import { ReloadOutlined } from '@ant-design/icons';
 import { Button, Input, Spin } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type CaptchaType = 'image' | 'audio' | 'text';
 
@@ -27,7 +27,7 @@ const generateTextCaptcha = () => {
 
 const generateAudioCaptcha = () => {
   const numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-  const randomNumbers = Array.from({length: 3}, () => Math.floor(Math.random() * 10));
+  const randomNumbers = Array.from({ length: 3 }, () => Math.floor(Math.random() * 10));
   const audioText = randomNumbers.map(num => numbers[num]).join(' ');
   return { audioText, answer: randomNumbers.join('') };
 };
@@ -81,6 +81,11 @@ const Captcha = ({ onSuccess, onError }: CaptchaProps) => {
       setCaptchaLoading(false);
     }, 500);
   };
+  useEffect(() => {
+    if (captchaType === 'image') {
+      generateCaptcha();
+    }
+  }, [captchaType]);
 
   const generateRandomCaptcha = () => {
     const types: CaptchaType[] = ['image', 'audio', 'text'];
@@ -182,8 +187,8 @@ const Captcha = ({ onSuccess, onError }: CaptchaProps) => {
             placeholder="Your answer"
             onPressEnter={(e) => handleCaptchaSubmit((e.target as HTMLInputElement).value)}
           />
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             onClick={() => handleCaptchaSubmit((document.querySelector('input[placeholder="Your answer"]') as HTMLInputElement)?.value)}
             className="mt-2 !rounded-sm !px-2 !py-1"
           >
@@ -192,41 +197,41 @@ const Captcha = ({ onSuccess, onError }: CaptchaProps) => {
         </div>
       )}
 
-{captchaType === 'audio' && (
-            <div className="text-center">
-              <p>Listen and type the numbers you hear:</p>
-              <div className="my-4">
-                <audio controls>
-                  <source 
-                    src={`https://api.voicerss.org/?key=4c8646dd8c724b6ea29e3e8f6746eb78&hl=en-us&src=${encodeURIComponent(audioCaptcha.audioText)}`} 
-                    type="audio/mpeg"
-                  />
-                  Your browser does not support the audio element.
-                </audio>
-              </div>
-              <Input
-                placeholder="Type the numbers"
-                onPressEnter={(e) => handleCaptchaSubmit((e.target as HTMLInputElement).value)}
+      {captchaType === 'audio' && (
+        <div className="text-center">
+          <p>Listen and type the numbers you hear:</p>
+          <div className="my-4">
+            <audio controls>
+              <source
+                src={`https://api.voicerss.org/?key=4c8646dd8c724b6ea29e3e8f6746eb78&hl=en-us&src=${encodeURIComponent(audioCaptcha.audioText)}`}
+                type="audio/mpeg"
               />
-              <Button 
-                type="primary" 
-                onClick={() => handleCaptchaSubmit((document.querySelector('input[placeholder="Type the numbers"]') as HTMLInputElement)?.value)}
-                className="mt-2 !rounded-sm !px-2 !py-1"
-              >
-                Submit
-              </Button>
-            </div>
-          )}
-
-          <div className="mt-4 text-center">
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={generateRandomCaptcha}
-              className="!rounded-sm !px-2 !py-1"
-            >
-              Try another type
-            </Button>
+              Your browser does not support the audio element.
+            </audio>
           </div>
+          <Input
+            placeholder="Type the numbers"
+            onPressEnter={(e) => handleCaptchaSubmit((e.target as HTMLInputElement).value)}
+          />
+          <Button
+            type="primary"
+            onClick={() => handleCaptchaSubmit((document.querySelector('input[placeholder="Type the numbers"]') as HTMLInputElement)?.value)}
+            className="mt-2 !rounded-sm !px-2 !py-1"
+          >
+            Submit
+          </Button>
+        </div>
+      )}
+
+      <div className="mt-4 text-center">
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={generateRandomCaptcha}
+          className="!rounded-sm !px-2 !py-1"
+        >
+          Try another type
+        </Button>
+      </div>
     </div>
   );
 };
