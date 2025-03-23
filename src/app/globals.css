@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  font-family: 'Amazon Ember', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
 html,
 
 .ant-table-body {
@@ -58,7 +62,6 @@ html,
   }
 }
 
-
 .ant-empty-description,
 .ant-select-item-empty {
   font-weight: 700 !important;
@@ -76,11 +79,6 @@ html,
   ;
 }
 
-.ant-input,
-.ant-input-outlined {
-  border-radius: 4px !important;
-}
-
 .ant-input-outlined:focus,
 .ant-input-affix-wrapper:focus,
 .ant-input-affix-wrapper-focused {
@@ -89,7 +87,8 @@ html,
   outline: 0 !important;
 }
 
-.ant-input-affix-wrapper {
+.ant-input-affix-wrapper, .ant-select-selector, .ant-input,
+.ant-input-outlined, .ant-modal-content {
   border-radius: 4px !important;
 }
 
@@ -103,10 +102,6 @@ html,
 .ant-menu-item-selected {
   background-color: #353542 !important;
   border-radius: 6px !important;
-}
-
-.ant-input {
-  border-radius: 4px !important;
 }
 
 ul.ant-menu.ant-menu-sub.ant-menu-inline {

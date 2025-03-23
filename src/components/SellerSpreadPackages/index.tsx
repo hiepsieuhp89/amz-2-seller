@@ -76,7 +76,7 @@ const SellerSpreadPackages = () => {
                   <div className="text-center mb-4 mt-3">
                     <img
                       className="max-w-full mx-auto mb-4"
-                      src={pkg.image || "/placeholder.svg"}
+                      src={pkg.image }
                       alt={pkg.title}
                       height={100}
                     />

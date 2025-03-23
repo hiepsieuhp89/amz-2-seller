@@ -16,6 +16,7 @@
   background: linear-gradient(to right, transparent 0%, #252C35 100%) !important;
   border-right: 4px solid #FCAF17;
   border-radius: 4px;
+  color: #FCAF17;
 }
 
 .ant-menu-dark .ant-menu-submenu-title:hover,
@@ -36,10 +37,6 @@
   color: white;
 }
 
-.ant-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
 .ant-menu-inline-collapsed .ant-badge {
   display: none;
 }
@@ -53,8 +50,7 @@
   border-radius: 4px !important;
 }
 
-.ant-menu-submenu-title .anticon.anticon-right,
-.ant-menu-submenu-title .anticon.anticon-down{
+.ant-menu-submenu-title svg:last-child{
   position: absolute !important;
   right: 24px !important;
 }

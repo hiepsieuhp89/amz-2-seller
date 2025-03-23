@@ -45,7 +45,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
             width: '20%',
         },
         {
-            title: "Mã đặt hàng:",
+            title: "Mã đặt hàng",
             dataIndex: "orderCode",
             key: "orderCode",
             width: '20%',

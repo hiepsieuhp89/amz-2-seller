@@ -40,14 +40,14 @@ export default function LayoutHeaderCommon() {
   }
   return (
     <header className="bg-[#4D148C] text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full z-10 shadow-md">
-      <div className="relative h-8 left-[64px] top-1/2">
+      <div className="relative h-[30px] w-[110px] left-[64px] top-1/2">
         <Image
           quality={100}
           draggable={false}
           src="/images/fedex.png"
           alt="logo"
-          width={100}
-          height={100}
+          width={200}
+          height={200}
           className='h-full w-full object-contain'
         />
       </div>

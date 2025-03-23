@@ -66,7 +66,7 @@ return (
         <Icon 
           path={isSidebarOpen ? mdiWindowClose : mdiMenu} 
           size={1.4} 
-          className='text-main-gunmetal-blue flex-shrink-0'
+          className='text-[#484F66] flex-shrink-0'
         />
       </Button>
     </div>
