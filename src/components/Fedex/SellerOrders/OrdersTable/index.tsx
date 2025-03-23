@@ -2,8 +2,8 @@
 
 import type React from "react"
 import { useState } from "react"
-import { Table, Badge, Button, Tooltip, Input, Select, Card, Row, Col, Typography, Modal, Form } from "antd"
-import { EyeOutlined, DownloadOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons"
+import { Table, Badge, Button, Tooltip, Input, Select, Card, Row, Col, Typography, Modal, Form, Checkbox } from "antd"
+import { EyeOutlined, DownloadOutlined, PlusOutlined, SearchOutlined, MinusOutlined } from "@ant-design/icons"
 import type { ColumnsType } from "antd/es/table"
 import Icon from '@mdi/react';
 import { mdiCashClock } from '@mdi/js';
@@ -31,6 +31,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
     const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [isBulkModalVisible, setIsBulkModalVisible] = useState(false)
+    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
 
     const toggleExpand = (key: string) => {
         if (expandedRowKeys.includes(key)) {
@@ -56,7 +57,39 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
         setIsBulkModalVisible(false)
     }
 
+    const onSelectAllChange = (e: any) => {
+        if (e.target.checked) {
+            setSelectedRowKeys(data.map(item => item.key))
+        } else {
+            setSelectedRowKeys([])
+        }
+    }
+
+    const onSelectChange = (key: string, checked: boolean) => {
+        if (checked) {
+            setSelectedRowKeys([...selectedRowKeys, key])
+        } else {
+            setSelectedRowKeys(selectedRowKeys.filter(k => k !== key))
+        }
+    }
+
     const columns: ColumnsType<OrderData> = [
+        {
+            title: (
+                <Checkbox
+                    onChange={onSelectAllChange}
+                    checked={selectedRowKeys.length === data.length}
+                />
+            ),
+            key: 'selection',
+            width: '5%',
+            render: (_, record) => (
+                <Checkbox
+                    checked={selectedRowKeys.includes(record.key)}
+                    onChange={(e) => onSelectChange(record.key, e.target.checked)}
+                />
+            ),
+        },
         {
             title: "Thời gian",
             dataIndex: "time",
@@ -64,7 +97,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
             width: '20%',
         },
         {
-            title: "Mã đặt hàng:",
+            title: "Mã đặt hàng",
             dataIndex: "orderCode",
             key: "orderCode",
             width: '20%',
@@ -182,7 +215,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
                 }}
                 expandable={{
                     expandedRowKeys,
-                    expandIcon: () => null,
+                    onExpand: (expanded, record) => {
+                        toggleExpand(record.key)
+                    },
                     expandedRowRender: (record) => (
                         <div className="p-4 bg-gray-50" style={{ borderTop: '1px solid #f0f0f0' }}>
                             <p>
@@ -221,7 +256,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
                             dataSource={[
                                 {
                                     key: '1',
-                                    label: 'Mã đặt hàng:',
+                                    label: 'Mã đặt hàng',
                                     value: '20250318-06264665'
                                 },
                                 {

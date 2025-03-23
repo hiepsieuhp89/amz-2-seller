@@ -12,6 +12,7 @@ import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import "./styles.css"
+import { useUser } from "@/context/useUserContext"
 
 interface LayoutFedExProps {
   isSidebarOpen: boolean
@@ -22,7 +23,7 @@ function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
   const pathname = usePathname()
   const [path, setPath] = useState(`fedex`)
   const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null)
-
+  const { user } = useUser()
   const menu = [
     {
       key: "/fedex",
@@ -31,7 +32,6 @@ function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
       activeIcon: <Icon path={mdiPackageVariantClosedCheck} size={0.8} />,
       path: `/fedex`,
     },
-    // Add more menu items as needed
   ]
 
   useEffect(() => {
@@ -98,7 +98,7 @@ function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
               {/* User Info */}
               <div className="flex flex-col gap-0 w-full items-center">
                 <div className="flex items-center gap-1">
-                  <span className="text-lg font-medium">Trang Shop</span>
+                  <span className="text-lg !font-bold">{user?.username} Shop</span>
                   <div className="h-7 w-7 relative">
                     <Image
                       draggable={false}
@@ -109,8 +109,8 @@ function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
                       src={"/images/tick-icon.png"} alt="logo" />
                   </div>
                 </div>
-                <div className="text-sm text-gray-200 mb-4">
-                  trangtrang220921@gmail.com
+                <div className="text-xs text-gray-200 mb-4">
+                  {user?.email}
                 </div>
               </div>
             </div>

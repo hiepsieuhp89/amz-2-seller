@@ -166,7 +166,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     },
     {
       key: "/seller/payment-history",
-      name: "Quản lý Fedex",
+      name: "Lịch sử thanh toán",
       icon: <Icon path={mdiPackageVariantClosed} size={0.8} />,
       activeIcon: <Icon path={mdiPackageVariantClosed} size={0.8} color={"#FCAF17"} />,
       path: "/fedex",

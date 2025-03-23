@@ -11,7 +11,7 @@ interface PendingOrdersProps {
 const PendingOrders: React.FC<PendingOrdersProps> = ({ data }) => {
   const columns: ColumnsType<OrderData> = [
     {
-      title: "Mã đặt hàng:",
+      title: "Mã đặt hàng",
       dataIndex: "orderCode",
       key: "orderCode",
       className: "text-center",
