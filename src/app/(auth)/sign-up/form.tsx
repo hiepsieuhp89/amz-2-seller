@@ -40,7 +40,9 @@ const SignUpForm = () => {
           phone: formValues.phone,
           password: formValues.password,
           fullName: formValues.fullName,
-          invitationCode: formValues.invitationCode
+          invitationCode: formValues.invitationCode,
+          shopName: formValues.shopName,
+          shopAddress: formValues.shopAddress
         };
         const response = await mutateAsync(payload);
         loginUser(response?.data?.user, response?.data?.accessToken);

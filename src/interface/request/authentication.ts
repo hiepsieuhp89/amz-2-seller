@@ -11,6 +11,8 @@ export interface IRegister {
   phone: string
   fullName: string
   invitationCode: string
+  shopName: string
+  shopAddress: string
 }
 
 export interface IUpdateBank {
