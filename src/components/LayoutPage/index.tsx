@@ -304,7 +304,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
               <div className="flex flex-col gap-0 w-full items-center">
                 {/* Shop Info */}
                 <div className="flex items-center gap-1">
-                  <span className="text-lg font-medium">{user?.storeName || "Cửa hàng chưa có tên"}</span>
+                  <span className="text-lg font-medium">{user?.shopName || "Cửa hàng chưa có tên"}</span>
                   <div className="h-7 w-7 relative">
                     <Image
                       draggable={false}

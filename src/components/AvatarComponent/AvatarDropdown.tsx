@@ -43,8 +43,8 @@ const AvatarDropdown = () => {
       await updateUser({
         phone: values.phone,
         fullName: values.fullName,
-        storeName: values.storeName,
-        storeAddress: values.storeAddress
+        shopName: values.shopName,
+        shopAddress: values.shopAddress
       })
       messageApi.success("Cập nhật thông tin thành công!")
       setIsModalOpen(false)
@@ -75,8 +75,8 @@ const AvatarDropdown = () => {
       phone: user?.phone,
       fullName: user?.fullName,
       invitationCode: user?.invitationCode,
-      storeName: user?.storeName,
-      storeAddress: user?.storeAddress
+      shopName: user?.shopName,
+      shopAddress: user?.shopAddress
     })
     setIsModalOpen(true)
   }
@@ -189,7 +189,7 @@ const AvatarDropdown = () => {
 
           <Form.Item
             label="Tên cửa hàng"
-            name="storeName"
+            name="shopName"
             rules={[{ required: true, message: 'Vui lòng nhập tên cửa hàng!' }]}
           >
             <Input />
@@ -197,7 +197,7 @@ const AvatarDropdown = () => {
 
           <Form.Item
             label="Địa chỉ cửa hàng"
-            name="storeAddress"
+            name="shopAddress"
             rules={[{ required: true, message: 'Vui lòng nhập địa chỉ cửa hàng!' }]}
           >
             <Input />

@@ -17,6 +17,9 @@ type FieldType = {
   password: string;
   fullName: string;
   invitationCode: string;
+  confirmPassword: string;
+  shopName: string;
+  shopAddress: string;
 };
 
 const SignUpForm = () => {
@@ -124,7 +127,7 @@ const SignUpForm = () => {
           />
         </Form.Item>
         <Form.Item
-          name="confirm"
+          name="confirmPassword"
           label={<strong>Xác nhận mật khẩu</strong>}
           dependencies={['password']}
           className='!mb-4'
@@ -156,7 +159,7 @@ const SignUpForm = () => {
         <Divider className='!mb-3' />
         <Form.Item
           label={<strong>Tên cửa hàng</strong>}
-          name="code"
+          name="shopName"
           className='!mb-4'
           rules={[{ required: true, message: 'Vui lòng nhập tên cửa hàng!' }]}
         >
@@ -164,7 +167,7 @@ const SignUpForm = () => {
         </Form.Item>
         <Form.Item
           label={<strong>Địa chỉ cửa hàng</strong>}
-          name="code"
+          name="shopAddress"
           className='!mb-4'
           rules={[{ required: true, message: 'Vui lòng địa chỉ cửa hàng!' }]}
         >
