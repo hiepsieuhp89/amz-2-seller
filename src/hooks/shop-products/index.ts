@@ -1,7 +1,7 @@
-import { addShopProducts, removeShopProducts, getMyShopProducts, getMyOrders, getAllShopProducts } from "@/api/shop-products"
+import { addShopProducts, getAllShopProducts, getMyOrders, getMyShopProducts, getShopStatistics, removeShopProducts } from "@/api/shop-products"
 import type { IAddShopProductsRequest, IGetShopProductsRequest, IRemoveShopProductsRequest } from "@/interface/request/shop-products"
 import type { IShopProductsResponse } from "@/interface/response/shop-products"
-import { type UseMutationResult, useMutation, useQueryClient, useQuery } from "@tanstack/react-query"
+import { type UseMutationResult, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export const useAddShopProducts = (): UseMutationResult<IShopProductsResponse, Error, IAddShopProductsRequest> => {
   const queryClient = useQueryClient()
@@ -79,5 +79,12 @@ export const useGetAllShopProducts = (params?: IGetShopProductsRequest) => {
   return useQuery<IShopProductsResponse, Error>({
     queryKey: ['shop-products', params],
     queryFn: () => getAllShopProducts(params),
+  })
+}
+
+export const useGetShopStatistics = () => {
+  return useQuery({
+    queryKey: ['shopStatistics'],
+    queryFn: () => getShopStatistics(),
   })
 }

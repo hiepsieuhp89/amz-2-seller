@@ -52,3 +52,15 @@ export const getAllShopProducts = async (
   const data: IShopProductsResponse = res
   return data
 }
+
+export const getShopStatistics = async (): Promise<{
+  totalOrders: number
+  totalRevenue: number
+  totalProfit: number
+  todayOrders: number
+  todayRevenue: number
+  todayProfit: number
+}> => {
+  const res = await sendGet("/shop-products/statistics/shop")
+  return res
+}
