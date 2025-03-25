@@ -187,6 +187,7 @@ const SignInForm = () => {
         <Captcha 
           onSuccess={handleCaptchaSuccess}
           onError={handleErrorMessage}
+          onBack={() => setShowCaptcha(false)}
         />
       )}
     </>

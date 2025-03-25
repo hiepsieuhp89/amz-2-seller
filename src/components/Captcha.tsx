@@ -35,9 +35,10 @@ const generateAudioCaptcha = () => {
 interface CaptchaProps {
   onSuccess: () => void;
   onError: (message: string) => void;
+  onBack: () => void;
 }
 
-const Captcha = ({ onSuccess, onError }: CaptchaProps) => {
+const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
   const [captchaType, setCaptchaType] = useState<CaptchaType>('image');
   const [captchaLoading, setCaptchaLoading] = useState(false);
   const [captchaTarget, setCaptchaTarget] = useState('');
@@ -223,13 +224,19 @@ const Captcha = ({ onSuccess, onError }: CaptchaProps) => {
         </div>
       )}
 
-      <div className="mt-4 text-center">
+      <div className="mt-4 text-center flex justify-center gap-2">
         <Button
           icon={<ReloadOutlined />}
           onClick={generateRandomCaptcha}
           className="!rounded-sm !px-2 !py-1"
         >
           Try another type
+        </Button>
+        <Button
+          onClick={onBack}
+          className="!rounded-sm !px-2 !py-1"
+        >
+          Back to Form
         </Button>
       </div>
     </div>
