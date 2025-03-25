@@ -20,12 +20,14 @@ const SellerProducts = () => {
   }
 
   return (
-    <div className="px-4 py-4">
-       <div className="flex items-center mb-4">
-      <Typography.Title level={3} className="m-0">
-        Các sản phẩm
-      </Typography.Title>
-    </div>
+    <div className="p-4">
+      <div className="flex items-center mb-4">
+        <Typography.Title
+          className="!text-[20px] font-bold text-main-dark-blue"
+        >
+          Các sản phẩm
+        </Typography.Title>
+      </div>
       <div className="mb-4">
         <ProductsStats />
       </div>

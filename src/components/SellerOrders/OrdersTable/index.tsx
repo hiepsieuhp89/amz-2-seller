@@ -2,12 +2,15 @@
 
 import type React from "react"
 import { useState } from "react"
-import { Table, Badge, Button, Tooltip, Input, Select, Card, Row, Col, Typography, Spin, Empty } from "antd"
+import { Table, Badge, Button, Tooltip, Input, Select, Card, Row, Col, Typography, Spin, Empty, Space, Divider } from "antd"
 import { EyeOutlined, DownloadOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons"
 import type { ColumnsType } from "antd/es/table"
 import { useGetMyOrders } from "@/hooks/shop-products"
+import Icon from "@mdi/react"
+import { mdiContentSaveEdit, mdiEye, mdiTrashCan } from "@mdi/js"
 
 const { Option } = Select
+const { Title } = Typography
 
 interface OrderData {
     key: string
@@ -30,9 +33,12 @@ const OrdersTable  = () => {
         page: 1
     })
     const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
-
     if (isLoading) {
-        return <Spin size="large" className="flex justify-center items-center h-screen" />
+        return (
+            <div className="flex justify-center items-center h-[50vh]">
+                <Spin size="small" />
+            </div>
+        )
     }
 
     if (!ordersData || !ordersData.data || ordersData.data.data?.length === 0) {
@@ -45,12 +51,14 @@ const OrdersTable  = () => {
             dataIndex: "time",
             key: "time",
             width: '15%',
+            sorter: (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
         },
         {
             title: "Mã đặt hàng",
             dataIndex: "orderCode",
             key: "orderCode",
             width: '15%',
+            sorter: (a, b) => a.orderCode.localeCompare(b.orderCode),
         },
         {
             title: "Tổng tiền",
@@ -58,6 +66,7 @@ const OrdersTable  = () => {
             key: "totalAmount",
             width: '10%',
             render: (text) => `$${text}`,
+            sorter: (a, b) => parseFloat(a.totalAmount) - parseFloat(b.totalAmount),
         },
         {
             title: "Trạng thái",
@@ -70,55 +79,99 @@ const OrdersTable  = () => {
                     text={status === 'PENDING' ? 'Đang chờ xử lý' : 'Đã xử lý'}
                 />
             ),
+            sorter: (a, b) => a.status.localeCompare(b.status),
         },
         {
             title: "Email khách hàng",
             dataIndex: "email",
             key: "email",
             width: '20%',
+            sorter: (a, b) => a.email.localeCompare(b.email),
         },
         {
             title: "Số sản phẩm",
             dataIndex: "itemsCount",
             key: "itemsCount",
             width: '10%',
+            sorter: (a, b) => a.itemsCount - b.itemsCount,
         },
         {
-            title: "Tùy chọn",
+            title: "Hành động",
             key: "action",
             width: '15%',
             render: () => (
-                <div className="flex gap-2 justify-center">
-                    <Button type="primary" shape="circle" icon={<EyeOutlined />} className="text-blue-500" />
-                    <Button type="primary" shape="circle" icon={<DownloadOutlined />} className="text-yellow-500" />
-                </div>
+                <Space size="middle">
+                <Tooltip title="Xem chi tiết">
+                  <Icon
+                    path={mdiEye} 
+                    size={0.7} 
+                    color={"#A3A3A3"}
+                   
+                  />
+                </Tooltip>
+                <Tooltip title="Chỉnh sửa">
+                  <Icon 
+                    path={mdiContentSaveEdit} 
+                    size={0.7} 
+                    color={"#A3A3A3"}
+                  />
+                </Tooltip>
+                <Tooltip title="Xóa">
+                  <Icon 
+                    path={mdiTrashCan} 
+                    size={0.7} 
+                    color={"#A3A3A3"}
+                  />
+                </Tooltip>
+              </Space>
             ),
         },
     ];
 
     return (
-        <div className="bg-white rounded-[4px] border">
-            <div className="px-6 py-3 flex justify-between items-center">
-                <div className="font-medium text-base">Đơn hàng</div>
-                <div className="flex gap-2">
-                    <Select 
-                        placeholder="Lọc theo trạng thái phân phối" 
-                        style={{ width: 250, borderRadius: 0 }} 
-                    >
-                        <Option value="">Lọc theo trạng thái phân phối</Option>
-                        <Option value="pending">Đang chờ xử lý</Option>
-                        <Option value="confirmed">Đã xác nhận</Option>
-                        <Option value="on_the_way">Đang trên đường đi</Option>
-                        <Option value="delivered">Đã giao hàng</Option>
-                        <Option value="cancelled">Đã huỷ</Option>
-                    </Select>
-                    <Input
-                        placeholder="Nhập Mã đơn hàng và nhấn Enter"
-                        style={{ width: 250 }}
-                    />
-                </div>
-            </div>
-            
+        <Card
+            bordered={false}
+            className="orders-table-card border"
+            style={{ borderRadius: "8px", boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)" }}
+        >
+            <Row justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
+                <Col>
+                    <Space size="middle">
+                        <Title level={5} style={{ margin: 0 }}>
+                            Đơn hàng
+                        </Title>
+                        <Badge 
+                            size='default'
+                            count={ordersData?.data?.data?.length || 0} 
+                            showZero 
+                            style={{ backgroundColor: "#1890ff" }} 
+                        />
+                    </Space>
+                </Col>
+                <Col>
+                    <Space size="small">
+                        <Input
+                            placeholder="Nhập Mã đơn hàng"
+                            prefix={<SearchOutlined style={{ color: "#1890ff" }} />}
+                            style={{ width: 250, borderRadius: "6px" }}
+                            allowClear
+                        />
+                        <Select 
+                            placeholder="Lọc trạng thái" 
+                            style={{ width: 250, borderRadius: "6px" }}
+                        >
+                            <Option value="pending">Đang chờ xử lý</Option>
+                            <Option value="confirmed">Đã xác nhận</Option>
+                            <Option value="on_the_way">Đang trên đường đi</Option>
+                            <Option value="delivered">Đã giao hàng</Option>
+                            <Option value="cancelled">Đã huỷ</Option>
+                        </Select>
+                    </Space>
+                </Col>
+            </Row>
+
+            <Divider style={{ margin: "0 0 16px 0" }} />
+
             <Table
                 columns={columns}
                 dataSource={ordersData.data.data?.map(order => ({
@@ -137,7 +190,15 @@ const OrdersTable  = () => {
                 }))}
                 pagination={false}
                 rowKey="key"
-                className="border-t"
+                scroll={{ x: "max-content" }}
+                size="middle"
+                rowClassName={() => "order-table-row"}
+                style={{
+                    overflow: "hidden",
+                    tableLayout: "fixed",
+                    maxWidth: '100vw',
+                }}
+                bordered
                 expandable={{
                     expandedRowKeys,
                     expandIcon: () => null,
@@ -157,7 +218,7 @@ const OrdersTable  = () => {
                     ),
                 }}
             />
-        </div>
+        </Card>
     )
 }
 

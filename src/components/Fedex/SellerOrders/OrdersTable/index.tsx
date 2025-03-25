@@ -96,18 +96,21 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
             dataIndex: "time",
             key: "time",
             width: '20%',
+            sorter: (a, b) => a.time.localeCompare(b.time),
         },
         {
             title: "Mã đặt hàng",
             dataIndex: "orderCode",
             key: "orderCode",
             width: '20%',
+            sorter: (a, b) => a.orderCode.localeCompare(b.orderCode),
         },
         {
             title: "Số tiền",
             dataIndex: "amount",
             key: "amount",
             width: '10%',
+            sorter: (a, b) => parseFloat(a.amount.replace('$', '')) - parseFloat(b.amount.replace('$', '')),
         },
         {
             title: "Lợi nhuận",
@@ -115,6 +118,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
             key: "profit",
             width: '10%',
             render: (text) => <span className="text-red-500">{text}</span>,
+            sorter: (a, b) => parseFloat(a.profit.replace('$', '')) - parseFloat(b.profit.replace('$', '')),
         },
         {
             title: "Tình trạng giao hàng",
@@ -143,6 +147,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
                     )}
                 </div>
             ),
+            sorter: (a, b) => a.deliveryStatus.localeCompare(b.deliveryStatus),
         },
         {
             title: "Tùy chọn",

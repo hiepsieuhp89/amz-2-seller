@@ -59,6 +59,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      lucide-react:
+        specifier: ^0.483.0
+        version: 0.483.0(react@18.3.1)
       mammoth:
         specifier: ^1.9.0
         version: 1.9.0
@@ -92,6 +95,9 @@ importers:
       uuid:
         specifier: ^10.0.0
         version: 10.0.0
+      yet-another-react-lightbox:
+        specifier: ^3.21.8
+        version: 3.21.8(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
       '@types/file-saver':
         specifier: ^2.0.7
@@ -1676,6 +1682,11 @@ packages:
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
 
+  lucide-react@0.483.0:
+    resolution: {integrity: sha512-WldsY17Qb/T3VZdMnVQ9C3DDIP7h1ViDTHVdVGnLZcvHNg30zH/MTQ04RTORjexoGmpsXroiQXZ4QyR0kBy0FA==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
   mammoth@1.9.0:
     resolution: {integrity: sha512-F+0NxzankQV9XSUAuVKvkdQK0GbtGGuqVnND9aVf9VSeUA82LQa29GjLqYU6Eez8LHqSJG3eGiDW3224OKdpZg==}
     engines: {node: '>=12.0.0'}
@@ -2635,6 +2646,20 @@ packages:
 
   yargs@3.10.0:
     resolution: {integrity: sha512-QFzUah88GAGy9lyDKGBqZdkYApt63rCXYBGYnEP4xDJPXNqXXnBDACnbrXnViV6jRSqAePwrATi2i8mfYm4L1A==}
+
+  yet-another-react-lightbox@3.21.8:
+    resolution: {integrity: sha512-8DnjpSmWF+WjGXX+NIJx0V/naUhUYxLt6RIBJZoQ4y1GJVKwiUO2RuRvUBvYQTwAwFqwhJSvxfIhCU3VyCj9WQ==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      '@types/react': ^16 || ^17 || ^18 || ^19
+      '@types/react-dom': ^16 || ^17 || ^18 || ^19
+      react: ^16.8.0 || ^17 || ^18 || ^19
+      react-dom: ^16.8.0 || ^17 || ^18 || ^19
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
 
 snapshots:
 
@@ -4482,6 +4507,10 @@ snapshots:
 
   lru-cache@10.4.3: {}
 
+  lucide-react@0.483.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
   mammoth@1.9.0:
     dependencies:
       '@xmldom/xmldom': 0.8.10
@@ -5657,3 +5686,11 @@ snapshots:
       cliui: 2.1.0
       decamelize: 1.2.0
       window-size: 0.1.0
+
+  yet-another-react-lightbox@3.21.8(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    optionalDependencies:
+      '@types/react': 18.3.18
+      '@types/react-dom': 18.3.5(@types/react@18.3.18)
