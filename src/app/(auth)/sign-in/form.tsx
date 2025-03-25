@@ -125,7 +125,7 @@ const SignInForm = () => {
         const payload: ISignIn = {
           username: formValues.username,
           password: formValues.password,
-          gate: "website"
+          // gate: "website"
         };
         const { data } = await mutateAsync(payload);
         if (data?.accessToken) {
