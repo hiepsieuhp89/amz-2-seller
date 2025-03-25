@@ -71,6 +71,7 @@ const SignUpForm = () => {
         <Captcha
           onSuccess={handleCaptchaSuccess}
           onError={(message: string) => messageApi.error(message)}
+          onBack={() => setShowCaptcha(false)}
         />
       )}
       <Form
