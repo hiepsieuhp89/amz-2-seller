@@ -99,8 +99,9 @@ const Storehouse = () => {
           setSelectedProducts([])
           setTotalSelectedProducts(0)
         },
-        onError: (error) => {
-          message.error(`Lỗi khi thêm sản phẩm: ${error.message}`)
+        onError: (error: any) => {
+          console.log(error)
+          message.error(`Lỗi khi thêm sản phẩm: ${error.response?.data?.message || 'Có lỗi xảy ra'}`)
         }
       }
     )
@@ -247,7 +248,7 @@ const Storehouse = () => {
             </div>
 
             <div className="md:w-[400px]">
-              <div className="flex gap-3 mb-3">
+              {/* <div className="flex gap-3 mb-3">
                 <Input
                   type="number"
                   placeholder="Số lượng"
@@ -260,7 +261,7 @@ const Storehouse = () => {
                 <Button type="primary" className="h-10 flex-1 !rounded-[4px]" onClick={selectRandomProducts}>
                   Chọn sản phẩm ngẫu nhiên
                 </Button>
-              </div>
+              </div> */}
 
               {totalSelectedProducts > 0 && (
                 <div className="flex items-center gap-2 text-center my-4 text-sm text-main-gunmetal-blue font-semibold">

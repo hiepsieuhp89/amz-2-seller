@@ -5,9 +5,13 @@ import { Button } from "antd"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { mdiPackageVariantClosed, mdiInboxArrowUp } from "@mdi/js"
+import { useGetMyShopProducts } from "@/hooks/shop-products"
 
 export const ProductsStats: React.FC = () => {
     const router = useRouter()
+    const { data: shopProductsData } = useGetMyShopProducts({ page: 1 })
+    const totalItems = shopProductsData?.data?.meta?.itemCount || 0
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Uploads Remaining Card */}
@@ -17,7 +21,7 @@ export const ProductsStats: React.FC = () => {
                         <Icon path={mdiPackageVariantClosed} size={0.8} />
                     </div>
                     <div className="text-center pt-3 pb-3">
-                        <div className="text-4xl font-bold">161</div>
+                        <div className="text-4xl font-bold">{totalItems}</div>
                         <div className="text-base font-medium">Tổng số sản phẩm đã thêm</div>
                     </div>
                 </div>
