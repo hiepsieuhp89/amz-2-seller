@@ -5,7 +5,9 @@ import { Table, Input, Checkbox, Button, Space, Tag, Typography, Row, Col, Pagin
 import { SearchOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons"
 import { IProduct } from "@/interface/response/products"
 import "./styles.css"
-import { useShopProducts } from "@/hooks/products"
+import { getMyShopProducts } from "@/api/shop-products"
+import { IShopProduct, IShopProductsResponse } from "@/interface/response/shop-products"
+import { useGetMyShopProducts } from "@/hooks/shop-products"
 
 type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
 
@@ -21,16 +23,14 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
     onSelectChange,
 }) => {
     const [currentPage, setCurrentPage] = useState(1)
-    const [searchText, setSearchText] = useState<string>("");
-    
-    const {shopProductsData , isLoading, refetch } = useShopProducts({
+    const [searchText, setSearchText] = useState<string>("")
+    const { data: shopProductsData, isLoading } = useGetMyShopProducts({
         page: currentPage,
     })
-    const products = shopProductsData?.data?.data || []
     console.log(shopProductsData)
-    useEffect(() => {
-        refetch()
-    }, [currentPage, refetch])
+
+    const products = shopProductsData?.data?.data || []
+
     const handleSearch = (value: string) => {
         setSearchText(value);
         onSearch(value);
@@ -41,12 +41,12 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
     };
 
     const columns = [
-        {
+        {   
             title: (
                 <Checkbox
                     onChange={(e) => {
                         if (e.target.checked) {
-                            onSelectChange(products.map((item) => item.id))
+                            onSelectChange(products.map((item: any) => item.productId))
                         } else {
                             onSelectChange([])
                         }
@@ -54,16 +54,16 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
                     checked={selectedRowKeys.length === products.length}
                 />
             ),
-            dataIndex: "id",
+            dataIndex: "productId",
             key: "selection",
-            render: (_: any, record: IProduct) => (
+            render: (_: any, record: IShopProduct) => (
                 <Checkbox
-                    checked={selectedRowKeys.includes(record.id)}
+                    checked={selectedRowKeys.includes(record.productId)}
                     onChange={(e) => {
                         if (e.target.checked) {
-                            onSelectChange([...selectedRowKeys, record.id])
+                            onSelectChange([...selectedRowKeys, record.productId])
                         } else {
-                            onSelectChange(selectedRowKeys.filter((key) => key !== record.id))
+                            onSelectChange(selectedRowKeys.filter((key) => key !== record.productId))
                         }
                     }}
                 />
@@ -73,60 +73,53 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
         },
         {
             title: "Tên",
-            dataIndex: "name",
+            dataIndex: ["product", "name"],
             key: "name",
-            render: (text: string, record: IProduct) => (
-                <Typography.Paragraph >
-                    <strong>Sản phẩm:</strong> {text} | <strong>Mô tả:</strong> {record?.description}
+            render: (text: string, record: IShopProduct) => (
+                <Typography.Paragraph>
+                    <strong>Sản phẩm:</strong> {text} | <strong>Mô tả:</strong> {record.product?.description}
                 </Typography.Paragraph>
             ),
             width: "30%",
         },
         {
-            title: "Số lượng hiện tại",
-            dataIndex: "stock",
-            key: "stock",
-            render: (stock: number) => <Typography.Text>{stock}</Typography.Text>,
+            title: "Số lượng",
+            dataIndex: "quantity",
+            key: "quantity",
+            render: (quantity: number) => <Typography.Text>{quantity}</Typography.Text>,
             responsive: ["md" as Breakpoint],
         },
         {
             title: "Giá nhập",
             dataIndex: "price",
             key: "price",
-            render: (price: string) => <Typography.Text>${price}</Typography.Text>,
-            responsive: ["md" as Breakpoint],
-        },
-        {
-            title: "Giá bán",
-            dataIndex: "salePrice",
-            key: "salePrice",
-            render: (salePrice: string) => <Typography.Text>${salePrice}</Typography.Text>,
+            render: (price: number) => <Typography.Text>${price}</Typography.Text>,
             responsive: ["md" as Breakpoint],
         },
         {
             title: "Lợi nhuận",
+            dataIndex: "profit",
             key: "profit",
-            render: (_: any, record: IProduct) => {
-                const profit = Number(record.price) - Number(record.salePrice);
-                return <Typography.Text type={profit >= 0 ? "danger" : "success"}>
+            render: (profit: number) => (
+                <Typography.Text type={profit >= 0 ? "danger" : "success"}>
                     ${Math.abs(profit).toFixed(2)}
                 </Typography.Text>
-            },
+            ),
         },
         {
             title: "Trạng thái",
             key: "status",
             responsive: ["md" as Breakpoint],
-            render: (_: any, record: IProduct) => (
-                <Tag color={record?.deletedAt === null ? "success" : "warning"}>
-                    {record?.deletedAt === null ? "Đang bán" : "Ngừng bán"}
+            render: (_: any, record: IShopProduct) => (
+                <Tag color={record?.isActive ? "success" : "warning"}>
+                    {record?.isActive ? "Đang bán" : "Ngừng bán"}
                 </Tag>
             ),
         },
         {
             title: "Hành động",
             key: "action",
-            render: (_: any, record: IProduct) => (
+            render: (_: any, record: IShopProduct) => (
                 <Space size="small">
                     <Button type="text" icon={<EditOutlined />} size="small" />
                     <Button type="text" icon={<DeleteOutlined />} size="small" danger />

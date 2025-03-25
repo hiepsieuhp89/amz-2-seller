@@ -1,7 +1,6 @@
 export interface ISignIn {
   username: string
   password: string
-  gate: string
 }
 
 export interface IRegister {

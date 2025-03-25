@@ -2,20 +2,21 @@ export interface IProduct {
     id: string
     name: string
     description: string
-    price: number | string
+    price: string
     salePrice: string
     stock: number
     category?: string
     categoryId?: string
     images?: string[]
-    profit?: number
+    profit: number
     createdAt: string
     updatedAt: string
     deletedAt: string | null
     image?: string
     purchasePrice?: number
-    imageUrl?: string
+    imageUrl: string
     shopProducts?: any[]
+    averageRating: string
 }
 
 export interface IProductResponse {

@@ -19,6 +19,7 @@ interface OrderData {
     isDelayed: boolean
     delayTime: string
     paymentStatus: string
+    
 }
 
 interface OrdersTableProps {

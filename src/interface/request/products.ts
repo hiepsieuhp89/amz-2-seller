@@ -14,11 +14,15 @@ export interface IProductUpdate {
 }
 
 export interface IProductSearchParams {
+    order?: string
+    page?: number
     keyword?: string
     category?: string
     minPrice?: number
     maxPrice?: number
-    page?: number
     limit?: number
 }
 
+export interface IAddShopProductsRequest {
+    productIds: string[]
+}

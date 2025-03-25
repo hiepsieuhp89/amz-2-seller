@@ -5,20 +5,23 @@ import { useState, useEffect } from "react"
 import { Input, Button, Card, Badge, Empty, Spin, message } from "antd"
 import { PlusOutlined, SearchOutlined, DeleteOutlined } from "@ant-design/icons"
 import styles from "./storehouse.module.scss"
-import { useProducts } from "@/hooks/products"
+import { useGetAllShopProducts } from "@/hooks/shop-products"
 import { useAddShopProducts } from "@/hooks/shop-products"
 import { IProduct } from "@/interface/response/products"
 import Image from "next/image"
+import { useUser } from "@/context/useUserContext"
 
 const Storehouse = () => {
-  const { productsData, isLoading, refetch } = useProducts({
+  const { user } = useUser()
+  const { data: productsData, isLoading, refetch } = useGetAllShopProducts({
     page: 1,
+    shopId: user?.id
   })
-  const { mutate: addShopProducts, isPending: isAddingProducts } = useAddShopProducts()
   console.log(productsData)
+  const { mutate: addShopProducts, isPending: isAddingProducts } = useAddShopProducts()
   const [products, setProducts] = useState<IProduct[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<IProduct[]>(productsData?.data?.data || [])
-  const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<any[]>(productsData?.data?.data || [])
+  const [selectedProducts, setSelectedProducts] = useState<any[]>([])
   const [keyword, setKeyword] = useState("")
   const [minPrice, setMinPrice] = useState<number | undefined>()
   const [maxPrice, setMaxPrice] = useState<number | undefined>()
@@ -30,15 +33,21 @@ const Storehouse = () => {
       let filtered = [...productsData?.data?.data || []]
 
       if (keyword) {
-        filtered = filtered.filter((product) => product.name.toLowerCase().includes(keyword.toLowerCase()))
+        filtered = filtered.filter((product: any) => 
+          product.name.toLowerCase().includes(keyword.toLowerCase())
+        )
       }
 
       if (minPrice !== undefined) {
-        filtered = filtered.filter((product) => Number(product.salePrice) >= minPrice)
+        filtered = filtered.filter((product: any) => 
+          Number(product.salePrice) >= minPrice
+        )
       }
 
       if (maxPrice !== undefined) {
-        filtered = filtered.filter((product) => Number(product.salePrice) <= maxPrice)
+        filtered = filtered.filter((product: any) => 
+          Number(product.salePrice) <= maxPrice
+        )
       }
 
       setFilteredProducts(filtered)
@@ -51,18 +60,14 @@ const Storehouse = () => {
     if ((productsData?.data?.data as any)?.length > 0) {
       filterProducts()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyword, minPrice, maxPrice, productsData?.data?.data])
 
-  const addProduct = (product: IProduct) => {
-    // Kiểm tra xem sản phẩm đã tồn tại trong danh sách đã chọn chưa
+  const addProduct = (product: any) => {
     const productExists = selectedProducts.some(item => item.id === product.id);
-
     if (productExists) {
       message.warning("Sản phẩm đã tồn tại trong danh sách");
       return;
     }
-
     setSelectedProducts([...selectedProducts, product])
     setTotalSelectedProducts(totalSelectedProducts + 1)
   }
@@ -160,14 +165,14 @@ const Storehouse = () => {
                       cover={
                         <div className={styles.imageContainer}>
                           <Badge.Ribbon
-                            text={`Trong kho: ${product.stock}`}
+                            text={`Trong kho: ${product.stock || 0}`}
                             color="green"
                             className={styles.stockBadge}
                             placement="start"
                           >
                             <Image
-                              src={checkImageUrl(product.image || "")}
-                              alt={product.name}
+                              src={checkImageUrl(product.imageUrl || "")}
+                              alt={product.name || "Product Image"}
                               className={`${styles.productImage}`}
                               width={140}
                               height={140}
@@ -178,16 +183,17 @@ const Storehouse = () => {
                       }
                     >
                       <div className={styles.productName}>
-                        Tên sản phẩm:{" "}
-                        {product.name}
+                        Tên sản phẩm: {product.name}
                       </div>
                       <div className={styles.productDescription}>
-                        <strong>Mô tả:{" "}</strong>
+                        <strong>Mô tả: </strong>
                         {product.description}
                       </div>
                       <div className={styles.priceInfo}>
                         <span>Giá bán:</span>
-                        <span className="!text-green-500">{Number(product.salePrice).toFixed(2)}</span>
+                        <span className="!text-green-500">
+                          {Number(product.salePrice).toFixed(2)}
+                        </span>
                       </div>
                       <div className={styles.priceInfo}>
                         <span>Giá nhập:</span>
@@ -205,7 +211,6 @@ const Storehouse = () => {
                         <PlusOutlined className={styles.plusIcon} />
                       </div>
                     </Card>
-
                   </div>
                 ))
               ) : (
@@ -260,7 +265,7 @@ const Storehouse = () => {
                       <li key={`${product.id}-${index}`} className={`${styles.selectedItem} hover:bg-gray-50 p-3 border-b`}>
                         <div className="flex items-center">
                           <Image
-                            src={checkImageUrl(product.image || "")}
+                            src={checkImageUrl(product.imageUrl || "")}
                             alt={product.name}
                             className="w-16 h-16 object-cover rounded-[4px] mr-3"
                             width={64}

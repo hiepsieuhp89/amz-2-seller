@@ -12,3 +12,38 @@ export interface IRemoveShopProductsRequest {
     productIds: string[]
 }
 
+export interface IGetMyShopProductsRequest {
+  order?: string
+  page?: number
+  take?: number
+  search?: string
+  status?: string
+  name?: string
+  code?: string
+  minPrice?: number
+  maxPrice?: number
+  inStock?: boolean
+  active?: boolean
+}
+
+export interface IGetMyOrdersRequest {
+  order?: string
+  page?: number
+  take?: number
+  search?: string
+  status?: string
+  delayStatus?: string
+}
+
+export interface IGetShopProductsRequest {
+  order?: string
+  page?: number
+  take?: number
+  search?: string
+  status?: string
+  shopId: string
+  name?: string
+  code?: string
+  minPrice?: number
+  maxPrice?: number
+}
