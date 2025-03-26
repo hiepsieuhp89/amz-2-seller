@@ -125,7 +125,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       activeIcon: <Icon path={mdiCartOutline} size={0.8} color={"#FCAF17"} />,
       children: [
         { key: "seller-packages", name: "Các gói", path: "/seller/seller-packages" },
-        { key: "packages-payment", name: "Gói đã mua", path: "/seller/packages-payment-list" },
+        // { key: "packages-payment", name: "Gói đã mua", path: "/seller/packages-payment-list" },
       ],
     },
     {
@@ -135,7 +135,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       activeIcon: <Icon path={mdiCartOutline} size={0.8} color={"#FCAF17"} />,
       children: [
         { key: "spread-packages", name: "Các gói", path: "/seller/spread-packages" },
-        { key: "spread-packages-payment", name: "Gói đã mua", path: "/seller/spread-packages-payment-list" },
+        // { key: "spread-packages-payment", name: "Gói đã mua", path: "/seller/spread-packages-payment-list" },
       ],
     },
     {

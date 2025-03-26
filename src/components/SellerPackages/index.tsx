@@ -7,6 +7,7 @@ import { useGetSellerPackages } from "@/hooks/seller-packages"
 import Image from "next/image"
 import Icon from "@mdi/react"
 import { mdiCartOutline } from "@mdi/js"
+import { useUser } from "@/context/useUserContext"
 const { Title, Text } = Typography
 const SellerPackages: React.FC = () => {
   const { data: packagesData, isLoading, isError } = useGetSellerPackages()
@@ -53,6 +54,8 @@ const SellerPackages: React.FC = () => {
     const icons = [<RocketOutlined key="rocket" />, <StarOutlined key="star" />, <CrownOutlined key="crown" />]
     return icons[index % icons.length]
   }
+  const { profile } = useUser()
+  console.log(profile)
 
   return (
     <div className="min-h-screen p-4">
