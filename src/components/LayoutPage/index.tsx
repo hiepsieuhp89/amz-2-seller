@@ -1,26 +1,13 @@
 "use client"
 import {
-  mdiCart,
   mdiCartOutline,
   mdiChevronDown,
   mdiChevronRight,
-  mdiCog,
   mdiCogOutline,
-  mdiCommentText,
-  mdiCommentTextOutline,
-  mdiFolder,
-  mdiFolderOutline,
-  mdiPackageVariantClosed, mdiPackageVariantClosedCheck,
-  mdiStar,
-  mdiStarOutline,
-  mdiStore,
+  mdiPackageVariant,
+  mdiPackageVariantClosed,
   mdiStoreOutline,
-  mdiPrinterPosOutline,
-  mdiCash100,
-  mdiAccountTieOutline,
-  mdiAccountCashOutline,
-  mdiAccountCogOutline,
-  mdiLinkBoxOutline
+
 } from "@mdi/js"
 import Icon from "@mdi/react"
 import type { MenuProps } from "antd"
@@ -53,8 +40,8 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     {
       key: "/seller/products",
       name: "Các sản phẩm",
-      icon: <Icon path={mdiFolderOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiFolderOutline} size={0.8} color={"#FCAF17"} />,
+      icon: <Icon path={mdiPackageVariant} size={0.8} />,
+      activeIcon: <Icon path={mdiPackageVariant} size={0.8} color={"#FCAF17"} />,
       path: `/seller/products`,
     },
     {
@@ -137,7 +124,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       icon: <Icon path={mdiCartOutline} size={0.8} />,
       activeIcon: <Icon path={mdiCartOutline} size={0.8} color={"#FCAF17"} />,
       children: [
-        { key: "seller-packages", name: "Gói tài khoản", path: "/seller/seller-packages" },
+        { key: "seller-packages", name: "Các gói", path: "/seller/seller-packages" },
         { key: "packages-payment", name: "Gói đã mua", path: "/seller/packages-payment-list" },
       ],
     },
@@ -147,7 +134,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       icon: <Icon path={mdiCartOutline} size={0.8} />,
       activeIcon: <Icon path={mdiCartOutline} size={0.8} color={"#FCAF17"} />,
       children: [
-        { key: "spread-packages", name: "Gói tài khoản", path: "/seller/spread-packages" },
+        { key: "spread-packages", name: "Các gói", path: "/seller/spread-packages" },
         { key: "spread-packages-payment", name: "Gói đã mua", path: "/seller/spread-packages-payment-list" },
       ],
     },

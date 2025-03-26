@@ -39,8 +39,8 @@ export default function LayoutHeaderCommon() {
     });
   }
   return (
-    <header className="bg-main-dark-blue text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full z-10 shadow-md">
-      <div className="relative h-8 left-[64px] top-1/2">
+    <header className="!h-[70px] min-h-[70px] bg-main-dark-blue text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full z-10 shadow-md">
+      <div className="relative h-8 left-[64px]">
         <Image
           quality={100}
           draggable={false}
