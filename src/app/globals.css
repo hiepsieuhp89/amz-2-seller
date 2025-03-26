@@ -107,3 +107,34 @@ html,
 ul.ant-menu.ant-menu-sub.ant-menu-inline {
   list-style: disc !important;
 }
+
+/* Ant Design Pagination Custom Styles */
+.ant-pagination-item {
+  /* Base styles for all pagination items */
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-pagination-item:hover {
+  border-color: #1890ff !important;
+  color: #1890ff !important;
+  background-color: #ffffff !important;
+}
+
+.ant-pagination-item-active {
+  background-color: #1890ff !important;
+  border-color: #1890ff !important;
+}
+.ant-pagination-item-active:hover {
+  background-color: #1890ff !important;
+  border-color: #1890ff !important;
+}
+
+.ant-pagination-item-active a {
+  color: white !important;
+}
+
+.ant-pagination-item-active:hover a {
+  color: white !important;
+}

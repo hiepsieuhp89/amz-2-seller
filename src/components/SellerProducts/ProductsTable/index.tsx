@@ -7,7 +7,6 @@ import { useState } from "react"
 import {
   Table,
   Input,
-  Checkbox,
   Button,
   Space,
   Typography,
@@ -66,22 +65,6 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({ onSearch, selected
     if (pageSize) setPageSize(pageSize)
   }
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      const allProductIds = products.map((item: any) => item.productId);
-      onSelectChange(allProductIds);
-    } else {
-      onSelectChange([]);
-    }
-  }
-
-  const handleSelectRow = (record: IShopProduct, checked: boolean) => {
-    const newSelectedKeys = checked
-      ? [...selectedRowKeys, record.productId]
-      : selectedRowKeys.filter((key) => key !== record.productId);
-    onSelectChange(newSelectedKeys);
-  }
-
   const getStatusColor = (isActive: boolean) => {
     return isActive ? "#52c41a" : "#faad14"
   }
@@ -106,25 +89,6 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({ onSearch, selected
   };
 
   const columns = [
-    {
-      title: (
-        <Checkbox
-          onChange={(e) => handleSelectAll(e.target.checked)}
-          checked={products.length > 0 && selectedRowKeys.length === products.length}
-          indeterminate={selectedRowKeys.length > 0 && selectedRowKeys.length < products.length}
-        />
-      ),
-      dataIndex: "productId",
-      key: "selection",
-      render: (_: any, record: IShopProduct) => (
-        <Checkbox
-          checked={selectedRowKeys.includes(record.productId)}
-          onChange={(e) => handleSelectRow(record, e.target.checked)}
-        />
-      ),
-      width: 60,
-      align: "center" as const,
-    },
     {
       title: "Hình ảnh",
       dataIndex: ["product", "imageUrl"],
@@ -204,7 +168,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({ onSearch, selected
       ),
       responsive: ["md" as Breakpoint],
       align: "center" as const,
-      width: 80,
+      width: 100,
     },
     {
       title: "Giá nhập",
@@ -261,7 +225,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({ onSearch, selected
         </Button>
       ),
       align: "right" as const,
-      width: 120,
+      width: 100,
     },
     {
       title: "Trạng thái",
