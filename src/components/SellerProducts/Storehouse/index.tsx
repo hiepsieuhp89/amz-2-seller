@@ -271,7 +271,7 @@ const Storehouse = () => {
               )}
 
               <Card
-                className="mb-3 !rounded-[8px] overflow-hidden shadow-sm"
+                className="mb-3 !rounded-[8px] overflow-hidden"
                 headStyle={{ backgroundColor: 'white', border: '1px solid #eee' }}
               >
                 <div>
