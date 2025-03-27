@@ -4,6 +4,8 @@ import {
   mdiChevronDown,
   mdiChevronRight,
   mdiCogOutline,
+  mdiHome,
+  mdiHomeOutline,
   mdiPackageVariant,
   mdiPackageVariantClosed,
   mdiStoreOutline,
@@ -30,13 +32,13 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
   const [searchTerm, setSearchTerm] = useState("")
 
   const menu = [
-    // {
-    //   key: "/seller/dashboard",
-    //   name: "Bảng điều khiển",
-    //   icon: <Icon path={mdiHomeOutline} size={0.8} />,
-    //   activeIcon: <Icon path={mdiHome} size={0.8} />,
-    //   path: `/seller/dashboard`,
-    // },
+    {
+      key: "/seller/dashboard",
+      name: "Bảng điều khiển",
+      icon: <Icon path={mdiHomeOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiHome} size={0.8} />,
+      path: `/seller/dashboard`,
+    },
     {
       key: "/seller/products",
       name: "Các sản phẩm",

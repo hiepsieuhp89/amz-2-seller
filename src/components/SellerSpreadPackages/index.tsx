@@ -1,53 +1,74 @@
 "use client"
 
-import type React from "react"
-import { Card, Button, Typography } from "antd"
+import { useUser } from "@/context/useUserContext"
+import { useGetSpreadPackages, usePurchaseSpreadPackage } from "@/hooks/spread-packages"
 import { CheckOutlined } from "@ant-design/icons"
-
-interface PackageItem {
-  id: number
-  title: string
-  image: string
-  features: string[]
-  price: string
-  duration: number
-  durationUnit: string
-  onSelect: (id: number, price: number) => void
-}
+import { Button, Modal, Spin, Typography } from "antd"
+import React from "react"
 
 const SellerSpreadPackages = () => {
-  const packages: PackageItem[] = [
-    {
-      id: 1,
-      title: "Cơ bản",
-      image: "https://shop.shop-worldwide-amz.top/public/uploads/all/WijsgXMX3GgqKsxrm0gQ8TyxEPFE9FIFfRoXLRdH.jpg",
-      features: [
-        "100 Giới hạn quảng bá sản phẩm",
-        "Nạp vào $50.00 hệ thống sẽ quảng bá cửa hàng của bạn, tăng cao doanh thu. Dự tính: $500.00",
-      ],
-      price: "$50.00",
-      duration: 3,
-      durationUnit: "ngày",
-      onSelect: (id, price) => select_payment_type(id, price),
-    },
-    {
-      id: 2,
-      title: "Nâng cao",
-      image: "https://shop.shop-worldwide-amz.top/public/uploads/all/WijsgXMX3GgqKsxrm0gQ8TyxEPFE9FIFfRoXLRdH.jpg",
-      features: [
-        "200 Giới hạn quảng bá sản phẩm",
-        "Nạp vào $200.00 hệ thống sẽ quảng bá cửa hàng của bạn, tăng cao doanh thu. Dự tính: $5,000.00",
-      ],
-      price: "$200.00",
-      duration: 7,
-      durationUnit: "ngày",
-      onSelect: (id, price) => select_payment_type(id, price),
-    },
-  ]
+  const { data: packagesData, isLoading, isError } = useGetSpreadPackages()
+  const { profile } = useUser()
+  const [selectedPackage, setSelectedPackage] = React.useState<{
+    id: number
+    title: string
+    price: number
+  } | null>(null)
+  const [isModalVisible, setIsModalVisible] = React.useState(false)
+  const purchaseMutation = usePurchaseSpreadPackage()
 
-  const select_payment_type = (id: number, price: number) => {
-    console.log(`Selected package ${id} with price ${price}`)
+  const handlePurchase = async () => {
+    if (!selectedPackage) return
+    
+    try {
+      await purchaseMutation.mutateAsync({ packageId: selectedPackage.id.toString() })
+      Modal.success({
+        title: 'Mua gói thành công',
+        content: `Bạn đã mua thành công gói ${selectedPackage.title}`,
+      })
+    } catch (error) {
+      Modal.error({
+        title: 'Lỗi khi mua gói',
+        content: 'Đã có lỗi xảy ra khi thực hiện mua gói. Vui lòng thử lại sau.',
+      })
+    } finally {
+      setIsModalVisible(false)
+      setSelectedPackage(null)
+    }
   }
+
+  const select_payment_type = (id: number, title: string, price: number) => {
+    setSelectedPackage({ id, title, price })
+    setIsModalVisible(true)
+  }
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-[60vh]">
+        <Spin size="small" />
+      </div>
+    )
+
+  if (isError)
+    return (
+      <div className="text-center p-8 text-red-500">
+        <Typography.Title level={4}>Có lỗi xảy ra khi tải dữ liệu</Typography.Title>
+        <Typography.Text>Vui lòng thử lại sau</Typography.Text>
+      </div>
+    )
+
+  const packages = packagesData?.data.data.map((pkg) => ({
+    id: Number(pkg.id),
+    title: pkg.name,
+    image: pkg.image,
+    features: [
+      `${pkg.maxProducts} Giới hạn quảng bá sản phẩm`,
+      `Nạp vào $${pkg.price} hệ thống sẽ quảng bá cửa hàng của bạn, tăng cao doanh thu. Dự tính: $${pkg.price * pkg.percentProfit}`,
+    ],
+    price: `$${pkg.price}`,
+    duration: pkg.duration,
+    durationUnit: "ngày",
+  })) || []
 
   return (
     <div className="pt-2 lg:px-8">
@@ -105,7 +126,11 @@ const SellerSpreadPackages = () => {
                     <Button
                       type="primary"
                       className="font-semibold h-10 px-6 !rounded-[4px]"
-                      onClick={() => pkg.onSelect(pkg.id, Number.parseFloat(pkg.price.replace("$", "")))}
+                      onClick={() => select_payment_type(
+                        pkg.id,
+                        pkg.title,
+                        Number.parseFloat(pkg.price.replace("$", ""))
+                      )}
                     >
                       Mua gói
                     </Button>
@@ -115,6 +140,22 @@ const SellerSpreadPackages = () => {
           </div>
         </div>
       </section>
+
+      <Modal
+        title="Xác nhận mua gói"
+        visible={isModalVisible}
+        onOk={handlePurchase}
+        onCancel={() => setIsModalVisible(false)}
+        confirmLoading={purchaseMutation.isPending}
+      >
+        {selectedPackage && (
+          <>
+            <p>Bạn đang mua gói: <strong>{selectedPackage.title}</strong></p>
+            <p>Giá: <strong>${selectedPackage.price}</strong></p>
+            <p>Vui lòng xác nhận để tiếp tục.</p>
+          </>
+        )}
+      </Modal>
     </div>
   )
 }

@@ -1,16 +1,50 @@
 "use client"
 
-import type React from "react"
-import { Card, Button, Typography, Spin, Badge, Divider } from "antd"
-import { CheckOutlined, StarOutlined, RocketOutlined, CrownOutlined } from "@ant-design/icons"
-import { useGetSellerPackages } from "@/hooks/seller-packages"
-import Image from "next/image"
-import Icon from "@mdi/react"
-import { mdiCartOutline } from "@mdi/js"
 import { useUser } from "@/context/useUserContext"
+import { useGetSellerPackages, usePurchaseSellerPackage } from "@/hooks/seller-packages"
+import { CheckOutlined, CrownOutlined, RocketOutlined, StarOutlined } from "@ant-design/icons"
+import { mdiCartOutline } from "@mdi/js"
+import Icon from "@mdi/react"
+import { Badge, Button, Card, Divider, Modal, Spin, Typography } from "antd"
+import Image from "next/image"
+import React from "react"
 const { Title, Text } = Typography
 const SellerPackages: React.FC = () => {
   const { data: packagesData, isLoading, isError } = useGetSellerPackages()
+  const { profile } = useUser()
+  const [selectedPackage, setSelectedPackage] = React.useState<{
+    id: number
+    title: string
+    price: number
+  } | null>(null)
+  const [isModalVisible, setIsModalVisible] = React.useState(false)
+  const purchaseMutation = usePurchaseSellerPackage()
+
+  const handlePurchase = async () => {
+    if (!selectedPackage) return
+    
+    try {
+      await purchaseMutation.mutateAsync({ packageId: selectedPackage.id.toString() })
+      Modal.success({
+        title: 'Mua gói thành công',
+        content: `Bạn đã mua thành công gói ${selectedPackage.title}`,
+      })
+    } catch (error) {
+      Modal.error({
+        title: 'Lỗi khi mua gói',
+        content: 'Đã có lỗi xảy ra khi thực hiện mua gói. Vui lòng thử lại sau.',
+      })
+    } finally {
+      setIsModalVisible(false)
+      setSelectedPackage(null)
+    }
+  }
+
+  const select_payment_type = (id: number, title: string, price: number) => {
+    setSelectedPackage({ id, title, price })
+    setIsModalVisible(true)
+  }
+
   if (isLoading)
     return (
       <div className="flex justify-center items-center h-[60vh]">
@@ -54,8 +88,6 @@ const SellerPackages: React.FC = () => {
     const icons = [<RocketOutlined key="rocket" />, <StarOutlined key="star" />, <CrownOutlined key="crown" />]
     return icons[index % icons.length]
   }
-  const { profile } = useUser()
-  console.log(profile)
 
   return (
     <div className="min-h-screen p-4">
@@ -143,6 +175,7 @@ const SellerPackages: React.FC = () => {
                   className={`h-12 !rounded-[4px]
                     font-medium text-base ${pkg.popular ? "!bg-orange-500 !border-orange-500 hover:!bg-orange-600" : ""
                     }`}
+                  onClick={() => select_payment_type(pkg.id, pkg.title, pkg.price)}
                 >
                   Mua gói
                 </Button>
@@ -151,6 +184,22 @@ const SellerPackages: React.FC = () => {
           </div>
         </div>
       </section>
+
+      <Modal
+        title="Xác nhận mua gói"
+        visible={isModalVisible}
+        onOk={handlePurchase}
+        onCancel={() => setIsModalVisible(false)}
+        confirmLoading={purchaseMutation.isPending}
+      >
+        {selectedPackage && (
+          <>
+            <p>Bạn đang mua gói: <strong>{selectedPackage.title}</strong></p>
+            <p>Giá: <strong>${selectedPackage.price}</strong></p>
+            <p>Vui lòng xác nhận để tiếp tục.</p>
+          </>
+        )}
+      </Modal>
     </div>
   )
 }
