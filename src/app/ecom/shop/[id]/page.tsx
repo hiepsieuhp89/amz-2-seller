@@ -5,7 +5,7 @@ import { Empty, Pagination, Select, Spin } from "antd";
 import Image from "next/image";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import "./styles.css"
+import styles from "./styles.module.scss"
 import Link from "next/link";
 export default function ShopPage() {
   const params = useParams();
@@ -163,7 +163,7 @@ export default function ShopPage() {
               <Link
                 href={`/ecom/product/${item.id}`}
                 key={item.id}
-                className="bg-white border border-gray-200 rounded-sm p-3 relative hover:shadow-md transition-shadow cursor-pointer group hov-animate-outline"
+                className={`bg-white border border-gray-200 rounded-sm p-3 relative hover:shadow-md transition-shadow cursor-pointer ${styles.hovAnimateOutline}`}
               >
                 {/* Product Image */}
                 <div className="relative h-48 mb-3">
