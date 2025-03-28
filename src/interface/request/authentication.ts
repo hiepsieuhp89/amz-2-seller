@@ -28,7 +28,29 @@ export interface IUpdateUser {
   address?: string
   avatar?: string
   shopName?: string
+  shopPhone?: string
   shopAddress?: string
+  city?: string
+  district?: string
+  ward?: string
+  countryId?: string
+  stateId?: string
+  cityId?: string
+  districtId?: string
+  postalCodeId?: string
+  metaTitle?: string
+  metaDescription?: string
+  bannerImage?: string
+  mobileBannerImage?: string
+  fullBannerImage?: string
+  halfBannerImage?: string
+  bannerImage2?: string
+  bankName?: string
+  bankAccountNumber?: string
+  bankAccountName?: string
+  bankBranch?: string
+  bankCode?: string
+  bankNumber?: string
 }
 
 export interface IChangePassword {

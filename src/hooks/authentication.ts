@@ -84,7 +84,18 @@ export const useUpdateUser = (): UseMutationResult<IAuthResponse, Error, IUpdate
   const queryClient = useQueryClient()
 
   return useMutation<IAuthResponse, Error, IUpdateUser>({
-    mutationFn: (params: IUpdateUser) => updateUser(params),
+    mutationFn: (params: IUpdateUser) => updateUser({
+      ...params,
+      // Map shop specific fields if needed
+      shopPhone: params.phone,
+      shopAddress: params.address,
+      // Map banner fields if needed
+      bannerImage: params.topBanner?.[0],
+      mobileBannerImage: params.sliders?.[0],
+      fullBannerImage: params.bannerFullWidth1?.[0],
+      halfBannerImage: params.bannersHalfWidth?.[0],
+      bannerImage2: params.bannerFullWidth2?.[0]
+    }),
     onSuccess: (result: IAuthResponse) => {
       queryClient.invalidateQueries({
         queryKey: ["userProfile"],

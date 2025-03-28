@@ -5,16 +5,18 @@ import ShopBasicInfo from "./ShopBasicInfo"
 import ShopBannerSettings from "./ShopBannerSettings"
 import { mockShopData } from "./mockData"
 import { ShopData } from "./types"
+import { useUpdateUser } from "@/hooks/authentication"
 
 const SellerShop = () => {
   const [shopData, setShopData] = React.useState<ShopData>(mockShopData)
+  const updateUserMutation = useUpdateUser()
 
-  const handleSaveBasicInfo = (updatedData: Partial<ShopData>) => {
-    setShopData({ ...shopData, ...updatedData })
-  }
-
-  const handleSaveBannerSettings = (updatedData: Partial<ShopData>) => {
-    setShopData({ ...shopData, ...updatedData })
+  const handleSave = (updatedData: Partial<ShopData>) => {
+    updateUserMutation.mutate(updatedData, {
+      onSuccess: () => {
+        setShopData(prev => ({ ...prev, ...updatedData }))
+      }
+    })
   }
 
   return (
@@ -41,9 +43,8 @@ const SellerShop = () => {
         </div>
       </div>
 
-      <ShopBasicInfo shopData={shopData} onSave={handleSaveBasicInfo} />
-
-      <ShopBannerSettings shopData={shopData} onSave={handleSaveBannerSettings} />
+      <ShopBasicInfo shopData={shopData} onSave={handleSave} />
+      <ShopBannerSettings shopData={shopData} onSave={handleSave} />
     </div>
   )
 }
