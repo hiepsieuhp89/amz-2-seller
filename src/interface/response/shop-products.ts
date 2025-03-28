@@ -88,3 +88,33 @@ export interface IShopProductsResponse {
   }
 }
 
+export interface IRevenueStatisticsResponse {
+  dailyStats: {
+    date: string
+    revenue: number
+    profit: number
+    orders: number
+  }[]
+  totalRevenue: number
+  totalProfit: number
+  totalOrders: number
+}
+
+export interface IShopDetailStatisticsResponse {
+  totalProducts: number
+  activeProducts: number
+  totalProfit: number
+  totalOrders: number
+  totalSales: number
+  totalViews: number
+  sellerPackage: Record<string, unknown>
+  pendingOrders: number
+}
+
+export interface ITopSellingProductsResponse {
+  product: Record<string, unknown>
+  totalSold: number
+  revenue: number
+  profit: number
+}
+

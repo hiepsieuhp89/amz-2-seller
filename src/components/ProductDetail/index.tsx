@@ -20,6 +20,7 @@ import {
   mdiCheckCircle,
 } from "@mdi/js"
 import Image from "next/image"
+import { useGetShopProductDetail } from "@/hooks/shop-products"
 
 const { Title, Text } = Typography
 
@@ -30,7 +31,8 @@ const productImages = [
   "https://m.media-amazon.com/images/I/41mUAj5oWCL._AC_SL1500_.jpg",
 ]
 
-const ProductDetail: React.FC = () => {
+const ProductDetail = ({ productId }: { productId: string }) => {
+  const { data: productData, isLoading } = useGetShopProductDetail(productId)
   const [quantity, setQuantity] = useState<number>(1)
   const [currentImage, setCurrentImage] = useState<number>(0)
   const price = 9.99
@@ -47,6 +49,8 @@ const ProductDetail: React.FC = () => {
     hover: { scale: 1.05, transition: { duration: 0.2 } },
     tap: { scale: 0.95 },
   }
+
+  if (isLoading) return <div>Loading...</div>
 
   return (
       <div className="py-6 px-[104px]">
@@ -109,8 +113,7 @@ const ProductDetail: React.FC = () => {
             <Col xs={24} lg={14} xl={14}>
               <div className="product-info">
                 <Title level={4} style={{ fontWeight: 700, marginBottom: "16px" }}>
-                  Hyhucoie Womens Sweatsuits 2 Piece Set Lounge Sets Long Sleeve Tops Jogger Sweatpants Track Sweats
-                  Suits Matching Pants Sets - Clothes
+                  {productData?.data?.items[0]?.name || "Product Name"}
                 </Title>
 
                 <Row align="middle" gutter={[16, 16]} style={{ marginBottom: "16px" }}>

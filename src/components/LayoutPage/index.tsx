@@ -20,6 +20,7 @@ import "./styles.css"
 import Image from "next/image"
 import { useUser } from "@/context/useUserContext"
 import { motion, AnimatePresence } from "framer-motion"
+import Link from "next/link"
 
 interface LayoutGAProps {
   isSidebarOpen: boolean
@@ -129,8 +130,11 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
   const handleMenuClick = (key: string) => {
     const selectedItem = menu.find((item) => item.key === key)
     if (selectedItem && !selectedItem.children) {
-      router.push(selectedItem.path)
-      setPath(selectedItem.path)
+      return (
+        <Link href={selectedItem.path}>
+          <a onClick={() => setPath(selectedItem.path)} />
+        </Link>
+      )
     }
   }
 
@@ -159,52 +163,62 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
           label: <span className="font-semibold">{item.name}</span>,
           children: item.children.map((child) => ({
             key: child.key,
-            label: <span className="font-semibold">{child.name}</span>,
-            onClick: () => handleSubMenuClick(child.path),
+            label: (
+              <Link href={child.path} onClick={() => setPath(child.path)}>
+                <span className="font-semibold">{child.name}</span>
+              </Link>
+            ),
           })),
           expandIcon: ({ isOpen }) =>
             isOpen ? <Icon path={mdiChevronDown} size={0.8} /> : <Icon path={mdiChevronRight} size={0.8} />,
         }
       }
 
-      let label: React.ReactNode = <span className="font-semibold">{item.name}</span>
+      let label: React.ReactNode = (
+        <Link href={item.path} onClick={() => setPath(item.path)}>
+          <span className="font-semibold">{item.name}</span>
+        </Link>
+      )
+      
       if (item.badge) {
         label = (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-              paddingRight: "4px",
-            }}
-            key={item.key}
-          >
-            <span className="font-semibold">{item.name}</span>
-            {item.badge.text ? (
-              <Badge
-                count={item.badge.text}
-                style={{
-                  backgroundColor: item.badge.color,
-                  fontSize: "12px",
-                  padding: "0 8px",
-                  borderRadius: "4px",
-                  boxShadow: "0 0 4px rgba(255, 255, 255, 0.3)",
-                }}
-                className="ant-badge-no-border"
-              />
-            ) : (
-              <Badge
-                count={item.badge.count}
-                style={{
-                  backgroundColor: item.badge.color,
-                  borderRadius: "4px",
-                  boxShadow: "0 0 4px rgba(255, 255, 255, 0.3)",
-                }}
-                className="ant-badge-no-border"
-              />
-            )}
-          </div>
+          <Link href={item.path} onClick={() => setPath(item.path)}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+                paddingRight: "4px",
+              }}
+              key={item.key}
+            >
+              <span className="font-semibold">{item.name}</span>
+              {item.badge.text ? (
+                <Badge
+                  count={item.badge.text}
+                  style={{
+                    backgroundColor: item.badge.color,
+                    fontSize: "12px",
+                    padding: "0 8px",
+                    borderRadius: "4px",
+                    boxShadow: "0 0 4px rgba(255, 255, 255, 0.3)",
+                  }}
+                  className="ant-badge-no-border"
+                />
+              ) : (
+                <Badge
+                  count={item.badge.count}
+                  style={{
+                    backgroundColor: item.badge.color,
+                    borderRadius: "4px",
+                    boxShadow: "0 0 4px rgba(255, 255, 255, 0.3)",
+                  }}
+                  className="ant-badge-no-border"
+                />
+              )}
+            </div>
+          </Link>
         )
       }
 
@@ -212,7 +226,6 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
         key: item.key,
         icon: displayIcon,
         label,
-        onClick: () => handleMenuClick(item.key),
       }
     })
   }
@@ -274,7 +287,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       animate={isSidebarOpen ? "open" : "closed"}
       variants={sidebarVariants}
       style={{
-        backgroundColor: "#131921",
+        backgroundColor: "#131921 !important",
         height: "100%",
         overflow: "hidden",
         display: "flex",
@@ -298,13 +311,15 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
                 variants={contentVariants}
                 style={{
                   width: "100%",
-                  backgroundColor: "#131921",
+                  backgroundColor: "#131921 !important",
                   overflow: "hidden",
                 }}
               >
                 <motion.div variants={itemVariants} className="w-full flex flex-col items-center gap-1">
-                  <div className="text-[#ff9900] flex items-center cursor-pointer" onClick={() => router.push(`/ecom/shop/${user?.id || ""}`)}>
-                    <span className="font-semibold text-sm flex-shrink-0">Ghé thăm cửa hàng</span>
+                  <div className="text-[#ff9900] flex items-center cursor-pointer">
+                    <Link href={`/ecom/shop/${user?.id || ""}`} className="font-semibold text-sm flex-shrink-0">
+                      Ghé thăm cửa hàng
+                    </Link>
                     <span className="ml-1 flex-shrink-0">→</span>
                   </div>
 

@@ -1,4 +1,4 @@
-import { addShopProducts, getAllShopProducts, getMyOrders, getMyShopProducts, getShopStatistics, removeShopProducts } from "@/api/shop-products"
+import { addShopProducts, getAllShopProducts, getMyOrders, getMyShopProducts, getShopStatistics, removeShopProducts, getRevenueStatistics, getShopDetailStatistics, getTopSellingProducts, getShopProductDetail, getOrderDetail } from "@/api/shop-products"
 import type { IAddShopProductsRequest, IGetShopProductsRequest, IRemoveShopProductsRequest } from "@/interface/request/shop-products"
 import type { IShopProductsResponse } from "@/interface/response/shop-products"
 import { type UseMutationResult, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -86,5 +86,40 @@ export const useGetShopStatistics = () => {
   return useQuery({
     queryKey: ['shopStatistics'],
     queryFn: () => getShopStatistics(),
+  })
+}
+
+export const useGetRevenueStatistics = (params: { days: number }) => {
+  return useQuery({
+    queryKey: ['revenueStatistics', params],
+    queryFn: () => getRevenueStatistics(params),
+  })
+}
+
+export const useGetShopDetailStatistics = () => {
+  return useQuery({
+    queryKey: ['shopDetailStatistics'],
+    queryFn: () => getShopDetailStatistics(),
+  })
+}
+
+export const useGetTopSellingProducts = (params: { limit: number }) => {
+  return useQuery({
+    queryKey: ['topSellingProducts', params],
+    queryFn: () => getTopSellingProducts(params),
+  })
+}
+
+export const useGetShopProductDetail = (id: string) => {
+  return useQuery({
+    queryKey: ['shopProductDetail', id],
+    queryFn: () => getShopProductDetail(id),
+  })
+}
+
+export const useGetOrderDetail = (id: string) => {
+  return useQuery({
+    queryKey: ['orderDetail', id],
+    queryFn: () => getOrderDetail(id),
   })
 }

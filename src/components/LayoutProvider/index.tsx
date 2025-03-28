@@ -39,7 +39,7 @@ const toggleSidebar = () => {
 return (
   <LayoutContext.Provider value={{ isSidebarOpen, toggleSidebar }}>
     <div className={styles.root} suppressHydrationWarning>
-      <div className='bg-red-300'>
+      <div className='!bg-main-dark-blue'>
         <LayoutPage isSidebarOpen={isSidebarOpen} />
       </div>
 

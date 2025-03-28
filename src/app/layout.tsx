@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <ClientLayout>
       <NextTopLoader
-        color="#2299DD"
+        color="#FF9900"
         initialPosition={0.08}
         crawlSpeed={200}
         height={3}

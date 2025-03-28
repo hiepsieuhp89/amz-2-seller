@@ -64,3 +64,60 @@ export const getShopStatistics = async (): Promise<{
   const res = await sendGet("/shop-products/statistics/shop")
   return res
 }
+
+export const getRevenueStatistics = async (params: {
+  days: number
+}): Promise<{
+  dailyStats: {
+    date: string
+    revenue: number
+    profit: number
+    orders: number
+  }[]
+  totalRevenue: number
+  totalProfit: number
+  totalOrders: number
+}> => {
+  const res = await sendGet("/shop-products/statistics/revenue", params)
+  return res
+}
+
+export const getShopDetailStatistics = async (): Promise<{
+  totalProducts: number
+  activeProducts: number
+  totalProfit: number
+  totalOrders: number
+  totalSales: number
+  totalViews: number
+  sellerPackage: Record<string, unknown>
+  pendingOrders: number
+}> => {
+  const res = await sendGet("/shop-products/statistics/detail")
+  return res
+}
+
+export const getTopSellingProducts = async (params: {
+  limit: number
+}): Promise<
+  {
+    product: Record<string, unknown>
+    totalSold: number
+    revenue: number
+    profit: number
+  }[]
+> => {
+  const res = await sendGet("/shop-products/statistics/top-selling", params)
+  return res
+}
+
+export const getShopProductDetail = async (id: string): Promise<IShopProductsResponse> => {
+  const res = await sendGet(`/shop-products/my-shop-products/${id}`)
+  const data: IShopProductsResponse = res
+  return data
+}
+
+export const getOrderDetail = async (id: string): Promise<IShopProductsResponse> => {
+  const res = await sendGet(`/shop-products/my-orders/${id}`)
+  const data: IShopProductsResponse = res
+  return data
+}

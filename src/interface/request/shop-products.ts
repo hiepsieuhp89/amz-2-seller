@@ -47,3 +47,19 @@ export interface IGetShopProductsRequest {
   minPrice?: number
   maxPrice?: number
 }
+
+export interface IGetRevenueStatisticsRequest {
+  days: number
+}
+
+export interface IGetTopSellingProductsRequest {
+  limit: number
+}
+
+export interface IGetShopProductDetailRequest {
+  id: string
+}
+
+export interface IGetOrderDetailRequest {
+  id: string
+}
