@@ -1,8 +1,8 @@
-"use client";
+import { ShopView } from "@/components/Shop";
 
 export default function ShopPage() {
 
   return (
-    <p>hello</p>
+    <ShopView />
   );
 }
