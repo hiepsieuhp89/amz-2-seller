@@ -5,14 +5,13 @@ import ShopFooter from '@/components/Shop/ShopFooter';
 import ShopHeader from '@/components/Shop/ShopHeader';
 import ShopNavigation from '@/components/Shop/ShopNavigation';
 import { useGetAllShopProducts } from "@/hooks/shop-products";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export const ShopView = () => {
-  const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const shopId = params.id as string;
+  const shopId = searchParams.get("id") as string;
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
   const [pageSize, setPageSize] = useState(10);
@@ -32,13 +31,13 @@ export const ShopView = () => {
   const meta = shopProductsData?.data?.meta;
   useEffect(() => {
     const params = new URLSearchParams();
+    if (shopId) params.set("id", shopId);
     if (search) params.set("search", search);
     if (page > 1) params.set("page", String(page));
 
-    const url = `/shop/${shopId}${params.toString() ? `?${params.toString()}` : ""
-      }`;
+    const url = `/shop${params.toString() ? `?${params.toString()}` : ""}`;
     router.replace(url, { scroll: false });
-  }, [search, page, shopId, router]);
+  }, [shopId, search, page, router]);
 
   useEffect(() => {
     refetch();
