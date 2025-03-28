@@ -28,6 +28,7 @@ import { useGetMyShopProducts } from "@/hooks/shop-products"
 import Image from 'next/image';
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import "./styles.css"
 
 const { Title, Text } = Typography
 
@@ -53,8 +54,6 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({ onSearch, selected
   const products = shopProductsData?.data?.data || []
   const totalItems = shopProductsData?.data?.meta?.itemCount || 0
   const productImages = products.map((product: any) => product.product.imageUrl).filter(Boolean);
-
-  console.log(products)
   const handleSearch = (value: string) => {
     setSearchText(value)
     onSearch(value)

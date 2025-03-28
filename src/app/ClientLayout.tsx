@@ -29,6 +29,7 @@ export default function ClientLayout({
       borderRadius: 12,
       controlHeight: 40,
       colorTextPlaceholder: '#636364',
+      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
     },
     components: {
       Steps: {

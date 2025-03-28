@@ -146,7 +146,7 @@ const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
 
       {captchaType === 'image' && captchaLoading ? (
         <div className="flex justify-center py-8">
-          <Spin size="large" />
+          <Spin size="small" />
         </div>
       ) : (
         captchaType === 'image' && (

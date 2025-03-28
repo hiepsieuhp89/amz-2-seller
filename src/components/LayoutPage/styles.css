@@ -54,3 +54,13 @@
   position: absolute !important;
   right: 24px !important;
 }
+
+::-webkit-scrollbar {
+  width: 0;  /* Ẩn thanh scrollbar trên Chrome/Safari/Edge */
+  background: transparent;  /* Làm nền trong suốt */
+}
+
+* {
+  scrollbar-width: none;  /* Ẩn thanh scrollbar trên Firefox */
+  -ms-overflow-style: none;  /* Ẩn thanh scrollbar trên IE/Edge */
+}

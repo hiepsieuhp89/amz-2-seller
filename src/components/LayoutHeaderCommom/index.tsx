@@ -39,7 +39,7 @@ export default function LayoutHeaderCommon() {
     });
   }
   return (
-    <header className="!h-[70px] min-h-[70px] bg-main-dark-blue text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full z-10 shadow-md">
+    <header className="!h-[70px] min-h-[70px] bg-main-dark-blue text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full shadow-md z-50">
       <div className="relative h-8 left-[64px]">
         <Image
           quality={100}
