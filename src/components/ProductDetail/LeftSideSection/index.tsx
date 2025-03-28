@@ -111,14 +111,15 @@ const LeftSideSection = () => {
                 <Link href="/shop/Shop-Hoa-Hong">
                   <motion.div 
                     whileHover={{ scale: 1.05 }}
-                    className="mr-3"
+                    className="mr-3 w-14 h-14 bg-white border relative rounded-full"
                   >
                     <Image 
-                      src="/placeholder.svg?height=48&width=48" 
+                      draggable={false}
+                      src="/images/silver-shop.png" 
                       alt="Shop Hoa Hong" 
-                      width={48}
-                      height={48}
-                      className="w-12 h-12 rounded-full border object-cover"
+                      fill
+                      quality={100}
+                      className="flex-shrink-0 rounded-full h-full w-full  object-contain !p-1"
                     />
                   </motion.div>
                 </Link>

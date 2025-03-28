@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import "./styles.css"
+import Link from "next/link";
 export default function ShopPage() {
   const params = useParams();
   const router = useRouter();
@@ -159,10 +160,10 @@ export default function ShopPage() {
         ) : shopProducts && shopProducts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {shopProducts.map((item: any) => (
-              <div
+              <Link
+                href={`/ecom/product/${item.id}`}
                 key={item.id}
                 className="bg-white border border-gray-200 rounded-sm p-3 relative hover:shadow-md transition-shadow cursor-pointer group hov-animate-outline"
-                onClick={() => router.push(`/ecom/product/${item.id}`)}
               >
                 {/* Product Image */}
                 <div className="relative h-48 mb-3">
@@ -226,7 +227,7 @@ export default function ShopPage() {
                     <path d="M16 10a4 4 0 0 1-8 0"></path>
                   </svg>
                 </button>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (

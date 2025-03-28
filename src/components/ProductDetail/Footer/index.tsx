@@ -69,7 +69,7 @@ const Footer: React.FC = () => {
         >
           <div className="flex items-center">
             <img
-              src={language.flag || "/placeholder.svg"}
+              src={language.flag}
               alt={language.name}
               className="mr-2"
               height={11}

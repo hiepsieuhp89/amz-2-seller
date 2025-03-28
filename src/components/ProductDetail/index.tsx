@@ -20,7 +20,8 @@ import {
   mdiCheckCircle,
 } from "@mdi/js"
 import Image from "next/image"
-import { useGetShopProductDetail } from "@/hooks/shop-products"
+import Zoom from 'react-medium-image-zoom'
+import 'react-medium-image-zoom/dist/styles.css'
 
 const { Title, Text } = Typography
 
@@ -31,8 +32,7 @@ const productImages = [
   "https://m.media-amazon.com/images/I/41mUAj5oWCL._AC_SL1500_.jpg",
 ]
 
-const ProductDetail = ({ productId }: { productId: string }) => {
-  const { data: productData, isLoading } = useGetShopProductDetail(productId)
+const ProductDetail = () => {
   const [quantity, setQuantity] = useState<number>(1)
   const [currentImage, setCurrentImage] = useState<number>(0)
   const price = 9.99
@@ -50,20 +50,13 @@ const ProductDetail = ({ productId }: { productId: string }) => {
     tap: { scale: 0.95 },
   }
 
-  if (isLoading) return <div>Loading...</div>
-
   return (
       <div className="py-6 px-[104px]">
           <Row gutter={[32, 24]}>
             {/* Product Image Gallery */}
             <Col xs={24} lg={10} xl={10}>
               <div className="product-gallery" style={{ position: "sticky", top: "20px" }}>
-                <motion.div
-                  className="main-image"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
+                <Zoom>
                   <Image
                     src={productImages[currentImage]}
                     alt="Product"
@@ -75,9 +68,10 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                       maxHeight: "400px",
                       objectFit: "contain",
                       borderRadius: "4px",
+                      cursor: "zoom-in"
                     }}
                   />
-                </motion.div>
+                </Zoom>
 
                 <Row className="thumbnail-gallery" gutter={[8, 8]} style={{ marginTop: "16px" }}>
                   {productImages.map((img, index) => (
@@ -113,7 +107,8 @@ const ProductDetail = ({ productId }: { productId: string }) => {
             <Col xs={24} lg={14} xl={14}>
               <div className="product-info">
                 <Title level={4} style={{ fontWeight: 700, marginBottom: "16px" }}>
-                  {productData?.data?.items[0]?.name || "Product Name"}
+                  Hyhucoie Womens Sweatsuits 2 Piece Set Lounge Sets Long Sleeve Tops Jogger Sweatpants Track Sweats
+                  Suits Matching Pants Sets - Clothes
                 </Title>
 
                 <Row align="middle" gutter={[16, 16]} style={{ marginBottom: "16px" }}>
@@ -289,7 +284,7 @@ const ProductDetail = ({ productId }: { productId: string }) => {
                   </Col>
                   <Col span={18}>
                     <div style={{ display: "flex", alignItems: "center" }}>
-                      <img src="/placeholder.svg?height=36&width=120" alt="Refund Policy" style={{ height: "36px" }} />
+                      {/* <img src="" alt="Refund Policy" style={{ height: "36px" }} /> */}
                       <a href="#" style={{ marginLeft: "12px", color: "#1890ff" }}>
                         View Policy
                       </a>

@@ -5,19 +5,15 @@ import Header from "@/components/ProductDetail/Header";
 import LeftSideSection from "@/components/ProductDetail/LeftSideSection";
 import { Card, Rate, Button, Divider, Typography } from "antd";
 import Title from "antd/es/typography/Title";
-import { useParams } from "next/navigation";
 
 const { Text } = Typography;
 
 export default function ProductDetailPage() {
-  const params = useParams();
-  const { id } = params;
-
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <div className="flex flex-col">
-        <ProductDetail productId={id as string} />
+        <ProductDetail />
         <div className="w-full flex flex-row py-6 px-[104px] gap-4">
           <div className="w-full lg:w-1/4">
             <LeftSideSection />
