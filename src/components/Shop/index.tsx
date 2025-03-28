@@ -35,7 +35,7 @@ export const ShopView = () => {
     if (search) params.set("search", search);
     if (page > 1) params.set("page", String(page));
 
-    const url = `/ecom/shop/${shopId}${params.toString() ? `?${params.toString()}` : ""
+    const url = `/seller/ecom/shop/${shopId}${params.toString() ? `?${params.toString()}` : ""
       }`;
     router.replace(url, { scroll: false });
   }, [search, page, shopId, router]);
