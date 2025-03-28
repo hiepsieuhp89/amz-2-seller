@@ -48,6 +48,7 @@ export interface IProfileResponse {
     username: string
     fullName: string
     phone: string
+    logoUrl: string | null
     invitationCode: string | null
     referralCode: string
     role: string

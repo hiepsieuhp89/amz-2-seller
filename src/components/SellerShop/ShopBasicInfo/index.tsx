@@ -16,6 +16,7 @@ interface FileType {
   name: string;
   status: 'done' | 'uploading' | 'error';
   url?: string;
+  thumbUrl?: string;
 }
 
 const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
@@ -26,19 +27,20 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
 
   React.useEffect(() => {
     form.setFieldsValue({
-      name: profile?.data?.shopName,
-      phone: profile?.data?.shopPhone,
-      address: profile?.data?.shopAddress,
+      shopName: profile?.data?.shopName,
+      shopPhone: profile?.data?.shopPhone,
+      shopAddress: profile?.data?.shopAddress,
       metaTitle: profile?.data?.metaTitle,
       metaDescription: profile?.data?.metaDescription,
+      logoUrl: profile?.data?.logoUrl
     })
 
-    if (profile?.data?.bannerImage) {
+    if (profile?.data?.logoUrl) {
       setFileList([{
         uid: '-1',
         name: 'logo',
         status: 'done',
-        url: profile?.data?.bannerImage
+        url: profile?.data?.logoUrl
       }])
     }
   }, [profile, form])
@@ -46,7 +48,7 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
   const handleSubmit = (values: any) => {
     const submitData = {
       ...values,
-      logo: fileList[0]?.url || null
+      logoUrl: fileList[0]?.url || null
     }
     onSave(submitData)
     message.success("Thông tin cơ bản đã được lưu")
@@ -62,7 +64,8 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
           uid: '-1',
           name: 'logo',
           status: 'done',
-          url: uploadedFile.url // Assuming the API returns the URL in this field
+          url: uploadedFile.url,
+          thumbUrl: URL.createObjectURL(newFileList[0].originFileObj)
         }])
       } catch (error) {
         message.error('Upload failed')
@@ -85,9 +88,9 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
         layout="vertical"
         onFinish={handleSubmit}
         initialValues={{
-          name: profile?.data?.shopName,
-          phone: profile?.data?.shopPhone,
-          address: profile?.data?.shopAddress,
+          shopName: profile?.data?.shopName,
+          shopPhone: profile?.data?.shopPhone,
+          shopAddress: profile?.data?.shopAddress,
           metaTitle: profile?.data?.metaTitle,
           metaDescription: profile?.data?.metaDescription,
         }}
@@ -99,7 +102,7 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
             </label>
           </div>
           <div className="md:w-5/6">
-            <Form.Item name="name" rules={[{ required: true, message: "Vui lòng nhập tên cửa hàng" }]}>
+            <Form.Item name="shopName" rules={[{ required: true, message: "Vui lòng nhập tên cửa hàng" }]}>
               <Input placeholder="Tên cửa hàng" className="w-full" />
             </Form.Item>
           </div>
@@ -135,7 +138,7 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
             </label>
           </div>
           <div className="md:w-5/6">
-            <Form.Item name="phone" rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}>
+            <Form.Item name="shopPhone" rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}>
               <Input placeholder="Điện thoại" className="w-full" />
             </Form.Item>
           </div>
@@ -148,7 +151,7 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
             </label>
           </div>
           <div className="md:w-5/6">
-            <Form.Item name="address" rules={[{ required: true, message: "Vui lòng nhập địa chỉ cửa hàng" }]}>
+            <Form.Item name="shopAddress" rules={[{ required: true, message: "Vui lòng nhập địa chỉ cửa hàng" }]}>
               <Input placeholder="Địa chỉ" className="w-full" />
             </Form.Item>
           </div>

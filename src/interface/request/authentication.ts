@@ -33,6 +33,7 @@ export interface IUpdateUser {
   city?: string
   district?: string
   ward?: string
+  logoUrl?: string
   countryId?: string
   stateId?: string
   cityId?: string
