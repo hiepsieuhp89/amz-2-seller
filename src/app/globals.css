@@ -138,3 +138,19 @@ ul.ant-menu.ant-menu-sub.ant-menu-inline {
 .ant-pagination-item-active:hover a {
   color: white !important;
 }
+
+.ant-menu-root {
+  background-color: #131921 !important;
+}
+
+.ant-menu-item-selected {
+  background-color: #131921 !important;
+}
+
+.ant-menu-root {
+  background-color: #131921 !important;
+}
+
+.ant-menu-item-selected {
+  background-color: #131921 !important;
+}

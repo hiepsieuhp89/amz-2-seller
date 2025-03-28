@@ -294,7 +294,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
         flexDirection: "column",
       }}
     >
-      <div className="fixed top-0 left-0 w-full h-full flex flex-col pt-[68px] overflow-y-auto">
+      <div className="fixed top-0 left-0 h-full flex flex-col pt-[68px] overflow-y-auto w-fit">
         <motion.div
           className="w-full"
           initial={isSidebarOpen ? "open" : "closed"}

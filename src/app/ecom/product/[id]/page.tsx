@@ -23,7 +23,7 @@ export default function ProductDetailPage() {
             <LeftSideSection />
           </div>
           <div className="w-full lg:w-3/4">
-            <Card title={<Title level={4}>Reviews & Ratings</Title>}>
+            <Card title={<Title level={4}>Đánh giá sản phẩm</Title>}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                   <Title level={1} style={{ margin: 0 }}>
