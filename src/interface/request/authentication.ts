@@ -28,7 +28,7 @@ export interface IUpdateUser {
   address?: string
   avatar?: string
   shopName?: string
-  shopPhone?: string
+  phone?: string
   shopAddress?: string
   city?: string
   district?: string

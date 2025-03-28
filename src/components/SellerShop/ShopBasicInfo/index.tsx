@@ -28,7 +28,7 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
   React.useEffect(() => {
     form.setFieldsValue({
       shopName: profile?.data?.shopName,
-      shopPhone: profile?.data?.shopPhone,
+      phone: profile?.data?.phone,
       shopAddress: profile?.data?.shopAddress,
       metaTitle: profile?.data?.metaTitle,
       metaDescription: profile?.data?.metaDescription,
@@ -56,7 +56,7 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
 
   const handleChange = async ({ fileList: newFileList }: any) => {
     setFileList(newFileList)
-    
+
     if (newFileList.length > 0 && newFileList[0].originFileObj) {
       try {
         const uploadedFile = await uploadMutation.mutateAsync(newFileList[0].originFileObj)
@@ -64,7 +64,7 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
           uid: '-1',
           name: 'logo',
           status: 'done',
-          url: uploadedFile.url,
+          url: uploadedFile.data.url,
           thumbUrl: URL.createObjectURL(newFileList[0].originFileObj)
         }])
       } catch (error) {
@@ -74,7 +74,6 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
     }
   }
 
-  console.log("profile", profile)
   return (
     <div
       className="bg-white rounded-[4px] border"
@@ -89,7 +88,7 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
         onFinish={handleSubmit}
         initialValues={{
           shopName: profile?.data?.shopName,
-          shopPhone: profile?.data?.shopPhone,
+          phone: profile?.data?.phone,
           shopAddress: profile?.data?.shopAddress,
           metaTitle: profile?.data?.metaTitle,
           metaDescription: profile?.data?.metaDescription,
@@ -138,7 +137,7 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
             </label>
           </div>
           <div className="md:w-5/6">
-            <Form.Item name="shopPhone" rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}>
+            <Form.Item name="phone" rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}>
               <Input placeholder="Điện thoại" className="w-full" />
             </Form.Item>
           </div>

@@ -71,7 +71,7 @@ export interface IProfileResponse {
     stars: number
     reputationPoints: number
     shopName: string
-    shopPhone: string | null
+    phone: string | null
     shopAddress: string
     metaTitle: string | null
     metaDescription: string | null

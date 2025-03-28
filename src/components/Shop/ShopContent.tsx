@@ -70,7 +70,7 @@ export default function ShopContent({
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {shopProducts.map((item: any) => (
             <Link
-              href={`/seller/ecom/product/${item.id}`}
+              href={`/shop/product/${item.id}`}
               key={item.id}
               className="bg-white border border-gray-200 rounded-sm p-3 relative hover:shadow-md transition-shadow cursor-pointer"
               style={{

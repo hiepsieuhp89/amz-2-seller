@@ -317,7 +317,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
               >
                 <motion.div variants={itemVariants} className="w-full flex flex-col items-center gap-1">
                   <div className="text-[#ff9900] flex items-center cursor-pointer">
-                    <Link href={`/seller/ecom/shop/${user?.id || ""}`} className="font-semibold text-sm flex-shrink-0">
+                    <Link href={`/shop/${user?.id || ""}`} className="font-semibold text-sm flex-shrink-0">
                       Ghé thăm cửa hàng
                     </Link>
                     <span className="ml-1 flex-shrink-0">→</span>

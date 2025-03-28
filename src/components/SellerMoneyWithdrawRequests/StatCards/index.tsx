@@ -1,5 +1,10 @@
-import type React from "react"
+import { useUser } from "@/context/useUserContext"
+import { useCreateWithdrawal } from "@/hooks/withdrawals"
 import { DollarOutlined, PlusOutlined } from "@ant-design/icons"
+import { Input, message, Modal } from "antd"
+import type React from "react"
+import { useState } from "react"
+import Link from "next/link"
 
 interface StatCardProps {
   title: string
@@ -39,21 +44,73 @@ const ActionCard: React.FC<{ title: string, onClick?: () => void }> = ({ title, 
 }
 
 const StatCards: React.FC = () => {
+  const { profile } = useUser()
+  const [amount, setAmount] = useState<number>(0)
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const { mutate: createWithdrawal, isPending } = useCreateWithdrawal()
+
+  const handleWithdrawClick = () => {
+    if (!profile?.data?.bankAccountNumber || !profile?.data?.bankName || !profile?.data?.bankAccountName) {
+      message.warning(
+        <span>
+          Vui lòng cập nhật thông tin ngân hàng trước khi rút tiền. 
+          <Link href="/seller/shop" className="text-blue-500 ml-1 underline">
+            Cập nhật ngay
+          </Link>
+        </span>
+      )
+      return
+    }
+    setIsModalVisible(true)
+  }
+
+  const handleWithdraw = () => {
+    createWithdrawal({ amount }, {
+      onSuccess: () => {
+        message.success("Yêu cầu rút tiền thành công")
+        setIsModalVisible(false)
+      },
+      onError: () => {
+        message.error("Có lỗi xảy ra khi gửi yêu cầu rút tiền")
+      }
+    })
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <StatCard 
-        title="Số dư đang chờ xử lý" 
-        value="$12.70" 
-        gradientClass="bg-gradient-to-r from-pink-500 to-purple-500" 
-      />
-      <StatCard 
-        title="Số dư trên Wallet" 
-        value="$0.00" 
-        gradientClass="bg-gradient-to-r from-blue-400 to-cyan-500" 
-      />
-      <ActionCard title="Gửi yêu cầu rút tiền" />
-      <ActionCard title="Nạp tiền" />
-    </div>
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <StatCard 
+          title="Số dư đang chờ xử lý" 
+          value="$12.70" 
+          gradientClass="bg-gradient-to-r from-pink-500 to-purple-500" 
+        />
+        <StatCard 
+          title="Số dư trên Wallet" 
+          value="$0.00" 
+          gradientClass="bg-gradient-to-r from-blue-400 to-cyan-500" 
+        />
+        <ActionCard 
+          title="Gửi yêu cầu rút tiền" 
+          onClick={handleWithdrawClick}
+        />
+        <ActionCard title="Nạp tiền" />
+      </div>
+
+      <Modal
+        title="Rút tiền"
+        visible={isModalVisible}
+        onOk={handleWithdraw}
+        onCancel={() => setIsModalVisible(false)}
+        confirmLoading={isPending}
+      >
+        <Input
+          type="number"
+          placeholder="Nhập số tiền cần rút"
+          value={amount}
+          onChange={(e) => setAmount(Number(e.target.value))}
+        />
+      </Modal>
+    </>
   )
 }
 

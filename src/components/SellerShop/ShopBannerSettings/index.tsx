@@ -32,53 +32,83 @@ const ShopBannerSettings: React.FC<ShopBannerSettingsProps> = ({ onSave }) => {
   const [bannerImage2List, setBannerImage2List] = React.useState<FileType[]>([])
 
   const defaultValues = {
-    bannerImage: [],
-    mobileBannerImage: [],
-    fullBannerImage: [],
-    halfBannerImage: [],
-    bannerImage2: [],
+    bannerImage: profile?.data?.bannerImage,
+    mobileBannerImage: profile?.data?.mobileBannerImage,
+    fullBannerImage: profile?.data?.fullBannerImage,
+    halfBannerImage: profile?.data?.halfBannerImage,
+    bannerImage2: profile?.data?.bannerImage2,
   };
 
   React.useEffect(() => {
-    const formatFileList = (data: any) => {
-      if (!data) return [];
-      if (Array.isArray(data)) {
-        return data.map((item, index) => ({
-          uid: `-${index}`,
-          name: `image-${index}`,
-          status: 'done',
-          url: item
-        }));
-      }
-      return [{
-        uid: '-1',
-        name: 'image',
-        status: 'done',
-        url: data
-      }];
-    };
-
     form.setFieldsValue({
-      bannerImage: formatFileList(profile?.data?.bannerImage),
-      mobileBannerImage: formatFileList(profile?.data?.mobileBannerImage),
-      fullBannerImage: formatFileList(profile?.data?.fullBannerImage),
-      halfBannerImage: formatFileList(profile?.data?.halfBannerImage),
-      bannerImage2: formatFileList(profile?.data?.bannerImage2),
+      bannerImage: profile?.data?.bannerImage || '',
+      mobileBannerImage: profile?.data?.mobileBannerImage || '',
+      fullBannerImage: profile?.data?.fullBannerImage || '',
+      halfBannerImage: profile?.data?.halfBannerImage || '',
+      bannerImage2: profile?.data?.bannerImage2 || '',
     });
-  }, [profile, form])
+    
+    // Initialize fileList states with existing images
+    if (profile?.data?.bannerImage) {
+      setBannerImageList([{
+        uid: '-1',
+        name: 'bannerImage',
+        status: 'done',
+        url: profile?.data?.bannerImage
+      }]);
+    }
+    
+    if (profile?.data?.mobileBannerImage) {
+      setMobileBannerImageList([{
+        uid: '-1',
+        name: 'mobileBannerImage',
+        status: 'done',
+        url: profile?.data?.mobileBannerImage
+      }]);
+    }
+    
+    if (profile?.data?.fullBannerImage) {
+      setFullBannerImageList([{
+        uid: '-1',
+        name: 'fullBannerImage',
+        status: 'done',
+        url: profile?.data?.fullBannerImage
+      }]);
+    }
+    
+    if (profile?.data?.halfBannerImage) {
+      setHalfBannerImageList([{
+        uid: '-1',
+        name: 'halfBannerImage',
+        status: 'done',
+        url: profile?.data?.halfBannerImage
+      }]);
+    }
+    
+    if (profile?.data?.bannerImage2) {
+      setBannerImage2List([{
+        uid: '-1',
+        name: 'bannerImage2',
+        status: 'done',
+        url: profile?.data?.bannerImage2
+      }]);
+    }
+  }, [profile, form]);
 
   const handleSubmit = (values: any) => {
-    // Đảm bảo các giá trị là mảng trước khi lưu
-    const sanitizedValues = {
+    // Get the URLs from the fileList states
+    const submitData = {
       ...values,
-      bannerImage: values.bannerImage || [],
-      mobileBannerImage: values.mobileBannerImage || [],
-      fullBannerImage: values.fullBannerImage || [],
-      halfBannerImage: values.halfBannerImage || [],
-      bannerImage2: values.bannerImage2 || [],
+      bannerImage: bannerImageList[0]?.url || '',
+      mobileBannerImage: mobileBannerImageList[0]?.url || '',
+      fullBannerImage: fullBannerImageList[0]?.url || '',
+      halfBannerImage: halfBannerImageList[0]?.url || '',
+      bannerImage2: bannerImage2List[0]?.url || '',
     };
-    onSave(sanitizedValues)
-    message.success("Cài đặt biểu ngữ đã được lưu")
+    
+    console.log("values", submitData);
+    onSave(submitData);
+    message.success("Cài đặt biểu ngữ đã được lưu");
   }
 
   const handleChange = (fieldName: string, setFileList: React.Dispatch<React.SetStateAction<FileType[]>>) => 
@@ -92,10 +122,10 @@ const ShopBannerSettings: React.FC<ShopBannerSettingsProps> = ({ onSave }) => {
             uid: '-1',
             name: fieldName,
             status: 'done',
-            url: uploadedFile.url,
+            url: uploadedFile.data.url,
             thumbUrl: URL.createObjectURL(newFileList[0].originFileObj)
           }])
-          form.setFieldsValue({ [fieldName]: uploadedFile.url })
+          form.setFieldsValue({ [fieldName]: uploadedFile.data.url })
         } catch (error) {
           message.error('Upload failed')
           setFileList([])
