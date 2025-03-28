@@ -4,6 +4,7 @@ import React from "react"
 import { Form, Button, Card, Upload, message } from "antd"
 import { UploadOutlined } from "@ant-design/icons"
 import type { ShopData } from "../types"
+import { useUploadFile } from '@/hooks/upload'
 
 interface ShopBannerSettingsProps {
   shopData: ShopData
@@ -12,6 +13,7 @@ interface ShopBannerSettingsProps {
 
 const ShopBannerSettings: React.FC<ShopBannerSettingsProps> = ({ shopData, onSave }) => {
   const [form] = Form.useForm()
+  const uploadMutation = useUploadFile()
 
   const defaultValues = {
     topBanner: [],
@@ -64,11 +66,32 @@ const ShopBannerSettings: React.FC<ShopBannerSettingsProps> = ({ shopData, onSav
     message.success("Cài đặt biểu ngữ đã được lưu")
   }
 
-  const normFile = (e: any) => {
+  const normFile = async (e: any) => {
     if (Array.isArray(e)) {
-      return e;
+      return e
     }
-    return e?.fileList || [];  // Thêm mặc định array rỗng
+    
+    const fileList = e?.fileList || []
+    
+    // Upload files if they haven't been uploaded yet
+    const uploadedFiles = await Promise.all(
+      fileList.map(async (file: any) => {
+        if (file.url) return file
+        try {
+          const uploadedFile = await uploadMutation.mutateAsync(file.originFileObj)
+          return {
+            ...file,
+            url: uploadedFile.url,
+            status: 'done'
+          }
+        } catch (error) {
+          message.error('Upload failed')
+          return null
+        }
+      })
+    )
+    
+    return uploadedFiles.filter(Boolean)
   }
 
   const renderUploadField = (label: string, name: string, dimensions: string, multiple = false, helpText?: string) => (

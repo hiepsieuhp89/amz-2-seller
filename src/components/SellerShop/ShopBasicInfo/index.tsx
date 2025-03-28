@@ -4,6 +4,7 @@ import React from "react"
 import { Form, Input, Button, Card, Upload, message } from "antd"
 import { UploadOutlined } from "@ant-design/icons"
 import { ShopData } from "../types"
+import { useUploadFile } from '@/hooks/upload'
 
 interface ShopBasicInfoProps {
   shopData: ShopData
@@ -20,6 +21,7 @@ interface FileType {
 const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ shopData, onSave }) => {
   const [form] = Form.useForm()
   const [fileList, setFileList] = React.useState<FileType[]>([])
+  const uploadMutation = useUploadFile()
 
   React.useEffect(() => {
     form.setFieldsValue({
@@ -49,8 +51,23 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ shopData, onSave }) => {
     message.success("Thông tin cơ bản đã được lưu")
   }
 
-  const handleChange = ({ fileList: newFileList }: any) => {
+  const handleChange = async ({ fileList: newFileList }: any) => {
     setFileList(newFileList)
+    
+    if (newFileList.length > 0 && newFileList[0].originFileObj) {
+      try {
+        const uploadedFile = await uploadMutation.mutateAsync(newFileList[0].originFileObj)
+        setFileList([{
+          uid: '-1',
+          name: 'logo',
+          status: 'done',
+          url: uploadedFile.url // Assuming the API returns the URL in this field
+        }])
+      } catch (error) {
+        message.error('Upload failed')
+        setFileList([])
+      }
+    }
   }
 
   return (
