@@ -5,15 +5,16 @@ import { Form, Button, Card, Upload, message } from "antd"
 import { UploadOutlined } from "@ant-design/icons"
 import type { ShopData } from "../types"
 import { useUploadFile } from '@/hooks/upload'
+import { useUser } from "@/context/useUserContext"
 
 interface ShopBannerSettingsProps {
-  shopData: ShopData
   onSave: (data: Partial<ShopData>) => void
 }
 
-const ShopBannerSettings: React.FC<ShopBannerSettingsProps> = ({ shopData, onSave }) => {
+const ShopBannerSettings: React.FC<ShopBannerSettingsProps> = ({ onSave }) => {
   const [form] = Form.useForm()
   const uploadMutation = useUploadFile()
+  const { profile } = useUser()
 
   const defaultValues = {
     topBanner: [],
@@ -24,7 +25,6 @@ const ShopBannerSettings: React.FC<ShopBannerSettingsProps> = ({ shopData, onSav
   };
 
   React.useEffect(() => {
-    // Chuyển đổi dữ liệu thành định dạng fileList cho Antd Upload
     const formatFileList = (data: any) => {
       if (!data) return [];
       if (Array.isArray(data)) {
@@ -44,13 +44,13 @@ const ShopBannerSettings: React.FC<ShopBannerSettingsProps> = ({ shopData, onSav
     };
 
     form.setFieldsValue({
-      topBanner: shopData?.topBanner || defaultValues.topBanner,
-      sliders: shopData?.sliders || defaultValues.sliders,
-      bannerFullWidth1: shopData?.bannerFullWidth1 || defaultValues.bannerFullWidth1,
-      bannersHalfWidth: shopData?.bannersHalfWidth || defaultValues.bannersHalfWidth,
-      bannerFullWidth2: shopData?.bannerFullWidth2 || defaultValues.bannerFullWidth2,
+      topBanner: formatFileList(profile?.data?.bannerImage),
+      sliders: formatFileList(profile?.data?.mobileBannerImage),
+      bannerFullWidth1: formatFileList(profile?.data?.fullBannerImage),
+      bannersHalfWidth: formatFileList(profile?.data?.halfBannerImage),
+      bannerFullWidth2: formatFileList(profile?.data?.bannerImage2),
     });
-  }, [shopData, form])
+  }, [profile, form])
 
   const handleSubmit = (values: any) => {
     // Đảm bảo các giá trị là mảng trước khi lưu
@@ -152,11 +152,11 @@ const ShopBannerSettings: React.FC<ShopBannerSettingsProps> = ({ shopData, onSav
         layout="vertical"
         onFinish={handleSubmit}
         initialValues={{
-          topBanner: shopData.topBanner,
-          sliders: shopData.sliders,
-          bannerFullWidth1: shopData.bannerFullWidth1,
-          bannersHalfWidth: shopData.bannersHalfWidth,
-          bannerFullWidth2: shopData.bannerFullWidth2,
+          topBanner: profile?.data?.bannerImage,
+          sliders: profile?.data?.mobileBannerImage,
+          bannerFullWidth1: profile?.data?.fullBannerImage,
+          bannersHalfWidth: profile?.data?.halfBannerImage,
+          bannerFullWidth2: profile?.data?.bannerImage2,
         }}
       >
         {renderUploadField("Ảnh bìa Đỉnh", "topBanner", "1920x360", false, heightLimitHelpText)}

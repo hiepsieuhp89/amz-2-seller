@@ -43,8 +43,8 @@ const SellerShop = () => {
         </div>
       </div>
 
-      <ShopBasicInfo shopData={shopData} onSave={handleSave} />
-      <ShopBannerSettings shopData={shopData} onSave={handleSave} />
+      <ShopBasicInfo onSave={handleSave} />
+      <ShopBannerSettings onSave={handleSave} />
     </div>
   )
 }

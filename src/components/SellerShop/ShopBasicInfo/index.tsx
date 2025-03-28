@@ -1,13 +1,13 @@
 "use client"
 
-import React from "react"
-import { Form, Input, Button, Card, Upload, message } from "antd"
-import { UploadOutlined } from "@ant-design/icons"
-import { ShopData } from "../types"
+import { useUser } from "@/context/useUserContext"
 import { useUploadFile } from '@/hooks/upload'
+import { UploadOutlined } from "@ant-design/icons"
+import { Button, Form, Input, Upload, message } from "antd"
+import React from "react"
+import { ShopData } from "../types"
 
 interface ShopBasicInfoProps {
-  shopData: ShopData
   onSave: (data: Partial<ShopData>) => void
 }
 
@@ -18,29 +18,30 @@ interface FileType {
   url?: string;
 }
 
-const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ shopData, onSave }) => {
+const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ onSave }) => {
   const [form] = Form.useForm()
   const [fileList, setFileList] = React.useState<FileType[]>([])
   const uploadMutation = useUploadFile()
+  const { profile } = useUser()
 
   React.useEffect(() => {
     form.setFieldsValue({
-      name: shopData.name,
-      phone: shopData.phone,
-      address: shopData.address,
-      metaTitle: shopData.metaTitle,
-      metaDescription: shopData.metaDescription,
+      name: profile?.data?.shopName,
+      phone: profile?.data?.shopPhone,
+      address: profile?.data?.shopAddress,
+      metaTitle: profile?.data?.metaTitle,
+      metaDescription: profile?.data?.metaDescription,
     })
 
-    if (shopData.logo) {
+    if (profile?.data?.bannerImage) {
       setFileList([{
         uid: '-1',
         name: 'logo',
         status: 'done',
-        url: shopData.logo
+        url: profile?.data?.bannerImage
       }])
     }
-  }, [shopData, form])
+  }, [profile, form])
 
   const handleSubmit = (values: any) => {
     const submitData = {
@@ -70,6 +71,7 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ shopData, onSave }) => {
     }
   }
 
+  console.log("profile", profile)
   return (
     <div
       className="bg-white rounded-[4px] border"
@@ -83,11 +85,11 @@ const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ shopData, onSave }) => {
         layout="vertical"
         onFinish={handleSubmit}
         initialValues={{
-          name: shopData.name,
-          phone: shopData.phone,
-          address: shopData.address,
-          metaTitle: shopData.metaTitle,
-          metaDescription: shopData.metaDescription,
+          name: profile?.data?.shopName,
+          phone: profile?.data?.shopPhone,
+          address: profile?.data?.shopAddress,
+          metaTitle: profile?.data?.metaTitle,
+          metaDescription: profile?.data?.metaDescription,
         }}
       >
         <div className="flex flex-col md:flex-row mb-3">

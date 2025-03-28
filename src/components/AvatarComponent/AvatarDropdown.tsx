@@ -12,7 +12,7 @@ const { Text, Title } = Typography
 
 const AvatarDropdown = () => {
   const router = useRouter()
-  const { user, logoutUser } = useUser()
+  const { user, profile, logoutUser } = useUser()
   const [isClient, setIsClient] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
@@ -75,8 +75,8 @@ const AvatarDropdown = () => {
       phone: user?.phone,
       fullName: user?.fullName,
       invitationCode: user?.invitationCode,
-      shopName: user?.shopName,
-      shopAddress: user?.shopAddress
+      shopName: profile?.data?.shopName,
+      shopAddress: profile?.data?.shopAddress
     })
     setIsModalOpen(true)
   }
