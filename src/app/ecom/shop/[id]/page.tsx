@@ -3,10 +3,10 @@ import Header from "@/components/ProductDetail/Header";
 import { useGetAllShopProducts } from "@/hooks/shop-products";
 import { Empty, Pagination, Select, Spin } from "antd";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import styles from "./styles.module.scss"
-import Link from "next/link";
+
 export default function ShopPage() {
   const params = useParams();
   const router = useRouter();
@@ -163,70 +163,109 @@ export default function ShopPage() {
               <Link
                 href={`/ecom/product/${item.id}`}
                 key={item.id}
-                className={`bg-white border border-gray-200 rounded-sm p-3 relative hover:shadow-md transition-shadow cursor-pointer ${styles.hovAnimateOutline}`}
+                className="bg-white border border-gray-200 rounded-sm p-3 relative hover:shadow-md transition-shadow cursor-pointer"
+                style={{
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
               >
-                {/* Product Image */}
-                <div className="relative h-48 mb-3">
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.name}
-                    fill
-                    className="object-contain"
-                  />
-                </div>
+                <style jsx>{`
+                  .hoverEffect::before,
+                  .hoverEffect::after {
+                    box-sizing: inherit;
+                    content: '';
+                    position: absolute;
+                    z-index: 1;
+                    width: 0;
+                    height: 0;
+                    transition: all 0.3s;
+                    border: 2px solid transparent;
+                  }
+                  
+                  .hoverEffect:hover::before {
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    border-top-color: #FF9900;
+                    border-right-color: #FF9900;
+                    transition: width 0.3s ease-out, height 0.3s ease-out 0.3s;
+                  }
+                  
+                  .hoverEffect:hover::after {
+                    bottom: 0;
+                    right: 0;
+                    width: 100%;
+                    height: 100%;
+                    border-bottom-color: #FF9900;
+                    border-left-color: #FF9900;
+                    transition: width 0.3s ease-out, height 0.3s ease-out 0.3s;
+                  }
+                `}</style>
+                <div className="hoverEffect">
+                  {/* Product Image */}
+                  <div className="relative h-48 mb-3">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.name}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
 
-                {/* Product Details */}
-                <div className="space-y-1">
-                  <h3 className="text-sm text-[#0F1111] line-clamp-2 h-10 hover:text-[#C7511F]">
-                    {item.name}
-                  </h3>
-                  <div className="flex items-center space-x-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span key={star} className="text-[#FFA41C] text-xs">
-                        ★
+                  {/* Product Details */}
+                  <div className="space-y-1">
+                    <h3 className="text-sm text-[#0F1111] line-clamp-2 h-10 hover:text-[#C7511F]">
+                      {item.name}
+                    </h3>
+                    <div className="flex items-center space-x-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span key={star} className="text-[#FFA41C] text-xs">
+                          ★
+                        </span>
+                      ))}
+                      <span className="text-xs text-[#007185]">(0)</span>
+                    </div>
+                    <div className="flex items-end">
+                      <span className="text-lg font-bold text-[#0F1111]">
+                        ${Number(item.salePrice).toFixed(2)}
                       </span>
-                    ))}
-                    <span className="text-xs text-[#007185]">(0)</span>
+                      {item.profit > 0 && (
+                        <span className="text-sm text-gray-500 ml-2 line-through">
+                          ${(Number(item.salePrice) - item.profit).toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-[#007185]">
+                      {item.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                    </div>
+                    <div className="text-xs text-[#565959]">
+                      FREE delivery
+                    </div>
                   </div>
-                  <div className="flex items-end">
-                    <span className="text-lg font-bold text-[#0F1111]">
-                      ${Number(item.salePrice).toFixed(2)}
-                    </span>
-                    {item.profit > 0 && (
-                      <span className="text-sm text-gray-500 ml-2 line-through">
-                        ${(Number(item.salePrice) - item.profit).toFixed(2)}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-xs text-[#007185]">
-                    {item.stock > 0 ? 'In Stock' : 'Out of Stock'}
-                  </div>
-                  <div className="text-xs text-[#565959]">
-                    FREE delivery
-                  </div>
-                </div>
-                <button
-                  className="absolute bottom-2 right-2 bg-[#FFD814] hover:bg-[#F7CA00] border border-[#FCD200] rounded-full w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                  <button
+                    className="absolute bottom-2 right-2 bg-[#FFD814] hover:bg-[#F7CA00] border border-[#FCD200] rounded-full w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
                   >
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                  </svg>
-                </button>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                      <line x1="3" y1="6" x2="21" y2="6"></line>
+                      <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                  </button>
+                </div>
               </Link>
             ))}
           </div>
