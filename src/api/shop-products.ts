@@ -68,17 +68,7 @@ export const getShopStatistics = async (): Promise<{
 
 export const getRevenueStatistics = async (params: {
   days: number
-}): Promise<{
-  dailyStats: {
-    date: string
-    revenue: number
-    profit: number
-    orders: number
-  }[]
-  totalRevenue: number
-  totalProfit: number
-  totalOrders: number
-}> => {
+}): Promise<any> => {
   const res = await sendGet("/shop-products/statistics/revenue", params)
   return res
 }

@@ -1,15 +1,30 @@
 import type React from "react"
 import { Card } from "antd"
 import { Line } from "@ant-design/charts"
-import type { ChartData } from "../types"
+import { useQuery } from "@tanstack/react-query"
+import { getRevenueStatistics } from "@/api/shop-products"
 
-interface RevenueChartProps {
-  data: ChartData[]
+interface ChartData {
+  date: string
+  value: number
 }
 
-const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
+const RevenueChart: React.FC = () => {
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["revenueStatistics"],
+    queryFn: () => getRevenueStatistics({ days: 10 }),
+  })
+
+  if (isLoading || isFetching) return <div>Loading chart data...</div>
+  if (!data?.data?.dailyStats) return <div>No data available</div>
+
+  const chartData: ChartData[] = data.data.dailyStats.map((stat: any) => ({
+    date: new Date(stat.date).toISOString(),
+    value: stat.revenue,
+  }))
+
   const config = {
-    data,
+    data: chartData,
     xField: "date",
     yField: "value",
     smooth: true,
@@ -25,6 +40,25 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
     line: {
       color: "#FFA940",
     },
+    xAxis: {
+      type: 'time',
+      label: {
+        formatter: (date: string) => {
+          return new Date(date).toLocaleDateString('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          });
+        }
+      },
+      grid: {
+        line: {
+          style: {
+            stroke: "transparent",
+          },
+        },
+      },
+    },
     yAxis: {
       min: 0,
       title: {
@@ -39,17 +73,37 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
         },
       },
     },
-    xAxis: {
-      grid: {
-        line: {
-          style: {
-            stroke: "transparent",
-          },
-        },
-      },
-    },
     tooltip: {
-      showMarkers: false,
+      showMarkers: true,
+      fields: ['date', 'value'],
+      formatter: (datum: any) => {
+        return {
+          name: 'Doanh thu',
+          value: `$${datum.value.toLocaleString('vi-VN')}`
+        };
+      },
+      customContent: (title: string, items: any[]) => {
+        const date = new Date(title).toLocaleDateString('vi-VN', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+        
+        return (
+          <div className="p-2 bg-white rounded shadow">
+            <div className="text-sm font-medium">{date}</div>
+            {items.map((item, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <span 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: item.color }}
+                />
+                <span>{item.name}: {item.value}</span>
+              </div>
+            ))}
+          </div>
+        );
+      }
     },
     state: {
       active: {
