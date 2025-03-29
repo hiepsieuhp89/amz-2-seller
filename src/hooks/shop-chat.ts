@@ -13,8 +13,9 @@ export const useSendMessageToUser = () => {
   return useMutation({
     mutationFn: ({ userId, message }: { userId: string; message: string }) => 
       sendMessageToUser(userId, message),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shopChat'] })
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['shopChat', variables.userId] })
+      queryClient.invalidateQueries({ queryKey: ['shopChat', 'list'] })
     },
     onError: (error: any) => {
       throw new Error(error.response?.data?.message || "Lỗi khi gửi tin nhắn")
@@ -34,8 +35,8 @@ export const useMarkMessageAsRead = () => {
   
   return useMutation({
     mutationFn: (userId: string) => markMessageAsRead(userId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shopChat'] })
+    onSuccess: (_, userId) => {
+      queryClient.invalidateQueries({ queryKey: ['shopChat', userId] })
       queryClient.invalidateQueries({ queryKey: ['shopChat', 'list'] })
     }
   })
@@ -48,6 +49,7 @@ export const useDeleteMessage = () => {
     mutationFn: (messageId: string) => deleteMessage(messageId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shopChat'] })
+      queryClient.invalidateQueries({ queryKey: ['shopChat', 'list'] })
     }
   })
 }
