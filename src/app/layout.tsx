@@ -3,6 +3,7 @@ import './globals.css';
 // import './font.css';
 import ClientLayout from './ClientLayout';
 import NextTopLoader from 'nextjs-toploader';
+import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   title: 'Amazon',
@@ -27,6 +28,19 @@ export default function RootLayout({
         crawl={true}
         easing="ease"
         speed={200}
+      />
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: '#fff',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            fontSize: '14px',
+            color: '#333',
+          },
+        }}
       />
       {children}
     </ClientLayout>

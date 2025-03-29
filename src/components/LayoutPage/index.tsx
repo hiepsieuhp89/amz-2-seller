@@ -9,6 +9,8 @@ import {
   mdiPackageVariant,
   mdiPackageVariantClosed,
   mdiStoreOutline,
+  mdiMessageTextOutline,
+  mdiMessageText,
 } from "@mdi/js"
 import Icon from "@mdi/react"
 import type { MenuProps } from "antd"
@@ -106,6 +108,18 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       icon: <Icon path={mdiPackageVariantClosed} size={0.8} />,
       activeIcon: <Icon path={mdiPackageVariantClosed} size={0.8} color={"#FCAF17"} />,
       path: "/seller/money-withdraw-requests",
+    },
+    {
+      key: "/seller/chat",
+      name: "Chat trực tuyến",
+      icon: <Icon path={mdiMessageTextOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiMessageText} size={0.8} color={"#FCAF17"} />,
+      path: `/seller/chat`,
+      badge: {
+        text: "",
+        count: 0,
+        color: "#f08806",
+      },
     },
   ]
 
