@@ -1,18 +1,17 @@
-import { 
-  sendMessageToUser, 
-  getMessagesWithUser, 
-  markMessageAsRead, 
-  deleteMessage, 
-  getListMessageAvailable 
+import {
+  deleteMessage,
+  getListMessageAvailable,
+  getMessagesWithUser,
+  markMessageAsRead,
+  sendMessageToUser
 } from "@/api/shop-chat"
-import type { IShopChatResponse } from "@/interface/response/shop-chat"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export const useSendMessageToUser = () => {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: ({ userId, message }: { userId: string, message: string }) => 
+    mutationFn: ({ userId, message }: any) => 
       sendMessageToUser(userId, message),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shopChat'] })
@@ -21,7 +20,7 @@ export const useSendMessageToUser = () => {
 }
 
 export const useGetMessagesWithUser = (userId: string) => {
-  return useQuery<IShopChatResponse>({
+  return useQuery<any>({
     queryKey: ['shopChat', userId],
     queryFn: () => getMessagesWithUser(userId)
   })
@@ -31,9 +30,10 @@ export const useMarkMessageAsRead = () => {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (messageId: string) => markMessageAsRead(messageId),
+    mutationFn: (userId: string) => markMessageAsRead(userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shopChat'] })
+      queryClient.invalidateQueries({ queryKey: ['shopChat', 'list'] })
     }
   })
 }
@@ -49,13 +49,8 @@ export const useDeleteMessage = () => {
   })
 }
 
-export const useGetListMessageAvailable = (params: {
-  order?: string
-  page?: number
-  take?: number
-  search?: string
-}) => {
-  return useQuery<IShopChatResponse>({
+export const useGetListMessageAvailable = (params: any) => {
+  return useQuery<any>({
     queryKey: ['shopChat', 'list', params],
     queryFn: () => getListMessageAvailable(params)
   })

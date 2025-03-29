@@ -1,16 +1,24 @@
 "use client";
 import {
+  useDeleteMessage,
   useGetListMessageAvailable,
   useGetMessagesWithUser,
+  useMarkMessageAsRead,
   useSendMessageToUser,
 } from "@/hooks/shop-chat";
-import type {
-  IAvailableChat,
-  IChatMessage,
-} from "@/interface/response/shop-chat";
-import { mdiMessageText, mdiSend } from "@mdi/js";
+import { mdiCheck, mdiDelete, mdiDotsVertical, mdiMessageText, mdiSend } from "@mdi/js";
 import Icon from "@mdi/react";
-import { Avatar, Badge, Button, Card, Input, Layout, List } from "antd";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  Dropdown,
+  Input,
+  Layout,
+  List,
+  MenuProps
+} from "antd";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -26,26 +34,61 @@ export default function ChatPage() {
   const { data: messages, refetch: refetchMessages } = useGetMessagesWithUser(
     selectedUser || ""
   );
-  const { mutate: sendMessage } = useSendMessageToUser();
-  const prevMessagesCount = useRef(messages?.data?.data?.length || 0);
-
-  console.log("chatList", chatList);
+  const { mutate: sendMessage } = useSendMessageToUser(); 
+  const { mutate: markAsRead } = useMarkMessageAsRead();
+  const { mutate: deleteMessage } = useDeleteMessage();
+  const prevMessagesCount = useRef(messages?.data?.length || 0);
 
   // Transform chatList data to match IAvailableChat interface
   const transformedChatList =
-    chatList?.data?.data?.map((message) => ({
-      userId: message.id,
-      userName: message.senderRole === "user" ? "Người dùng" : "Cửa hàng",
-      userAvatar: "https://via.placeholder.com/150",
-      lastMessage: message.message,
-      lastMessageDate: message.createdAt,
-      unreadCount: message.isRead ? 0 : 1,
-    })) || [];
+    chatList?.data?.data?.reduce(
+      (acc: any, message: any) => {
+        const userId = message.user.id;
+        const existingChat = acc.find((chat: any) => chat.userId === userId);
+
+        if (existingChat) {
+          // Update last message if this message is newer
+          if (
+            new Date(message.createdAt) > new Date(existingChat.lastMessageDate)
+          ) {
+            existingChat.lastMessage = message.message;
+            existingChat.lastMessageDate = message.createdAt;
+            existingChat.unreadCount += message.isRead ? 0 : 1;
+          }
+        } else {
+          // Create new chat entry
+          acc.push({
+            userId: userId,
+            userName:
+              message.senderRole === "user"
+                ? message.user.fullName
+                : message.shop.shopName,
+            userAvatar:
+              message.senderRole === "user"
+                ? "https://via.placeholder.com/150"
+                : message.shop.logoUrl,
+            lastMessage: message.message,
+            lastMessageDate: message.createdAt,
+            unreadCount: message.isRead ? 0 : 1,
+          });
+        }
+        return acc;
+      },
+      [] as any
+    ) || [];
 
   // Handle user click
   const handleUserClick = (userId: string) => {
     setSelectedUser(userId);
     refetchMessages(); // Fetch messages when user is selected
+
+    // Đánh dấu tin nhắn đã đọc
+    const selectedChat = transformedChatList.find(
+      (chat: any) => chat.userId === userId
+    );
+    if (selectedChat && selectedChat.unreadCount > 0) {
+      markAsRead(userId);
+    }
   };
 
   // Fetch new messages every 20 seconds
@@ -53,7 +96,7 @@ export default function ChatPage() {
     const interval = setInterval(() => {
       if (selectedUser) {
         refetchMessages().then((newData) => {
-          const newMessages = newData.data?.data?.messages || [];
+          const newMessages = newData.data?.data || [];
           if (newMessages.length > prevMessagesCount.current) {
             const newCount = newMessages.length - prevMessagesCount.current;
             setNewMessagesCount(newCount);
@@ -95,6 +138,40 @@ export default function ChatPage() {
     }
   };
 
+  const handleMarkMessage = (messageId: string) => {
+    markAsRead(messageId);
+  };
+
+  const handleDeleteMessage = (messageId: string) => {
+    deleteMessage(messageId);
+    setTimeout(() => refetchMessages(), 300);
+  };
+
+  const renderMessageActions = (messageId: string) => {
+    const items: MenuProps['items'] = [
+      {
+        key: '1',
+        label: 'Đánh dấu đã đọc',
+        icon: <Icon path={mdiCheck} size={0.6} />,
+        onClick: () => handleMarkMessage(messageId)
+      },
+      {
+        key: '2',
+        label: 'Xoá tin nhắn',
+        icon: <Icon path={mdiDelete} size={0.6} />,
+        danger: true,
+        onClick: () => handleDeleteMessage(messageId)
+      }
+    ];
+    return (
+      <Dropdown menu={{ items }} trigger={['click']}>
+        <Button type="text" style={{ padding: 0 }}>
+          <Icon path={mdiDotsVertical} size={0.8} />
+        </Button>
+      </Dropdown>
+    );
+  };
+
   return (
     <>
       <Toaster />
@@ -122,7 +199,14 @@ export default function ChatPage() {
             <List
               dataSource={transformedChatList}
               style={{ padding: "8px 0" }}
-              renderItem={(item) => (
+              renderItem={(item: {
+                userId: string;
+                userName: string;
+                userAvatar: string;
+                lastMessage: string;
+                lastMessageDate: string;
+                unreadCount: number;
+              }) => (
                 <div
                   key={item.userId}
                   className={`cursor-pointer transition-all ${
@@ -182,39 +266,73 @@ export default function ChatPage() {
         <Content className="h-full flex flex-col flex-1">
           {selectedUser ? (
             <>
+              <div className="p-4 border-b bg-white">
+                <div className="max-w-full mx-auto">
+                  <div className="flex items-center gap-4">
+                    <Avatar
+                      src={
+                        transformedChatList.find((chat: any) => chat.userId === selectedUser)
+                          ?.userAvatar
+                      }
+                      size="large"
+                    />
+                    <div>
+                      <h2 className="text-lg font-semibold">
+                        {
+                          transformedChatList.find((chat: any) => chat.userId === selectedUser)
+                            ?.userName
+                        }
+                      </h2>
+                      <p className="text-sm text-gray-500">Đang hoạt động</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div
                 className="flex-1 p-4 overflow-y-auto"
                 style={{ backgroundColor: "#f0f2f5" }}
               >
-                <div className="max-w-4xl mx-auto h-full flex flex-col flex-1">
+                <div className="max-w-full mx-auto h-full flex flex-col flex-1">
                   <div className="flex-1">
                     <AnimatePresence>
-                      {messages?.data?.messages?.length ? (
-                        messages.data.messages.map((msg: IChatMessage) => (
+                      {messages?.data?.length ? (
+                        messages.data.map((msg: any) => (
                           <motion.div
                             key={msg.id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
                             className={`mb-4 flex ${
-                              msg.senderId === selectedUser
+                              msg.senderRole === "user"
                                 ? "justify-start"
                                 : "justify-end"
                             }`}
                           >
-                            <Card
-                              className={`max-w-[80%] ${
-                                msg.senderId === selectedUser
-                                  ? "bg-white"
-                                  : "bg-blue-50"
-                              }`}
-                              bodyStyle={{ padding: "12px 16px" }}
-                            >
-                              <p className="text-sm">{msg.message}</p>
-                              <p className="text-xs text-gray-500 mt-1 text-right">
-                                {new Date(msg.createdAt).toLocaleTimeString()}
-                              </p>
-                            </Card>
+                            <div className="flex items-start gap-2">
+                              <Card
+                                className={`max-w-[70%] min-w-[100px] ${
+                                  msg.senderRole === "user"
+                                    ? "bg-white"
+                                    : "bg-blue-50"
+                                }`}
+                                style={{ width: "fit-content", flexShrink: 0 }}
+                                bodyStyle={{ 
+                                  padding: "12px 16px",
+                                  maxWidth: "100%",
+                                  wordBreak: "break-word",
+                                  whiteSpace: "pre-wrap"
+                                }}
+                              >
+                                <div className="flex justify-between items-start gap-2">
+                                  <p className="text-sm">{msg.message}</p>
+                                  {renderMessageActions(msg.id)}
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1 text-right">
+                                  {new Date(msg.createdAt).toLocaleTimeString()}
+                                </p>
+                              </Card>
+                            </div>
                           </motion.div>
                         ))
                       ) : (
@@ -235,7 +353,7 @@ export default function ChatPage() {
               </div>
 
               <div className="p-4 border-t bg-white">
-                <div className="max-w-4xl mx-auto">
+                <div className="max-w-full mx-auto">
                   <div className="flex items-end gap-2">
                     <Input.TextArea
                       rows={2}

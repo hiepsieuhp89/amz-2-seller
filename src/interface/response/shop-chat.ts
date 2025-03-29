@@ -1,17 +1,21 @@
+export interface IPaginationMeta {
+  page: number
+  take: number
+  itemCount: number
+  pageCount: number
+  hasPreviousPage: boolean
+  hasNextPage: boolean
+}
+
+export interface IChatData {
+  data: IChatMessage[]
+  meta: IPaginationMeta
+}
+
 export interface IShopChatResponse {
   status: boolean
   message: string
-  data: {
-    data: IChatMessage[]
-    meta: {
-      page: number
-      take: number
-      itemCount: number
-      pageCount: number
-      hasPreviousPage: boolean
-      hasNextPage: boolean
-    }
-  }
+  data: IAvailableChat[]
   errors: null
   timestamp: string
 }
@@ -25,6 +29,15 @@ export interface IChatMessage {
   createdAt: string
   updatedAt: string
   isRead: boolean
+  user: {
+    id: string
+    fullName: string
+  }
+  shop: {
+    id: string
+    shopName: string
+    logoUrl: string
+  }
 }
 
 export interface IChatList {
@@ -50,4 +63,13 @@ export interface IAvailableChat {
   message: string
   isRead: boolean
   deletedBy: string | null
+  user: {
+    id: string
+    fullName: string
+  }
+  shop: {
+    id: string
+    shopName: string
+    logoUrl: string
+  }
 } 
