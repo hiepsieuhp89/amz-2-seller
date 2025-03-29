@@ -1,6 +1,6 @@
 import React from "react"
 import { DollarOutlined } from "@ant-design/icons"
-import { useGetShopStatistics } from "@/hooks/shop-products"
+import { useShopStatistics } from "@/hooks/dashboard"
 
 interface StatCardProps {
   title: string
@@ -24,32 +24,37 @@ const StatCard = ({ title, value, gradientClass }: StatCardProps) => {
   )
 }
 
+<<<<<<< HEAD
 const StatCards = () => {
   const { data: stats, isLoading, isError } = useGetShopStatistics()
+=======
+const StatCards: React.FC = () => {
+  const { statistics, isLoading, isFetching } = useShopStatistics()
+>>>>>>> 27d7933e1f5caa1e48fed45abea1d3195233d470
 
-  if (isLoading) return <div>Loading statistics...</div>
-  if (isError) return <div>Error loading statistics</div>
+  if (isLoading || isFetching) return <div>Loading statistics...</div>
+  if (!statistics) return <div>No statistics available</div>
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       <StatCard
         title="Tổng số đơn đặt hàng"
-        value={stats?.totalOrders || 0}
+        value={statistics.totalOrders || 0}
         gradientClass="bg-gradient-to-r from-pink-500 to-purple-500"
       />
       <StatCard
         title="Tổng Thu Nhập"
-        value={`$${(stats?.totalRevenue || 0).toFixed(2)}`}
+        value={`$${statistics.totalRevenue || 0}`}
         gradientClass="bg-gradient-to-r from-indigo-600 to-blue-500"
       />
       <StatCard
         title="Tổng Lợi Nhuận"
-        value={`$${(stats?.totalProfit || 0).toFixed(2)}`}
+        value={`$${statistics.totalProfit || 0}`}
         gradientClass="bg-gradient-to-r from-blue-400 to-cyan-500"
       />
       <StatCard
         title="Đơn hàng | Doanh thu | Lợi nhuận hôm nay"
-        value={`${stats?.todayOrders || 0} / $${(stats?.todayRevenue || 0).toFixed(2)} / $${(stats?.todayProfit || 0).toFixed(2)}`}
+        value={`${statistics.todayOrders || 0} / $${statistics.todayRevenue || 0} / $${statistics.todayProfit || 0}`}
         gradientClass="bg-gradient-to-r from-orange-400 to-amber-500"
       />
     </div>

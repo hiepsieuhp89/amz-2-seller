@@ -5,6 +5,7 @@ import { Input, message, Modal } from "antd"
 import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
+import { useShopStatistics } from "@/hooks/dashboard"
 
 interface StatCardProps {
   title: string
@@ -31,7 +32,7 @@ const StatCard<StatCardProps> = ({ title, value, gradientClass, icon = <DollarOu
 
 const ActionCard<{ title: string, onClick?: () => void }> = ({ title, onClick }) => {
   return (
-    <div 
+    <div
       className="p-3 rounded h-full mb-3 cursor-pointer text-center bg-white shadow-sm hover:shadow-lg transition-shadow"
       onClick={onClick}
     >
@@ -48,12 +49,13 @@ const StatCards = () => {
   const [amount, setAmount] = useState<number>(0)
   const [isModalVisible, setIsModalVisible] = useState(false)
   const { mutate: createWithdrawal, isPending } = useCreateWithdrawal()
+  const { statistics, isLoading } = useShopStatistics()
 
   const handleWithdrawClick = () => {
     if (!profile?.data?.bankAccountNumber || !profile?.data?.bankName || !profile?.data?.bankAccountName) {
       message.warning(
         <span>
-          Vui lòng cập nhật thông tin ngân hàng trước khi rút tiền. 
+          Vui lòng cập nhật thông tin ngân hàng trước khi rút tiền.
           <Link href="/seller/shop" className="text-blue-500 ml-1 underline">
             Cập nhật ngay
           </Link>
@@ -78,19 +80,59 @@ const StatCards = () => {
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <StatCard 
-          title="Số dư đang chờ xử lý" 
-          value="$12.70" 
-          gradientClass="bg-gradient-to-r from-pink-500 to-purple-500" 
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+       div className="space-y-4">
+          <StatCard 
+            title="Tổng đơn hàng" 
+            value={`${statistics?.totalOrders || 0}`} 
+            gradientClass="bg-gradient-to-r from-purple-500 to-indigo-500" 
+          />
+          <StatCard 
+            title="Doanh thu tổng" 
+            value={`$${statistics?.totalRevenue || 0}`} 
+            gradientClass="bg-gradient-to-r from-green-500 to-teal-500" 
+          />
+          <StatCard 
+            title="Lợi nhuận tổng" 
+            value={`$${statistics?.totalProfit || 0}`} 
+            gradientClass="bg-gradient-to-r from-yellow-500 to-orange-500" 
+          />
+        </div>
+
+        <div className="space-y-4">
+          <StatCard 
+            title="Đơn hàng hôm nay" 
+            value={`${statistics?.todayOrders || 0}`} 
+            gradientClass="bg-gradient-to-r from-blue-500 to-cyan-500" 
+          />
+          <StatCard 
+            title="Doanh thu hôm nay" 
+            value={`$${statistics?.todayRevenue || 0}`} 
+            gradientClass="bg-gradient-to-r from-pink-500 to-rose-500" 
+          />
+          <StatCard 
+            title="Lợi nhuận hôm nay" 
+            value={`$${statistics?.todayProfit || 0}`} 
+            gradientClass="bg-gradient-to-r from-indigo-500 to-violet-500" 
+          />
+        </div>
+      </div> */}
+
+      {/* Other Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <StatCard
+          title="Số dư đang chờ xử lý"
+          value={`$${statistics?.totalPendingOrderAmount || 0}`}
+          gradientClass="bg-gradient-to-r from-pink-500 to-purple-500"
         />
-        <StatCard 
-          title="Số dư trên Wallet" 
-          value="$0.00" 
-          gradientClass="bg-gradient-to-r from-blue-400 to-cyan-500" 
+        <StatCard
+          title="Số dư trên Wallet"
+          value={`$${profile?.data?.balance || 0}`}
+          gradientClass="bg-gradient-to-r from-blue-400 to-cyan-500"
         />
-        <ActionCard 
-          title="Gửi yêu cầu rút tiền" 
+        <ActionCard
+          title="Gửi yêu cầu rút tiền"
           onClick={handleWithdrawClick}
         />
         <ActionCard title="Nạp tiền" />

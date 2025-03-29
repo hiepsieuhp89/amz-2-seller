@@ -1,27 +1,97 @@
 import type React from "react"
-import { Card, Table, Button } from "antd"
+import { Card, Table, Button, Tag } from "antd"
 import type { ColumnsType } from "antd/es/table"
 import type { OrderData } from "../types"
-import { EyeOutlined } from "@ant-design/icons"
+import { EyeOutlined, CopyOutlined, CheckOutlined } from "@ant-design/icons"
+import { useEffect, useState } from "react"
+import { getMyOrders } from "@/api/shop-products"
 
 interface PendingOrdersProps {
-  data: OrderData[]
+  // data: OrderData[] // Remove this prop since we'll fetch data internally
 }
 
+<<<<<<< HEAD
 const PendingOrders = ({ data }: PendingOrdersProps) => {
+=======
+const PendingOrders: React.FC<PendingOrdersProps> = () => {
+  const [data, setData] = useState<OrderData[]>([])
+  const [loading, setLoading] = useState(false)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchPendingOrders = async () => {
+      setLoading(true)
+      try {
+        const response = await getMyOrders({ status: "PENDING" })
+        setData(response.data.data as any || []) // Update to access response.data.data
+      } catch (error) {
+        console.error("Failed to fetch pending orders:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPendingOrders()
+  }, [])
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text)
+    setCopiedId(text)
+    setTimeout(() => setCopiedId(null), 3000)
+  }
+
+>>>>>>> 27d7933e1f5caa1e48fed45abea1d3195233d470
   const columns: ColumnsType<OrderData> = [
     {
       title: "Mã đặt hàng",
-      dataIndex: "orderCode",
-      key: "orderCode",
-      className: "text-center",
+      dataIndex: "id",
+      key: "id",
+      className: "text-left",
+      render: (text) => (
+        <div className="flex items-center justify-between">
+          <span>{text}</span>
+          <Button
+            type="text"
+            icon={copiedId === text ? <CheckOutlined /> : <CopyOutlined />}
+            onClick={() => handleCopy(text)}
+          />
+        </div>
+      )
     },
     {
-      title: "Lợi nhuận",
-      dataIndex: "profit",
-      key: "profit",
-      render: (text) => <span className="text-red-500 font-semibold">${text}</span>,
+      title: "Khách hàng",
+      dataIndex: ["user", "fullName"],
+      key: "customer",
+      className: "text-left",
+      render: (text) => (
+        <div className="flex items-center justify-between">
+          <span>{text}</span>
+          <Button
+            type="text"
+            icon={copiedId === text ? <CheckOutlined /> : <CopyOutlined />}
+            onClick={() => handleCopy(text)}
+          />
+        </div>
+      )
     },
+    {
+      title: "Tổng tiền",
+      dataIndex: "totalAmount",
+      key: "totalAmount",
+      className: "text-center",
+      render: (value) => `$${value}`
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      className: "text-center",
+      render: (status) => (
+        <Tag color={status === "PENDING" ? "orange" : "green"}>
+          {status}
+        </Tag>
+      )
+    }
   ]
 
   const expandedRowRender = (record: OrderData) => {
@@ -43,25 +113,15 @@ const PendingOrders = ({ data }: PendingOrdersProps) => {
   }
 
   return (
-    <Card style={{ borderRadius: "15px" }} bodyStyle={{ padding: "20px" }}>
-      <h5 className="text-lg font-medium mb-4">Đơn hàng chờ xác nhận</h5>
+    <Card title="Đơn hàng đang chờ xử lý">
       <Table
         columns={columns}
         dataSource={data}
         rowKey="id"
         pagination={false}
-        expandable={{
-          expandedRowRender,
-        }}
         size="middle"
+        loading={loading}
       />
-      <div className="flex justify-center mt-4">
-        <Button 
-        className="!rounded-[4px]"
-        type="primary" block>
-          Xem tất cả
-        </Button>
-      </div>
     </Card>
   )
 }

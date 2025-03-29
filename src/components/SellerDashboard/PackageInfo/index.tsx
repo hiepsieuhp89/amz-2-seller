@@ -1,31 +1,33 @@
 import type React from "react"
 import { Card } from "antd"
-import type { PackageInfoData } from "../types"
+import { useShopDetailStatistics } from "@/hooks/dashboard"
 import { ListTaskIcon, PercentIcon, CalendarWeekIcon } from "../mockData"
 
-interface PackageInfoProps {
-  data: PackageInfoData
-}
+const PackageInfo: React.FC = () => {
+  const { detailStatistics } = useShopDetailStatistics()
 
+<<<<<<< HEAD
 const PackageInfo = ({ data }: PackageInfoProps) => {
+=======
+>>>>>>> 27d7933e1f5caa1e48fed45abea1d3195233d470
   const packageItems = [
     {
       icon: <ListTaskIcon />,
-      value: `${data.currentProducts} / ${data.maxProducts}`,
+      value: `${detailStatistics?.activeProducts || 0} / ${detailStatistics?.sellerPackage?.maxProducts || 0}`,
       label: "Sản phẩm đang được bán",
       bgColor: "bg-[#DFF5FF]",
       iconColor: "text-[#5356FF]",
     },
     {
       icon: <PercentIcon />,
-      value: `${data.discount}%`,
+      value: `${detailStatistics?.sellerPackage?.percentProfit || 0}%`,
       label: "Sẽ được giảm giá nhập khi bạn chọn hàng tại Storehouse",
       bgColor: "bg-[#fce3e3]",
       iconColor: "text-[#A87676]",
     },
     {
       icon: <CalendarWeekIcon />,
-      value: `${data.daysRemaining} ngày còn lại`,
+      value: `${detailStatistics?.sellerPackage?.duration || 0} ngày còn lại`,
       label: "Trước khi gói hết hiệu lực",
       bgColor: "bg-[#CDE8E5]",
       iconColor: "text-[#7AB2B2]",
@@ -41,7 +43,9 @@ const PackageInfo = ({ data }: PackageInfoProps) => {
           alt="Silver Shop"
           className="w-24"
         />
-        <h5 className="my-auto text-center mx-3 text-lg font-medium">Silver Shop</h5>
+        <h5 className="my-auto text-center mx-3 text-lg font-medium">
+          {detailStatistics?.sellerPackage?.name || "Gói bán hàng mặc định"}
+        </h5>
       </div>
 
       <div className="space-y-3">
