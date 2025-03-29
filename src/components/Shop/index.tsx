@@ -6,9 +6,9 @@ import ShopHeader from '@/components/Shop/ShopHeader';
 import ShopNavigation from '@/components/Shop/ShopNavigation';
 import { useGetAllShopProducts } from "@/hooks/shop-products";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 
-export const ShopView = () => {
+function ShopContentWrapper() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const shopId = searchParams.get("id") as string;
@@ -75,5 +75,13 @@ export const ShopView = () => {
     />
     <ShopFooter />
   </div>;
+}
+
+export const ShopView = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ShopContentWrapper />
+    </Suspense>
+  );
 };
 
