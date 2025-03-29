@@ -52,6 +52,7 @@ const config: Config = {
   			'main-charcoal-blue': '#232F3E',
   			'main-gunmetal-blue': '#252C35',
   			'main-golden-orange': '#FCAF17',
+			'main-text': '#0F172A',
   			'gray-light': '#7579E70D',
   			'gray-dark': '#636364',
   			'border-primary': '#DCDCDC',

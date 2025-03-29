@@ -50,7 +50,7 @@ export const ProductsStats: React.FC = () => {
                         width={100}
                         src="/images/silver-shop.png" alt="Shop rank" className="object-contain" />
                 </div>
-                <span className="block text-base text-main-dark-blue font-medium mb-2 mt-1">Gói tài khoản hiện tại: Shop Bạc</span>
+                <span className="block text-base text-main-text font-medium mb-2 mt-1">Gói tài khoản hiện tại: Shop Bạc</span>
                 <Button 
                 type="default" 
                 className="

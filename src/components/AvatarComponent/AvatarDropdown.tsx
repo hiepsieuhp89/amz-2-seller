@@ -35,7 +35,7 @@ const AvatarDropdown = () => {
   }
 
   const getAvatarColor = () => {
-    return user?.role === "admin" ? "#1677ff" : "#52c41a"
+    return "linear-gradient(135deg, #FCAF17, #FF8C00)"
   }
 
   const handleProfileUpdate = async (values: any) => {
@@ -122,9 +122,9 @@ const AvatarDropdown = () => {
       <Dropdown menu={{ items }} trigger={["click"]} placement="bottomRight" arrow>
         <Space className="cursor-pointer rounded-md transition-all">
           <Avatar
-            size={45}
+            size={38}
             style={{
-              backgroundColor: getAvatarColor(),
+              background: getAvatarColor(),
               fontSize: "18px",
               fontWeight: "bold",
               display: "flex",

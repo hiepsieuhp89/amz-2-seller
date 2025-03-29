@@ -25,7 +25,7 @@ export default function ClientLayout({
   const theme: ThemeConfig = {
     token: {
       fontSize: 14,
-      colorPrimary: '#232F3E',
+      colorPrimary: '#0F172A',
       borderRadius: 12,
       controlHeight: 40,
       colorTextPlaceholder: '#636364',

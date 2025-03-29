@@ -27,11 +27,12 @@ export default function ShopContent({
   handlePageChange,
 }: ShopContentProps) {
   return (
-    <main className="container mx-auto max-w-[1500px] px-[104px] py-6">
+    <main className="w-full flex justify-center px-[104px] py-6 bg-orange-50">
+      <div className="max-w-[1500px] bg-orange-50">
       {/* Filters & Sort */}
       <div className="mb-6 flex justify-between items-center">
         <div>
-          <span className="mr-2">Sắp xếp theo:</span>
+          <span className="mr-2 text-main-text font-medium text-sm">Sắp xếp theo:</span>
           <Select
             defaultValue={`${sortField}:${sortOrder}`}
             onChange={handleSortChange}
@@ -45,7 +46,7 @@ export default function ShopContent({
         </div>
         <div>
           {meta && (
-            <span>
+            <span className="text-main-text font-medium text-sm">
               Hiển thị {shopProducts.length} trên {meta.itemCount} sản phẩm
             </span>
           )}
@@ -54,9 +55,9 @@ export default function ShopContent({
 
       {/* Products Section Title */}
       <div className="mb-4 border-b pb-2 flex justify-between items-center">
-        <h2 className="text-xl font-medium">Sản phẩm mới về</h2>
+        <h2 className="text-xl font-medium text-main-text">Sản phẩm mới về</h2>
         <button className="text-blue-500">
-          <span className="mr-1">Xem tất cả</span>
+          <span className="mr-1 font-medium text-sm">Xem tất cả</span>
           <span>❯</span>
         </button>
       </div>
@@ -72,7 +73,7 @@ export default function ShopContent({
             <Link
               href={`/shop/product?id=${item.id}`}
               key={item.id}
-              className="bg-white border border-gray-200 rounded-sm p-3 relative hover:shadow-md transition-shadow cursor-pointer"
+              className="bg-white border border-gray-200 rounded-sm p-3 relative hover:shadow-md transition-shadow cursor-pointer hov-animate-outline"
               style={{
                 position: 'relative',
                 overflow: 'hidden',
@@ -91,7 +92,7 @@ export default function ShopContent({
 
                 {/* Product Details */}
                 <div className="space-y-1">
-                  <h3 className="text-sm text-[#0F1111] line-clamp-2 h-10 hover:text-[#C7511F]">
+                  <h3 className="text-sm text-main-text line-clamp-2 h-10 hover:text-[#C7511F]">
                     {item.name}
                   </h3>
                   <div className="flex items-center space-x-1">
@@ -103,7 +104,7 @@ export default function ShopContent({
                     <span className="text-xs text-[#007185]">(0)</span>
                   </div>
                   <div className="flex items-end">
-                    <span className="text-lg font-bold text-[#0F1111]">
+                    <span className="text-lg font-bold text-main-text">
                       ${Number(item.salePrice).toFixed(2)}
                     </span>
                     {item.profit > 0 && (
@@ -162,6 +163,7 @@ export default function ShopContent({
           />
         </div>
       )}
+      </div>
     </main>
   );
 } 

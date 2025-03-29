@@ -126,7 +126,7 @@ const LeftSideSection = () => {
                 
                 {/* Shop Name & Location */}
                 <div>
-                  <Link href="/shop/Shop-Hoa-Hong" className="text-gray-800 hover:text-primary font-bold text-sm flex items-center">
+                  <Link href="/shop/Shop-Hoa-Hong" className="text-main-text hover:text-primary font-bold text-sm flex items-center">
                     Shop Hoa Hong
                     <motion.span 
                       whileHover={{ scale: 1.2 }}

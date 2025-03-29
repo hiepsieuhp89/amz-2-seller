@@ -148,23 +148,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
 
     return path.startsWith(menuPath) && path.charAt(menuPath.length) === "/"
   }
-
-  const handleMenuClick = (key: string) => {
-    const selectedItem = menu.find((item) => item.key === key)
-    if (selectedItem && !selectedItem.children) {
-      return (
-        <Link href={selectedItem.path}>
-          <a onClick={() => setPath(selectedItem.path)} />
-        </Link>
-      )
-    }
-  }
-
-  const handleSubMenuClick = (subPath: string) => {
-    router.push(subPath)
-    setPath(subPath)
-  }
-
+  
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
   }
@@ -182,12 +166,12 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
         return {
           key: item.key,
           icon: displayIcon,
-          label: <span className="font-semibold">{item.name}</span>,
+          label: <span className="font-medium">{item.name}</span>,
           children: item.children.map((child) => ({
             key: child.key,
             label: (
               <Link href={child.path} onClick={() => setPath(child.path)}>
-                <span className="font-semibold">{child.name}</span>
+                <span className="font-medium">{child.name}</span>
               </Link>
             ),
           })),
@@ -198,7 +182,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
 
       let label: React.ReactNode = (
         <Link href={item.path} onClick={() => setPath(item.path)}>
-          <span className="font-semibold">{item.name}</span>
+          <span className="font-medium">{item.name}</span>
         </Link>
       )
       
@@ -215,7 +199,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
               }}
               key={item.key}
             >
-              <span className="font-semibold">{item.name}</span>
+              <span className="font-medium">{item.name}</span>
               {item.badge.text ? (
                 <Badge
                   count={item.badge.text}
@@ -339,7 +323,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
               >
                 <motion.div variants={itemVariants} className="w-full flex flex-col items-center gap-1">
                   <div className="text-[#ff9900] flex items-center cursor-pointer">
-                    <Link href={`/shop?id=${user?.id || ""}`} className="font-semibold text-sm flex-shrink-0">
+                    <Link href={`/shop?id=${user?.id || ""}`} className="font-medium text-sm flex-shrink-0">
                       Ghé thăm cửa hàng
                     </Link>
                     <span className="ml-1 flex-shrink-0">→</span>
@@ -377,7 +361,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
 
                   {/* Trust Score */}
                   <div className="mb-4">
-                    <span className="text-white font-semibold text-sm">Điểm uy tín: </span>
+                    <span className="text-white font-medium text-sm">Điểm uy tín: </span>
                     <span className="text-green-400 text-sm">100</span>
                   </div>
 

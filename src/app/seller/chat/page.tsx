@@ -157,7 +157,8 @@ export default function ChatPage() {
             <span>Đánh dấu đã đọc</span>
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => handleDeleteMessage(messageId)}
+            onClick={() => 
+              handleDeleteMessage(messageId)}
             className="cursor-pointer text-destructive focus:text-destructive"
           >
             <Trash2 className="mr-2 h-4 w-4" />
@@ -199,7 +200,7 @@ export default function ChatPage() {
           {/* Sidebar */}
           <div className="w-[300px] border-r flex flex-col">
             <div className="p-4 py-2 border-b bg-white h-[85px] flex flex-col justify-between">
-              <h2 className="text-lg font-semibold text-main-dark-blue">Tin nhắn</h2>
+              <h2 className="text-lg font-semibold text-main-text">Tin nhắn</h2>
               <div className="relative">
                 <Input
                   placeholder="Tìm kiếm cuộc trò chuyện"
@@ -352,7 +353,7 @@ export default function ChatPage() {
                                   }`}>
                                   <div className="flex justify-between items-start gap-2">
                                     {isSender && renderMessageActions(msg.id, isSender)}
-                                    <p className={`text-sm font-medium ${isSender ? 'text-white' : 'text-main-dark-blue'
+                                    <p className={`text-sm font-medium ${isSender ? 'text-white' : 'text-main-text'
                                       }`}>
                                       {msg.message}
                                     </p>
