@@ -16,19 +16,19 @@ const SellerDashboard: React.FC = () => {
           <RevenueChart data={mockChartData} />
         </Col>
         <Col xs={24} lg={8}>
-          <ShopInfo data={mockShopInfo} />
+          <ShopInfo />
           <div className="mt-5">
-            <PackageInfo data={mockPackageInfo} />
+            <PackageInfo />
           </div>
         </Col>
       </Row>
 
       <Row gutter={[20, 20]} className="mt-5">
         <Col xs={24} lg={12}>
-          <BestSellingProducts data={mockBestSellingProducts} />
+          <BestSellingProducts />
         </Col>
         <Col xs={24} lg={12}>
-          <PendingOrders data={mockPendingOrders} />
+          <PendingOrders />
         </Col>
       </Row>
     </div>

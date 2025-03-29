@@ -1,45 +1,43 @@
 import type React from "react"
 import { Card, Row, Col } from "antd"
-import type { ShopInfoData } from "../types"
+import { useShopDetailStatistics } from "@/hooks/dashboard"
 import { BoxSeamIcon, StarsIcon, ReceiptIcon, PersonHeartsIcon, EyeIcon } from "../mockData"
 
-interface ShopInfoProps {
-  data: ShopInfoData
-}
+const ShopInfo: React.FC = () => {
+  const { detailStatistics } = useShopDetailStatistics()
 
-const ShopInfo: React.FC<ShopInfoProps> = ({ data }) => {
   const infoItems = [
     {
       icon: <BoxSeamIcon />,
-      value: data.totalProducts,
+      value: detailStatistics?.totalProducts || 0,
       label: "Các sản phẩm",
       bgColor: "bg-[#eee5ff]",
       iconColor: "text-[#a276fd]",
     },
     {
       icon: <StarsIcon />,
-      value: data.totalProfit,
+      value: detailStatistics?.totalProfit || 0,
       label: "Tổng Lợi Nhuận",
       bgColor: "bg-[#fff0a3]",
       iconColor: "text-[#ffd700]",
     },
     {
       icon: <ReceiptIcon />,
-      value: data.totalOrders,
+      value: detailStatistics?.totalOrders || 0,
       label: "Tổng số đơn đặt hàng",
       bgColor: "bg-[#c9f7f5]",
       iconColor: "text-[#1bc5bd]",
     },
     {
       icon: <PersonHeartsIcon />,
-      value: data.totalSales,
+      value: detailStatistics?.totalSales || 0,
       label: "Tổng Lượt Bán",
       bgColor: "bg-[#ffe2e5]",
       iconColor: "text-[#f64e60]",
     },
     {
       icon: <EyeIcon />,
-      value: data.totalViews,
+      value: detailStatistics?.totalViews || 0,
       label: "Lượt xem",
       bgColor: "bg-[#9DDE8B]",
       iconColor: "text-[#40A578]",
