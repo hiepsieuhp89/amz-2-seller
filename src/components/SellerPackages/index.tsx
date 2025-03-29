@@ -1,7 +1,6 @@
 "use client"
-
-import { useUser } from "@/context/useUserContext"
 import { useGetSellerPackages, usePurchaseSellerPackage } from "@/hooks/seller-packages"
+import { checkImageUrl } from "@/lib/utils"
 import { CheckOutlined, CrownOutlined, RocketOutlined, StarOutlined } from "@ant-design/icons"
 import { mdiCartOutline } from "@mdi/js"
 import Icon from "@mdi/react"
@@ -11,7 +10,6 @@ import React from "react"
 const { Title, Text } = Typography
 const SellerPackages = () => {
   const { data: packagesData, isLoading, isError } = useGetSellerPackages()
-  const { profile } = useUser()
   const [selectedPackage, setSelectedPackage] = React.useState<{
     id: number
     title: string
@@ -74,16 +72,6 @@ const SellerPackages = () => {
       popular: pkg.id === "2",
     })) || []
 
-  const checkImageUrl = (imageUrl: string): string => {
-    if (!imageUrl) return "https://picsum.photos/800/600"
-
-    if (imageUrl.includes("example.com") || !imageUrl.startsWith("http")) {
-      return "https://picsum.photos/800/600"
-    }
-
-    return imageUrl
-  }
-
   const getPackageIcon = (index: number) => {
     const icons = [<RocketOutlined key="rocket" />, <StarOutlined key="star" />, <CrownOutlined key="crown" />]
     return icons[index % icons.length]
@@ -116,7 +104,7 @@ const SellerPackages = () => {
               <Card
                 key={pkg.id}
                 className="
-                w-full sm:w-[350px] hover:shadow-lg transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+                w-full sm:w-[350px]  transition-all duration-300 hover:-translate-y-2 overflow-hidden"
                 bodyStyle={{ padding: '12px' }}
                 cover={
                   <div className="relative h-[200px] overflow-hidden">
@@ -173,7 +161,7 @@ const SellerPackages = () => {
                   size="large"
                   block
                   className={`h-12 !rounded-[4px]
-                    font-medium text-base ${pkg.popular ? "!bg-orange-500 !border-orange-500 hover:!bg-orange-600" : ""
+                    font-medium text-base ${pkg.popular ? "!bg-[#F5F5F5]0 !border-orange-500 hover:!bg-orange-600" : ""
                     }`}
                   onClick={() => select_payment_type(pkg.id, pkg.title, pkg.price)}
                 >

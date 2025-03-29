@@ -33,7 +33,7 @@ const StatCard<StatCardProps> = ({ title, value, gradientClass, icon = <DollarOu
 const ActionCard<{ title: string, onClick?: () => void }> = ({ title, onClick }) => {
   return (
     <div
-      className="p-3 rounded h-full mb-3 cursor-pointer text-center bg-white shadow-sm hover:shadow-lg transition-shadow"
+      className="p-3 rounded h-full mb-3 cursor-pointer text-center bg-white   transition-shadow"
       onClick={onClick}
     >
       <div className="w-[60px] h-[60px] rounded-full bg-gray-500 flex items-center justify-center mb-3 mx-auto">

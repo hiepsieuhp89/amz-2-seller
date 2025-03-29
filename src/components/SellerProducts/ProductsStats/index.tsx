@@ -28,7 +28,7 @@ export const ProductsStats = () => {
             </div>
 
             <div
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-3 flex flex-col items-center justify-center cursor-pointer">
+                className="bg-white rounded-lg  hover: transition-shadow p-3 flex flex-col items-center justify-center cursor-pointer">
                 <Button
                     onClick={() => router.push("/seller/products/storehouse")}
                     type="primary"
@@ -41,7 +41,7 @@ export const ProductsStats = () => {
             </div>
 
             {/* Account Package Card */}
-            <div className="bg-white rounded-lg shadow-sm p-3 flex flex-col items-center">
+            <div className="bg-white rounded-lg  p-3 flex flex-col items-center">
                 <div className="h-11 w-11 relative">
                     <Image
                         draggable={false}

@@ -24,17 +24,8 @@ const StatCard = ({ title, value, gradientClass }: StatCardProps) => {
   )
 }
 
-<<<<<<< HEAD
-const StatCards = () => {
-  const { data: stats, isLoading, isError } = useGetShopStatistics()
-=======
 const StatCards: React.FC = () => {
-  const { statistics, isLoading, isFetching } = useShopStatistics()
->>>>>>> 27d7933e1f5caa1e48fed45abea1d3195233d470
-
-  if (isLoading || isFetching) return <div>Loading statistics...</div>
-  if (!statistics) return <div>No statistics available</div>
-
+  const { statistics } = useShopStatistics()
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       <StatCard
@@ -44,12 +35,12 @@ const StatCards: React.FC = () => {
       />
       <StatCard
         title="Tổng Thu Nhập"
-        value={`$${statistics.totalRevenue || 0}`}
+        value={`$${(statistics as any).totalRevenue || 0}`}
         gradientClass="bg-gradient-to-r from-indigo-600 to-blue-500"
       />
       <StatCard
         title="Tổng Lợi Nhuận"
-        value={`$${statistics.totalProfit || 0}`}
+        value={`$${(statistics as any).totalProfit || 0}`}
         gradientClass="bg-gradient-to-r from-blue-400 to-cyan-500"
       />
       <StatCard

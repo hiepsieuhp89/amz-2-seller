@@ -1,38 +1,21 @@
 "use client"
 
-import Icon from '@mdi/react';
-import { mdiContentSaveEdit, mdiEye, mdiPencil, mdiTrashCan } from '@mdi/js';
+import Icon from "@mdi/react"
+import { mdiArrowTopRightThin } from "@mdi/js"
 import type React from "react"
 import { useState } from "react"
-import {
-  Table,
-  Input,
-  Button,
-  Space,
-  Typography,
-  Row,
-  Col,
-  Pagination,
-  Card,
-  Tooltip,
-  Badge,
-  Divider,
-} from "antd"
-import {
-  SearchOutlined,
-  FilterOutlined,
-  ReloadOutlined,
-} from "@ant-design/icons"
+import { Table, Input, Button, Space, Typography, Row, Col, Pagination, Card, Tooltip, Badge, Divider } from "antd"
+import { SearchOutlined, FilterOutlined, ReloadOutlined } from "@ant-design/icons"
 import type { IShopProduct } from "@/interface/response/shop-products"
 import { useGetMyShopProducts } from "@/hooks/shop-products"
-import Image from 'next/image';
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
+import Image from "next/image"
+import Lightbox from "yet-another-react-lightbox"
+import "yet-another-react-lightbox/styles.css"
 import "./styles.css"
-
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { checkImageUrl } from "@/lib/utils"
 const { Title, Text } = Typography
-
-type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl"
 
 interface ProductsTableProps {
   onSearch: (value: string) => void
@@ -46,14 +29,17 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
   const [searchText, setSearchText] = useState<string>("")
   const { data: shopProductsData, isLoading } = useGetMyShopProducts({
     page: currentPage,
-    onlyHaveReview: true
+    onlyHaveReview: true,
   })
-  const [openLightbox, setOpenLightbox] = useState(false);
-  const [currentImage, setCurrentImage] = useState("");
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [openLightbox, setOpenLightbox] = useState(false)
+  const [currentImage, setCurrentImage] = useState("")
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const products = shopProductsData?.data?.data || []
   const totalItems = shopProductsData?.data?.meta?.itemCount || 0
-  const productImages = products.map((product: any) => product.product.imageUrl).filter(Boolean);
+  const productImages = products.map((product: any) => product.product.imageUrl).filter(Boolean)
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
+  const [selectedProductReviews, setSelectedProductReviews] = useState<any[]>([])
+
   const handleSearch = (value: string) => {
     setSearchText(value)
     onSearch(value)
@@ -64,70 +50,67 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
     if (pageSize) setPageSize(pageSize)
   }
 
-  const getStatusColor = (isActive: boolean) => {
-    return isActive ? "#52c41a" : "#faad14"
+  const handleImageClick = (imageUrl: string) => {
+    const index = productImages.indexOf(imageUrl)
+    setCurrentImageIndex(index)
+    setCurrentImage(imageUrl)
+    setOpenLightbox(true)
   }
 
-  const handleImageClick = (imageUrl: string) => {
-    const index = productImages.indexOf(imageUrl);
-    setCurrentImageIndex(index);
-    setCurrentImage(imageUrl);
-    setOpenLightbox(true);
-  };
+  const handleViewReviews = (productId: string) => {
+    const product = products.find((p: any) => p.productId === productId)
+    if (product) {
+      setSelectedProductId(productId)
+      setSelectedProductReviews((product as any)?.reviews || [])
+    }
+  }
 
-  const handleNextImage = () => {
-    const nextIndex = (currentImageIndex + 1) % productImages.length;
-    setCurrentImageIndex(nextIndex);
-    setCurrentImage(productImages[nextIndex]);
-  };
-
-  const handlePreviousImage = () => {
-    const prevIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
-    setCurrentImageIndex(prevIndex);
-    setCurrentImage(productImages[prevIndex]);
-  };
+  const handleCloseDialog = () => {
+    setSelectedProductId(null)
+  }
 
   const columns = [
     {
       title: "Hình ảnh",
       dataIndex: ["product", "imageUrl"],
       key: "image",
-      render: (imageUrl: string) => (
+      render: (imageUrl: string) =>
         imageUrl ? (
-          <div 
-            style={{ 
-              width: '80px', 
-              height: '80px', 
-              position: 'relative',
-              borderRadius: '4px',
-              overflow: 'hidden',
-              cursor: 'pointer'
+          <div
+            style={{
+              width: "80px",
+              height: "80px",
+              position: "relative",
+              borderRadius: "4px",
+              overflow: "hidden",
+              cursor: "pointer",
             }}
             onClick={() => handleImageClick(imageUrl)}
           >
             <Image
-              src={imageUrl}
+              src={checkImageUrl(imageUrl)}
               alt="Product"
               fill
               quality={100}
               draggable={false}
-              style={{ objectFit: 'cover' }}
+              style={{ objectFit: "cover" }}
             />
           </div>
         ) : (
-          <div style={{ 
-            width: '50px', 
-            height: '50px', 
-            backgroundColor: '#f0f0f0', 
-            borderRadius: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
+          <div
+            style={{
+              width: "50px",
+              height: "50px",
+              backgroundColor: "#f0f0f0",
+              borderRadius: "4px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <Text type="secondary">No Image</Text>
           </div>
-        )
-      ),
+        ),
       width: 80,
       align: "center" as const,
     },
@@ -137,11 +120,15 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       key: "name",
       sorter: (a: IShopProduct, b: IShopProduct) => a.product.name.localeCompare(b.product.name),
       render: (text: string, record: IShopProduct) => (
-        <Space direction="vertical" size={0} style={{ maxWidth: 300 }}>
-          <Text strong style={{ fontSize: "14px", wordWrap: 'break-word', whiteSpace: 'normal' }}>
+        <Space direction="vertical" size={0}>
+          <Text strong style={{ fontSize: "14px", wordWrap: "break-word", whiteSpace: "normal" }}>
             {text}
           </Text>
-          <Text type="secondary" style={{ fontSize: "12px", wordWrap: 'break-word', whiteSpace: 'normal' }} ellipsis={{ tooltip: record.product?.description }}>
+          <Text
+            type="secondary"
+            style={{ fontSize: "12px", wordWrap: "break-word", whiteSpace: "normal" }}
+            ellipsis={{ tooltip: record.product?.description }}
+          >
             {record.product?.description}
           </Text>
         </Space>
@@ -149,234 +136,190 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       width: 300,
     },
     {
-      title: "Số lượng",
-      dataIndex: ["product", "stock"],
-      key: "quantity",
-      sorter: (a: IShopProduct, b: IShopProduct) => a.product.stock - b.product.stock,
-      render: (stock: number) => (
-        <Badge
-          count={stock}
-          showZero
-          overflowCount={999}
-          style={{
-            backgroundColor: stock > 0 ? "#1890ff" : "#f5222d",
-            fontSize: "12px",
-            fontWeight: "bold",
-          }}
-        />
-      ),
-      responsive: ["md" as Breakpoint],
+      title: "Số lượng đánh giá",
+      dataIndex: "reviews",
+      key: "reviewCount",
+      render: (reviews: any[]) => <Text strong>{reviews.length}</Text>,
       align: "center" as const,
-      width: 100,
-    },
-    {
-      title: "Giá nhập",
-      dataIndex: ["product", "price"],
-      key: "price",
-      sorter: (a: IShopProduct, b: IShopProduct) =>Number(a.product.price) - Number(b.product.price),
-      render: (price: number) => (
-        <Button
-          style={{
-            backgroundColor: "#E6F4FF",
-            color: "#1890FF",
-            borderRadius: "4px",
-            padding: "0 10px",
-            fontSize: "12px",
-            fontWeight: "bold",
-            cursor: "default",
-            height: 22,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "none",
-          }}
-        >
-          $ {price ? price : 0}
-        </Button>
-      ),
-      responsive: ["md" as Breakpoint],
-      align: "right" as const,
-      width: 100,
-    },
-    {
-      title: "Lợi nhuận",
-      dataIndex: "profit",
-      key: "profit",
-      sorter: (a: IShopProduct, b: IShopProduct) => a.profit - b.profit,
-      render: (profit: number) => (
-        <Button
-          style={{
-            backgroundColor: "#FFF1F0",
-            color: "#FF4D4F",
-            borderRadius: "4px",
-            padding: "0 10px",
-            fontSize: "12px",
-            fontWeight: "bold",
-            cursor: "default",
-            height: 22,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "none",
-          }}
-        >
-          $ {profit ? Math.abs(profit).toLocaleString("vi-VN") : 0}
-        </Button>
-      ),
-      align: "right" as const,
-      width: 100,
-    },
-    {
-      title: "Trạng thái",
-      key: "status",
-      responsive: ["md" as Breakpoint],
-      render: (_: any, record: IShopProduct) => (
-        <Button
-          style={{
-            backgroundColor: "#ECFFF3",
-            color: "#5AC48A",
-            borderRadius: "4px",
-            padding: "0 10px",
-            fontSize: "12px",
-            fontWeight: "bold",
-            cursor: "default",
-            height: 22,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "none",
-          }}
-        >
-          {record?.isActive ? "Đang bán" : "Ngừng bán"}
-        </Button>
-      ),
-      align: "center" as const,
-      width: 100,
+      width: 120,
     },
     {
       title: "Hành động",
       key: "action",
       render: (_: any, record: IShopProduct) => (
-        <Space size="middle">
-          <Tooltip title="Xem chi tiết">
-            <Icon 
-              path={mdiEye} 
-              size={0.7} 
-              color={"#A3A3A3"}
-             
-            />
-          </Tooltip>
-          <Tooltip title="Chỉnh sửa">
-            <Icon 
-              path={mdiContentSaveEdit} 
-              size={0.7} 
-              color={"#A3A3A3"}
-            />
-          </Tooltip>
-          <Tooltip title="Xóa">
-            <Icon 
-              path={mdiTrashCan} 
-              size={0.7} 
-              color={"#A3A3A3"}
-            />
-          </Tooltip>
-        </Space>
+        <Button
+          icon={<Icon path={mdiArrowTopRightThin} size={0.7} color={"#ffffff"} />}
+          iconPosition="end"
+          className="!bg-main-golden-orange !rounded-[4px]"
+          type="primary"
+          size="small"
+          onClick={() => handleViewReviews(record.productId)}
+        >
+          Xem đánh giá
+        </Button>
       ),
       align: "center" as const,
-      width: 100,
+      width: 120,
     },
   ]
 
+  console.log("Dialog state:", {
+    selectedProductId,
+    hasReviews: selectedProductReviews?.length > 0,
+    isOpen: selectedProductId !== null,
+  })
+
   return (
-    <Card
-      bordered={false}
-      className="products-table-card border"
-      style={{ borderRadius: "8px", boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)" }}
-    >
-      <Row 
-      justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
-        <Col>
-          <Space size="middle">
-            <Title level={5} style={{ margin: 0 }}>
-              Tất cả sản phẩm
-            </Title>
-            <Badge 
-            size='default'
-            count={totalItems} showZero style={{ backgroundColor: "#1890ff" }} />
-          </Space>
-        </Col>
-        <Col>
-          <Space size="small">
-            <Input
-              placeholder="Tìm kiếm sản phẩm"
-              prefix={<SearchOutlined style={{ color: "#1890ff" }} />}
-              value={searchText}
-              onChange={(e) => handleSearch(e.target.value)}
-              style={{ width: 250, borderRadius: "6px" }}
-              allowClear
-            />
-            <Tooltip title="Lọc sản phẩm">
-              <Button icon={<FilterOutlined />} style={{ borderRadius: "6px" }} />
-            </Tooltip>
-            <Tooltip title="Làm mới">
-              <Button icon={<ReloadOutlined />} style={{ borderRadius: "6px" }} />
-            </Tooltip>
-          </Space>
-        </Col>
-      </Row>
-
-      <Divider style={{ margin: "0 0 16px 0" }} />
-
-      {selectedRowKeys.length > 0 && (
-        <Row style={{ marginBottom: 16 }}>
-          <Space>
-            <Text strong>{selectedRowKeys.length} sản phẩm đã chọn</Text>
-            <Button danger size="small">
-              Xóa đã chọn
-            </Button>
-          </Space>
+    <>
+      <Card
+        bordered={false}
+        className="products-table-card border !text-main-dark-blue/80"
+        style={{ borderRadius: "8px", boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)" }}
+      >
+        <Row justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
+          <Col>
+            <Space size="middle">
+              <Title level={5} style={{ margin: 0 }}>
+                Tất cả sản phẩm
+              </Title>
+              <Badge size="default" count={totalItems} showZero style={{ backgroundColor: "#1890ff" }} />
+            </Space>
+          </Col>
+          <Col>
+            <Space size="small">
+              <Input
+                placeholder="Tìm kiếm sản phẩm"
+                prefix={<SearchOutlined style={{ color: "#1890ff" }} />}
+                value={searchText}
+                onChange={(e) => handleSearch(e.target.value)}
+                style={{ width: 250, borderRadius: "6px" }}
+                allowClear
+              />
+              <Tooltip title="Lọc sản phẩm">
+                <Button icon={<FilterOutlined />} style={{ borderRadius: "6px" }} />
+              </Tooltip>
+              <Tooltip title="Làm mới">
+                <Button icon={<ReloadOutlined />} style={{ borderRadius: "6px" }} />
+              </Tooltip>
+            </Space>
+          </Col>
         </Row>
-      )}
 
-      <Table
-        rowKey="productId"
-        columns={columns}
-        dataSource={products as any}
-        loading={isLoading}
-        pagination={false}
-        scroll={{ x: "max-content" }}
-        size="middle"
-        rowClassName={() => "product-table-row"}
-        style={{
-          overflow: "hidden",
-          tableLayout: "fixed",
-          maxWidth: '100vw',
+        <Divider style={{ margin: "0 0 16px 0" }} />
+
+        {selectedRowKeys.length > 0 && (
+          <Row style={{ marginBottom: 16 }}>
+            <Space>
+              <Text strong>{selectedRowKeys.length} sản phẩm đã chọn</Text>
+              <Button danger size="small">
+                Xóa đã chọn
+              </Button>
+            </Space>
+          </Row>
+        )}
+
+        <Table
+          rowKey="productId"
+          columns={columns}
+          dataSource={products as any}
+          loading={isLoading}
+          pagination={false}
+          scroll={{ x: "max-content" }}
+          size="middle"
+          rowClassName={() => "product-table-row"}
+          style={{
+            overflow: "hidden",
+            tableLayout: "fixed",
+            maxWidth: "100vw",
+          }}
+          bordered
+        />
+
+        <Row justify="space-between" align="middle" style={{ marginTop: 16 }}>
+          <Col></Col>
+          <Col>
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={totalItems}
+              showSizeChanger
+              showQuickJumper
+              onChange={handlePaginationChange}
+              onShowSizeChange={handlePaginationChange}
+              style={{ marginTop: "16px" }}
+              className="custom-pagination"
+            />
+          </Col>
+        </Row>
+      </Card>
+
+      <Dialog
+        open={selectedProductId !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCloseDialog()
+          }
         }}
-        bordered
-      />
-
-      <Row justify="space-between" align="middle" style={{ marginTop: 16 }}>
-        <Col>
-        </Col>
-        <Col>
-          <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={totalItems}
-            showSizeChanger
-            showQuickJumper
-            onChange={handlePaginationChange}
-            onShowSizeChange={handlePaginationChange}
-            style={{ marginTop: '16px' }}
-            className="custom-pagination"
-          />
-        </Col>
-      </Row>
+      >
+        <DialogContent className="max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>Đánh giá sản phẩm: {selectedProductId}</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[500px] pr-4">
+            {selectedProductReviews.length > 0 ? (
+              selectedProductReviews.map((review) => (
+                <div key={review.id} className="mb-4 p-4 border rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-400 to-orange-600 flex items-center justify-center text-white font-medium">
+                        {review.userId.slice(0, 1).toUpperCase()}
+                      </div>
+                      <div className="font-medium">
+                        {review.userId.slice(0, 8) + '*'.repeat(review.userId.length - 8)}
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</div>
+                  </div>
+                  <div className="flex items-center mb-2">
+                    <div className="mr-2">Đánh giá:</div>
+                    <div className="flex">
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <span
+                          key={index}
+                          className={`text-xl ${index < review.rating ? "text-yellow-400" : "text-gray-300"}`}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="text-gray-700">{review.content}</div>
+                  {review.images && review.images.length > 0 && (
+                    <div className="mt-2 flex gap-2">
+                      {review.images.map((image: string, idx: number) => (
+                        <img
+                          key={idx}
+                          src={checkImageUrl(image)}
+                          alt={`Review image ${idx + 1}`}
+                          className="w-20 h-20 object-cover rounded"
+                          onClick={() => handleImageClick(image)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div>Không có đánh giá nào cho sản phẩm này</div>
+            )}
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
 
       <Lightbox
         open={openLightbox}
         close={() => setOpenLightbox(false)}
-        slides={productImages.map(src => ({ src }))}
+        slides={productImages.map((src) => ({ src }))}
         index={currentImageIndex}
         controller={{
           closeOnBackdropClick: true,
@@ -386,7 +329,9 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
           view: ({ index }) => setCurrentImageIndex(index),
         }}
       />
-    </Card>
+    </>
   )
 }
+
+export default ProductsTable
 

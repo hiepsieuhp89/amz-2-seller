@@ -1,4 +1,4 @@
-import { addShopProducts, getAllShopProducts, getMyOrders, getMyShopProducts, getShopStatistics, removeShopProducts, getRevenueStatistics, getShopDetailStatistics, getTopSellingProducts, getShopProductDetail, getOrderDetail } from "@/api/shop-products"
+import { addShopProducts, getAllShopProducts, getMyOrders, getMyShopProducts, getShopStatistics, removeShopProducts, getRevenueStatistics, getShopDetailStatistics, getTopSellingProducts, getShopProductDetail, getOrderDetail, getShopProductReviews } from "@/api/shop-products"
 import type { IAddShopProductsRequest, IGetShopProductsRequest, IRemoveShopProductsRequest } from "@/interface/request/shop-products"
 import type { IShopProductsResponse } from "@/interface/response/shop-products"
 import { type UseMutationResult, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -122,5 +122,20 @@ export const useGetOrderDetail = (id: string) => {
   return useQuery({
     queryKey: ['orderDetail', id],
     queryFn: () => getOrderDetail(id),
+  })
+}
+
+export const useGetShopProductReviews = (
+  id: string,
+  params?: {
+    order?: string
+    page?: number
+    take?: number
+    search?: string
+  }
+) => {
+  return useQuery({
+    queryKey: ['shopProductReviews', id, params],
+    queryFn: () => getShopProductReviews(id, params),
   })
 }
