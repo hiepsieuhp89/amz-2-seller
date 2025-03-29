@@ -6,10 +6,11 @@ import LeftSideSection from "@/components/ProductDetail/LeftSideSection";
 import { Button, Card, Divider, Rate, Typography } from "antd";
 import Title from "antd/es/typography/Title";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const { Text } = Typography;
 
-export default function ProductDetailPage() {
+function ProductDetailContent() {
   const searchParams = useSearchParams();
   const productId = searchParams.get("id");
 
@@ -50,6 +51,14 @@ export default function ProductDetailPage() {
       </div>
       <Footer />
     </div>
+  )
+}
+
+export default function ProductDetailPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProductDetailContent />
+    </Suspense>
   )
 }
 
