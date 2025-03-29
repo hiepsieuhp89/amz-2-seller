@@ -11,10 +11,13 @@ export const useSendMessageToUser = () => {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: ({ userId, message }: any) => 
+    mutationFn: ({ userId, message }: { userId: string; message: string }) => 
       sendMessageToUser(userId, message),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['shopChat'] })
+    },
+    onError: (error: any) => {
+      throw new Error(error.response?.data?.message || "Lỗi khi gửi tin nhắn")
     }
   })
 }

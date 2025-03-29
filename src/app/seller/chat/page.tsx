@@ -1,120 +1,102 @@
-"use client";
+"use client"
 import {
   useDeleteMessage,
   useGetListMessageAvailable,
   useGetMessagesWithUser,
   useMarkMessageAsRead,
   useSendMessageToUser,
-} from "@/hooks/shop-chat";
-import { mdiCheck, mdiDelete, mdiDotsVertical, mdiMessageText, mdiSend } from "@mdi/js";
-import Icon from "@mdi/react";
-import {
-  Avatar,
-  Badge,
-  Button,
-  Card,
-  Dropdown,
-  Input,
-  Layout,
-  List,
-  MenuProps
-} from "antd";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
-
-const { Content, Sider } = Layout;
+} from "@/hooks/shop-chat"
+import { Check, MoreVertical, MessageSquare, Send, Trash2, MessageCircle } from "lucide-react"
+import { AnimatePresence, motion } from "framer-motion"
+import { useEffect, useRef, useState } from "react"
+import { toast, Toaster } from "react-hot-toast"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Icon } from '@mdi/react';
+import { mdiMagnify, mdiMessage, mdiPackageVariant } from '@mdi/js';
 
 export default function ChatPage() {
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [message, setMessage] = useState("");
-  const [newMessagesCount, setNewMessagesCount] = useState(0);
-  const { data: chatList, refetch: refetchChatList } =
-    useGetListMessageAvailable({});
-  const { data: messages, refetch: refetchMessages } = useGetMessagesWithUser(
-    selectedUser || ""
-  );
-  const { mutate: sendMessage } = useSendMessageToUser(); 
-  const { mutate: markAsRead } = useMarkMessageAsRead();
-  const { mutate: deleteMessage } = useDeleteMessage();
-  const prevMessagesCount = useRef(messages?.data?.length || 0);
+  const [selectedUser, setSelectedUser] = useState<string | null>(null)
+  const [message, setMessage] = useState("")
+  const [newMessagesCount, setNewMessagesCount] = useState(0)
+  const { data: chatList, refetch: refetchChatList } = useGetListMessageAvailable({})
+  const { data: messages, refetch: refetchMessages } = useGetMessagesWithUser(selectedUser || "")
+  const { mutate: sendMessage } = useSendMessageToUser()
+  const { mutate: markAsRead } = useMarkMessageAsRead()
+  const { mutate: deleteMessage } = useDeleteMessage()
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const prevMessagesCount = useRef(messages?.data?.length || 0)
 
-  // Transform chatList data to match IAvailableChat interface
   const transformedChatList =
-    chatList?.data?.data?.reduce(
-      (acc: any, message: any) => {
-        const userId = message.user.id;
-        const existingChat = acc.find((chat: any) => chat.userId === userId);
+    chatList?.data?.data?.reduce((acc: any, message: any) => {
+      const userId = message.user.id
+      const existingChat = acc.find((chat: any) => chat.userId === userId)
 
-        if (existingChat) {
-          // Update last message if this message is newer
-          if (
-            new Date(message.createdAt) > new Date(existingChat.lastMessageDate)
-          ) {
-            existingChat.lastMessage = message.message;
-            existingChat.lastMessageDate = message.createdAt;
-            existingChat.unreadCount += message.isRead ? 0 : 1;
-          }
-        } else {
-          // Create new chat entry
-          acc.push({
-            userId: userId,
-            userName:
-              message.senderRole === "user"
-                ? message.user.fullName
-                : message.shop.shopName,
-            userAvatar:
-              message.senderRole === "user"
-                ? "https://via.placeholder.com/150"
-                : message.shop.logoUrl,
-            lastMessage: message.message,
-            lastMessageDate: message.createdAt,
-            unreadCount: message.isRead ? 0 : 1,
-          });
+      if (existingChat) {
+        if (new Date(message.createdAt) > new Date(existingChat.lastMessageDate)) {
+          existingChat.lastMessage = message.message
+          existingChat.lastMessageDate = message.createdAt
+          existingChat.unreadCount += message.isRead ? 0 : 1
         }
-        return acc;
-      },
-      [] as any
-    ) || [];
+      } else {
+        acc.push({
+          userId: userId,
+          userName: message.senderRole === "user" ? message.user.fullName : message.shop.shopName,
+          userAvatar: message.senderRole === "user" ? "https://via.placeholder.com/150" : message.shop.logoUrl,
+          lastMessage: message.message,
+          lastMessageDate: message.createdAt,
+          unreadCount: message.isRead ? 0 : 1,
+        })
+      }
+      return acc
+    }, [] as any) || []
 
   // Handle user click
   const handleUserClick = (userId: string) => {
-    setSelectedUser(userId);
-    refetchMessages(); // Fetch messages when user is selected
+    setSelectedUser(userId)
+    refetchMessages() // Fetch messages when user is selected
 
     // Đánh dấu tin nhắn đã đọc
-    const selectedChat = transformedChatList.find(
-      (chat: any) => chat.userId === userId
-    );
+    const selectedChat = transformedChatList.find((chat: any) => chat.userId === userId)
     if (selectedChat && selectedChat.unreadCount > 0) {
-      markAsRead(userId);
+      markAsRead(userId)
     }
-  };
+  }
+
+  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
 
   // Fetch new messages every 20 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       if (selectedUser) {
         refetchMessages().then((newData) => {
-          const newMessages = newData.data?.data || [];
+          const newMessages = newData.data?.data || []
           if (newMessages.length > prevMessagesCount.current) {
-            const newCount = newMessages.length - prevMessagesCount.current;
-            setNewMessagesCount(newCount);
-            showNewMessageToast(newCount);
+            const newCount = newMessages.length - prevMessagesCount.current
+            setNewMessagesCount(newCount)
+            showNewMessageToast(newCount)
           }
-          prevMessagesCount.current = newMessages.length;
-        });
+          prevMessagesCount.current = newMessages.length
+        })
       }
-      refetchChatList();
-    }, 20000);
+      refetchChatList()
+    }, 20000)
 
-    return () => clearInterval(interval);
-  }, [selectedUser, refetchMessages, refetchChatList]);
+    return () => clearInterval(interval)
+  }, [selectedUser, refetchMessages, refetchChatList])
 
   const showNewMessageToast = (count: number) => {
     toast(
-      <div className="flex items-center gap-2">
-        <Icon path={mdiMessageText} size={0.8} className="text-blue-500" />
+      <div className="flex items-center gap-2 font-medium">
+        <MessageSquare className="h-4 w-4 text-blue-500" />
         <span>Bạn có {count} tin nhắn mới</span>
       </div>,
       {
@@ -126,271 +108,349 @@ export default function ChatPage() {
           borderRadius: "8px",
           padding: "12px 16px",
         },
-      }
-    );
-  };
+      },
+    )
+  }
 
   const handleSendMessage = () => {
+    console.log(selectedUser)
     if (message.trim() && selectedUser) {
-      sendMessage({ userId: selectedUser, message });
-      setMessage("");
-      setTimeout(() => refetchMessages(), 300);
+      sendMessage(
+        { userId: selectedUser, message },
+        {
+          onSuccess: () => {
+            setMessage("")
+            setTimeout(() => refetchMessages(), 300)
+          },
+          onError: (error: any) => {
+            toast.error(error.message || "Không thể gửi tin nhắn")
+          }
+        }
+      )
     }
-  };
+  }
 
   const handleMarkMessage = (messageId: string) => {
-    markAsRead(messageId);
-  };
+    markAsRead(messageId)
+  }
 
   const handleDeleteMessage = (messageId: string) => {
-    deleteMessage(messageId);
-    setTimeout(() => refetchMessages(), 300);
-  };
+    deleteMessage(messageId)
+    setTimeout(() => refetchMessages(), 300)
+  }
 
-  const renderMessageActions = (messageId: string) => {
-    const items: MenuProps['items'] = [
-      {
-        key: '1',
-        label: 'Đánh dấu đã đọc',
-        icon: <Icon path={mdiCheck} size={0.6} />,
-        onClick: () => handleMarkMessage(messageId)
-      },
-      {
-        key: '2',
-        label: 'Xoá tin nhắn',
-        icon: <Icon path={mdiDelete} size={0.6} />,
-        danger: true,
-        onClick: () => handleDeleteMessage(messageId)
-      }
-    ];
+  const renderMessageActions = (messageId: string, isSender: boolean) => {
     return (
-      <Dropdown menu={{ items }} trigger={['click']}>
-        <Button type="text" style={{ padding: 0 }}>
-          <Icon path={mdiDotsVertical} size={0.8} />
-        </Button>
-      </Dropdown>
-    );
-  };
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={`h-6 w-6 p-0 opacity-70 hover:opacity-100 transition-opacity ${isSender ? "text-white hover:bg-blue-600" : "hover:bg-slate-200"}`}
+          >
+            <MoreVertical className="h-4 w-4" />
+            <span className="sr-only">Tùy chọn</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-[180px]">
+          <DropdownMenuItem onClick={() => handleMarkMessage(messageId)} className="cursor-pointer">
+            <Check className="mr-2 h-4 w-4" />
+            <span>Đánh dấu đã đọc</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => handleDeleteMessage(messageId)}
+            className="cursor-pointer text-destructive focus:text-destructive"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            <span>Xoá tin nhắn</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString([], {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
+  }
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2)
+  }
 
   return (
     <>
       <Toaster />
-      <Layout className="h-full flex flex-col">
-        <Sider
-          width={300}
-          theme="light"
-          className="border-r flex flex-col flex-1"
-          style={{
-            backgroundColor: "#f8f9fa",
-            padding: "0 16px",
-          }}
-        >
-          <div className="p-4 border-b">
-            <h2 className="text-lg font-semibold">Danh sách chat</h2>
-            <div className="mt-2">
-              <Input.Search
-                placeholder="Tìm kiếm cuộc trò chuyện"
-                allowClear
-                style={{ width: "100%" }}
-              />
+      <div className="flex flex-col overflow-hidden border" style={{ height: 'calc(100vh - 70px)' }}>
+        <div className="flex h-full">
+          {/* Sidebar */}
+          <div className="w-[300px] border-r flex flex-col">
+            <div className="p-4 py-2 border-b bg-white h-[85px] flex flex-col justify-between">
+              <h2 className="text-lg font-semibold text-main-dark-blue">Tin nhắn</h2>
+                <div className="relative">
+                  <Input
+                    placeholder="Tìm kiếm cuộc trò chuyện"
+                    className="rounded-sm h-8 pl-8 border-slate-300 focus-visible:ring-blue-500"
+                    />
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                    <Icon path={mdiMagnify} size={0.8} className="!text-gray-400" />
+                  </div>
+                </div>
             </div>
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            <List
-              dataSource={transformedChatList}
-              style={{ padding: "8px 0" }}
-              renderItem={(item: {
-                userId: string;
-                userName: string;
-                userAvatar: string;
-                lastMessage: string;
-                lastMessageDate: string;
-                unreadCount: number;
-              }) => (
-                <div
-                  key={item.userId}
-                  className={`cursor-pointer transition-all ${
-                    selectedUser === item.userId
-                      ? "bg-blue-50"
-                      : "hover:bg-gray-50"
-                  }`}
-                  style={{
-                    borderLeft:
+            <ScrollArea className="flex-1 bg-orange-50">
+                {transformedChatList?.map((item: any) => (
+                  <div
+                    key={item.userId}
+                    className={`cursor-pointer transition-all duration-200  ${
                       selectedUser === item.userId
-                        ? "4px solid #1890ff"
-                        : "4px solid transparent",
-                    margin: "4px 0",
-                    borderRadius: "4px",
-                  }}
-                >
-                  <List.Item
+                        ? "bg-white border-l-4 border-blue-500"
+                        : "hover:bg-white bg-white border-l-4 border-transparent"
+                    }`}
                     onClick={() => handleUserClick(item.userId)}
-                    style={{ padding: "12px 16px" }}
                   >
-                    <List.Item.Meta
-                      avatar={
-                        <Avatar
-                          src={item.userAvatar}
-                          style={{ backgroundColor: "#87d068" }}
-                        />
-                      }
-                      title={
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium">{item.userName}</span>
+                    <div className="px-3 py-3">
+                      <div className="flex items-start gap-2">
+                        <div className="relative flex-shrink-0">
+                          <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                            <AvatarImage src={item.userAvatar} alt={item.userName} />
+                            <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white">
+                              {getInitials(item.userName)}
+                            </AvatarFallback>
+                          </Avatar>
                           {item.unreadCount > 0 && (
-                            <Badge
-                              count={item.unreadCount}
-                              style={{ backgroundColor: "#f08806" }}
-                            />
+                            <span className="absolute -top-1 -right-1">
+                              <Badge
+                                variant="destructive"
+                                className="h-5 min-w-5 flex items-center justify-center rounded-full animate-pulse"
+                              >
+                                {item.unreadCount}
+                              </Badge>
+                            </span>
                           )}
                         </div>
-                      }
-                      description={
-                        <div className="truncate">
-                          <p className="text-sm text-gray-600">
-                            {item.lastMessage}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {new Date(item.lastMessageDate).toLocaleString()}
-                          </p>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <span
+                              className={`font-medium text-base ${item.unreadCount > 0 ? "text-slate-900 font-semibold" : "text-slate-700"}`}
+                            >
+                              {item.userName}
+                            </span>
+                            <span className="text-xs text-slate-500">{formatTime(item.lastMessageDate)}</span>
+                          </div>
+                          <div>
+                            <p
+                              className={`text-sm truncate ${item.unreadCount > 0 ? "text-slate-800 font-medium" : "text-slate-600"}`}
+                            >
+                              {item.lastMessage}
+                            </p>
+                            <p className="text-xs text-slate-400 mt-1">{formatDate(item.lastMessageDate)}</p>
+                          </div>
                         </div>
-                      }
-                    />
-                  </List.Item>
-                </div>
-              )}
-            />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </ScrollArea>
           </div>
-        </Sider>
 
-        <Content className="h-full flex flex-col flex-1">
-          {selectedUser ? (
-            <>
-              <div className="p-4 border-b bg-white">
-                <div className="max-w-full mx-auto">
-                  <div className="flex items-center gap-4">
-                    <Avatar
-                      src={
-                        transformedChatList.find((chat: any) => chat.userId === selectedUser)
-                          ?.userAvatar
-                      }
-                      size="large"
-                    />
-                    <div>
-                      <h2 className="text-lg font-semibold">
-                        {
-                          transformedChatList.find((chat: any) => chat.userId === selectedUser)
-                            ?.userName
-                        }
-                      </h2>
-                      <p className="text-sm text-gray-500">Đang hoạt động</p>
+          {/* Main Content */}
+          <div className="flex-1 flex flex-col bg-orange-50">
+            {selectedUser ? (
+              <>
+                <div className="p-4 border-b bg-white">
+                  <div className="max-w-full mx-auto">
+                    <div className="flex items-center gap-4">
+                      <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                        <AvatarImage
+                          src={transformedChatList.find((chat: any) => chat.userId === selectedUser)?.userAvatar}
+                          alt="User avatar"
+                        />
+                        <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white">
+                          {getInitials(
+                            transformedChatList.find((chat: any) => chat.userId === selectedUser)?.userName || "",
+                          )}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h2 className="text-lg font-semibold text-slate-800">
+                          {transformedChatList.find((chat: any) => chat.userId === selectedUser)?.userName}
+                        </h2>
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                          <p className="text-sm text-slate-500">Đang hoạt động</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div
-                className="flex-1 p-4 overflow-y-auto"
-                style={{ backgroundColor: "#f0f2f5" }}
-              >
-                <div className="max-w-full mx-auto h-full flex flex-col flex-1">
-                  <div className="flex-1">
+                <ScrollArea
+                  className="flex-1 p-4"
+                >
+                  <div className="max-w-full mx-auto h-full flex flex-col space-y-4">
                     <AnimatePresence>
                       {messages?.data?.length ? (
-                        messages.data.map((msg: any) => (
-                          <motion.div
-                            key={msg.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className={`mb-4 flex ${
-                              msg.senderRole === "user"
-                                ? "justify-start"
-                                : "justify-end"
-                            }`}
-                          >
-                            <div className="flex items-start gap-2">
-                              <Card
-                                className={`max-w-[70%] min-w-[100px] ${
-                                  msg.senderRole === "user"
-                                    ? "bg-white"
-                                    : "bg-blue-50"
-                                }`}
-                                style={{ width: "fit-content", flexShrink: 0 }}
-                                bodyStyle={{ 
-                                  padding: "12px 16px",
-                                  maxWidth: "100%",
-                                  wordBreak: "break-word",
-                                  whiteSpace: "pre-wrap"
-                                }}
-                              >
-                                <div className="flex justify-between items-start gap-2">
-                                  <p className="text-sm">{msg.message}</p>
-                                  {renderMessageActions(msg.id)}
+                        messages.data.map((msg: any, index: number) => {
+                          const isFirstMessageOfDay =
+                            index === 0 ||
+                            new Date(msg.createdAt).toDateString() !==
+                              new Date(messages.data[index - 1].createdAt).toDateString()
+
+                          const isSender = msg.senderRole !== "user"
+
+                          return (
+                            <div key={`message-group-${msg.id}`}>
+                              {isFirstMessageOfDay && (
+                                <div className="flex justify-center my-4">
+                                  <div className="bg-white bg-opacity-70 px-3 py-1 rounded-full text-xs text-slate-600 shadow-sm">
+                                    {new Date(msg.createdAt).toLocaleDateString([], {
+                                      weekday: "long",
+                                      year: "numeric",
+                                      month: "long",
+                                      day: "numeric",
+                                    })}
+                                  </div>
                                 </div>
-                                <p className="text-xs text-gray-500 mt-1 text-right">
-                                  {new Date(msg.createdAt).toLocaleTimeString()}
-                                </p>
-                              </Card>
+                              )}
+                              <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.3 }}
+                                className={`flex ${isSender ? "justify-end" : "justify-start"}`}
+                              >
+                                <div className="flex items-start gap-2 max-w-[80%]">
+                                  {!isSender && (
+                                    <Avatar className="h-9 w-9 mt-1">
+                                      <AvatarImage
+                                        src={
+                                          transformedChatList.find((chat: any) => chat.userId === selectedUser)
+                                            ?.userAvatar
+                                        }
+                                        alt="User avatar"
+                                      />
+                                      <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white text-xs">
+                                        {getInitials(
+                                          transformedChatList.find((chat: any) => chat.userId === selectedUser)
+                                            ?.userName || "",
+                                        )}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  )}
+                                  <div className="bg-white rounded-lg p-6 border border-gray-200">
+                                    <div className="flex justify-between items-start gap-2">
+                                      <p className={`text-sm ${isSender ? "text-white" : "text-slate-800"}`}>
+                                        {msg.message}
+                                      </p>
+                                      {renderMessageActions(msg.id, isSender)}
+                                    </div>
+                                    <p
+                                      className={`text-xs mt-1 text-right ${
+                                        isSender ? "text-blue-100" : "text-slate-500"
+                                      }`}
+                                    >
+                                      {formatTime(msg.createdAt)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </motion.div>
                             </div>
-                          </motion.div>
-                        ))
+                          )
+                        })
                       ) : (
                         <div className="h-full flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="text-2xl text-gray-400 mb-2">
-                              💬
+                          <div className="text-center bg-white bg-opacity-80 p-8 rounded-2xl">
+                            <div className="text-5xl mb-4">
+                              <Icon path={mdiPackageVariant} size={2.5} />
                             </div>
-                            <p className="text-gray-500">
-                              Bắt đầu cuộc trò chuyện
-                            </p>
+                            <p className="text-slate-600 font-medium">Bắt đầu cuộc trò chuyện</p>
+                            <p className="text-slate-500 text-sm mt-2">Gửi tin nhắn đầu tiên để bắt đầu trò chuyện</p>
                           </div>
                         </div>
                       )}
                     </AnimatePresence>
+                    <div ref={messagesEndRef} />
                   </div>
-                </div>
-              </div>
+                </ScrollArea>
 
-              <div className="p-4 border-t bg-white">
-                <div className="max-w-full mx-auto">
-                  <div className="flex items-end gap-2">
-                    <Input.TextArea
-                      rows={2}
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      onPressEnter={(e) => {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }}
-                      placeholder="Nhập tin nhắn..."
-                      style={{ flex: 1 }}
-                      autoSize={{ minRows: 1, maxRows: 4 }}
-                    />
-                    <Button
-                      type="primary"
-                      onClick={handleSendMessage}
-                      icon={<Icon path={mdiSend} size={0.8} />}
-                      style={{ height: "40px" }}
-                    >
-                      Gửi
-                    </Button>
+                <div className="p-4 border-t bg-white">
+                  <div className="max-w-full mx-auto">
+                    <div className="flex items-end gap-2">
+                      <Input
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault()
+                            handleSendMessage()
+                          }
+                        }}
+                        placeholder="Nhập tin nhắn..."
+                        className="h-10 border-slate-300 focus-visible:ring-blue-500"
+                      />
+                      <Button
+                        onClick={handleSendMessage}
+                        className="h-10 shadow-md hover:shadow-lg transition-shadow !bg-main-dark-blue text-white"
+                      >
+                        <Send className="h-4 w-4 mr-2" />
+                        Gửi
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </>
-          ) : (
-            <div className="flex items-center justify-center h-full bg-gray-50">
-              <div className="text-center">
-                <div className="text-2xl text-gray-400 mb-2">💬</div>
-                <p className="text-gray-500">
-                  Chọn một cuộc trò chuyện để bắt đầu
+              </>
+            ) : (
+              <div className="flex items-center justify-center h-full bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-center p-10 max-w-md mx-auto"
+              >
+                <div className="mb-6 flex justify-center">
+                  <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] flex items-center justify-center shadow-lg">
+                    <MessageCircle className="h-8 w-8 text-white" />
+                  </div>
+                </div>
+        
+                <h3 className="text-2xl font-bold text-slate-800 mb-3 tracking-tight">Chào mừng đến với Tin nhắn</h3>
+        
+                <p className="text-slate-600 mb-6 leading-relaxed">
+                  Chọn một cuộc trò chuyện từ danh sách bên trái để bắt đầu hoặc tiếp tục cuộc trò chuyện của bạn.
                 </p>
-              </div>
+        
+                <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
+                  {[...Array(3)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 0.7 }}
+                      transition={{ delay: 0.1 * i + 0.5, duration: 0.3 }}
+                      className="h-1 rounded-full bg-gradient-to-r from-[#FCAF17] to-[#FF8C00]"
+                    />
+                  ))}
+                </div>
+              </motion.div>
             </div>
-          )}
-        </Content>
-      </Layout>
+            )}
+          </div>
+        </div>
+      </div>
     </>
-  );
+  )
 }
+
