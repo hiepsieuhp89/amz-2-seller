@@ -92,7 +92,7 @@ const SellerSpreadPackages = () => {
                   key={pkg.id}
                   className="
                   w-[333px]
-                  overflow-hidden rounded-md shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1 py-6 px-5 bg-white border"
+                  overflow-hidden rounded-md  transition-all duration-300  hover:-translate-y-1 py-6 px-5 bg-white border"
                 >
                   <div className="text-center mb-4 mt-3">
                     <img

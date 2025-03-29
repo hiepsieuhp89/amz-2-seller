@@ -64,3 +64,11 @@ export interface IGetShopProductDetailRequest {
 export interface IGetOrderDetailRequest {
   id: string
 }
+
+export interface IGetShopProductReviewsRequest {
+  id: string
+  order?: string
+  page?: number
+  take?: number
+  search?: string
+}

@@ -28,7 +28,7 @@ interface OrdersTableProps {
     onSearch: (value: string) => void
 }
 
-const OrdersTable<OrdersTableProps> = ({ data, onFilterChange, onSearch }) => {
+const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearch }) => {
     const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [isBulkModalVisible, setIsBulkModalVisible] = useState(false)

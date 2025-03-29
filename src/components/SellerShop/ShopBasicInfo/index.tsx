@@ -19,7 +19,7 @@ interface FileType {
   thumbUrl?: string;
 }
 
-const ShopBasicInfo<ShopBasicInfoProps> = ({ onSave }) => {
+const ShopBasicInfo = ({ onSave }: ShopBasicInfoProps) => {
   const [form] = Form.useForm()
   const [fileList, setFileList] = React.useState<FileType[]>([])
   const uploadMutation = useUploadFile()

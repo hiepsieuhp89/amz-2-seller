@@ -19,7 +19,7 @@ interface FileType {
   thumbUrl?: string;
 }
 
-const ShopBannerSettings<ShopBannerSettingsProps> = ({ onSave }) => {
+const ShopBannerSettings = ({ onSave }: ShopBannerSettingsProps) => {
   const [form] = Form.useForm()
   const uploadMutation = useUploadFile()
   const { profile } = useUser()

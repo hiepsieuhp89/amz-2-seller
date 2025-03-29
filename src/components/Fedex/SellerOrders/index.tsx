@@ -105,7 +105,7 @@ const SellerOrders = () => {
   function Card({ children, className, onClick }: { children: React.ReactNode, className: string, onClick?: () => void }) {
     return (
       <div
-        className={`p-4 rounded-lg ${className} ${onClick ? 'cursor-pointer transition-all duration-300 hover:shadow-lg hover:bg-gray-100' : ''}`}
+        className={`p-4 rounded-lg ${className} ${onClick ? 'cursor-pointer transition-all duration-300  hover:bg-gray-100' : ''}`}
         onClick={onClick}
       >
         {children}

@@ -2,9 +2,14 @@
 
 import type React from "react"
 import { useState } from "react"
-import { mdiPackageVariant, mdiStar } from "@mdi/js"
-import Icon from "@mdi/react"
-import ProductsTable from "../SellerProducts/ProductsTable"
+import ProductsTable from "./ProductsTable"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 const SellerReviews = () => {
   const [searchQuery, setSearchQuery] = useState("")
@@ -19,21 +24,22 @@ const SellerReviews = () => {
   }
 
   return (
-    <div className="p-4">
-      <div className="flex items-center mb-4">
-        <div
-          className="bg-blue-100 !text-[#188DFA] w-10 h-10 rounded-full flex items-center justify-center text-lg relative z-10"
-        >
-          <Icon path={mdiStar} size={0.8} color={"#188DFA"} />
-        </div>
-        <div
-          className="bg-blue-100 w-fit px-6 h-8 rounded-full flex items-center justify-center -translate-x-5"
-        >
-          <p className="!font-semibold !text-[#188DFA] !text-base">
-            Đánh giá sản phẩm
-          </p>
-        </div>
-      </div>
+    <div className="p-4 bg-[#F5F5F5]">
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/" className="text-main-dark-blue/80 hover:text-main-dark-blue uppercase">
+              Trang chủ
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator className="text-main-dark-blue/80" />
+          <BreadcrumbItem>
+            <BreadcrumbLink className="text-main-dark-blue/80 font-semibold uppercase">
+              Đánh giá sản phẩm
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <ProductsTable
         onSearch={handleSearch}
         selectedRowKeys={selectedRowKeys}

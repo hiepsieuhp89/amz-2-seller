@@ -98,7 +98,7 @@ export default function LayoutHeaderCommon() {
   }
 
   return (
-    <header className="!h-[70px] min-h-[70px] bg-main-dark-blue text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full shadow-md z-50">
+    <header className="!h-[70px] min-h-[70px] bg-main-dark-blue text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full  z-50">
       <div className="relative h-8 left-[64px]">
         <Image
           quality={100}
@@ -138,7 +138,7 @@ export default function LayoutHeaderCommon() {
               </div>
             </PopoverTrigger>
 
-            <PopoverContent side="bottom" align="end" className="w-80 p-0 bg-white shadow-lg rounded-lg border-none">
+            <PopoverContent side="bottom" align="end" className="w-80 p-0 bg-white  rounded-lg border-none">
               <div className="border-0 shadow-none">
                 <div className="pb-2 pt-3 px-4 border-b">
                   <div className="text-base font-medium flex justify-between items-center">
@@ -215,7 +215,7 @@ export default function LayoutHeaderCommon() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="flex-1 rounded-sm !bg-orange-400 hover:!bg-orange-500 !text-white transition-all duration-300"
+                    className="flex-1 rounded-sm !bg-orange-400 hover:!bg-[#F5F5F5]0 !text-white transition-all duration-300"
                   >
                     Xem tất cả thông báo <Bell className="h-4 w-4 ml-1" />
                   </Button>

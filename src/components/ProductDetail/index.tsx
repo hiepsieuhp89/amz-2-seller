@@ -286,7 +286,7 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          <div className="mt-6 bg-green-50 p-4 rounded-lg shadow-sm">
+          <div className="mt-6 bg-green-50 p-4 rounded-lg ">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
                 <Icon path={mdiCheckCircle} size={1} className="text-green-600" />

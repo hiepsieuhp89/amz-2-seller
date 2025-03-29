@@ -118,3 +118,24 @@ export interface ITopSellingProductsResponse {
   profit: number
 }
 
+export interface IShopProductReviewsResponse {
+  data: {
+    id: string
+    rating: number
+    comment: string
+    createdAt: string
+    user: {
+      id: string
+      username: string
+    }
+  }[]
+  meta: {
+    page: number
+    take: number
+    itemCount: number
+    pageCount: number
+    hasPreviousPage: boolean
+    hasNextPage: boolean
+  }
+}
+

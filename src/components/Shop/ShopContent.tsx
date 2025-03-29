@@ -27,8 +27,8 @@ export default function ShopContent({
   handlePageChange,
 }: ShopContentProps) {
   return (
-    <main className="w-full flex justify-center px-[104px] py-6 bg-orange-50">
-      <div className="max-w-[1500px] bg-orange-50">
+    <main className="w-full flex justify-center px-[104px] py-6 bg-[#F5F5F5]">
+      <div className="max-w-[1500px] bg-[#F5F5F5]">
       {/* Filters & Sort */}
       <div className="mb-6 flex justify-between items-center">
         <div>
@@ -73,7 +73,7 @@ export default function ShopContent({
             <Link
               href={`/shop/product?id=${item.id}`}
               key={item.id}
-              className="bg-white border border-gray-200 rounded-sm p-3 relative hover:shadow-md transition-shadow cursor-pointer hov-animate-outline"
+              className="bg-white border border-gray-200 rounded-sm p-3 relative hover: transition-shadow cursor-pointer hov-animate-outline"
               style={{
                 position: 'relative',
                 overflow: 'hidden',

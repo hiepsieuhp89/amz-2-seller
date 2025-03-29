@@ -197,8 +197,8 @@ export default function ChatPage() {
   return (
     <>
       <Toaster />
-      <div className="flex flex-col overflow-hidden border" style={{ height: 'calc(100vh - 70px)' }}>
-        <div className="flex h-full">
+      <div className="flex flex-col overflow-hidden border p-4" style={{ height: 'calc(100vh - 70px)' }}>
+        <div className="flex h-full rounded-[6px] overflow-hidden border">
           {/* Sidebar */}
           <div className="w-[300px] border-r flex flex-col">
             <div className="p-4 border-b bg-white !h-[86px] flex flex-col justify-between">
@@ -213,7 +213,7 @@ export default function ChatPage() {
                 </div>
               </div>
             </div>
-            <ScrollArea className="flex flex-col h-full bg-orange-50">
+            <ScrollArea className="flex flex-col h-full bg-[#F5F5F5]">
               <div className="flex flex-col h-full">
                 {transformedChatList?.map((item: any) => (
                   <div
@@ -227,7 +227,7 @@ export default function ChatPage() {
                     <div className="px-3 py-3">
                       <div className="flex items-start gap-2">
                         <div className="relative flex-shrink-0">
-                          <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                          <Avatar className="h-12 w-12 border-2 border-white ">
                             <AvatarImage src={item.userAvatar} alt={item.userName} />
                             <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white">
                               {getInitials(item.userName)}
@@ -272,13 +272,13 @@ export default function ChatPage() {
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 flex flex-col bg-orange-50">
+          <div className="flex-1 flex flex-col bg-[#F5F5F5]">
             {selectedUser ? (
               <>
                 <div className="p-4 border-b bg-white !h-[86px]">
                   <div className="max-w-full mx-auto">
                     <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                      <Avatar className="h-12 w-12 border-2 border-white ">
                         <AvatarImage
                           src={transformedChatList.find((chat: any) => chat.userId === selectedUser)?.userAvatar}
                           alt="User avatar"
@@ -319,7 +319,7 @@ export default function ChatPage() {
                           <div key={`message-group-${msg.id}`}>
                             {isFirstMessageOfDay && (
                               <div className="flex justify-center my-4">
-                                <div className="bg-white bg-opacity-70 px-3 py-1 rounded-full text-xs text-slate-600 shadow-sm">
+                                <div className="bg-white bg-opacity-70 px-3 py-1 rounded-full text-xs text-slate-600 ">
                                   {new Date(msg.createdAt).toLocaleDateString([], {
                                     weekday: "long",
                                     year: "numeric",
@@ -383,7 +383,7 @@ export default function ChatPage() {
                           className="text-center p-10 max-w-md mx-auto"
                         >
                           <div className="mb-6 flex justify-center">
-                            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] flex items-center justify-center shadow-lg">
+                            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] flex items-center justify-center ">
                               <MessageCircle className="h-8 w-8 text-white" />
                             </div>
                           </div>
@@ -429,7 +429,7 @@ export default function ChatPage() {
                       />
                       <Button
                         onClick={handleSendMessage}
-                        className="h-10 shadow-md hover:shadow-lg transition-shadow !bg-main-dark-blue text-white"
+                        className="h-10 transition-shadow !bg-main-dark-blue text-white"
                       >
                         <Send className="h-4 w-4 mr-2" />
                         Gửi
@@ -447,7 +447,7 @@ export default function ChatPage() {
                   className="text-center p-10 max-w-md mx-auto"
                 >
                   <div className="mb-6 flex justify-center">
-                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] flex items-center justify-center shadow-lg">
+                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] flex items-center justify-center ">
                       <MessageCircle className="h-8 w-8 text-white" />
                     </div>
                   </div>
