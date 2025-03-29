@@ -69,7 +69,9 @@ export default function ChatPage() {
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+    }
   }, [messages])
 
   // Fetch new messages every 20 seconds
@@ -199,7 +201,7 @@ export default function ChatPage() {
         <div className="flex h-full">
           {/* Sidebar */}
           <div className="w-[300px] border-r flex flex-col">
-            <div className="p-4 py-2 border-b bg-white h-[85px] flex flex-col justify-between">
+            <div className="p-4 border-b bg-white !h-[86px] flex flex-col justify-between">
               <h2 className="text-lg font-semibold text-main-text">Tin nhắn</h2>
               <div className="relative">
                 <Input
@@ -211,58 +213,61 @@ export default function ChatPage() {
                 </div>
               </div>
             </div>
-            <ScrollArea className="flex-1 bg-orange-50">
-              {transformedChatList?.map((item: any) => (
-                <div
-                  key={item.userId}
-                  className={`cursor-pointer transition-all duration-200  ${selectedUser === item.userId
-                      ? "bg-white border-l-4 border-blue-500"
-                      : "hover:bg-white bg-white border-l-4 border-transparent"
-                    }`}
-                  onClick={() => handleUserClick(item.userId)}
-                >
-                  <div className="px-3 py-3">
-                    <div className="flex items-start gap-2">
-                      <div className="relative flex-shrink-0">
-                        <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
-                          <AvatarImage src={item.userAvatar} alt={item.userName} />
-                          <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white">
-                            {getInitials(item.userName)}
-                          </AvatarFallback>
-                        </Avatar>
-                        {item.unreadCount > 0 && (
-                          <span className="absolute -top-1 -right-1">
-                            <Badge
-                              variant="destructive"
-                              className="h-5 min-w-5 flex items-center justify-center rounded-full animate-pulse"
-                            >
-                              {item.unreadCount}
-                            </Badge>
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <span
-                            className={`font-medium text-base ${item.unreadCount > 0 ? "text-slate-900 font-semibold" : "text-slate-700"}`}
-                          >
-                            {item.userName}
-                          </span>
-                          <span className="text-xs text-slate-500">{formatTime(item.lastMessageDate)}</span>
+            <ScrollArea className="flex flex-col h-full bg-orange-50">
+              <div className="flex flex-col h-full">
+                {transformedChatList?.map((item: any) => (
+                  <div
+                    key={item.userId}
+                    className={`cursor-pointer transition-all duration-200  ${selectedUser === item.userId
+                        ? "bg-white border-l-4 border-blue-500"
+                        : "hover:bg-white bg-white border-l-4 border-transparent"
+                      }`}
+                    onClick={() => handleUserClick(item.userId)}
+                  >
+                    <div className="px-3 py-3">
+                      <div className="flex items-start gap-2">
+                        <div className="relative flex-shrink-0">
+                          <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                            <AvatarImage src={item.userAvatar} alt={item.userName} />
+                            <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white">
+                              {getInitials(item.userName)}
+                            </AvatarFallback>
+                          </Avatar>
+                          {item.unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1">
+                              <Badge
+                                variant="destructive"
+                                className="h-5 min-w-5 flex items-center justify-center rounded-full animate-pulse"
+                              >
+                                {item.unreadCount}
+                              </Badge>
+                            </span>
+                          )}
                         </div>
-                        <div>
-                          <p
-                            className={`max-w-[300px] text-sm text-wrap ${item.unreadCount > 0 ? "text-slate-800 font-medium" : "text-slate-600"}`}
-                          >
-                            {item.lastMessage}
-                          </p>
-                          <p className="text-xs text-slate-400 mt-1">{formatDate(item.lastMessageDate)}</p>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <span
+                              className={`font-medium text-base ${item.unreadCount > 0 ? "text-slate-900 font-semibold" : "text-slate-700"}`}
+                            >
+                              {item.userName}
+                            </span>
+                            <span className="text-xs text-slate-500">{formatTime(item.lastMessageDate)}</span>
+                          </div>
+                          <div>
+                            <p
+                              className={`max-w-[300px] text-sm text-wrap ${item.unreadCount > 0 ? "text-slate-800 font-medium" : "text-slate-600"}`}
+                            >
+                              {item.lastMessage}
+                            </p>
+                            <p className="text-xs text-slate-400 mt-1">{formatDate(item.lastMessageDate)}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              <div className="w-[300px] h-24 flex-grow bg-gradient-to-b from-white to-[#FFF7ED]"></div>
             </ScrollArea>
           </div>
 
@@ -270,7 +275,7 @@ export default function ChatPage() {
           <div className="flex-1 flex flex-col bg-orange-50">
             {selectedUser ? (
               <>
-                <div className="p-4 border-b bg-white">
+                <div className="p-4 border-b bg-white !h-[86px]">
                   <div className="max-w-full mx-auto">
                     <div className="flex items-center gap-4">
                       <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
@@ -403,6 +408,7 @@ export default function ChatPage() {
                         </motion.div>
                       </div>
                     )}
+                    <div ref={messagesEndRef} />
                   </div>
                 </ScrollArea>
 

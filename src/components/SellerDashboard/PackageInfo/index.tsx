@@ -7,7 +7,7 @@ interface PackageInfoProps {
   data: PackageInfoData
 }
 
-const PackageInfo: React.FC<PackageInfoProps> = ({ data }) => {
+const PackageInfo = ({ data }: PackageInfoProps) => {
   const packageItems = [
     {
       icon: <ListTaskIcon />,

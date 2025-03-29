@@ -1,9 +1,9 @@
 "use client"
 
 import type React from "react"
-import StatCards from "./StatCards"
 import TransactionTables from "./TransactionTables"
 import { mockOrderHistory, mockWalletHistory, mockWithdrawRequests } from "./mockData"
+import StatCards from "../SellerOrders/StatCards"
 
 const SellerMoneyWithdrawRequests = () => {
   return (

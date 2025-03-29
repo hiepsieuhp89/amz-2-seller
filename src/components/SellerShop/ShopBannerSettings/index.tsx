@@ -19,7 +19,7 @@ interface FileType {
   thumbUrl?: string;
 }
 
-const ShopBannerSettings: React.FC<ShopBannerSettingsProps> = ({ onSave }) => {
+const ShopBannerSettings<ShopBannerSettingsProps> = ({ onSave }) => {
   const [form] = Form.useForm()
   const uploadMutation = useUploadFile()
   const { profile } = useUser()

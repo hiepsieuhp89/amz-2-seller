@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import { mdiPackageVariantClosed, mdiInboxArrowUp } from "@mdi/js"
 import { useGetMyShopProducts } from "@/hooks/shop-products"
 
-export const ProductsStats: React.FC = () => {
+export const ProductsStats = () => {
     const router = useRouter()
     const { data: shopProductsData } = useGetMyShopProducts({ page: 1 })
     const totalItems = shopProductsData?.data?.meta?.itemCount || 0

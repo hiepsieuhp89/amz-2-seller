@@ -7,7 +7,7 @@ interface BestSellingProductsProps {
   data: ProductData[]
 }
 
-const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
+const BestSellingProducts = ({ data }: BestSellingProductsProps) => {
   const columns: ColumnsType<ProductData> = [
     {
       title: "#",

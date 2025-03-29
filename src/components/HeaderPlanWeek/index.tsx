@@ -10,7 +10,7 @@ interface PlanWeekDataProps {
     week_number?: any;
 
 }
-const HeaderPlanWeek: React.FC<PlanWeekDataProps> = ({ from_date,to_date,week_number, timeUpdate }) => {
+const HeaderPlanWeek<PlanWeekDataProps> = ({ from_date,to_date,week_number, timeUpdate }) => {
     return (
         <div className="flex flex-col pt-4">
             <div>

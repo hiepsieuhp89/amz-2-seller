@@ -40,7 +40,7 @@ interface ProductsTableProps {
   onSelectChange: (selectedRowKeys: React.Key[]) => void
 }
 
-export const ProductsTable: React.FC<ProductsTableProps> = ({ onSearch, selectedRowKeys, onSelectChange }) => {
+const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTableProps) => {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [searchText, setSearchText] = useState<string>("")
@@ -390,3 +390,4 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({ onSearch, selected
   )
 }
 
+export default ProductsTable

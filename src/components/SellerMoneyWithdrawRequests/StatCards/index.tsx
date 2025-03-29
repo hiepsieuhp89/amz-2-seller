@@ -13,7 +13,7 @@ interface StatCardProps {
   icon?: React.ReactNode
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, gradientClass, icon = <DollarOutlined /> }) => {
+const StatCard<StatCardProps> = ({ title, value, gradientClass, icon = <DollarOutlined /> }) => {
   return (
     <div className={`rounded-[4px] overflow-hidden text-white ${gradientClass}`}>
       <div className="flex flex-col items-center">
@@ -29,7 +29,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, gradientClass, icon =
   )
 }
 
-const ActionCard: React.FC<{ title: string, onClick?: () => void }> = ({ title, onClick }) => {
+const ActionCard<{ title: string, onClick?: () => void }> = ({ title, onClick }) => {
   return (
     <div 
       className="p-3 rounded h-full mb-3 cursor-pointer text-center bg-white shadow-sm hover:shadow-lg transition-shadow"
@@ -43,7 +43,7 @@ const ActionCard: React.FC<{ title: string, onClick?: () => void }> = ({ title, 
   )
 }
 
-const StatCards: React.FC = () => {
+const StatCards = () => {
   const { profile } = useUser()
   const [amount, setAmount] = useState<number>(0)
   const [isModalVisible, setIsModalVisible] = useState(false)

@@ -9,7 +9,7 @@ interface VersionItemProps {
   onClick?: () => void;
 }
 
-const VersionItem: React.FC<VersionItemProps> = ({ time, user, onClick, isSelected }) => {
+const VersionItem<VersionItemProps> = ({ time, user, onClick, isSelected }) => {
   return (
     <div
       className={`mb-4 cursor-pointer ${isSelected ? 'bg-[#f0f0f0]' : 'hover:bg-[#f0f0f0]'}`}

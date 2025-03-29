@@ -21,7 +21,7 @@
 //   onSearch: (value: string) => void
 // }
 
-// const ReviewsTable: React.FC<ReviewsTableProps> = ({ data, onFilterChange, onSearch }) => {
+// const ReviewsTable<ReviewsTableProps> = ({ data, onFilterChange, onSearch }) => {
 //   const columns: TableProps<Review>["columns"] = [
 //     {
 //       title: "#",

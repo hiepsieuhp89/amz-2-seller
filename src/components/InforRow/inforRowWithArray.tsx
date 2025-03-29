@@ -8,7 +8,7 @@ interface InfoRowProps {
   allUser?:any
 }
 
-export const InfoRowWithArray: React.FC<InfoRowProps> = ({
+export const InfoRowWithArray<InfoRowProps> = ({
   label,
   value,
   className = "",

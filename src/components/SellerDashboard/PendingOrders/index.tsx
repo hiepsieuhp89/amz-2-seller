@@ -8,7 +8,7 @@ interface PendingOrdersProps {
   data: OrderData[]
 }
 
-const PendingOrders: React.FC<PendingOrdersProps> = ({ data }) => {
+const PendingOrders = ({ data }: PendingOrdersProps) => {
   const columns: ColumnsType<OrderData> = [
     {
       title: "Mã đặt hàng",

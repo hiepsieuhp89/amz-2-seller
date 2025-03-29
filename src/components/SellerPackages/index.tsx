@@ -9,7 +9,7 @@ import { Badge, Button, Card, Divider, Modal, Spin, Typography } from "antd"
 import Image from "next/image"
 import React from "react"
 const { Title, Text } = Typography
-const SellerPackages: React.FC = () => {
+const SellerPackages = () => {
   const { data: packagesData, isLoading, isError } = useGetSellerPackages()
   const { profile } = useUser()
   const [selectedPackage, setSelectedPackage] = React.useState<{

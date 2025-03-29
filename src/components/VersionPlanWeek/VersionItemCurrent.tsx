@@ -10,7 +10,7 @@ interface VersionItemProps {
   onClick?: () => void;
 }
 
-const VersionCurrentItem: React.FC<VersionItemProps> = ({ time, user, month, onClick }) => {
+const VersionCurrentItem<VersionItemProps> = ({ time, user, month, onClick }) => {
   return (
     <div className="mb-4 cursor-pointer" onClick={onClick} >
 

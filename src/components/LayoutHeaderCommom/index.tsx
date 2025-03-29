@@ -1,48 +1,72 @@
-'use client';
+"use client"
 
-import { useRouter } from 'next/navigation';
-import AvatarDropdown from '../AvatarComponent/AvatarDropdown';
-import Image from 'next/image';
-import { mdiFaceAgent, mdiBellBadgeOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { motion } from 'framer-motion';
+import { useRouter } from "next/navigation"
+import AvatarDropdown from "../AvatarComponent/AvatarDropdown"
+import Image from "next/image"
+import { mdiFaceAgent } from "@mdi/js"
+import Icon from "@mdi/react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { motion } from "framer-motion"
+import { useGetAllNotifications, useGetUnreadNotifications } from "@/hooks/notification"
+import { Bell } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { formatDistanceToNow } from "date-fns"
+import { vi } from "date-fns/locale"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
 
 export default function LayoutHeaderCommon() {
-  const router = useRouter();
+  const router = useRouter()
+  const { data: allNotifications } = useGetAllNotifications()
+  const { data: unreadNotifications } = useGetUnreadNotifications()
+  const [showBadge, setShowBadge] = useState(true)
 
+  const unreadCount = unreadNotifications?.data?.length || 0
+
+  // Event listeners for role and department changes
   if (typeof window !== "undefined") {
-    window.addEventListener('storage', (event) => {
-      if (event.key === 'role') {
-        if (event.newValue === 'GA') {
-          router.push('ga/plan_week')
+    window.addEventListener("storage", (event) => {
+      if (event.key === "role") {
+        if (event.newValue === "GA") {
+          router.push("ga/plan_week")
         }
-        if (event.newValue === 'CS') {
-          router.push('/cs/manage_document')
+        if (event.newValue === "CS") {
+          router.push("/cs/manage_document")
         }
-        if (event.newValue === 'ADMIN') {
-          router.push('/admin/user')
+        if (event.newValue === "ADMIN") {
+          router.push("/admin/user")
         }
       }
-    });
-    window.addEventListener('storage', (event) => {
-      if (event.key === 'department') {
-        if (event.newValue === 'COMBAT') {
-          router.push('combat/plan_week')
+    })
+    window.addEventListener("storage", (event) => {
+      if (event.key === "department") {
+        if (event.newValue === "COMBAT") {
+          router.push("combat/plan_week")
         }
-        if (event.newValue === 'TRAINING') {
-          router.push('traning/plan_week')
+        if (event.newValue === "TRAINING") {
+          router.push("traning/plan_week")
         }
-        if (event.newValue === 'TECH') {
-          router.push('tech/plan_week')
+        if (event.newValue === "TECH") {
+          router.push("tech/plan_week")
         }
-        if (event.newValue === 'CONTROL') {
-          router.push('control/plan_week')
+        if (event.newValue === "CONTROL") {
+          router.push("control/plan_week")
         }
-
       }
-    });
+    })
   }
+
+  // Format date to a readable format
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString)
+      return formatDistanceToNow(date, { addSuffix: true, locale: vi })
+    } catch (error) {
+      return dateString
+    }
+  }
+
   return (
     <header className="!h-[70px] min-h-[70px] bg-main-dark-blue text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full shadow-md z-50">
       <div className="relative h-8 left-[64px]">
@@ -53,11 +77,11 @@ export default function LayoutHeaderCommon() {
           alt="logo"
           width={100}
           height={100}
-          className='h-full w-full object-contain'
+          className="h-full w-full object-contain"
         />
       </div>
       <div className="flex items-center">
-        <div className="ml-8 flex items-center gap-1 pr-6 ">
+        <div className="ml-8 flex items-center gap-1 pr-6">
           <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -65,36 +89,91 @@ export default function LayoutHeaderCommon() {
           >
             <Icon path={mdiFaceAgent} size={0.9} color="#FCAF17" />
           </motion.div>
+
           <Popover>
             <PopoverTrigger asChild>
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+              <div
                 className="p-2 rounded-full hover:bg-[#FCAF17]/10 cursor-pointer relative mr-2"
+                onClick={() => setShowBadge(false)}
               >
-                <Icon path={mdiBellBadgeOutline} size={0.9} color="#FCAF17" />
-              </motion.div>
+                <Bell className="h-5 w-5 text-[#FCAF17]" />
+                {showBadge && unreadCount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute rounded-full -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs font-normal"
+                  >
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </Badge>
+                )}
+              </div>
             </PopoverTrigger>
-            <PopoverContent
-              side="bottom"
-              align="center"
-              className="w-64 p-2 bg-white shadow-lg rounded-lg"
-            >
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                className="space-y-2"
-              >
-                <div className="px-3 py-2 hover:bg-[#FCAF17]/10 rounded-md cursor-pointer">Đơn hàng</div>
-                <div className="px-3 py-2 hover:bg-[#FCAF17]/10 rounded-md cursor-pointer">Người bán</div>
-                <div className="px-3 py-2 hover:bg-[#FCAF17]/10 rounded-md cursor-pointer">Các khoản thanh toán</div>
-              </motion.div>
+
+            <PopoverContent side="bottom" align="end" className="w-80 p-0 bg-white shadow-lg rounded-lg border-none">
+              <div className="border-0 shadow-none">
+                <div className="pb-2 pt-3 px-4 border-b">
+                  <div className="text-base font-medium flex justify-between items-center">
+                    <span>Thông báo</span>
+                    {unreadCount > 0 && (
+                      <Badge variant="secondary" className="ml-2 font-normal rounded-full text-gray-500">
+                        {unreadCount} chưa đọc
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                <ScrollArea className="h-[300px]">
+                  <div className="p-0">
+                    {allNotifications?.data && allNotifications.data.length > 0 ? (
+                      <div className="divide-y">
+                        {allNotifications.data?.map((notification) => (
+                          <div
+                            key={notification.id}
+                            className={`p-3 hover:bg-muted/50 cursor-pointer transition-colors ${
+                              notification.status === "UNREAD" ? "bg-muted/30" : ""
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="flex-1 space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <p className="font-semibold text-main-golden-orange text-sm">{notification.title}</p>
+                                  {notification.status === "UNREAD" && (
+                                    <span className="h-2 w-2 rounded-full bg-[#FCAF17]" />
+                                  )}
+                                </div>
+                                <p className="text-sm text-muted-foreground italic text-wrap break-words line-clamp-2">{notification.content}</p>
+                                <p className="text-xs text-gray-400">{formatDate(notification.createdAt)}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
+                        <Bell className="h-10 w-10 text-muted-foreground/50 mb-3" />
+                        <p className="text-muted-foreground">Không có thông báo nào</p>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+
+                <div className="p-2 border-t">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full rounded-sm 
+                    !bg-orange-400 hover:!bg-orange-500 !text-white transition-all duration-300
+                    "
+                  >
+                    Xem tất cả thông báo <Bell className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             </PopoverContent>
           </Popover>
           <AvatarDropdown />
         </div>
       </div>
     </header>
-  );
+  )
 }
+

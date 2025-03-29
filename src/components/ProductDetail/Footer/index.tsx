@@ -42,7 +42,7 @@ const currencies: CurrencyOption[] = [
   { code: "JPY", name: "Japanese Yen", symbol: "¥" },
 ]
 
-const Footer: React.FC = () => {
+const Footer = () => {
   const [currentLanguage, setCurrentLanguage] = useState<LanguageOption>(
     languages.find((lang) => lang.active) || languages[0],
   )

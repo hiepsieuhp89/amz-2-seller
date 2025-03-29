@@ -7,7 +7,7 @@ interface ShopInfoProps {
   data: ShopInfoData
 }
 
-const ShopInfo: React.FC<ShopInfoProps> = ({ data }) => {
+const ShopInfo = ({ data }: ShopInfoProps) => {
   const infoItems = [
     {
       icon: <BoxSeamIcon />,

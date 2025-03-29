@@ -3,7 +3,7 @@ import React from 'react'
 
 function HomePage() {
     return (
-        <SellerDashboard />
+        <div className='p-4 bg-red-400'><SellerDashboard /></div>
     )
 }
 

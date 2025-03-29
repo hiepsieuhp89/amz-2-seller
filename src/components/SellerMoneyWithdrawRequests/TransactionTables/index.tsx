@@ -9,11 +9,11 @@ interface TransactionTablesProps {
   orderHistory: OrderHistory[]
 }
 
-const TransactionTables: React.FC<TransactionTablesProps> = ({
+const TransactionTables = ({
   withdrawRequests,
   walletHistory,
   orderHistory,
-}) => {
+}: TransactionTablesProps) => {
   const withdrawColumns: ColumnsType<WithdrawRequest> = [
     { title: "Ngày", dataIndex: "date" },
     { title: "ID", dataIndex: "id" },

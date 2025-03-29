@@ -7,7 +7,7 @@ interface RevenueChartProps {
   data: ChartData[]
 }
 
-const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
+const RevenueChart = ({ data }: RevenueChartProps) => {
   const config = {
     data,
     xField: "date",

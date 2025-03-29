@@ -7,7 +7,7 @@ interface PlanWeekDataProps {
     title?: string;
 
 }
-const HeaderRouterBack: React.FC<PlanWeekDataProps> = ({ heading, title }) => {
+const HeaderRouterBack<PlanWeekDataProps> = ({ heading, title }) => {
     const router = useRouter()
     return (
         <div className="flex">

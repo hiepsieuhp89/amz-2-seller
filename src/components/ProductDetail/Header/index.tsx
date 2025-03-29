@@ -24,7 +24,7 @@ const languages: LanguageOption[] = [
   { code: "ru", name: "Русский", flag: "/images/vn-flag.png" },
 ]
 
-const Header: React.FC = () => {
+const Header = () => {
   const [currentLanguage, setCurrentLanguage] = useState<LanguageOption>(languages[1]) // Default to Vietnamese
   const [cartCount, setCartCount] = useState<number>(0)
 

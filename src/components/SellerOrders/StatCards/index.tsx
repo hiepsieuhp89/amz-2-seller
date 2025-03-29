@@ -8,7 +8,7 @@ interface StatCardProps {
   gradientClass: string
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, gradientClass }) => {
+const StatCard = ({ title, value, gradientClass }: StatCardProps) => {
   return (
     <div className={`rounded-[4px] overflow-hidden text-white ${gradientClass}`}>
       <div className="flex flex-col items-center">
@@ -24,7 +24,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, gradientClass }) => {
   )
 }
 
-const StatCards: React.FC = () => {
+const StatCards = () => {
   const { data: stats, isLoading, isError } = useGetShopStatistics()
 
   if (isLoading) return <div>Loading statistics...</div>

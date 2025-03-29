@@ -29,7 +29,7 @@ interface ActionProps {
     nameButtonClose?: string;
 }
 
-const ModalAction: React.FC<ActionProps> = ({
+const ModalAction<ActionProps> = ({
     isModalOpen,
     setIsModalOpen,
     title,

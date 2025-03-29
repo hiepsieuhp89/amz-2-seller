@@ -7,7 +7,7 @@ interface InfoRowProps {
   className?: string;
 }
 
-export const InfoRow: React.FC<InfoRowProps> = ({ label, value, className = "" }) => {
+export const InfoRow<InfoRowProps> = ({ label, value, className = "" }) => {
   const displayedValue = value?.length > 40 ? value.slice(0, 40) + '...' : value;
   return (
     <div className={`flex gap-2 p-4 ${className}`}>

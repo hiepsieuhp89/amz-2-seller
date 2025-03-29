@@ -3,9 +3,9 @@
 import type React from "react"
 import { useState } from "react"
 import { ProductsStats } from "./ProductsStats"
-import { ProductsTable } from "./ProductsTable"
 import { mdiPackageVariant } from "@mdi/js"
 import Icon from "@mdi/react"
+import ProductsTable from "./ProductsTable"
 
 const SellerProducts = () => {
   const [searchQuery, setSearchQuery] = useState("")

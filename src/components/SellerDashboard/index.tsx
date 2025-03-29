@@ -7,8 +7,7 @@ import BestSellingProducts from "./BestSellingProducts"
 import PendingOrders from "./PendingOrders"
 import { mockChartData, mockShopInfo, mockPackageInfo, mockBestSellingProducts, mockPendingOrders } from "./mockData"
 import RevenueChart from "./RevenueChart"
-
-const SellerDashboard: React.FC = () => {
+const SellerDashboard = () => {
   return (
     <div className="pt-2">
       <Row gutter={[20, 20]}>

@@ -41,7 +41,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       key: "/seller/dashboard",
       name: "Bảng điều khiển",
       icon: <Icon path={mdiHomeOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiHome} size={0.8} />,
+      activeIcon: <Icon path={mdiHomeOutline} size={0.8} color={"#FCAF17"} />,
       path: `/seller/dashboard`,
     },
     {
