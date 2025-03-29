@@ -7,18 +7,17 @@ import {
   useSendMessageToUser,
 } from "@/hooks/shop-chat"
 import { Check, MoreVertical, MessageSquare, Send, Trash2, MessageCircle } from "lucide-react"
-import { AnimatePresence, motion } from "framer-motion"
+import {  motion } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
 import { toast, Toaster } from "react-hot-toast"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Icon } from '@mdi/react';
-import { mdiMagnify, mdiMessage, mdiPackageVariant } from '@mdi/js';
+import { mdiMagnify } from '@mdi/js';
 
 export default function ChatPage() {
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
@@ -146,7 +145,7 @@ export default function ChatPage() {
           <Button
             variant="ghost"
             size="icon"
-            className={`h-6 w-6 p-0 opacity-70 hover:opacity-100 transition-opacity ${isSender ? "text-white hover:bg-blue-600" : "hover:bg-slate-200"}`}
+            className={`h-6 w-6 p-0 opacity-70 hover:opacity-100 transition-opacity rounded-full ${isSender ? "!text-white hover:bg-orange-300" : "hover:bg-gray-100"}`}
           >
             <MoreVertical className="h-4 w-4" />
             <span className="sr-only">Tùy chọn</span>
@@ -201,69 +200,68 @@ export default function ChatPage() {
           <div className="w-[300px] border-r flex flex-col">
             <div className="p-4 py-2 border-b bg-white h-[85px] flex flex-col justify-between">
               <h2 className="text-lg font-semibold text-main-dark-blue">Tin nhắn</h2>
-                <div className="relative">
-                  <Input
-                    placeholder="Tìm kiếm cuộc trò chuyện"
-                    className="rounded-sm h-8 pl-8 border-slate-300 focus-visible:ring-blue-500"
-                    />
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                    <Icon path={mdiMagnify} size={0.8} className="!text-gray-400" />
-                  </div>
+              <div className="relative">
+                <Input
+                  placeholder="Tìm kiếm cuộc trò chuyện"
+                  className="rounded-sm h-8 pl-8 border-slate-300 focus-visible:ring-blue-500"
+                />
+                <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                  <Icon path={mdiMagnify} size={0.8} className="!text-gray-400" />
                 </div>
+              </div>
             </div>
             <ScrollArea className="flex-1 bg-orange-50">
-                {transformedChatList?.map((item: any) => (
-                  <div
-                    key={item.userId}
-                    className={`cursor-pointer transition-all duration-200  ${
-                      selectedUser === item.userId
-                        ? "bg-white border-l-4 border-blue-500"
-                        : "hover:bg-white bg-white border-l-4 border-transparent"
+              {transformedChatList?.map((item: any) => (
+                <div
+                  key={item.userId}
+                  className={`cursor-pointer transition-all duration-200  ${selectedUser === item.userId
+                      ? "bg-white border-l-4 border-blue-500"
+                      : "hover:bg-white bg-white border-l-4 border-transparent"
                     }`}
-                    onClick={() => handleUserClick(item.userId)}
-                  >
-                    <div className="px-3 py-3">
-                      <div className="flex items-start gap-2">
-                        <div className="relative flex-shrink-0">
-                          <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
-                            <AvatarImage src={item.userAvatar} alt={item.userName} />
-                            <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white">
-                              {getInitials(item.userName)}
-                            </AvatarFallback>
-                          </Avatar>
-                          {item.unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1">
-                              <Badge
-                                variant="destructive"
-                                className="h-5 min-w-5 flex items-center justify-center rounded-full animate-pulse"
-                              >
-                                {item.unreadCount}
-                              </Badge>
-                            </span>
-                          )}
+                  onClick={() => handleUserClick(item.userId)}
+                >
+                  <div className="px-3 py-3">
+                    <div className="flex items-start gap-2">
+                      <div className="relative flex-shrink-0">
+                        <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                          <AvatarImage src={item.userAvatar} alt={item.userName} />
+                          <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white">
+                            {getInitials(item.userName)}
+                          </AvatarFallback>
+                        </Avatar>
+                        {item.unreadCount > 0 && (
+                          <span className="absolute -top-1 -right-1">
+                            <Badge
+                              variant="destructive"
+                              className="h-5 min-w-5 flex items-center justify-center rounded-full animate-pulse"
+                            >
+                              {item.unreadCount}
+                            </Badge>
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span
+                            className={`font-medium text-base ${item.unreadCount > 0 ? "text-slate-900 font-semibold" : "text-slate-700"}`}
+                          >
+                            {item.userName}
+                          </span>
+                          <span className="text-xs text-slate-500">{formatTime(item.lastMessageDate)}</span>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <span
-                              className={`font-medium text-base ${item.unreadCount > 0 ? "text-slate-900 font-semibold" : "text-slate-700"}`}
-                            >
-                              {item.userName}
-                            </span>
-                            <span className="text-xs text-slate-500">{formatTime(item.lastMessageDate)}</span>
-                          </div>
-                          <div>
-                            <p
-                              className={`text-sm truncate ${item.unreadCount > 0 ? "text-slate-800 font-medium" : "text-slate-600"}`}
-                            >
-                              {item.lastMessage}
-                            </p>
-                            <p className="text-xs text-slate-400 mt-1">{formatDate(item.lastMessageDate)}</p>
-                          </div>
+                        <div>
+                          <p
+                            className={`max-w-[300px] text-sm text-wrap ${item.unreadCount > 0 ? "text-slate-800 font-medium" : "text-slate-600"}`}
+                          >
+                            {item.lastMessage}
+                          </p>
+                          <p className="text-xs text-slate-400 mt-1">{formatDate(item.lastMessageDate)}</p>
                         </div>
                       </div>
                     </div>
                   </div>
-                ))}
+                </div>
+              ))}
             </ScrollArea>
           </div>
 
@@ -299,91 +297,111 @@ export default function ChatPage() {
                 </div>
 
                 <ScrollArea
-                  className="flex-1 p-4"
+                  className="flex-1 p-4 flex flex-col"
                 >
-                  <div className="max-w-full mx-auto h-full flex flex-col space-y-4">
-                    <AnimatePresence>
-                      {messages?.data?.length ? (
-                        messages.data.map((msg: any, index: number) => {
-                          const isFirstMessageOfDay =
-                            index === 0 ||
-                            new Date(msg.createdAt).toDateString() !==
-                              new Date(messages.data[index - 1].createdAt).toDateString()
+                  <div className="max-w-full mx-auto h-full flex flex-1 flex-col space-y-4">
+                    {messages?.data?.length ? (
+                      messages.data.map((msg: any, index: number) => {
+                        const isFirstMessageOfDay =
+                          index === 0 ||
+                          new Date(msg.createdAt).toDateString() !==
+                          new Date(messages.data[index - 1].createdAt).toDateString()
 
-                          const isSender = msg.senderRole !== "user"
+                        const isSender = msg.senderRole !== "user"
 
-                          return (
-                            <div key={`message-group-${msg.id}`}>
-                              {isFirstMessageOfDay && (
-                                <div className="flex justify-center my-4">
-                                  <div className="bg-white bg-opacity-70 px-3 py-1 rounded-full text-xs text-slate-600 shadow-sm">
-                                    {new Date(msg.createdAt).toLocaleDateString([], {
-                                      weekday: "long",
-                                      year: "numeric",
-                                      month: "long",
-                                      day: "numeric",
-                                    })}
-                                  </div>
+                        return (
+                          <div key={`message-group-${msg.id}`}>
+                            {isFirstMessageOfDay && (
+                              <div className="flex justify-center my-4">
+                                <div className="bg-white bg-opacity-70 px-3 py-1 rounded-full text-xs text-slate-600 shadow-sm">
+                                  {new Date(msg.createdAt).toLocaleDateString([], {
+                                    weekday: "long",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  })}
                                 </div>
-                              )}
-                              <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.3 }}
-                                className={`flex ${isSender ? "justify-end" : "justify-start"}`}
-                              >
-                                <div className="flex items-start gap-2 max-w-[80%]">
-                                  {!isSender && (
-                                    <Avatar className="h-9 w-9 mt-1">
-                                      <AvatarImage
-                                        src={
-                                          transformedChatList.find((chat: any) => chat.userId === selectedUser)
-                                            ?.userAvatar
-                                        }
-                                        alt="User avatar"
-                                      />
-                                      <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white text-xs">
-                                        {getInitials(
-                                          transformedChatList.find((chat: any) => chat.userId === selectedUser)
-                                            ?.userName || "",
-                                        )}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                  )}
-                                  <div className="bg-white rounded-lg p-6 border border-gray-200">
-                                    <div className="flex justify-between items-start gap-2">
-                                      <p className={`text-sm ${isSender ? "text-white" : "text-slate-800"}`}>
-                                        {msg.message}
-                                      </p>
-                                      {renderMessageActions(msg.id, isSender)}
-                                    </div>
-                                    <p
-                                      className={`text-xs mt-1 text-right ${
-                                        isSender ? "text-blue-100" : "text-slate-500"
-                                      }`}
-                                    >
-                                      {formatTime(msg.createdAt)}
+                              </div>
+                            )}
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -20 }}
+                              transition={{ duration: 0.3 }}
+                              className={`flex ${isSender ? "justify-end" : "justify-start"}`}
+                            >
+                              <div className="flex items-start gap-2 max-w-[80%]">
+                                {!isSender && (
+                                  <Avatar className="h-9 w-9 mt-1">
+                                    <AvatarImage
+                                      src={
+                                        transformedChatList.find((chat: any) => chat.userId === selectedUser)
+                                          ?.userAvatar
+                                      }
+                                      alt="User avatar"
+                                    />
+                                    <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white text-xs">
+                                      {getInitials(
+                                        transformedChatList.find((chat: any) => chat.userId === selectedUser)
+                                          ?.userName || "",
+                                      )}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                )}
+                                <div className={`rounded-lg p-4 border ${isSender ? 'bg-orange-400 text-white' : 'bg-white border-gray-200'
+                                  }`}>
+                                  <div className="flex justify-between items-start gap-2">
+                                    {isSender && renderMessageActions(msg.id, isSender)}
+                                    <p className={`text-sm font-medium ${isSender ? 'text-white' : 'text-main-dark-blue'
+                                      }`}>
+                                      {msg.message}
                                     </p>
+                                    {!isSender && renderMessageActions(msg.id, isSender)}
                                   </div>
+                                  <p className={`text-xs mt-1 text-right ${isSender ? 'text-orange-100' : 'text-gray-400'
+                                    }`}>
+                                    {formatTime(msg.createdAt)}
+                                  </p>
                                 </div>
-                              </motion.div>
-                            </div>
-                          )
-                        })
-                      ) : (
-                        <div className="h-full flex items-center justify-center">
-                          <div className="text-center bg-white bg-opacity-80 p-8 rounded-2xl">
-                            <div className="text-5xl mb-4">
-                              <Icon path={mdiPackageVariant} size={2.5} />
-                            </div>
-                            <p className="text-slate-600 font-medium">Bắt đầu cuộc trò chuyện</p>
-                            <p className="text-slate-500 text-sm mt-2">Gửi tin nhắn đầu tiên để bắt đầu trò chuyện</p>
+                              </div>
+                            </motion.div>
                           </div>
-                        </div>
-                      )}
-                    </AnimatePresence>
-                    <div ref={messagesEndRef} />
+                        )
+                      })
+                    ) : (
+                      <div className="flex items-center justify-center h-full bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50">
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5 }}
+                          className="text-center p-10 max-w-md mx-auto"
+                        >
+                          <div className="mb-6 flex justify-center">
+                            <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] flex items-center justify-center shadow-lg">
+                              <MessageCircle className="h-8 w-8 text-white" />
+                            </div>
+                          </div>
+
+                          <h3 className="text-2xl font-bold text-slate-800 mb-3 tracking-tight">Chào mừng đến với Tin nhắn</h3>
+
+                          <p className="text-slate-600 mb-6 leading-relaxed">
+                            Chọn một cuộc trò chuyện từ danh sách bên trái để bắt đầu hoặc tiếp tục cuộc trò chuyện của bạn.
+                          </p>
+
+                          <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
+                            {[...Array(3)].map((_, i) => (
+                              <motion.div
+                                key={i}
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 0.7 }}
+                                transition={{ delay: 0.1 * i + 0.5, duration: 0.3 }}
+                                className="h-1 rounded-full bg-gradient-to-r from-[#FCAF17] to-[#FF8C00]"
+                              />
+                            ))}
+                          </div>
+                        </motion.div>
+                      </div>
+                    )}
                   </div>
                 </ScrollArea>
 
@@ -415,37 +433,37 @@ export default function ChatPage() {
               </>
             ) : (
               <div className="flex items-center justify-center h-full bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="text-center p-10 max-w-md mx-auto"
-              >
-                <div className="mb-6 flex justify-center">
-                  <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] flex items-center justify-center shadow-lg">
-                    <MessageCircle className="h-8 w-8 text-white" />
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-center p-10 max-w-md mx-auto"
+                >
+                  <div className="mb-6 flex justify-center">
+                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] flex items-center justify-center shadow-lg">
+                      <MessageCircle className="h-8 w-8 text-white" />
+                    </div>
                   </div>
-                </div>
-        
-                <h3 className="text-2xl font-bold text-slate-800 mb-3 tracking-tight">Chào mừng đến với Tin nhắn</h3>
-        
-                <p className="text-slate-600 mb-6 leading-relaxed">
-                  Chọn một cuộc trò chuyện từ danh sách bên trái để bắt đầu hoặc tiếp tục cuộc trò chuyện của bạn.
-                </p>
-        
-                <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
-                  {[...Array(3)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 0.7 }}
-                      transition={{ delay: 0.1 * i + 0.5, duration: 0.3 }}
-                      className="h-1 rounded-full bg-gradient-to-r from-[#FCAF17] to-[#FF8C00]"
-                    />
-                  ))}
-                </div>
-              </motion.div>
-            </div>
+
+                  <h3 className="text-2xl font-bold text-slate-800 mb-3 tracking-tight">Chào mừng đến với Tin nhắn</h3>
+
+                  <p className="text-slate-600 mb-6 leading-relaxed">
+                    Chọn một cuộc trò chuyện từ danh sách bên trái để bắt đầu hoặc tiếp tục cuộc trò chuyện của bạn.
+                  </p>
+
+                  <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
+                    {[...Array(3)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 0.7 }}
+                        transition={{ delay: 0.1 * i + 0.5, duration: 0.3 }}
+                        className="h-1 rounded-full bg-gradient-to-r from-[#FCAF17] to-[#FF8C00]"
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
             )}
           </div>
         </div>
