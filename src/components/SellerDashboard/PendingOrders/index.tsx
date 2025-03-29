@@ -3,44 +3,22 @@ import { Card, Table, Button, Tag } from "antd"
 import type { ColumnsType } from "antd/es/table"
 import type { OrderData } from "../types"
 import { EyeOutlined, CopyOutlined, CheckOutlined } from "@ant-design/icons"
-import { useEffect, useState } from "react"
-import { getMyOrders } from "@/api/shop-products"
+import {  useState } from "react"
+import { useGetMyOrders } from "@/hooks/shop-products"
 
-interface PendingOrdersProps {
-  // data: OrderData[] // Remove this prop since we'll fetch data internally
-}
-
-<<<<<<< HEAD
-const PendingOrders = ({ data }: PendingOrdersProps) => {
-=======
-const PendingOrders: React.FC<PendingOrdersProps> = () => {
-  const [data, setData] = useState<OrderData[]>([])
-  const [loading, setLoading] = useState(false)
+const PendingOrders = () => {
+  const { data, isLoading } = useGetMyOrders({
+    status: "PENDING",
+  })
+  
   const [copiedId, setCopiedId] = useState<string | null>(null)
-
-  useEffect(() => {
-    const fetchPendingOrders = async () => {
-      setLoading(true)
-      try {
-        const response = await getMyOrders({ status: "PENDING" })
-        setData(response.data.data as any || []) // Update to access response.data.data
-      } catch (error) {
-        console.error("Failed to fetch pending orders:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchPendingOrders()
-  }, [])
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text)
     setCopiedId(text)
-    setTimeout(() => setCopiedId(null), 3000)
+    setTimeout(() => setCopiedId(null), 2000)
   }
 
->>>>>>> 27d7933e1f5caa1e48fed45abea1d3195233d470
   const columns: ColumnsType<OrderData> = [
     {
       title: "Mã đặt hàng",
@@ -116,11 +94,11 @@ const PendingOrders: React.FC<PendingOrdersProps> = () => {
     <Card title="Đơn hàng đang chờ xử lý">
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={data?.data as any}
         rowKey="id"
         pagination={false}
         size="middle"
-        loading={loading}
+        loading={isLoading}
       />
     </Card>
   )

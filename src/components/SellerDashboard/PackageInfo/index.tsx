@@ -3,13 +3,11 @@ import { Card } from "antd"
 import { useShopDetailStatistics } from "@/hooks/dashboard"
 import { ListTaskIcon, PercentIcon, CalendarWeekIcon } from "../mockData"
 
-const PackageInfo: React.FC = () => {
+
+
+const PackageInfo = () => {
   const { detailStatistics } = useShopDetailStatistics()
 
-<<<<<<< HEAD
-const PackageInfo = ({ data }: PackageInfoProps) => {
-=======
->>>>>>> 27d7933e1f5caa1e48fed45abea1d3195233d470
   const packageItems = [
     {
       icon: <ListTaskIcon />,

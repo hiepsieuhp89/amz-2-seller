@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useRouter } from "next/navigation"
 import AvatarDropdown from "../AvatarComponent/AvatarDropdown"
 import Image from "next/image"
@@ -7,7 +9,13 @@ import { mdiFaceAgent } from "@mdi/js"
 import Icon from "@mdi/react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { motion } from "framer-motion"
-import { useGetAllNotifications, useGetUnreadNotifications } from "@/hooks/notification"
+import {
+  useGetAllNotifications,
+  useGetUnreadNotifications,
+  useMarkAsRead,
+  useMarkAllAsRead,
+  useDeleteNotification,
+} from "@/hooks/notification"
 import { Bell } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { formatDistanceToNow } from "date-fns"
@@ -23,6 +31,10 @@ export default function LayoutHeaderCommon() {
   const [showBadge, setShowBadge] = useState(true)
 
   const unreadCount = unreadNotifications?.data?.length || 0
+
+  const { mutate: markAsRead } = useMarkAsRead()
+  const { mutate: markAllAsRead } = useMarkAllAsRead()
+  const { mutate: deleteNotification } = useDeleteNotification()
 
   // Event listeners for role and department changes
   if (typeof window !== "undefined") {
@@ -64,6 +76,24 @@ export default function LayoutHeaderCommon() {
       return formatDistanceToNow(date, { addSuffix: true, locale: vi })
     } catch (error) {
       return dateString
+    }
+  }
+
+  const handleNotificationClick = (notificationId: string) => {
+    if (notificationId) {
+      markAsRead({ notificationId })
+    }
+  }
+
+  const handleMarkAllAsRead = () => {
+    markAllAsRead()
+    setShowBadge(false)
+  }
+
+  const handleDeleteNotification = (e: React.MouseEvent, notificationId: string) => {
+    e.stopPropagation()
+    if (notificationId) {
+      deleteNotification({ notificationId })
     }
   }
 
@@ -131,16 +161,41 @@ export default function LayoutHeaderCommon() {
                             className={`p-3 hover:bg-muted/50 cursor-pointer transition-colors ${
                               notification.status === "UNREAD" ? "bg-muted/30" : ""
                             }`}
+                            onClick={() => handleNotificationClick(notification.id)}
                           >
                             <div className="flex items-start gap-3">
                               <div className="flex-1 space-y-1">
                                 <div className="flex items-center justify-between">
                                   <p className="font-semibold text-main-golden-orange text-sm">{notification.title}</p>
-                                  {notification.status === "UNREAD" && (
-                                    <span className="h-2 w-2 rounded-full bg-[#FCAF17]" />
-                                  )}
+                                  <div className="flex items-center gap-2">
+                                    {notification.status === "UNREAD" && (
+                                      <span className="h-2 w-2 rounded-full bg-[#FCAF17]" />
+                                    )}
+                                    <button
+                                      onClick={(e) => handleDeleteNotification(e, notification.id)}
+                                      className="text-gray-400 hover:text-red-500 transition-colors"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="lucide lucide-x"
+                                      >
+                                        <path d="M18 6 6 18"></path>
+                                        <path d="m6 6 12 12"></path>
+                                      </svg>
+                                    </button>
+                                  </div>
                                 </div>
-                                <p className="text-sm text-muted-foreground italic text-wrap break-words line-clamp-2">{notification.content}</p>
+                                <p className="text-sm text-muted-foreground italic text-wrap break-words line-clamp-2">
+                                  {notification.content}
+                                </p>
                                 <p className="text-xs text-gray-400">{formatDate(notification.createdAt)}</p>
                               </div>
                             </div>
@@ -156,16 +211,24 @@ export default function LayoutHeaderCommon() {
                   </div>
                 </ScrollArea>
 
-                <div className="p-2 border-t">
+                <div className="p-2 border-t flex gap-2">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full rounded-sm 
-                    !bg-orange-400 hover:!bg-orange-500 !text-white transition-all duration-300
-                    "
+                    className="flex-1 rounded-sm !bg-orange-400 hover:!bg-orange-500 !text-white transition-all duration-300"
                   >
-                    Xem tất cả thông báo <Bell className="h-4 w-4" />
+                    Xem tất cả thông báo <Bell className="h-4 w-4 ml-1" />
                   </Button>
+                  {unreadCount > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleMarkAllAsRead}
+                      className="rounded-sm hover:bg-muted transition-all duration-300"
+                    >
+                      Đánh dấu đã đọc
+                    </Button>
+                  )}
                 </div>
               </div>
             </PopoverContent>

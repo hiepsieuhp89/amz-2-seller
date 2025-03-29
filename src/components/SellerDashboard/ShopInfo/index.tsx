@@ -3,13 +3,8 @@ import { Card, Row, Col } from "antd"
 import { useShopDetailStatistics } from "@/hooks/dashboard"
 import { BoxSeamIcon, StarsIcon, ReceiptIcon, PersonHeartsIcon, EyeIcon } from "../mockData"
 
-const ShopInfo: React.FC = () => {
+const ShopInfo = () => {
   const { detailStatistics } = useShopDetailStatistics()
-
-<<<<<<< HEAD
-const ShopInfo = ({ data }: ShopInfoProps) => {
-=======
->>>>>>> 27d7933e1f5caa1e48fed45abea1d3195233d470
   const infoItems = [
     {
       icon: <BoxSeamIcon />,

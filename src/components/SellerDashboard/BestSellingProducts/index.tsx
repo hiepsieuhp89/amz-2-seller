@@ -2,16 +2,16 @@ import type React from "react"
 import { Card, Table } from "antd"
 import type { ColumnsType } from "antd/es/table"
 import { useTopSellingProducts } from "@/hooks/dashboard"
+import { ProductData } from "../types"
 
-const BestSellingProducts: React.FC = () => {
+interface BestSellingProductsProps {
+  data: ProductData[]
+}
+
+const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
   const { data: topSellingProducts, isLoading } = useTopSellingProducts()
 
-<<<<<<< HEAD
-const BestSellingProducts = ({ data }: BestSellingProductsProps) => {
   const columns: ColumnsType<ProductData> = [
-=======
-  const columns: ColumnsType<any> = [
->>>>>>> 27d7933e1f5caa1e48fed45abea1d3195233d470
     {
       title: "#",
       dataIndex: "index",
@@ -58,7 +58,7 @@ const BestSellingProducts = ({ data }: BestSellingProductsProps) => {
         loading={isLoading}
         pagination={false}
         expandable={{ expandedRowRender }}
-        rowKey={(record) => record.product.id}
+        rowKey={(record) => record?.id}
       />
     </Card>
   )
