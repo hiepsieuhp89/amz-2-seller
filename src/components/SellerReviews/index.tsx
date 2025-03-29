@@ -2,44 +2,46 @@
 
 import type React from "react"
 import { useState } from "react"
-import ReviewsTable from "./ReviewsTable"
-
-// Mock data - đã cập nhật thành mảng rỗng
-const mockReviews: any[] = [] 
+import { ProductsTable } from "./ProductsTable"
+import { mdiPackageVariant, mdiStar } from "@mdi/js"
+import Icon from "@mdi/react"
 
 const SellerReviews = () => {
-  const [filteredReviews, setFilteredReviews] = useState(mockReviews)
-
-  const handleFilterChange = (value: string) => {
-    if (!value) {
-      setFilteredReviews(mockReviews)
-      return
-    }
-
-    const ratingValue = parseInt(value)
-    const filtered = mockReviews.filter((review) => review.rating === ratingValue)
-    setFilteredReviews(filtered)
-  }
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
 
   const handleSearch = (value: string) => {
-    if (!value) {
-      setFilteredReviews(mockReviews)
-      return
-    }
+    setSearchQuery(value)
+  }
 
-    const filtered = mockReviews.filter(
-      (review) => 
-        review.product.toLowerCase().includes(value.toLowerCase()) ||
-        review.customer.toLowerCase().includes(value.toLowerCase())
-    )
-    setFilteredReviews(filtered)
+  const handleSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys)
   }
 
   return (
-    <div className="pt-2">
-      <ReviewsTable data={filteredReviews} onFilterChange={handleFilterChange} onSearch={handleSearch} />
+    <div className="p-4">
+      <div className="flex items-center mb-4">
+        <div
+          className="bg-blue-100 !text-[#188DFA] w-10 h-10 rounded-full flex items-center justify-center text-lg relative z-10"
+        >
+          <Icon path={mdiStar} size={0.8} color={"#188DFA"} />
+        </div>
+        <div
+          className="bg-blue-100 w-fit px-6 h-8 rounded-full flex items-center justify-center -translate-x-5"
+        >
+          <p className="!font-semibold !text-[#188DFA] !text-base">
+            Đánh giá sản phẩm
+          </p>
+        </div>
+      </div>
+      <ProductsTable
+        onSearch={handleSearch}
+        selectedRowKeys={selectedRowKeys}
+        onSelectChange={handleSelectChange}
+      />
     </div>
   )
 }
 
 export default SellerReviews
+

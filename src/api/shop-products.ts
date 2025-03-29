@@ -26,6 +26,7 @@ export const getMyShopProducts = async (params: {
   maxPrice?: number
   inStock?: boolean
   active?: boolean
+  onlyHaveReview?: boolean
 }): Promise<IShopProductsResponse> => {
   const res = await sendGet("/shop-products/my-shop-products", params)
   const data: IShopProductsResponse = res

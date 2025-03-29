@@ -24,6 +24,7 @@ export interface IGetMyShopProductsRequest {
   maxPrice?: number
   inStock?: boolean
   active?: boolean
+  onlyHaveReview?: boolean
 }
 
 export interface IGetMyOrdersRequest {

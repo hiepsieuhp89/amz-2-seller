@@ -11,6 +11,7 @@ import {
   mdiStoreOutline,
   mdiMessageTextOutline,
   mdiMessageText,
+  mdiStar,
 } from "@mdi/js"
 import Icon from "@mdi/react"
 import type { MenuProps } from "antd"
@@ -68,6 +69,13 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
         count: 0,
         color: "#f08806",
       },
+    },
+    {
+      key: "/seller/reviews",
+      name: "Đánh giá sản phẩm",
+      icon: <Icon path={mdiStar} size={0.8} />,
+      activeIcon: <Icon path={mdiStar} size={0.8} color={"#FCAF17"} />,
+      path: `/seller/reviews`,
     },
     {
       key: "/seller/account-packages",

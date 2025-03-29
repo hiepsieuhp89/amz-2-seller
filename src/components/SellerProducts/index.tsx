@@ -30,7 +30,7 @@ const SellerProducts = () => {
         <div
           className="bg-blue-100 w-fit px-6 h-8 rounded-full flex items-center justify-center -translate-x-5"
         >
-          <p className="!font-semibold !text-[#188DFA] text-lg">
+          <p className="!font-semibold !text-[#188DFA] !text-base">
             Các sản phẩm
           </p>
         </div>

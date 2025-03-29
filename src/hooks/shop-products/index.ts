@@ -53,6 +53,7 @@ export const useGetMyShopProducts = (params: {
   maxPrice?: number
   inStock?: boolean
   active?: boolean
+  onlyHaveReview?: boolean
 }) => {
   return useQuery({
     queryKey: ['myShopProducts', params],
