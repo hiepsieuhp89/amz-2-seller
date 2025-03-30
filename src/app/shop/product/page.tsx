@@ -3,7 +3,7 @@ import ProductDetail from "@/components/ProductDetail";
 import Footer from "@/components/ProductDetail/Footer";
 import Header from "@/components/ProductDetail/Header";
 import LeftSideSection from "@/components/ProductDetail/LeftSideSection";
-import { Button, Card, Divider, Rate, Typography } from "antd";
+import { Button, Divider, Rate, Typography } from "antd";
 import Title from "antd/es/typography/Title";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -24,7 +24,7 @@ function ProductDetailContent() {
             <LeftSideSection />
           </div>
           <div className="w-full lg:w-3/4">
-            <Card title={<Title level={4}>Đánh giá sản phẩm</Title>}>
+            <div style={{ background: '#fff', padding: '24px', borderRadius: '8px' }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                   <Title level={1} style={{ margin: 0 }}>
@@ -45,7 +45,7 @@ function ProductDetailContent() {
                   Chưa có nhận xét nào cho sản phẩm này.
                 </Text>
               </div>
-            </Card>
+            </div>
           </div>
         </div>
       </div>

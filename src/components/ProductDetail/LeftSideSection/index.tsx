@@ -98,9 +98,8 @@ const LeftSideSection = () => {
         variants={containerVariants}
       >
         <motion.div variants={itemVariants}>
-          <Card 
-            className="seller-info-card mb-4" 
-            bordered={true}
+          <div 
+            className="seller-info-card mb-4 p-6 border border-solid border-gray-200 rounded-lg" 
             style={{ background: '#fcfcfd' }}
           >
             <div className="position-relative text-left">
@@ -126,7 +125,7 @@ const LeftSideSection = () => {
                 
                 {/* Shop Name & Location */}
                 <div>
-                  <Link href="/shop/Shop-Hoa-Hong" className="text-main-text hover:text-primary font-bold text-sm flex items-center">
+                  <Link href="/shop/Shop-Hoa-Hong" className=" hover:font-bold text-sm flex items-center">
                     Shop Hoa Hong
                     <motion.span 
                       whileHover={{ scale: 1.2 }}
@@ -162,65 +161,64 @@ const LeftSideSection = () => {
                 </Button>
               </motion.div>
             </div>
-          </Card>
+          </div>
         </motion.div>
 
         {/* Top Selling Products */}
         <motion.div variants={itemVariants} className="hidden lg:block mt-4">
-          <Card 
-            title={
-              <Title level={5} className="mb-0 font-semibold">
-                Sản phẩm bán chạy nhất
-              </Title>
-            }
-            className="top-selling-card" 
-            bordered={true}
+          <div 
+            className="top-selling-card p-6 border border-solid border-gray-200 rounded-lg"
           >
-            <List
-              itemLayout="horizontal"
-              dataSource={topSellingProducts}
-              renderItem={(product) => (
-                <motion.div 
-                  variants={hoverVariants}
-                  whileHover="hover"
-                  className="py-3"
-                >
-                  <Link href={product.url} className="block">
-                    <div className="flex items-center">
-                      {/* Product Image */}
-                      <div className="w-1/4 xl:w-1/3 overflow-hidden">
-                        <motion.div 
-                          whileHover={{ scale: 1.1 }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          <Image 
-                            src={product.image} 
-                            alt={product.name} 
-                            width={200}
-                            height={200}
-                            className="w-full h-20 object-cover"
-                            style={{ maxHeight: '200px' }}
-                          />
-                        </motion.div>
-                      </div>
-                      
-                      {/* Product Details */}
-                      <div className="w-3/4 xl:w-2/3 pl-3">
-                        <div className="hidden xl:block mb-2">
-                          <Text className="text-sm line-clamp-2 hover:text-primary transition-colors">
-                            {product.name}
+            <div className="mb-4 font-semibold text-lg">
+              Sản phẩm bán chạy nhất
+            </div>
+            <div>
+              <List
+                itemLayout="horizontal"
+                dataSource={topSellingProducts}
+                renderItem={(product) => (
+                  <motion.div 
+                    variants={hoverVariants}
+                    whileHover="hover"
+                    className="py-3"
+                  >
+                    <Link href={product.url} className="block">
+                      <div className="flex items-center">
+                        {/* Product Image */}
+                        <div className="w-1/4 xl:w-1/3 overflow-hidden">
+                          <motion.div 
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.5 }}
+                          >
+                            <Image 
+                              src={product.image} 
+                              alt={product.name} 
+                              width={200}
+                              height={200}
+                              className="w-full h-20 object-cover"
+                              style={{ maxHeight: '200px' }}
+                            />
+                          </motion.div>
+                        </div>
+                        
+                        {/* Product Details */}
+                        <div className="w-3/4 xl:w-2/3 pl-3">
+                          <div className="hidden xl:block mb-2">
+                            <Text className="text-sm line-clamp-2 hover:transition-colors">
+                              {product.name}
+                            </Text>
+                          </div>
+                          <Text className=" font-bold">
+                            ${product.price.toFixed(2)}
                           </Text>
                         </div>
-                        <Text className="text-primary font-bold">
-                          ${product.price.toFixed(2)}
-                        </Text>
                       </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              )}
-            />
-          </Card>
+                    </Link>
+                  </motion.div>
+                )}
+              />
+            </div>
+          </div>
         </motion.div>
       </motion.div>
     </div>

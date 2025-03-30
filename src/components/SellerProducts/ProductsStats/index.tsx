@@ -28,7 +28,7 @@ export const ProductsStats = () => {
             </div>
 
             <div
-                className="bg-white rounded-lg  hover: transition-shadow p-3 flex flex-col items-center justify-center cursor-pointer">
+                className="bg-white rounded-lg  hover:transition-shadow p-3 flex flex-col items-center justify-center cursor-pointer">
                 <Button
                     onClick={() => router.push("/seller/products/storehouse")}
                     type="primary"
@@ -37,7 +37,7 @@ export const ProductsStats = () => {
                     className="!bg-gray-400 !flex !items-center !justify-center !mb-3"
                     icon={<PlusOutlined className="!text-white !text-3xl" />}
                 />
-                <div className="text-base font-medium text-primary">Thêm sản phẩm mới</div>
+                <div className="text-base font-medium ">Thêm sản phẩm mới</div>
             </div>
 
             {/* Account Package Card */}
@@ -50,7 +50,7 @@ export const ProductsStats = () => {
                         width={100}
                         src="/images/silver-shop.png" alt="Shop rank" className="object-contain" />
                 </div>
-                <span className="block text-base text-main-text font-medium mb-2 mt-1">Gói tài khoản hiện tại: Shop Bạc</span>
+                <span className="block text-base font-medium mb-2 mt-1">Gói tài khoản hiện tại: Shop Bạc</span>
                 <Button 
                 type="default" 
                 className="

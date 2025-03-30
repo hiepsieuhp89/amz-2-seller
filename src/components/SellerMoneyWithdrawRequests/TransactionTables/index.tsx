@@ -67,6 +67,7 @@ const TransactionTables = ({
           dataSource={withdrawRequests} 
           pagination={false}
           scroll={{ x: true }}
+          bordered={true}
         />
       </div>
 
@@ -76,6 +77,7 @@ const TransactionTables = ({
           dataSource={walletHistory} 
           pagination={false}
           scroll={{ x: true }}
+          bordered={true}
         />
       </div>
 
@@ -85,6 +87,7 @@ const TransactionTables = ({
           dataSource={orderHistory} 
           pagination={false}
           scroll={{ x: true }}
+          bordered={true}
         />
       </div>
     </>

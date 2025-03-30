@@ -96,7 +96,7 @@ const StatCards = () => {
           <StatCard 
             title="Lợi nhuận tổng" 
             value={`$${statistics?.totalProfit || 0}`} 
-            gradientClass="bg-gradient-to-r from-yellow-500 to-orange-500" 
+            gradientClass="bg-gradient-to-r from-yellow-500 to-[#F5F5F5]0" 
           />
         </div>
 

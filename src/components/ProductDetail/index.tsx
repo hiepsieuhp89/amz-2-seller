@@ -162,7 +162,7 @@ export default function ProductDetail() {
           <div className="grid grid-cols-3 gap-4">
             <div className="text-sm text-muted-foreground">Giá bán:</div>
             <div className="col-span-2">
-              <span className="text-2xl font-bold text-primary">${price.toFixed(2)}</span>
+              <span className="text-2xl font-bold ">${price.toFixed(2)}</span>
               <span className="ml-1 text-sm text-muted-foreground">/pc</span>
             </div>
           </div>
@@ -204,7 +204,7 @@ export default function ProductDetail() {
           <div className="grid grid-cols-3 gap-4">
             <div className="text-sm text-muted-foreground">Tổng giá:</div>
             <div className="col-span-2">
-              <span className="text-2xl font-bold text-primary">${totalPrice.toFixed(2)}</span>
+              <span className="text-2xl font-bold ">${totalPrice.toFixed(2)}</span>
             </div>
           </div>
 
@@ -216,7 +216,7 @@ export default function ProductDetail() {
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button className="h-11 gap-2 bg-primary text-primary-foreground">
+              <Button className="h-11 gap-2 bg-primary -foreground">
                 <Icon path={mdiCreditCardOutline} size={0.8} />
                 Mua ngay
               </Button>

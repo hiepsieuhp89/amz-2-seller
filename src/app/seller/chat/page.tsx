@@ -206,7 +206,7 @@ export default function ChatPage() {
           {/* Sidebar */}
           <div className="w-full md:w-[300px] border-r flex flex-col md:block hidden">
             <div className="p-4 border-b bg-white !h-[86px] flex flex-col justify-between">
-              <h2 className="text-lg font-semibold text-main-text">Tin nhắn</h2>
+              <h2 className="text-lg font-semibold ">Tin nhắn</h2>
               <div className="relative">
                 <Input
                   placeholder="Tìm kiếm cuộc trò chuyện"
@@ -217,8 +217,8 @@ export default function ChatPage() {
                 </div>
               </div>
             </div>
-            <ScrollArea className="flex flex-col h-full bg-[#F5F5F5]">
-              <div className="flex flex-col h-full">
+            <ScrollArea className="flex flex-col h-[calc(100%-86px)] bg-white">
+              <div className="flex flex-col">
                 {transformedChatList?.map((item: any) => (
                   <div
                     key={item.userId}
@@ -271,7 +271,6 @@ export default function ChatPage() {
                   </div>
                 ))}
               </div>
-              <div className="w-[300px] h-24 flex-grow bg-gradient-to-b from-white to-[#FFF7ED]"></div>
             </ScrollArea>
           </div>
 
@@ -290,7 +289,7 @@ export default function ChatPage() {
             <div className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden">
               <div className="absolute inset-y-0 left-0 w-full md:w-[280px] bg-white">
                 <div className="p-4 border-b bg-white !h-[86px] flex flex-col justify-between">
-                  <h2 className="text-lg font-semibold text-main-text">Tin nhắn</h2>
+                  <h2 className="text-lg font-semibold ">Tin nhắn</h2>
                   <div className="relative">
                     <Input
                       placeholder="Tìm kiếm cuộc trò chuyện"
@@ -447,7 +446,7 @@ export default function ChatPage() {
                                   }`}>
                                   <div className="flex justify-between items-start gap-2">
                                     {isSender && renderMessageActions(msg.id, isSender)}
-                                    <p className={`text-sm font-medium ${isSender ? 'text-white' : 'text-main-text'
+                                    <p className={`text-sm font-medium ${isSender ? 'text-white' : ''
                                       }`}>
                                       {msg.message}
                                     </p>
@@ -464,7 +463,7 @@ export default function ChatPage() {
                         )
                       })
                     ) : (
-                      <div className="flex items-center justify-center h-full bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50">
+                      <div className="flex items-center justify-center h-full bg-[#F5F5F5] to-amber-50">
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -528,7 +527,7 @@ export default function ChatPage() {
                 </div>
               </>
             ) : (
-              <div className="flex items-center justify-center h-full bg-gradient-to-br from-yellow-50 via-orange-50 to-amber-50">
+              <div className="flex items-center justify-center h-full bg-[#F5F5F5] to-amber-50">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}

@@ -1,7 +1,7 @@
 "use client"
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Input, Button, Card, Badge, Empty, Spin, message } from "antd"
+import { Input, Button, Badge, Empty, Spin, message } from "antd"
 import { PlusOutlined, SearchOutlined, DeleteOutlined } from "@ant-design/icons"
 import styles from "./storehouse.module.scss"
 import { useGetAllShopProducts } from "@/hooks/shop-products"
@@ -130,7 +130,7 @@ const Storehouse = () => {
                 placeholder="Tìm kiếm sản phẩm"
                 className="h-10"
                 value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
+                onChange={(e: any) => setKeyword(e.target.value)}
                 prefix={<SearchOutlined />}
               />
               <Input
@@ -138,14 +138,14 @@ const Storehouse = () => {
                 placeholder="Giá bắt đầu"
                 className="h-10"
                 value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e: any) => setMinPrice(e.target.value ? Number(e.target.value) : undefined)}
               />
               <Input
                 type="number"
                 placeholder="Giá kết thúc"
                 className="h-10"
                 value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e: any) => setMaxPrice(e.target.value ? Number(e.target.value) : undefined)}
               />
             </div>
 
@@ -157,35 +157,33 @@ const Storehouse = () => {
               ) : filteredProducts.length > 0 ? (
                 filteredProducts.map((product) => (
                   <div key={product.id} className={styles.productCard}>
-                    <Card
-                      className={`${styles.card} !rounded-[8px] overflow-hidden`}
-                      bodyStyle={{
+                    <div
+                      className={`${styles.card} !rounded-[8px] overflow-hidden bg-white`}
+                      style={{
                         padding: "12px",
                         display: 'flex',
                         flexDirection: 'column',
                         height: '100%'
                       }}
-                      cover={
-                        <div className={styles.imageContainer}>
-                          <Badge.Ribbon
-                            text={`Trong kho: ${product.stock || 0}`}
-                            color="green"
-                            className={styles.stockBadge}
-                            placement="start"
-                          >
-                            <Image
-                              src={checkImageUrl(product.imageUrl || "")}
-                              alt={product.name || "Product Image"}
-                              className={`${styles.productImage}`}
-                              width={500}
-                              height={500}
-                              draggable={false}
-                              quality={100}
-                            />
-                          </Badge.Ribbon>
-                        </div>
-                      }
                     >
+                      <div className={styles.imageContainer}>
+                        <Badge.Ribbon
+                          text={`Trong kho: ${product.stock || 0}`}
+                          color="green"
+                          className={styles.stockBadge}
+                          placement="start"
+                        >
+                          <Image
+                            src={checkImageUrl(product.imageUrl || "")}
+                            alt={product.name || "Product Image"}
+                            className={`${styles.productImage}`}
+                            width={500}
+                            height={500}
+                            draggable={false}
+                            quality={100}
+                          />
+                        </Badge.Ribbon>
+                      </div>
                       <div className={styles.productName}>
                         Tên sản phẩm: {product.name.length > 20 ? `${product.name.substring(0, 20)}...` : product.name}
                       </div>
@@ -229,7 +227,7 @@ const Storehouse = () => {
                         <div className={styles.overlay}></div>
                         <PlusOutlined className={styles.plusIcon} />
                       </div>
-                    </Card>
+                    </div>
                   </div>
                 ))
               ) : (
@@ -257,15 +255,15 @@ const Storehouse = () => {
               </div>
             )}
 
-            <Card
-              className="mb-3 !rounded-[8px] overflow-hidden"
-              headStyle={{ backgroundColor: 'white', border: '1px solid #eee' }}
+            <div
+              className="mb-3 !rounded-[8px] overflow-hidden bg-white"
+              style={{ border: '1px solid #eee' }}
             >
               <div>
                 {selectedProducts.length > 0 ? (
                   <ul className="list-group list-group-flush">
                     {selectedProducts.map((product, index) => (
-                      <li key={`${product.id}-${index}`} className={`${styles.selectedItem} hover:bg-gray-50 border-b py-2`}>
+                      <li key={`${product.id}-${index}`} className={`${styles.selectedItem} hover:bg-gray-50 border-b p-4`}>
                         <div className="flex items-center">
                           <Image
                             src={checkImageUrl(product.imageUrl || "")}
@@ -306,7 +304,7 @@ const Storehouse = () => {
                   />
                 )}
               </div>
-            </Card>
+            </div>
 
             <Button
               className="!rounded-[4px] !h-11 mt-4"

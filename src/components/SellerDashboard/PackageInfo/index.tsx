@@ -33,7 +33,7 @@ const PackageInfo = () => {
   ]
 
   return (
-    <Card style={{ borderRadius: "15px" }} bodyStyle={{ padding: "20px" }}>
+    <div style={{ borderRadius: "15px", padding: "20px", background: "#fff" }}>
       <h5 className="text-lg font-medium mb-4">Gói đã mua</h5>
       <div className="flex justify-center items-center p-4">
         <img
@@ -59,7 +59,7 @@ const PackageInfo = () => {
           </div>
         ))}
       </div>
-    </Card>
+    </div>
   )
 }
 

@@ -44,8 +44,8 @@ const ShopInfo = () => {
   ]
 
   return (
-    <Card style={{ borderRadius: "15px" }} bodyStyle={{ padding: "20px" }}>
-      <h5 className="text-lg font-medium mb-2">Thông tin cửa hàng</h5>
+    <div style={{ borderRadius: "15px", padding: "20px", background: "#fff" }}>
+      <h5 className="text-lg font-medium mb-4">Thông tin cửa hàng</h5>
       <Row gutter={[16, 16]} className="mt-3">
         {infoItems.map((item, index) => (
           <Col xs={24} sm={12} key={index}>
@@ -61,7 +61,7 @@ const ShopInfo = () => {
           </Col>
         ))}
       </Row>
-    </Card>
+    </div>
   )
 }
 

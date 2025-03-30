@@ -62,7 +62,7 @@ const OrdersTable  = () => {
             title: "Tổng tiền",
             dataIndex: "totalAmount",
             key: "totalAmount",
-            width: '10%',
+            width: 110,
             render: (text) => `$${text}`,
             sorter: (a, b) => parseFloat(a.totalAmount) - parseFloat(b.totalAmount),
         },
@@ -70,7 +70,7 @@ const OrdersTable  = () => {
             title: "Trạng thái",
             dataIndex: "status",
             key: "status",
-            width: '15%',
+            width: 110,
             render: (status) => (
                 <Badge
                     status={status === 'PENDING' ? 'warning' : 'success'}
@@ -90,13 +90,13 @@ const OrdersTable  = () => {
             title: "Số sản phẩm",
             dataIndex: "itemsCount",
             key: "itemsCount",
-            width: '10%',
+            width: 110,
             sorter: (a, b) => a.itemsCount - b.itemsCount,
         },
         {
             title: "Hành động",
             key: "action",
-            width: '15%',
+            width: 110,
             render: () => (
                 <Space size="middle">
                 <Tooltip title="Xem chi tiết">
@@ -127,12 +127,12 @@ const OrdersTable  = () => {
     ];
 
     return (
-        <div className="orders-table-card border p-4">
+        <div className="border p-4 bg-white rounded-md">
             <Row justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
                 <Col xs={24} sm={12}>
                     <Space size="middle">
                         <Title level={5} style={{ margin: 0 }}>
-                            Đơn hàng
+                            Tất cả đơn hàng
                         </Title>
                         <Badge 
                             size='default'
@@ -196,6 +196,7 @@ const OrdersTable  = () => {
                 expandable={{
                     expandedRowKeys,
                     expandIcon: () => null,
+                    expandIconColumnIndex: -1,
                     expandedRowRender: (record: any) => (
                         <div className="p-4 bg-gray-50">
                             <p>

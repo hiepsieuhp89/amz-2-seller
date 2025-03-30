@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: 'Amazon Ember', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #373737;
 }
 
 html,
@@ -16,12 +16,9 @@ html,
   border-radius: unset !important;
 }
 
-/* Thay đổi kích thước thanh cuộn cho các trình duyệt Webkit (Chrome, Safari, Edge,...) */
 ::-webkit-scrollbar {
   width: 8px;
-  /* Đặt chiều rộng của thanh cuộn ngang */
   height: 8px;
-  /* Đặt chiều cao của thanh cuộn dọc */
 }
 
 ::-webkit-scrollbar-thumb {
@@ -96,7 +93,7 @@ html,
   background: linear-gradient(#f6dd9e, #f0c24d) !important;
   border: 0.075em solid #878787 !important;
   border-radius: 0.1em !important;
-  color: #000000 !important;
+  color: #373737 !important;
 }
 
 .ant-menu-item-selected {
@@ -155,7 +152,12 @@ ul.ant-menu.ant-menu-sub.ant-menu-inline {
   background-color: #131921 !important;
 }
 
-
+.ant-typography, 
+.ant-table-column-title,
+.ant-table-cell,
+.ant-badge-status-text {
+  color: #373737 !important;
+}
 
 @layer base {
   :root {
