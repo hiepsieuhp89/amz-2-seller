@@ -1,0 +1,17 @@
+@media (max-width: 768px) {
+    .mobile\:max-h-\[300px\] {
+        max-height: 300px !important;
+    }
+
+    .ant-card {
+        margin: 0 10px;
+    }
+
+    .ant-card-body {
+        padding: 15px !important;
+    }
+
+    h5 {
+        font-size: 1rem !important;
+    }
+}

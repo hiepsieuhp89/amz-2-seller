@@ -3,12 +3,10 @@
 import type React from "react"
 import { useState } from "react"
 import { Table, Badge, Button, Tooltip, Input, Select, Card, Row, Col, Typography, Modal, Form, Checkbox } from "antd"
-import { EyeOutlined, DownloadOutlined, PlusOutlined, SearchOutlined, MinusOutlined } from "@ant-design/icons"
 import type { ColumnsType } from "antd/es/table"
 import Icon from '@mdi/react';
 import { mdiCashClock } from '@mdi/js';
-const { Option } = Select
-
+import { Option } from "antd/lib/mentions"
 interface OrderData {
     key: string
     time: string
@@ -87,7 +85,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
             render: (_, record) => (
                 <Checkbox
                     checked={selectedRowKeys.includes(record.key)}
-                    onChange={(e) => onSelectChange(record.key, e.target.checked)}
+                    onChange={(e: any) => onSelectChange(record.key, e.target.checked)}
                 />
             ),
         },
@@ -188,7 +186,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
                         className="placeholder-gray-400"
                         placeholder="Nhập Mã đơn hàng và nhấn Enter"
                         style={{ width: 250 }}
-                        onPressEnter={(e) => onSearch((e.target as HTMLInputElement).value)}
+                        onPressEnter={(e: any) => onSearch((e.target as HTMLInputElement).value)}
                     />
                     <Button
                         className="!rounded-[4px]"
@@ -211,7 +209,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
 
             <Table
                 columns={columns}
-                dataSource={data}
+                dataSource={Array.isArray(data) ? data : []}
                 pagination={false}
                 rowKey="key"
                 className="border-t"
@@ -221,10 +219,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
                 }}
                 expandable={{
                     expandedRowKeys,
-                    onExpand: (expanded, record) => {
+                    onExpand: (expanded: any, record: any) => {
                         toggleExpand(record.key)
                     },
-                    expandedRowRender: (record) => (
+                    expandedRowRender: (record: any) => (
                         <div className="p-4 bg-gray-50" style={{ borderTop: '1px solid #f0f0f0' }}>
                             <p>
                                 <strong>Khách hàng:</strong> Ryan Nash
@@ -306,7 +304,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
                                 {
                                     dataIndex: 'value',
                                     key: 'value',
-                                    render: (text) => <span className="text-danger">{text}</span>
+                                    render: (text: any) => <span className="text-danger">{text}</span>
                                 }
                             ]}
                         />
@@ -384,7 +382,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
                                 {
                                     dataIndex: 'value',
                                     key: 'value',
-                                    render: (text) => <span className="text-danger">{text}</span>
+                                    render: (text: any) => <span className="text-danger">{text}</span>
                                 }
                             ]}
                         />

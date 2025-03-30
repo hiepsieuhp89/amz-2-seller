@@ -78,7 +78,7 @@ function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
     <div
       className="sidebar"
       style={{
-        width: isSidebarOpen ? "280px" : "80px",
+        width: isSidebarOpen ? "280px" : "60px",
         backgroundColor: "#4D148C", // FedEx purple color
         height: "100%",
         transition: "width 0.3s",
@@ -119,9 +119,9 @@ function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
             mode="inline"
             theme="dark"
             style={{
-              backgroundColor: "#4D148C", // FedEx purple color
+              backgroundColor: "#4D148C",
               borderRight: "none",
-              width: isSidebarOpen ? "280px" : "80px",
+              width: isSidebarOpen ? "280px" : "60px",
             }}
             defaultSelectedKeys={[menu.find((item) => isActive(item.path))?.key || ""]}
             defaultOpenKeys={[activeSubMenu || ""]}

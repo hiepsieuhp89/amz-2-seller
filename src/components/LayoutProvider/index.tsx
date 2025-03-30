@@ -1,6 +1,6 @@
 'use client';
 import styles from './styles.module.scss';
-import { lazy, useState, createContext, useContext } from 'react';
+import { lazy, useState, createContext, useContext, useEffect } from 'react';
 import { Button } from 'antd';
 import Icon from '@mdi/react';
 import { mdiMenu, mdiWindowClose } from '@mdi/js';
@@ -8,7 +8,6 @@ import { mdiMenu, mdiWindowClose } from '@mdi/js';
 const LayoutPage = lazy(() => import('@/components/LayoutPage'));
 const LayoutHeaderCommon = lazy(() => import('@/components/LayoutHeaderCommom'));
 
-// Tạo context để quản lý trạng thái sidebar
 type LayoutContextType = {
 isSidebarOpen: boolean;
 toggleSidebar: () => void;
@@ -16,7 +15,6 @@ toggleSidebar: () => void;
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 
-// Hook để sử dụng context
 export const useLayout = () => {
 const context = useContext(LayoutContext);
 if (!context) {
@@ -32,15 +30,29 @@ children,
 children: React.ReactNode;
 }>) => {
 const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+const [isMobile, setIsMobile] = useState(false);
+useEffect(() => {
+  const checkMobile = () => {
+    setIsMobile(window.innerWidth <= 768);
+    if (window.innerWidth <= 768) {
+      setIsSidebarOpen(false);
+    }
+  };
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+  return () => window.removeEventListener('resize', checkMobile);
+}, []);
 const toggleSidebar = () => {
-  setIsSidebarOpen(!isSidebarOpen);
+  if (!isMobile) {
+    setIsSidebarOpen(!isSidebarOpen);
+  }
 };
 
 return (
   <LayoutContext.Provider value={{ isSidebarOpen, toggleSidebar }}>
     <div className={styles.root} suppressHydrationWarning>
       <div className='!bg-main-dark-blue'>
-        <LayoutPage isSidebarOpen={isSidebarOpen} />
+        <LayoutPage isSidebarOpen={isMobile ? false : isSidebarOpen} />
       </div>
 
       <div className={styles.outlet}>
@@ -74,7 +86,6 @@ return (
 );
 };
 
-// RootLayout bây giờ chỉ sử dụng LayoutProvider
 export default function RootLayout({
 children,
 }: Readonly<{

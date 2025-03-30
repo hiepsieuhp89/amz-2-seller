@@ -180,7 +180,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
               </Link>
             ),
           })),
-          expandIcon: ({ isOpen }) =>
+          expandIcon: ({ isOpen }: { isOpen: boolean }) =>
             isOpen ? <Icon path={mdiChevronDown} size={0.8} /> : <Icon path={mdiChevronRight} size={0.8} />,
         }
       }
@@ -251,7 +251,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
   // Animation variants for consistent timing
   const sidebarVariants = {
     open: { width: 280, transition: { duration: 0.3, ease: "easeInOut" } },
-    closed: { width: 80, transition: { duration: 0.3, ease: "easeInOut" } },
+    closed: { width: 60, transition: { duration: 0.3, ease: "easeInOut" } },
   }
 
   const contentVariants = {
@@ -392,7 +392,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
           <motion.div
             initial={false}
             animate={{
-              width: isSidebarOpen ? "280px" : "80px",
+              width: isSidebarOpen ? "280px" : "60px",
               transition: { duration: 0.3, ease: "easeInOut" },
             }}
           >

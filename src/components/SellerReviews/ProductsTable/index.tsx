@@ -4,7 +4,7 @@ import Icon from "@mdi/react"
 import { mdiArrowTopRightThin } from "@mdi/js"
 import type React from "react"
 import { useState } from "react"
-import { Table, Input, Button, Space, Typography, Row, Col, Pagination, Card, Tooltip, Badge, Divider } from "antd"
+import { Table, Input, Button, Space, Typography, Row, Col, Pagination, Tooltip, Badge } from "antd"
 import { SearchOutlined, FilterOutlined, ReloadOutlined } from "@ant-design/icons"
 import type { IShopProduct } from "@/interface/response/shop-products"
 import { useGetMyShopProducts } from "@/hooks/shop-products"
@@ -163,95 +163,85 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
     },
   ]
 
-  console.log("Dialog state:", {
-    selectedProductId,
-    hasReviews: selectedProductReviews?.length > 0,
-    isOpen: selectedProductId !== null,
-  })
-
   return (
     <>
-      <Card
-        bordered={false}
-        className="products-table-card border !text-main-dark-blue/80"
-        style={{ borderRadius: "8px", boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)" }}
-      >
-        <Row justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
-          <Col>
-            <Space size="middle">
-              <Title level={5} style={{ margin: 0 }}>
-                Tất cả sản phẩm
-              </Title>
-              <Badge size="default" count={totalItems} showZero style={{ backgroundColor: "#1890ff" }} />
-            </Space>
-          </Col>
-          <Col>
-            <Space size="small">
-              <Input
-                placeholder="Tìm kiếm sản phẩm"
-                prefix={<SearchOutlined style={{ color: "#1890ff" }} />}
-                value={searchText}
-                onChange={(e) => handleSearch(e.target.value)}
-                style={{ width: 250, borderRadius: "6px" }}
-                allowClear
-              />
-              <Tooltip title="Lọc sản phẩm">
-                <Button icon={<FilterOutlined />} style={{ borderRadius: "6px" }} />
-              </Tooltip>
-              <Tooltip title="Làm mới">
-                <Button icon={<ReloadOutlined />} style={{ borderRadius: "6px" }} />
-              </Tooltip>
-            </Space>
-          </Col>
-        </Row>
-
-        <Divider style={{ margin: "0 0 16px 0" }} />
-
-        {selectedRowKeys.length > 0 && (
-          <Row style={{ marginBottom: 16 }}>
-            <Space>
-              <Text strong>{selectedRowKeys.length} sản phẩm đã chọn</Text>
-              <Button danger size="small">
-                Xóa đã chọn
-              </Button>
-            </Space>
+      <div className="products-table-container">
+        <div className="products-table-card border p-4">
+          <Row justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
+            <Col>
+              <Space size="middle">
+                <Title level={5} style={{ margin: 0 }}>
+                  Tất cả sản phẩm
+                </Title>
+                <Badge size="default" count={totalItems} showZero style={{ backgroundColor: "#1890ff" }} />
+              </Space>
+            </Col>
+            <Col>
+              <Space size="small" style={{ display: 'flex', width: '100%' }}>
+                <Input
+                  placeholder="Tìm kiếm sản phẩm"
+                  prefix={<SearchOutlined style={{ color: "#1890ff" }} />}
+                  value={searchText}
+                  onChange={(e: any) => handleSearch(e.target.value)}
+                  style={{ flex: 1, borderRadius: "6px" }}
+                  allowClear
+                />
+                <Tooltip title="Lọc sản phẩm">
+                  <Button icon={<FilterOutlined />} style={{ borderRadius: "6px" }} />
+                </Tooltip>
+                <Tooltip title="Làm mới">
+                  <Button icon={<ReloadOutlined />} style={{ borderRadius: "6px" }} />
+                </Tooltip>
+              </Space>
+            </Col>
           </Row>
-        )}
 
-        <Table
-          rowKey="productId"
-          columns={columns}
-          dataSource={products as any}
-          loading={isLoading}
-          pagination={false}
-          scroll={{ x: "max-content" }}
-          size="middle"
-          rowClassName={() => "product-table-row"}
-          style={{
-            overflow: "hidden",
-            tableLayout: "fixed",
-            maxWidth: "100vw",
-          }}
-          bordered
-        />
+          {selectedRowKeys.length > 0 && (
+            <Row style={{ marginBottom: 16 }}>
+              <Space>
+                <Text strong>{selectedRowKeys.length} sản phẩm đã chọn</Text>
+                <Button danger size="small">
+                  Xóa đã chọn
+                </Button>
+              </Space>
+            </Row>
+          )}
 
-        <Row justify="space-between" align="middle" style={{ marginTop: 16 }}>
-          <Col></Col>
-          <Col>
-            <Pagination
-              current={currentPage}
-              pageSize={pageSize}
-              total={totalItems}
-              showSizeChanger
-              showQuickJumper
-              onChange={handlePaginationChange}
-              onShowSizeChange={handlePaginationChange}
-              style={{ marginTop: "16px" }}
-              className="custom-pagination"
-            />
-          </Col>
-        </Row>
-      </Card>
+          <Table
+            rowKey="productId"
+            columns={columns}
+            dataSource={products as any}
+            loading={isLoading}
+            pagination={false}
+            scroll={{ x: "max-content" }}
+            size="middle"
+            rowClassName={() => "product-table-row"}
+            style={{
+              overflow: "hidden",
+              tableLayout: "fixed",
+              maxWidth: "100vw",
+            }}
+            bordered
+          />
+
+          <Row justify="space-between" align="middle" style={{ marginTop: 16 }}>
+            <Col></Col>
+            <Col>
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={totalItems}
+                showSizeChanger
+                showQuickJumper
+                onChange={handlePaginationChange}
+                onShowSizeChange={handlePaginationChange}
+                style={{ marginTop: "16px" }}
+                className="custom-pagination"
+              />
+            </Col>
+          </Row>
+        </div>
+      </div>
 
       <Dialog
         open={selectedProductId !== null}
@@ -319,14 +309,14 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       <Lightbox
         open={openLightbox}
         close={() => setOpenLightbox(false)}
-        slides={productImages.map((src) => ({ src }))}
+        slides={productImages.map((src: any) => ({ src }))}
         index={currentImageIndex}
         controller={{
           closeOnBackdropClick: true,
           closeOnPullDown: true,
         }}
         on={{
-          view: ({ index }) => setCurrentImageIndex(index),
+          view: ({ index }: { index: number }) => setCurrentImageIndex(index),
         }}
       />
     </>

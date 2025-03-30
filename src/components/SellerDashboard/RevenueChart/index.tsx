@@ -1,7 +1,7 @@
 import type React from "react"
 import { Card } from "antd"
 import { Line } from "@ant-design/charts"
-
+import "./styles.css"
 interface ChartData {
   date: string
   value: number
@@ -111,12 +111,12 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
   }
 
   return (
-    <Card className="h-full" style={{ borderRadius: "15px" }} bodyStyle={{ padding: "20px" }}>
+    <div className="h-full p-5" style={{ borderRadius: "15px" }}>
       <h5 className="text-lg font-medium mb-4">Chi tiết doanh thu</h5>
-      <div style={{ height: "400px" }}>
+      <div style={{ height: "400px" }} className="mobile:max-h-[300px]">
         <Line {...config} />
       </div>
-    </Card>
+    </div>
   )
 }
 

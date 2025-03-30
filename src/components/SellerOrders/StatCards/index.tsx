@@ -26,6 +26,11 @@ const StatCard = ({ title, value, gradientClass }: StatCardProps) => {
 
 const StatCards: React.FC = () => {
   const { statistics } = useShopStatistics()
+  
+  if (!statistics) {
+    return <div>Đang tải thống kê...</div>
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       <StatCard

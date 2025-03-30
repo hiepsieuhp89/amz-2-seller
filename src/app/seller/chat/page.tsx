@@ -30,6 +30,7 @@ export default function ChatPage() {
   const { mutate: deleteMessage } = useDeleteMessage()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const prevMessagesCount = useRef(messages?.data?.length || 0)
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false)
 
   const transformedChatList =
     chatList?.data?.data?.reduce((acc: any, message: any) => {
@@ -65,6 +66,9 @@ export default function ChatPage() {
     if (selectedChat && selectedChat.unreadCount > 0) {
       markAsRead(userId)
     }
+
+    // Đóng sidebar trên mobile
+    setShowMobileSidebar(false)
   }
 
   // Scroll to bottom when new messages arrive
@@ -78,7 +82,7 @@ export default function ChatPage() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (selectedUser) {
-        refetchMessages().then((newData) => {
+        refetchMessages().then((newData: any) => {
           const newMessages = newData.data?.data || []
           if (newMessages.length > prevMessagesCount.current) {
             const newCount = newMessages.length - prevMessagesCount.current
@@ -200,7 +204,7 @@ export default function ChatPage() {
       <div className="flex flex-col overflow-hidden border p-4" style={{ height: 'calc(100vh - 70px)' }}>
         <div className="flex h-full rounded-[6px] overflow-hidden border">
           {/* Sidebar */}
-          <div className="w-[300px] border-r flex flex-col">
+          <div className="w-full md:w-[300px] border-r flex flex-col md:block hidden">
             <div className="p-4 border-b bg-white !h-[86px] flex flex-col justify-between">
               <h2 className="text-lg font-semibold text-main-text">Tin nhắn</h2>
               <div className="relative">
@@ -270,6 +274,91 @@ export default function ChatPage() {
               <div className="w-[300px] h-24 flex-grow bg-gradient-to-b from-white to-[#FFF7ED]"></div>
             </ScrollArea>
           </div>
+
+          {/* Mobile Sidebar Toggle */}
+          <div className="md:hidden fixed bottom-4 right-4 z-50">
+            <Button
+              onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+              className="rounded-full h-12 w-12 shadow-lg"
+            >
+              <MessageSquare className="h-5 w-5" />
+            </Button>
+          </div>
+
+          {/* Mobile Sidebar */}
+          {showMobileSidebar && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden">
+              <div className="absolute inset-y-0 left-0 w-full md:w-[280px] bg-white">
+                <div className="p-4 border-b bg-white !h-[86px] flex flex-col justify-between">
+                  <h2 className="text-lg font-semibold text-main-text">Tin nhắn</h2>
+                  <div className="relative">
+                    <Input
+                      placeholder="Tìm kiếm cuộc trò chuyện"
+                      className="rounded-sm h-8 pl-8 border-slate-300 focus-visible:ring-blue-500"
+                    />
+                    <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                      <Icon path={mdiMagnify} size={0.8} className="!text-gray-400" />
+                    </div>
+                  </div>
+                </div>
+                <ScrollArea className="flex flex-col h-full bg-[#F5F5F5]">
+                  <div className="flex flex-col h-full">
+                    {transformedChatList?.map((item: any) => (
+                      <div
+                        key={item.userId}
+                        className={`cursor-pointer transition-all duration-200  ${selectedUser === item.userId
+                            ? "bg-white border-l-4 border-blue-500"
+                            : "hover:bg-white bg-white border-l-4 border-transparent"
+                          }`}
+                        onClick={() => handleUserClick(item.userId)}
+                      >
+                        <div className="px-3 py-3">
+                          <div className="flex items-start gap-2">
+                            <div className="relative flex-shrink-0">
+                              <Avatar className="h-12 w-12 border-2 border-white ">
+                                <AvatarImage src={item.userAvatar} alt={item.userName} />
+                                <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white">
+                                  {getInitials(item.userName)}
+                                </AvatarFallback>
+                              </Avatar>
+                              {item.unreadCount > 0 && (
+                                <span className="absolute -top-1 -right-1">
+                                  <Badge
+                                    variant="destructive"
+                                    className="h-5 min-w-5 flex items-center justify-center rounded-full animate-pulse"
+                                  >
+                                    {item.unreadCount}
+                                  </Badge>
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <span
+                                  className={`font-medium text-base ${item.unreadCount > 0 ? "text-slate-900 font-semibold" : "text-slate-700"}`}
+                                >
+                                  {item.userName}
+                                </span>
+                                <span className="text-xs text-slate-500">{formatTime(item.lastMessageDate)}</span>
+                              </div>
+                              <div>
+                                <p
+                                  className={`max-w-[300px] text-sm text-wrap ${item.unreadCount > 0 ? "text-slate-800 font-medium" : "text-slate-600"}`}
+                                >
+                                  {item.lastMessage}
+                                </p>
+                                <p className="text-xs text-slate-400 mt-1">{formatDate(item.lastMessageDate)}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            </div>
+          )}
 
           {/* Main Content */}
           <div className="flex-1 flex flex-col bg-[#F5F5F5]">

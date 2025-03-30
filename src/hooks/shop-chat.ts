@@ -13,7 +13,7 @@ export const useSendMessageToUser = () => {
   return useMutation({
     mutationFn: ({ userId, message }: { userId: string; message: string }) => 
       sendMessageToUser(userId, message),
-    onSuccess: (_, variables) => {
+    onSuccess: (_: any, variables: { userId: string; message: string }) => {
       queryClient.invalidateQueries({ queryKey: ['shopChat', variables.userId] })
       queryClient.invalidateQueries({ queryKey: ['shopChat', 'list'] })
     },
@@ -35,7 +35,7 @@ export const useMarkMessageAsRead = () => {
   
   return useMutation({
     mutationFn: (userId: string) => markMessageAsRead(userId),
-    onSuccess: (_, userId) => {
+    onSuccess: (_: any, userId: string) => {
       queryClient.invalidateQueries({ queryKey: ['shopChat', userId] })
       queryClient.invalidateQueries({ queryKey: ['shopChat', 'list'] })
     }

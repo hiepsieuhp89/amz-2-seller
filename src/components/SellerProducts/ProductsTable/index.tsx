@@ -1,40 +1,21 @@
 "use client"
 
-import Icon from '@mdi/react';
-import { mdiContentSaveEdit, mdiEye, mdiPencil, mdiTrashCan } from '@mdi/js';
+import Icon from "@mdi/react"
+import { mdiContentSaveEdit, mdiEye, mdiTrashCan } from "@mdi/js"
 import type React from "react"
 import { useState } from "react"
-import {
-  Table,
-  Input,
-  Button,
-  Space,
-  Typography,
-  Row,
-  Col,
-  Pagination,
-  Card,
-  Tooltip,
-  Badge,
-  Divider,
-} from "antd"
-import {
-  SearchOutlined,
-  FilterOutlined,
-  ReloadOutlined,
-} from "@ant-design/icons"
+import { Table, Input, Button, Space, Typography, Row, Col, Pagination, Tooltip, Badge, Divider } from "antd"
+import { SearchOutlined, FilterOutlined, ReloadOutlined } from "@ant-design/icons"
 import type { IShopProduct } from "@/interface/response/shop-products"
 import { useGetMyShopProducts } from "@/hooks/shop-products"
-import Image from 'next/image';
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
+import Image from "next/image"
+import Lightbox from "yet-another-react-lightbox"
+import "yet-another-react-lightbox/styles.css"
 import "./styles.css"
-import { checkImageUrl } from '@/lib/utils';
+import { checkImageUrl } from "@/lib/utils"
 
 const { Title, Text } = Typography
-
 type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl"
-
 interface ProductsTableProps {
   onSearch: (value: string) => void
   selectedRowKeys: React.Key[]
@@ -48,13 +29,13 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
   const { data: shopProductsData, isLoading } = useGetMyShopProducts({
     page: currentPage,
   })
-  const [openLightbox, setOpenLightbox] = useState(false);
-  const [currentImage, setCurrentImage] = useState("");
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [openLightbox, setOpenLightbox] = useState(false)
+  const [currentImage, setCurrentImage] = useState("")
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   const products = shopProductsData?.data?.data || []
   const totalItems = shopProductsData?.data?.meta?.itemCount || 0
-  const productImages = products.map((product: any) => product.product.imageUrl).filter(Boolean);
+  const productImages = products.map((product: any) => product.product.imageUrl).filter(Boolean)
   const handleSearch = (value: string) => {
     setSearchText(value)
     onSearch(value)
@@ -65,72 +46,62 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
     if (pageSize) setPageSize(pageSize)
   }
 
-  const getStatusColor = (isActive: boolean) => {
-    return isActive ? "#52c41a" : "#faad14"
+  const handleImageClick = (imageUrl: string) => {
+    const index = productImages.indexOf(imageUrl)
+    setCurrentImageIndex(index)
+    setCurrentImage(imageUrl)
+    setOpenLightbox(true)
   }
 
-  const handleImageClick = (imageUrl: string) => {
-    const index = productImages.indexOf(imageUrl);
-    setCurrentImageIndex(index);
-    setCurrentImage(imageUrl);
-    setOpenLightbox(true);
-  };
-
-  const handleNextImage = () => {
-    const nextIndex = (currentImageIndex + 1) % productImages.length;
-    setCurrentImageIndex(nextIndex);
-    setCurrentImage(productImages[nextIndex]);
-  };
-
-  const handlePreviousImage = () => {
-    const prevIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
-    setCurrentImageIndex(prevIndex);
-    setCurrentImage(productImages[prevIndex]);
-  };
+  const isMobile = () => window.innerWidth < 768
+  const isTablet = () => window.innerWidth >= 768 && window.innerWidth < 1024
+  const isDesktop = () => window.innerWidth >= 1024
 
   const columns = [
     {
       title: "Hình ảnh",
       dataIndex: ["product", "imageUrl"],
       key: "image",
-      render: (imageUrl: string) => (
+      render: (imageUrl: string) =>
         imageUrl ? (
-          <div 
-            style={{ 
-              width: '80px', 
-              height: '80px', 
-              position: 'relative',
-              borderRadius: '4px',
-              overflow: 'hidden',
-              cursor: 'pointer'
+          <div
+            style={{
+              width: "80px",
+              height: "80px",
+              position: "relative",
+              borderRadius: "4px",
+              overflow: "hidden",
+              cursor: "pointer",
             }}
             onClick={() => handleImageClick(imageUrl)}
           >
             <Image
-              src={checkImageUrl(imageUrl)}
+              src={checkImageUrl(imageUrl) || "/placeholder.svg"}
               alt="Product"
               fill
               quality={100}
               draggable={false}
-              style={{ objectFit: 'cover' }}
+              style={{ objectFit: "cover" }}
             />
           </div>
         ) : (
-          <div style={{ 
-            width: '50px', 
-            height: '50px', 
-            backgroundColor: '#f0f0f0', 
-            borderRadius: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
+          <div
+            style={{
+              width: "50px",
+              height: "50px",
+              backgroundColor: "#f0f0f0",
+              borderRadius: "4px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <Text type="secondary">No Image</Text>
           </div>
-        )
-      ),
+        ),
       width: 80,
       align: "center" as const,
+      responsive: ["xs", "sm"] as Breakpoint[],
     },
     {
       title: "Tên sản phẩm",
@@ -139,15 +110,20 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       sorter: (a: IShopProduct, b: IShopProduct) => a.product.name.localeCompare(b.product.name),
       render: (text: string, record: IShopProduct) => (
         <Space direction="vertical" size={0} style={{ maxWidth: 300 }}>
-          <Text strong style={{ fontSize: "14px", wordWrap: 'break-word', whiteSpace: 'normal' }}>
+          <Text strong style={{ fontSize: "14px", wordWrap: "break-word", whiteSpace: "normal" }}>
             {text}
           </Text>
-          <Text type="secondary" style={{ fontSize: "12px", wordWrap: 'break-word', whiteSpace: 'normal' }} ellipsis={{ tooltip: record.product?.description }}>
+          <Text
+            type="secondary"
+            style={{ fontSize: "12px", wordWrap: "break-word", whiteSpace: "normal" }}
+            ellipsis={{ tooltip: record.product?.description }}
+          >
             {record.product?.description}
           </Text>
         </Space>
       ),
       width: 300,
+      responsive: ["xs", "sm", "md"] as Breakpoint[],
     },
     {
       title: "Số lượng",
@@ -174,7 +150,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       title: "Giá nhập",
       dataIndex: ["product", "price"],
       key: "price",
-      sorter: (a: IShopProduct, b: IShopProduct) =>Number(a.product.price) - Number(b.product.price),
+      sorter: (a: IShopProduct, b: IShopProduct) => Number(a.product.price) - Number(b.product.price),
       render: (price: number) => (
         <Button
           style={{
@@ -226,6 +202,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       ),
       align: "right" as const,
       width: 100,
+      responsive: ["md" as Breakpoint],
     },
     {
       title: "Trạng thái",
@@ -260,60 +237,41 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       render: (_: any, record: IShopProduct) => (
         <Space size="middle">
           <Tooltip title="Xem chi tiết">
-            <Icon 
-              path={mdiEye} 
-              size={0.7} 
-              color={"#A3A3A3"}
-             
-            />
+            <Icon path={mdiEye} size={0.7} color={"#A3A3A3"} />
           </Tooltip>
           <Tooltip title="Chỉnh sửa">
-            <Icon 
-              path={mdiContentSaveEdit} 
-              size={0.7} 
-              color={"#A3A3A3"}
-            />
+            <Icon path={mdiContentSaveEdit} size={0.7} color={"#A3A3A3"} />
           </Tooltip>
           <Tooltip title="Xóa">
-            <Icon 
-              path={mdiTrashCan} 
-              size={0.7} 
-              color={"#A3A3A3"}
-            />
+            <Icon path={mdiTrashCan} size={0.7} color={"#A3A3A3"} />
           </Tooltip>
         </Space>
       ),
       align: "center" as const,
       width: 100,
+      responsive: ["xs", "sm", "md"] as Breakpoint[],
     },
   ]
 
   return (
-    <Card
-      bordered={false}
-      className="products-table-card border"
-      style={{ borderRadius: "8px", boxShadow: "0 1px 2px rgba(0, 0, 0, 0.03)" }}
-    >
-      <Row 
-      justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
+    <div className="products-table-card border p-4">
+      <Row justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
         <Col>
           <Space size="middle">
             <Title level={5} style={{ margin: 0 }}>
               Tất cả sản phẩm
             </Title>
-            <Badge 
-            size='default'
-            count={totalItems} showZero style={{ backgroundColor: "#1890ff" }} />
+            <Badge size="default" count={totalItems} showZero style={{ backgroundColor: "#1890ff" }} />
           </Space>
         </Col>
         <Col>
-          <Space size="small">
+          <Space size="small" style={{ display: 'flex', width: '100%' }}>
             <Input
               placeholder="Tìm kiếm sản phẩm"
               prefix={<SearchOutlined style={{ color: "#1890ff" }} />}
               value={searchText}
-              onChange={(e) => handleSearch(e.target.value)}
-              style={{ width: 250, borderRadius: "6px" }}
+              onChange={(e: any) => handleSearch(e.target.value)}
+              style={{ flex: 1, borderRadius: "6px" }}
               allowClear
             />
             <Tooltip title="Lọc sản phẩm">
@@ -339,26 +297,25 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
         </Row>
       )}
 
-      <Table
-        rowKey="productId"
-        columns={columns}
-        dataSource={products as any}
-        loading={isLoading}
-        pagination={false}
-        scroll={{ x: "max-content" }}
-        size="middle"
-        rowClassName={() => "product-table-row"}
-        style={{
-          overflow: "hidden",
-          tableLayout: "fixed",
-          maxWidth: '100vw',
-        }}
-        bordered
-      />
+      <div className="table-responsive-container">
+        <Table
+          rowKey="productId"
+          columns={columns}
+          dataSource={products as any}
+          loading={isLoading}
+          pagination={false}
+          scroll={{ x: 800 }}
+          size="middle"
+          rowClassName={() => "product-table-row"}
+          style={{
+            tableLayout: "fixed",
+          }}
+          bordered
+        />
+      </div>
 
       <Row justify="space-between" align="middle" style={{ marginTop: 16 }}>
-        <Col>
-        </Col>
+        <Col></Col>
         <Col>
           <Pagination
             current={currentPage}
@@ -368,7 +325,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
             showQuickJumper
             onChange={handlePaginationChange}
             onShowSizeChange={handlePaginationChange}
-            style={{ marginTop: '16px' }}
+            style={{ marginTop: "16px" }}
             className="custom-pagination"
           />
         </Col>
@@ -377,18 +334,19 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       <Lightbox
         open={openLightbox}
         close={() => setOpenLightbox(false)}
-        slides={productImages.map(src => ({ src }))}
+        slides={productImages.map((src: any) => ({ src }))}
         index={currentImageIndex}
         controller={{
           closeOnBackdropClick: true,
           closeOnPullDown: true,
         }}
         on={{
-          view: ({ index }) => setCurrentImageIndex(index),
+          view: ({ index }: { index: number }) => setCurrentImageIndex(index),
         }}
       />
-    </Card>
+    </div>
   )
 }
 
 export default ProductsTable
+

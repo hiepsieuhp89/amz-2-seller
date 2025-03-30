@@ -91,16 +91,14 @@ const PendingOrders = () => {
   }
 
   return (
-    <Card title="Đơn hàng đang chờ xử lý">
       <Table
         columns={columns}
-        dataSource={data?.data as any}
+        dataSource={Array.isArray(data?.data) ? data.data : []}
         rowKey="id"
         pagination={false}
         size="middle"
         loading={isLoading}
       />
-    </Card>
   )
 }
 

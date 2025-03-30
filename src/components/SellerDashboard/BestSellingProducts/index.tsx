@@ -50,7 +50,7 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
   }
 
   return (
-    <Card style={{ borderRadius: "15px" }} bodyStyle={{ padding: "20px" }}>
+    <div style={{ borderRadius: "15px" }} className="p-5">
       <h5 className="text-lg font-medium mb-4">Sản phẩm bán chạy</h5>
       <Table
         columns={columns}
@@ -58,9 +58,9 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
         loading={isLoading}
         pagination={false}
         expandable={{ expandedRowRender }}
-        rowKey={(record) => record?.id}
+        rowKey={(record: any) => record?.id}
       />
-    </Card>
+    </div>
   )
 }
 
