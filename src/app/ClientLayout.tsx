@@ -44,8 +44,8 @@ export default function ClientLayout({
 
   return (
     <ReactQueryClientProvider>
-      <html>
-        <body>
+      <html suppressHydrationWarning>
+        <body suppressHydrationWarning>
           <AntdRegistry >
             <ConfigProvider theme={theme}>
               <UserProvider>

@@ -43,7 +43,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <div className="relative">
                 <div className="relative aspect-square w-full overflow-hidden">
                   <Image
-                    src={product.image || "/placeholder.svg"}
+                    src={product.image }
                     alt={product.name}
                     fill
                     className="object-cover"

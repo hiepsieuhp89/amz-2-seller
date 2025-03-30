@@ -21,7 +21,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
           <Card className="overflow-hidden h-full transition-all duration-200 hover:shadow-md">
             <CardContent className="p-0 flex flex-col h-full">
               <div className="relative aspect-square w-full">
-                <Image src={category.image || "/placeholder.svg"} alt={category.name} fill className="object-cover" />
+                <Image src={category.image } alt={category.name} fill className="object-cover" />
               </div>
               <div className="p-4 text-center">
                 <h3 className="font-medium text-sm sm:text-base line-clamp-2">{category.name}</h3>

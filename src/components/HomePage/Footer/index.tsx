@@ -1,3 +1,5 @@
+"use client"
+
 import { Icon } from "@mdi/react"
 import {
   mdiFacebook,
@@ -8,24 +10,37 @@ import {
   mdiPhoneOutline,
   mdiMapMarkerOutline,
 } from "@mdi/js"
-import Link from 'next/link'
-import Image from 'next/image'
+import Link from "next/link"
+import Image from "next/image"
+import { useUser } from "@/context/useUserContext"
+import { logout } from "@/api/axios"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export function Footer() {
+  const { user } = useUser()
+  const router = useRouter()
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   return (
-    <footer className="bg-main-dark-blue">
+    <footer className="bg-main-dark-blue text-sm">
       <div className="container mx-auto px-4 pt-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-          <Link href="/">
-                <Image
-                    src="/images/logo.png"
-                    alt="Amazon"
-                    width={80}
-                    height={34}
-                    className="cursor-pointer"
-                    quality={100}
-                />
+            <Link href="/">
+              <Image
+                src="/images/logo.png"
+                alt="Amazon"
+                width={80}
+                height={34}
+                className="cursor-pointer mb-3"
+                quality={100}
+                style={{ height: "auto" }} // Fix the image warning
+              />
             </Link>
             <p className="text-gray-400 mb-4">
               Cửa hàng trực tuyến với đa dạng sản phẩm chất lượng cao và dịch vụ khách hàng tuyệt vời.
@@ -50,41 +65,53 @@ export function Footer() {
             <h3 className="text-lg font-bold mb-4 text-white">Thông tin</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-gray-400 hover:text-white">
-                  Về chúng tôi
+                <Link href="/support-policy" className="text-gray-400 hover:text-white ">
+                  Chính sách hỗ trợ
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-400 hover:text-white">
-                  Liên hệ
+                <Link href="/return-policy" className="text-gray-400 hover:text-white">
+                  Chính sách hoàn trả
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-gray-400 hover:text-white">
-                  Điều khoản & Điều kiện
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="text-gray-400 hover:text-white">
+                <Link href="/privacy-policy" className="text-gray-400 hover:text-white">
                   Chính sách bảo mật
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-gray-400 hover:text-white">
-                  Câu hỏi thường gặp
+                <Link href="/seller-policy" className="text-gray-400 hover:text-white">
+                  Chính sách người bán
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="text-gray-400 hover:text-white">
+                  Điều khoản và điều kiện
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-lg font-bold mb-4 text-white">Tài khoản</h3>
+            <h3 className="text-lg font-bold mb-4 text-white">Tài khoản của tôi</h3>
             <ul className="space-y-2">
-              <li>
-                <Link href="/account" className="text-gray-400 hover:text-white">
-                  Tài khoản của tôi
-                </Link>
-              </li>
+              {/* Only render user-dependent content on the client side */}
+              {isClient ? (
+                user ? (
+                  <li className="text-gray-400 hover:text-white cursor-pointer" onClick={() => logout()}>
+                    Đăng xuất
+                  </li>
+                ) : (
+                  <li className="text-gray-400 hover:text-white cursor-pointer" onClick={() => router.push("/sign-in")}>
+                    Đăng nhập
+                  </li>
+                )
+              ) : (
+                <li className="text-gray-400">
+                  {/* Placeholder during server rendering */}
+                  <span className="opacity-0">Loading...</span>
+                </li>
+              )}
               <li>
                 <Link href="/orders" className="text-gray-400 hover:text-white">
                   Đơn hàng
@@ -97,7 +124,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/returns" className="text-gray-400 hover:text-white">
-                  Trả hàng
+                  Theo dõi thứ tự
                 </Link>
               </li>
               <li>
@@ -113,7 +140,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li className="flex items-center gap-2">
                 <Icon path={mdiMapMarkerOutline} size={0.8} className="flex-shrink-0 text-gray-400" />
-                <span className="text-gray-400" >
+                <span className="text-gray-400">
                   Amazon Web Services Singapore 23 Church St, #10-01, Singapore 049481
                 </span>
               </li>

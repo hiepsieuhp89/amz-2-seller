@@ -282,7 +282,7 @@ export default function MenuHeader() {
 
     return (
         <motion.nav
-            className="flex items-center px-4 h-10 bg-main-gunmetal-blue"
+            className="flex items-center px-4 h-10 bg-[#37475A]"
             initial="closed"
             animate="open"
             variants={variants}
