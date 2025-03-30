@@ -92,7 +92,8 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
             <Image
               src={checkImageUrl(imageUrl)}
               alt="Product"
-              fill
+              width={80}
+              height={80}
               quality={100}
               draggable={false}
               style={{ objectFit: "cover" }}
