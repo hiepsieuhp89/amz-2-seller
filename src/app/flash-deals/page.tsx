@@ -23,13 +23,13 @@ export default function FlashDealsPage() {
                             <BreadcrumbList>
                                 <BreadcrumbItem>
                                     <BreadcrumbLink 
-                                        href="https://axm-vn.shop">Trang chủ</BreadcrumbLink>
+                                        href="/">Trang chủ</BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
                                     <BreadcrumbLink 
                                     className="font-semibold"
-                                    href="https://axm-vn.shop/flash-deals">Giao dịch nhanh</BreadcrumbLink>
+                                    href="/flash-deals">Giao dịch nhanh</BreadcrumbLink>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>

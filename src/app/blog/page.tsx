@@ -69,7 +69,7 @@ export default function FlashDealsPage() {
                                             {post.description}
                                         </p>
                                         <div className="flex justify-end items-end flex-1">
-                                            <Button className="flex items-center transition-colors bg-main-dark-blue text-white px-4 py-2 h-10 rounded-sm">
+                                            <Button className="flex items-center transition-colors bg-main-charcoal-blue text-white px-4 py-2 h-10 rounded-sm">
                                                 <span>Xem thêm</span>
                                                 <Icon path={mdiArrowRight} size={0.8} className="ml-1" />
                                             </Button>
