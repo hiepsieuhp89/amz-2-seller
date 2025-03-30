@@ -14,7 +14,7 @@ interface StatCardProps {
   icon?: React.ReactNode
 }
 
-const StatCard<StatCardProps> = ({ title, value, gradientClass, icon = <DollarOutlined /> }) => {
+const StatCard = ({ title, value, gradientClass, icon = <DollarOutlined /> }: StatCardProps) => {
   return (
     <div className={`rounded-[4px] overflow-hidden text-white ${gradientClass}`}>
       <div className="flex flex-col items-center">
@@ -30,7 +30,7 @@ const StatCard<StatCardProps> = ({ title, value, gradientClass, icon = <DollarOu
   )
 }
 
-const ActionCard<{ title: string, onClick?: () => void }> = ({ title, onClick }) => {
+const ActionCard = ({ title, onClick }: { title: string, onClick?: () => void }) => {
   return (
     <div
       className="p-3 rounded h-full mb-3 cursor-pointer text-center bg-white   transition-shadow"
@@ -149,7 +149,7 @@ const StatCards = () => {
           type="number"
           placeholder="Nhập số tiền cần rút"
           value={amount}
-          onChange={(e) => setAmount(Number(e.target.value))}
+          onChange={(e: any) => setAmount(Number(e.target.value))}
         />
       </Modal>
     </>

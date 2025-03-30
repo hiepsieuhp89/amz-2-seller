@@ -62,15 +62,30 @@ const TransactionTables = ({
   return (
     <>
       <div title="Lịch sử yêu cầu rút tiền" className="!mb-4 rounded-[4px]">
-        <Table columns={withdrawColumns} dataSource={withdrawRequests} pagination={false} />
+        <Table 
+          columns={withdrawColumns} 
+          dataSource={withdrawRequests} 
+          pagination={false}
+          scroll={{ x: true }}
+        />
       </div>
 
       <div title="Biến Động Số Dư Ví" className="!mb-4 rounded-[4px]">
-        <Table columns={walletColumns} dataSource={walletHistory} pagination={false} />
+        <Table 
+          columns={walletColumns} 
+          dataSource={walletHistory} 
+          pagination={false}
+          scroll={{ x: true }}
+        />
       </div>
 
       <div title="Lịch sử giao dịch đơn hàng" className="!mb-4 rounded-[4px]">
-        <Table columns={orderColumns} dataSource={orderHistory} pagination={false} />
+        <Table 
+          columns={orderColumns} 
+          dataSource={orderHistory} 
+          pagination={false}
+          scroll={{ x: true }}
+        />
       </div>
     </>
   )
