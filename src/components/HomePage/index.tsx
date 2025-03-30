@@ -9,6 +9,7 @@ import { Footer } from "./Footer"
 import { motion } from "framer-motion"
 import { CategoryGrid } from "./CategoryGrid"
 import { categories, products } from "./mockData"
+import MenuHeader from "./MenuHeader"
 
 export default function HomePage() {
   const featuredProducts = products.filter((product) => product.isFeatured)
@@ -16,6 +17,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <MenuHeader />
       <main>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
           <HeroBanner />
