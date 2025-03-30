@@ -23,6 +23,7 @@ import { vi } from "date-fns/locale"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import Link from "next/link"
 
 export default function LayoutHeaderCommon() {
   const router = useRouter()
@@ -99,7 +100,7 @@ export default function LayoutHeaderCommon() {
 
   return (
     <header className="!h-[70px] min-h-[70px] bg-main-dark-blue text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full  z-50">
-      <div className="relative h-8 left-[64px]">
+      <Link href="/" className="relative h-8 left-[64px] cursor-pointer">
         <Image
           quality={100}
           draggable={false}
@@ -109,7 +110,7 @@ export default function LayoutHeaderCommon() {
           height={100}
           className="h-full w-full object-contain"
         />
-      </div>
+      </Link>
       <div className="flex items-center">
         <div className="ml-8 flex items-center gap-1 pr-6">
           <motion.div
@@ -155,7 +156,7 @@ export default function LayoutHeaderCommon() {
                   <div className="p-0">
                     {allNotifications?.data && allNotifications.data.length > 0 ? (
                       <div className="divide-y">
-                        {allNotifications.data?.map((notification) => (
+                        {allNotifications.data?.map((notification: any) => (
                           <div
                             key={notification.id}
                             className={`p-3 hover:bg-muted/50 cursor-pointer transition-colors ${

@@ -91,7 +91,7 @@ export default function ProductDetail() {
                 }
               >
                 <Image
-                  src={productImages[currentImage] || "/placeholder.svg"}
+                  src={productImages[currentImage]}
                   alt="Product image"
                   fill
                   className="object-contain"
@@ -113,7 +113,7 @@ export default function ProductDetail() {
                   )}
                 >
                   <Image
-                    src={img || "/placeholder.svg"}
+                    src={img}
                     alt={`Thumbnail ${index + 1}`}
                     fill
                     className="object-contain"
