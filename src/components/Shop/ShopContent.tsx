@@ -32,7 +32,7 @@ export default function ShopContent({
       {/* Filters & Sort */}
       <div className="mb-6 flex justify-between items-center">
         <div>
-          <span className="mr-2 text-main-text font-medium text-sm">Sắp xếp theo:</span>
+          <span className="mr-2  font-medium text-sm">Sắp xếp theo:</span>
           <Select
             defaultValue={`${sortField}:${sortOrder}`}
             onChange={handleSortChange}
@@ -46,7 +46,7 @@ export default function ShopContent({
         </div>
         <div>
           {meta && (
-            <span className="text-main-text font-medium text-sm">
+            <span className=" font-medium text-sm">
               Hiển thị {shopProducts.length} trên {meta.itemCount} sản phẩm
             </span>
           )}
@@ -55,7 +55,7 @@ export default function ShopContent({
 
       {/* Products Section Title */}
       <div className="mb-4 border-b pb-2 flex justify-between items-center">
-        <h2 className="text-xl font-medium text-main-text">Sản phẩm mới về</h2>
+        <h2 className="text-xl font-medium ">Sản phẩm mới về</h2>
         <button className="text-blue-500">
           <span className="mr-1 font-medium text-sm">Xem tất cả</span>
           <span>❯</span>
@@ -73,7 +73,7 @@ export default function ShopContent({
             <Link
               href={`/shop/product?id=${item.id}`}
               key={item.id}
-              className="bg-white border border-gray-200 rounded-sm p-3 relative hover: transition-shadow cursor-pointer hov-animate-outline"
+              className="bg-white border border-gray-200 rounded-sm p-3 relative hover:transition-shadow cursor-pointer hov-animate-outline"
               style={{
                 position: 'relative',
                 overflow: 'hidden',
@@ -92,7 +92,7 @@ export default function ShopContent({
 
                 {/* Product Details */}
                 <div className="space-y-1">
-                  <h3 className="text-sm text-main-text line-clamp-2 h-10 hover:text-[#C7511F]">
+                  <h3 className="text-sm  line-clamp-2 h-10 hover:text-[#C7511F]">
                     {item.name}
                   </h3>
                   <div className="flex items-center space-x-1">
@@ -104,7 +104,7 @@ export default function ShopContent({
                     <span className="text-xs text-[#007185]">(0)</span>
                   </div>
                   <div className="flex items-end">
-                    <span className="text-lg font-bold text-main-text">
+                    <span className="text-lg font-bold ">
                       ${Number(item.salePrice).toFixed(2)}
                     </span>
                     {item.profit > 0 && (

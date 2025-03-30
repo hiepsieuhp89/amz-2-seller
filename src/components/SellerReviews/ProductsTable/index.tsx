@@ -15,6 +15,7 @@ import "./styles.css"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { checkImageUrl } from "@/lib/utils"
+import { Breakpoint } from "antd/lib"
 const { Title, Text } = Typography
 
 interface ProductsTableProps {
@@ -84,6 +85,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
               borderRadius: "4px",
               overflow: "hidden",
               cursor: "pointer",
+              margin: "0 auto",
             }}
             onClick={() => handleImageClick(imageUrl)}
           >
@@ -106,13 +108,16 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              margin: "0 auto",
             }}
           >
             <Text type="secondary">No Image</Text>
           </div>
         ),
       width: 80,
+      maxWidth: 80,
       align: "center" as const,
+      responsive: ["xs", "sm"] as Breakpoint[],
     },
     {
       title: "Tên sản phẩm",
@@ -166,12 +171,12 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
   return (
     <>
       <div className="products-table-container">
-        <div className="products-table-card border p-4">
+      <div className="border p-4 bg-white rounded-md">
           <Row justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
             <Col>
               <Space size="middle">
                 <Title level={5} style={{ margin: 0 }}>
-                  Tất cả sản phẩm
+                  Tất cả sản phẩm có đánh giá
                 </Title>
                 <Badge size="default" count={totalItems} showZero style={{ backgroundColor: "#1890ff" }} />
               </Space>

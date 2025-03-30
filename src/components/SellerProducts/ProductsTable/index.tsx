@@ -53,10 +53,6 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
     setOpenLightbox(true)
   }
 
-  const isMobile = () => window.innerWidth < 768
-  const isTablet = () => window.innerWidth >= 768 && window.innerWidth < 1024
-  const isDesktop = () => window.innerWidth >= 1024
-
   const columns = [
     {
       title: "Hình ảnh",
@@ -76,7 +72,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
             onClick={() => handleImageClick(imageUrl)}
           >
             <Image
-              src={checkImageUrl(imageUrl) || "/placeholder.svg"}
+              src={checkImageUrl(imageUrl)}
               alt="Product"
               fill
               quality={100}
@@ -109,7 +105,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       key: "name",
       sorter: (a: IShopProduct, b: IShopProduct) => a.product.name.localeCompare(b.product.name),
       render: (text: string, record: IShopProduct) => (
-        <Space direction="vertical" size={0} style={{ maxWidth: 300 }}>
+        <Space direction="vertical" size={0}>
           <Text strong style={{ fontSize: "14px", wordWrap: "break-word", whiteSpace: "normal" }}>
             {text}
           </Text>
@@ -122,7 +118,6 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
           </Text>
         </Space>
       ),
-      width: 300,
       responsive: ["xs", "sm", "md"] as Breakpoint[],
     },
     {
@@ -144,7 +139,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       ),
       responsive: ["md" as Breakpoint],
       align: "center" as const,
-      width: 100,
+      width: 110,
     },
     {
       title: "Giá nhập",
@@ -173,7 +168,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       ),
       responsive: ["md" as Breakpoint],
       align: "right" as const,
-      width: 100,
+      width: 110,
     },
     {
       title: "Lợi nhuận",
@@ -201,7 +196,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
         </Button>
       ),
       align: "right" as const,
-      width: 100,
+      width: 110,
       responsive: ["md" as Breakpoint],
     },
     {
@@ -229,7 +224,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
         </Button>
       ),
       align: "center" as const,
-      width: 100,
+      width: 110,
     },
     {
       title: "Hành động",
@@ -248,13 +243,13 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
         </Space>
       ),
       align: "center" as const,
-      width: 100,
+      width: 110,
       responsive: ["xs", "sm", "md"] as Breakpoint[],
     },
   ]
 
   return (
-    <div className="products-table-card border p-4">
+    <div className="border p-4 bg-white rounded-md">
       <Row justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
         <Col>
           <Space size="middle">
