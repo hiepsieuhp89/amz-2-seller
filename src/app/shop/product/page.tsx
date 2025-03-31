@@ -1,13 +1,17 @@
 "use client"
+import { Footer } from "@/components/Common/Footer";
+import { Header } from "@/components/Common/Header";
 import ProductDetail from "@/components/ProductDetail";
-import Footer from "@/components/ProductDetail/Footer";
-import Header from "@/components/ProductDetail/Header";
 import LeftSideSection from "@/components/ProductDetail/LeftSideSection";
+import ProductTabs from "@/components/ProductDetail/ProductTabs";
 import { Button, Divider, Rate, Typography } from "antd";
 import Title from "antd/es/typography/Title";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-
+const descriptionImages = [
+  'https://example.com/image1.png',
+  'https://example.com/image2.png'
+]
 const { Text } = Typography;
 
 function ProductDetailContent() {
@@ -19,33 +23,12 @@ function ProductDetailContent() {
       <Header />
       <div className="flex flex-col">
         <ProductDetail />
-        <div className="w-full flex flex-row py-6 px-[104px] gap-4">
+        <div className="w-full flex flex-row py-6 px-[104px] gap-4 bg-[#E3E6E6]">
           <div className="w-full lg:w-1/4">
             <LeftSideSection />
           </div>
           <div className="w-full lg:w-3/4">
-            <div style={{ background: '#fff', padding: '24px', borderRadius: '8px' }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                  <Title level={1} style={{ margin: 0 }}>
-                    0
-                  </Title>
-                  <div>
-                    <Text>out of 5.0</Text>
-                    <div>
-                      <Rate disabled defaultValue={0} />
-                    </div>
-                  </div>
-                </div>
-                <Button type="primary">Rate this Product</Button>
-              </div>
-              <Divider />
-              <div style={{ textAlign: "center", padding: "24px 0" }}>
-                <Text type="secondary" style={{ fontSize: "16px" }}>
-                  Chưa có nhận xét nào cho sản phẩm này.
-                </Text>
-              </div>
-            </div>
+            <ProductTabs/>
           </div>
         </div>
       </div>

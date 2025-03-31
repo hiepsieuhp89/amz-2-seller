@@ -1,17 +1,17 @@
 "use client"
 
-import { Header } from "./Header"
 import { HeroBanner } from "./HeroBanner"
 import { BestSellers } from "./BestSellers"
-import { Footer } from "./Footer"
 import { motion, useScroll, useTransform, animate } from "framer-motion"
-import MenuHeader from "./MenuHeader"
+import MenuHeader from "../Common/MenuHeader"
 import Categories from "./Categories"
 import { FeaturedCategories } from "./FeaturedCategories"
 import Categories2 from "./Categories2"
 import { useEffect, useState } from 'react';
 import { mdiChevronUp } from "@mdi/js"
 import Icon from "@mdi/react"
+import { Header } from "../Common/Header"
+import { Footer } from "../Common/Footer"
 
 export default function HomePage() {
   const [showScroll, setShowScroll] = useState(false);
