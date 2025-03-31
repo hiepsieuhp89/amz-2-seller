@@ -20,7 +20,7 @@ export const useCreateCategory = (): UseMutationResult<ICategoryResponse, Error,
     })
 }
 
-export const useCategories = (params: ICategoryQueryParams) => {
+export const useCategories = (params?: ICategoryQueryParams) => {
     const {
         data: categoriesData,
         isLoading,
@@ -28,7 +28,7 @@ export const useCategories = (params: ICategoryQueryParams) => {
         refetch,
     } = useQuery({
         queryKey: ["categories", params],
-        queryFn: () => getCategories(params),
+        queryFn: () => getCategories(params || {}),
     })
 
     return {

@@ -12,14 +12,14 @@ import {
 } from "@/components/ui/breadcrumb"
 import Image from "next/image"
 
-export default function SupportPolicyPage() {
+export default function SellerPolicyPage() {
     return (
         <div className="min-h-screen bg-background flex flex-col">
             <Header />
             <MenuHeader />
             <section className="w-full py-8 px-[104px] bg-[#E3E6E6]">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Trang chính sách hoàn trả</h1>
+                    <h1 className="text-2xl font-bold">Trang chính sách bán hàng</h1>
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>

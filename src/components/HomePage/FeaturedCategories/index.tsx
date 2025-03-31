@@ -9,8 +9,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import useEmblaCarousel from "embla-carousel-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { useCategories } from "@/hooks/categories"
 
 export function FeaturedCategories() {
+   const { categoriesData, isLoading, isFetching, refetch } = useCategories({
+        order: "DESC",
+    })
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
     loop: false,
@@ -85,7 +89,7 @@ export function FeaturedCategories() {
 
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex -ml-4">
-          {featuredCategories.map((category) => (
+          {categoriesData?.data?.data.map((category) => (
             <div
               key={category.id}
               className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
@@ -95,7 +99,7 @@ export function FeaturedCategories() {
                   <CardContent className="p-0 flex flex-col h-full">
                     <div className="relative aspect-square w-full">
                       <Image
-                        src={category.image }
+                        src={category.imageUrl}
                         alt={category.name}
                         fill
                         className="object-cover"
@@ -103,7 +107,7 @@ export function FeaturedCategories() {
                     </div>
                     <div className="p-4 text-center">
                       <h3 className="font-medium text-sm sm:text-base line-clamp-2">{category.name}</h3>
-                      <p className="text-xs text-muted-foreground mt-1">{category.itemCount} sản phẩm</p>
+                      <p className="text-xs text-muted-foreground mt-1">{category.description}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -116,7 +120,7 @@ export function FeaturedCategories() {
       {isMobile && (
         <div className="flex justify-center mt-4">
           <div className="flex gap-1">
-            {Array.from({ length: Math.ceil(featuredCategories.length / 2) }).map((_, index) => (
+            {Array.from({ length: Math.ceil(categoriesData?.data?.data.length || 0 / 2) }).map((_, index) => (
               <div
                 key={index}
                 className={cn(
