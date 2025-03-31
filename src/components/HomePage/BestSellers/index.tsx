@@ -27,31 +27,52 @@ const RatingStars = ({ rating }: { rating: number }) => {
 }
 
 export function BestSellers() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: "start",
-    loop: false,
-    skipSnaps: false,
-    dragFree: false,
-  })
-
-  const [prevBtnEnabled, setPrevBtnEnabled] = useState(false)
-  const [nextBtnEnabled, setNextBtnEnabled] = useState(true)
+  // Thêm state isMobile
   const [isMobile, setIsMobile] = useState(false)
 
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
+  // Tạo các Embla Carousel riêng biệt
+  const [emblaRef1, emblaApi1] = useEmblaCarousel({ align: "start", loop: false })
+  const [emblaRef2, emblaApi2] = useEmblaCarousel({ align: "start", loop: false })
+  const [emblaRef3, emblaApi3] = useEmblaCarousel({ align: "start", loop: false })
 
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return
-    setPrevBtnEnabled(emblaApi.canScrollPrev())
-    setNextBtnEnabled(emblaApi.canScrollNext())
-  }, [emblaApi])
+  // Tạo state và callback riêng cho từng section
+  const [prevBtnEnabled1, setPrevBtnEnabled1] = useState(false)
+  const [nextBtnEnabled1, setNextBtnEnabled1] = useState(true)
+  const [prevBtnEnabled2, setPrevBtnEnabled2] = useState(false)
+  const [nextBtnEnabled2, setNextBtnEnabled2] = useState(true)
+  const [prevBtnEnabled3, setPrevBtnEnabled3] = useState(false)
+  const [nextBtnEnabled3, setNextBtnEnabled3] = useState(true)
+
+  const scrollPrev1 = useCallback(() => emblaApi1 && emblaApi1.scrollPrev(), [emblaApi1])
+  const scrollNext1 = useCallback(() => emblaApi1 && emblaApi1.scrollNext(), [emblaApi1])
+  const scrollPrev2 = useCallback(() => emblaApi2 && emblaApi2.scrollPrev(), [emblaApi2])
+  const scrollNext2 = useCallback(() => emblaApi2 && emblaApi2.scrollNext(), [emblaApi2])
+  const scrollPrev3 = useCallback(() => emblaApi3 && emblaApi3.scrollPrev(), [emblaApi3])
+  const scrollNext3 = useCallback(() => emblaApi3 && emblaApi3.scrollNext(), [emblaApi3])
+
+  const onSelect1 = useCallback(() => {
+    if (!emblaApi1) return
+    setPrevBtnEnabled1(emblaApi1.canScrollPrev())
+    setNextBtnEnabled1(emblaApi1.canScrollNext())
+  }, [emblaApi1])
+
+  const onSelect2 = useCallback(() => {
+    if (!emblaApi2) return
+    setPrevBtnEnabled2(emblaApi2.canScrollPrev())
+    setNextBtnEnabled2(emblaApi2.canScrollNext())
+  }, [emblaApi2])
+
+  const onSelect3 = useCallback(() => {
+    if (!emblaApi3) return
+    setPrevBtnEnabled3(emblaApi3.canScrollPrev())
+    setNextBtnEnabled3(emblaApi3.canScrollNext())
+  }, [emblaApi3])
 
   useEffect(() => {
-    if (!emblaApi) return
-    onSelect()
-    emblaApi.on("select", onSelect)
-    emblaApi.on("reInit", onSelect)
+    if (!emblaApi1) return
+    onSelect1()
+    emblaApi1.on("select", onSelect1)
+    emblaApi1.on("reInit", onSelect1)
 
     // Check if mobile
     const checkIfMobile = () => {
@@ -62,27 +83,68 @@ export function BestSellers() {
     window.addEventListener("resize", checkIfMobile)
 
     return () => {
-      emblaApi.off("select", onSelect)
-      emblaApi.off("reInit", onSelect)
+      emblaApi1.off("select", onSelect1)
+      emblaApi1.off("reInit", onSelect1)
       window.removeEventListener("resize", checkIfMobile)
     }
-  }, [emblaApi, onSelect])
+  }, [emblaApi1, onSelect1])
+
+  useEffect(() => {
+    if (!emblaApi2) return
+    onSelect2()
+    emblaApi2.on("select", onSelect2)
+    emblaApi2.on("reInit", onSelect2)
+
+    // Check if mobile
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    checkIfMobile()
+    window.addEventListener("resize", checkIfMobile)
+
+    return () => {
+      emblaApi2.off("select", onSelect2)
+      emblaApi2.off("reInit", onSelect2)
+      window.removeEventListener("resize", checkIfMobile)
+    }
+  }, [emblaApi2, onSelect2])
+
+  useEffect(() => {
+    if (!emblaApi3) return
+    onSelect3()
+    emblaApi3.on("select", onSelect3)
+    emblaApi3.on("reInit", onSelect3)
+
+    // Check if mobile
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    checkIfMobile()
+    window.addEventListener("resize", checkIfMobile)
+
+    return () => {
+      emblaApi3.off("select", onSelect3)
+      emblaApi3.off("reInit", onSelect3)
+      window.removeEventListener("resize", checkIfMobile)
+    }
+  }, [emblaApi3, onSelect3])
 
   return (
     <div className="relative p-4 bg-[#E3E6E6] flex flex-col gap-4">
+      {/* Section 1 */}
       <div className="bg-white p-4">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold md:text-2xl">
-            Sản phẩm nổi bật
-          </h2>
+          <h2 className="text-xl font-bold md:text-2xl">Sản phẩm nổi bật</h2>
           <div className="flex gap-2">
             <Button
               className={cn(
                 "w-10 h-10 !bg-black/70 !text-white rounded-none !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
-                !prevBtnEnabled && "opacity-50 cursor-not-allowed",
+                !prevBtnEnabled1 && "opacity-50 cursor-not-allowed",
               )}
-              onClick={scrollPrev}
-              disabled={!prevBtnEnabled}
+              onClick={scrollPrev1}
+              disabled={!prevBtnEnabled1}
               aria-label="Previous products"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -90,18 +152,17 @@ export function BestSellers() {
             <Button
               className={cn(
                 "w-10 h-10  flex items-center justify-center border !bg-black/70 !text-white rounded-none !hover:bg-black/50 shadow-sm transition-all",
-                !nextBtnEnabled && "opacity-50 cursor-not-allowed",
+                !nextBtnEnabled1 && "opacity-50 cursor-not-allowed",
               )}
-              onClick={scrollNext}
-              disabled={!nextBtnEnabled}
+              onClick={scrollNext1}
+              disabled={!nextBtnEnabled1}
               aria-label="Next products"
             >
               <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
         </div>
-
-        <div className="overflow-hidden" ref={emblaRef}>
+        <div className="overflow-hidden" ref={emblaRef1}>
           <div className="flex -ml-4">
             {featuredProducts.map((product) => (
               <div
@@ -140,7 +201,7 @@ export function BestSellers() {
                   key={index}
                   className={cn(
                     "w-2 h-2 rounded-full bg-gray-300",
-                    emblaApi?.selectedScrollSnap() === index && "bg-primary w-4",
+                    emblaApi1?.selectedScrollSnap() === index && "bg-primary w-4",
                   )}
                 />
               ))}
@@ -149,19 +210,18 @@ export function BestSellers() {
         )}
       </div>
 
+      {/* Section 2 */}
       <div className="bg-white p-4 mt-4">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold md:text-2xl">
-            Sản phẩm bán chạy nhất dành cho thể thao và giải trí ngoài trời
-          </h2>
+          <h2 className="text-xl font-bold md:text-2xl">Sản phẩm bán chạy nhất dành cho thể thao và giải trí ngoài trời</h2>
           <div className="flex gap-2">
             <Button
               className={cn(
                 "w-10 h-10 !bg-black/70 !text-white rounded-none !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
-                !prevBtnEnabled && "opacity-50 cursor-not-allowed",
+                !prevBtnEnabled2 && "opacity-50 cursor-not-allowed",
               )}
-              onClick={scrollPrev}
-              disabled={!prevBtnEnabled}
+              onClick={scrollPrev2}
+              disabled={!prevBtnEnabled2}
               aria-label="Previous products"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -169,18 +229,17 @@ export function BestSellers() {
             <Button
               className={cn(
                 "w-10 h-10  flex items-center justify-center border !bg-black/70 !text-white rounded-none !hover:bg-black/50 shadow-sm transition-all",
-                !nextBtnEnabled && "opacity-50 cursor-not-allowed",
+                !nextBtnEnabled2 && "opacity-50 cursor-not-allowed",
               )}
-              onClick={scrollNext}
-              disabled={!nextBtnEnabled}
+              onClick={scrollNext2}
+              disabled={!nextBtnEnabled2}
               aria-label="Next products"
             >
               <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
         </div>
-
-        <div className="overflow-hidden" ref={emblaRef}>
+        <div className="overflow-hidden" ref={emblaRef2}>
           <div className="flex -ml-4">
             {bestSellers.map((product) => (
               <div
@@ -219,7 +278,7 @@ export function BestSellers() {
                   key={index}
                   className={cn(
                     "w-2 h-2 rounded-full bg-gray-300",
-                    emblaApi?.selectedScrollSnap() === index && "bg-primary w-4",
+                    emblaApi2?.selectedScrollSnap() === index && "bg-primary w-4",
                   )}
                 />
               ))}
@@ -228,19 +287,18 @@ export function BestSellers() {
         )}
       </div>
 
+      {/* Section 3 */}
       <div className="bg-white p-4 mt-4">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold md:text-2xl">
-            Đồ chơi & Trò chơi bán chạy nhất
-          </h2>
+          <h2 className="text-xl font-bold md:text-2xl">Đồ chơi & Trò chơi bán chạy nhất</h2>
           <div className="flex gap-2">
             <Button
               className={cn(
                 "w-10 h-10 !bg-black/70 !text-white rounded-none !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
-                !prevBtnEnabled && "opacity-50 cursor-not-allowed",
+                !prevBtnEnabled3 && "opacity-50 cursor-not-allowed",
               )}
-              onClick={scrollPrev}
-              disabled={!prevBtnEnabled}
+              onClick={scrollPrev3}
+              disabled={!prevBtnEnabled3}
               aria-label="Previous products"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -248,18 +306,17 @@ export function BestSellers() {
             <Button
               className={cn(
                 "w-10 h-10  flex items-center justify-center border !bg-black/70 !text-white rounded-none !hover:bg-black/50 shadow-sm transition-all",
-                !nextBtnEnabled && "opacity-50 cursor-not-allowed",
+                !nextBtnEnabled3 && "opacity-50 cursor-not-allowed",
               )}
-              onClick={scrollNext}
-              disabled={!nextBtnEnabled}
+              onClick={scrollNext3}
+              disabled={!nextBtnEnabled3}
               aria-label="Next products"
             >
               <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
         </div>
-
-        <div className="overflow-hidden" ref={emblaRef}>
+        <div className="overflow-hidden" ref={emblaRef3}>
           <div className="flex -ml-4">
             {bestSellingToys.map((product) => (
               <div
@@ -298,7 +355,7 @@ export function BestSellers() {
                   key={index}
                   className={cn(
                     "w-2 h-2 rounded-full bg-gray-300",
-                    emblaApi?.selectedScrollSnap() === index && "bg-primary w-4",
+                    emblaApi3?.selectedScrollSnap() === index && "bg-primary w-4",
                   )}
                 />
               ))}
