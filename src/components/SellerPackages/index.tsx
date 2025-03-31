@@ -124,7 +124,7 @@ const SellerPackages = () => {
                     className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 text-lg ${index === 0
                         ? "bg-blue-100 text-blue-500"
                         : index === 1
-                          ? "bg-orange-100 text-[#F5F5F5]0"
+                          ? "bg-orange-100 text-[#E3E6E6]0"
                           : "bg-purple-100 text-purple-500"
                       }`}
                   >
@@ -160,7 +160,7 @@ const SellerPackages = () => {
                   size="large"
                   block
                   className={`h-12 !rounded-[4px]
-                    font-medium text-base ${pkg.popular ? "!bg-[#F5F5F5]0 !border-[#F5F5F5]0 hover:!bg-orange-600" : ""
+                    font-medium text-base ${pkg.popular ? "!bg-[#E3E6E6]0 !border-[#E3E6E6]0 hover:!bg-orange-600" : ""
                     }`}
                   onClick={() => select_payment_type(pkg.id, pkg.title, pkg.price)}
                 >

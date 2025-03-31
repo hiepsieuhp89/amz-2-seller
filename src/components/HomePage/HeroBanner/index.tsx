@@ -83,7 +83,7 @@ export function HeroBanner() {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 text-white hover:bg-black/50"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 !bg-black/30 !text-white rounded-none !hover:bg-black/50"
         onClick={prevBanner}
       >
         <Icon path={mdiChevronLeft} size={1.5} />
@@ -92,7 +92,7 @@ export function HeroBanner() {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 text-white hover:bg-black/50"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 !bg-black/30 !text-white !rounded-none !hover:bg-black/50"
         onClick={nextBanner}
       >
         <Icon path={mdiChevronRight} size={1.5} />

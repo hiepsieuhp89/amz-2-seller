@@ -217,7 +217,7 @@ export default function LayoutHeaderCommon() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="flex-1 rounded-sm !bg-orange-400 hover:!bg-[#F5F5F5]0 !text-white transition-all duration-300"
+                    className="flex-1 rounded-sm !bg-orange-400 hover:!bg-[#E3E6E6]0 !text-white transition-all duration-300"
                   >
                     Xem tất cả thông báo <Bell className="h-4 w-4 ml-1" />
                   </Button>
