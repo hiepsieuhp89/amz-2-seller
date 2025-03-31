@@ -4,7 +4,7 @@ import { useGetMyOrders } from "@/hooks/shop-products"
 import { SearchOutlined } from "@ant-design/icons"
 import { mdiContentSaveEdit, mdiEye, mdiTrashCan } from "@mdi/js"
 import Icon from "@mdi/react"
-import { Badge, Card, Col, Divider, Empty, Input, Row, Select, Space, Spin, Table, Tooltip, Typography } from "antd"
+import { Badge, Card, Col, Divider, Empty, Input, Row, Select, Space, Spin, Table, Tooltip, Typography, Pagination } from "antd"
 import type { ColumnsType } from "antd/es/table"
 import { useState } from "react"
 import { Option } from "antd/lib/mentions"
@@ -26,11 +26,19 @@ interface OrderData {
 }
 
 const OrdersTable  = () => {
+    const [currentPage, setCurrentPage] = useState(1)
+    const [pageSize, setPageSize] = useState(10)
     const { data: ordersData, isLoading } = useGetMyOrders({
         order: "DESC",
-        page: 1
+        page: currentPage
     })
     const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
+
+    const handlePaginationChange = (page: number, pageSize?: number) => {
+        setCurrentPage(page)
+        if (pageSize) setPageSize(pageSize)
+    }
+
     if (isLoading) {
         return (
             <div className="flex justify-center items-center h-[50vh]">
@@ -126,6 +134,8 @@ const OrdersTable  = () => {
         },
     ];
 
+    const totalItems = ordersData?.data?.meta?.itemCount || 0
+
     return (
         <div className="border p-4 bg-white rounded-md">
             <Row justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
@@ -213,6 +223,23 @@ const OrdersTable  = () => {
                     ),
                 }}
             />
+
+            <Row justify="space-between" align="middle" style={{ marginTop: 16 }}>
+                <Col></Col>
+                <Col>
+                    <Pagination
+                        current={currentPage}
+                        pageSize={pageSize}
+                        total={totalItems}
+                        showSizeChanger
+                        showQuickJumper
+                        onChange={handlePaginationChange}
+                        onShowSizeChange={handlePaginationChange}
+                        style={{ marginTop: "16px" }}
+                        className="custom-pagination"
+                    />
+                </Col>
+            </Row>
         </div>
     )
 }
