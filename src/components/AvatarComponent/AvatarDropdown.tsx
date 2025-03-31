@@ -1,12 +1,15 @@
 "use client"
 
-import { type MenuProps, Dropdown, Avatar, Space, Typography, message } from "antd"
+import { type MenuProps, Dropdown, Avatar, Space, Typography, message, Button, Tabs, Select, Upload } from "antd"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { UserOutlined, LockOutlined, LogoutOutlined } from "@ant-design/icons"
 import { useUser } from "@/context/useUserContext"
 import { useUpdateUser, useChangePassword } from "@/hooks/authentication"
 import { Modal, Form, Input } from "antd"
+import type { TabsProps } from "antd"
+import { useVerifyBankAccount } from "@/hooks/bank"
+import { debounce } from "lodash"
 
 const { Text, Title } = Typography
 
@@ -21,6 +24,9 @@ const AvatarDropdown = () => {
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser()
   const { mutateAsync: changePassword, isPending: isChangingPassword } = useChangePassword()
   const [messageApi, contextHolder] = message.useMessage()
+  const [bankAccountNameStatus, setBankAccountNameStatus] = useState<'success' | 'error' | ''>('')
+  const [bankAccountNameHelp, setBankAccountNameHelp] = useState('')
+  const { mutateAsync: verifyBankAccount } = useVerifyBankAccount()
 
   useEffect(() => {
     setIsClient(true)
@@ -44,7 +50,11 @@ const AvatarDropdown = () => {
         phone: values.phone,
         fullName: values.fullName,
         shopName: values.shopName,
-        shopAddress: values.shopAddress
+        shopAddress: values.shopAddress,
+        bankName: values.bankName,
+        bankAccountNumber: values.bankAccountNumber,
+        bankAccountName: values.bankAccountName,
+        bankBranch: values.bankBranch
       })
       messageApi.success("Cập nhật thông tin thành công!")
       setIsModalOpen(false)
@@ -81,34 +91,197 @@ const AvatarDropdown = () => {
     setIsModalOpen(true)
   }
 
-  const items: MenuProps["items"] = [
+  const handleBankAccountVerification = async (accountNumber: string) => {
+    const bankCode = form.getFieldValue('bankName') // Lấy mã ngân hàng đã chọn
+    if (!bankCode) {
+      messageApi.warning('Vui lòng chọn ngân hàng trước!')
+      return
+    }
+
+    try {
+      const response = await verifyBankAccount({ bankCode, accountNumber })
+      if (response.data.isValid) {
+        form.setFieldsValue({ bankAccountName: response.data.accountName })
+        setBankAccountNameStatus('success')
+        setBankAccountNameHelp('')
+      } else {
+        form.setFieldsValue({ bankAccountName: '' })
+        setBankAccountNameStatus('error')
+        setBankAccountNameHelp('Sai thông tin, vui lòng nhập lại...')
+      }
+    } catch (error) {
+      setBankAccountNameStatus('error')
+      setBankAccountNameHelp('Có lỗi xảy ra khi kiểm tra thông tin')
+      form.setFieldsValue({ bankAccountName: '' })
+    }
+  }
+
+  // Thêm debounce để tránh gọi API quá nhiều
+  const debouncedVerification = debounce(handleBankAccountVerification, 500)
+
+  const BasicInfoTab = () => (
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={handleProfileUpdate}
+    >
+      <Form.Item
+        label="Tên của bạn"
+        name="fullName"
+        rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
+      >
+        <Input />
+      </Form.Item>
+
+      <Form.Item
+        label="Điện thoại của bạn"
+        name="phone"
+        rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
+      >
+        <Input />
+      </Form.Item>
+
+      <Form.Item
+        label="Ảnh đại diện"
+        name="avatar"
+      >
+        <Space>
+          <Button>Duyệt qua</Button>
+          <Button>Chọn tập tin</Button>
+        </Space>
+      </Form.Item>
+
+      <Form.Item
+        label="Mật khẩu của bạn"
+        name="password"
+      >
+        <Input.Password disabled />
+      </Form.Item>
+
+      <Form.Item
+        label="Xác nhận mật khẩu"
+        name="confirmPassword"
+      >
+        <Input.Password disabled />
+      </Form.Item>
+    </Form>
+  )
+
+  const PaymentSettingsTab = () => (
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={handleProfileUpdate}
+    >
+      <Form.Item
+        label="Tên"
+        name="fullName"
+        rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}
+      >
+        <Input placeholder="NHẬP TÊN NGƯỜI DÙNG" />
+      </Form.Item>
+
+      <Form.Item
+        label="Địa chỉ"
+        name="address"
+        rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
+      >
+        <Input.TextArea placeholder="NHẬP ĐỊA CHỈ NGƯỜI DÙNG" />
+      </Form.Item>
+
+      <Form.Item
+        label="Loại giấy tờ"
+        name="idCardType"
+      >
+        <Select
+          placeholder="CHỌN LOẠI GIẤY TỜ"
+          options={[
+            { value: 'cccd', label: 'CCCD' },
+            { value: 'passport', label: 'Passport' },
+            { value: 'driver_license', label: 'Bằng lái xe' },
+          ]}
+        />
+      </Form.Item>
+
+      <Form.Item
+        label="Mặt trước"
+        name="idCardFrontImage"
+        rules={[{ required: true, message: 'Vui lòng tải lên ảnh mặt trước!' }]}
+      >
+        <Upload
+          listType="picture-card"
+          maxCount={1}
+          beforeUpload={() => false}
+        >
+          <div>
+            <Button>Browse</Button>
+          </div>
+        </Upload>
+      </Form.Item>
+
+      <Form.Item
+        label="Mặt sau"
+        name="idCardBackImage"
+        rules={[{ required: true, message: 'Vui lòng tải lên ảnh mặt sau!' }]}
+      >
+        <Upload
+          listType="picture-card"
+          maxCount={1}
+          beforeUpload={() => false}
+        >
+          <div>
+            <Button>Browse</Button>
+          </div>
+        </Upload>
+      </Form.Item>
+
+      <Form.Item
+        label="Tên ngân hàng"
+        name="bankName"
+        rules={[{ required: true, message: 'Vui lòng chọn ngân hàng!' }]}
+      >
+        <Select
+          placeholder="VUI LÒNG CHỌN NGÂN HÀNG"
+          options={[
+            { value: 'vcb', label: 'Vietcombank' },
+            { value: 'tcb', label: 'Techcombank' },
+            // Thêm các ngân hàng khác
+          ]}
+        />
+      </Form.Item>
+
+      <Form.Item
+        label="Số tài khoản ngân hàng"
+        name="bankAccountNumber"
+        rules={[{ required: true, message: 'Vui lòng nhập số tài khoản!' }]}
+      >
+        <Input 
+          placeholder="NHẬP SỐ TÀI KHOẢN NGÂN HÀNG"
+          onChange={(e) => debouncedVerification(e.target.value)}
+        />
+      </Form.Item>
+
+      <Form.Item
+        label="Tên tài khoản ngân hàng"
+        name="bankAccountName"
+        validateStatus={bankAccountNameStatus}
+        help={bankAccountNameHelp}
+      >
+        <Input disabled />
+      </Form.Item>
+    </Form>
+  )
+
+  const items: TabsProps['items'] = [
     {
-      key: "0",
-      label: "Thông tin tài khoản",
-      icon: <UserOutlined />,
-      onClick: showProfileModal
+      key: '1',
+      label: 'Thông tin cơ bản',
+      children: <BasicInfoTab />,
     },
     {
-      type: "divider",
-    },
-    {
-      key: "1",
-      label: "Đổi mật khẩu",
-      icon: <LockOutlined />,
-      onClick: () => setIsPasswordModalOpen(true)
-    },
-    {
-      type: "divider",
-    },
-    {
-      key: "2",
-      label: (
-        <Text type="danger" strong>
-          Đăng xuất
-        </Text>
-      ),
-      icon: <LogoutOutlined style={{ color: "#ff4d4f" }} />,
-      onClick: handleClickLogout,
+      key: '2',
+      label: 'Cài đặt thanh toán',
+      children: <PaymentSettingsTab />,
     },
   ]
 
@@ -146,70 +319,18 @@ const AvatarDropdown = () => {
       </Dropdown>
 
       <Modal
-        title="Cập nhật thông tin tài khoản"
+        title="Quản lý hồ sơ"
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onOk={() => form.submit()}
         confirmLoading={isUpdating}
+        width={800}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleProfileUpdate}
-        >
-          <Form.Item
-            label="Tên tài khoản"
-            name="username"
-          >
-            <Input disabled readOnly />
-          </Form.Item>
-
-          <Form.Item
-            label="Email"
-            name="email"
-          >
-            <Input disabled readOnly />
-          </Form.Item>
-
-          <Form.Item
-            label="Số điện thoại"
-            name="phone"
-            rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Họ và tên"
-            name="fullName"
-            rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Tên cửa hàng"
-            name="shopName"
-            rules={[{ required: true, message: 'Vui lòng nhập tên cửa hàng!' }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Địa chỉ cửa hàng"
-            name="shopAddress"
-            rules={[{ required: true, message: 'Vui lòng nhập địa chỉ cửa hàng!' }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Mã mời"
-            name="invitationCode"
-          >
-            <Input disabled readOnly />
-          </Form.Item>
-        </Form>
+        <Tabs
+          defaultActiveKey="1"
+          items={items}
+          type="card"
+        />
       </Modal>
 
       <Modal
