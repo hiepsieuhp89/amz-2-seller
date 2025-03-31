@@ -9,6 +9,6 @@ interface SelectedProductState {
 
 export const useSelectedProduct = create<SelectedProductState>((set) => ({
   selectedProduct: null,
-  setSelectedProduct: (product) => set({ selectedProduct: product }),
+  setSelectedProduct: (product: IProduct) => set({ selectedProduct: product }),
   clearSelectedProduct: () => set({ selectedProduct: null }),
 })) 
