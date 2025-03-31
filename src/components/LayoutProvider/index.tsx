@@ -57,7 +57,7 @@ return (
 
       <div className={styles.outlet}>
         <LayoutHeaderCommon />
-        <div className='mt-[38px] bg-[#F5F5F5] flex flex-col flex-1'>
+        <div className='mt-[38px] bg-[#E3E6E6] flex flex-col flex-1'>
           {children}
         </div>
       </div>

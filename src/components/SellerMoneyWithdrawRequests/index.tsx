@@ -8,7 +8,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 
 const SellerMoneyWithdrawRequests = () => {
   return (
-    <div className="p-4 bg-[#F5F5F5]">
+    <div className="p-4 bg-[#E3E6E6]">
       <Breadcrumb className="mb-4">
         <BreadcrumbList>
           <BreadcrumbItem>

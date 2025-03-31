@@ -23,7 +23,7 @@ export default function FlashDealsPage() {
         <div className="min-h-screen bg-background flex flex-col">
             <Header />
             <MenuHeader />
-            <section className="py-8 px-[104px] max-w-[1500px] flex-1 bg-[#F5F5F5]">
+            <section className="py-8 px-[104px] max-w-[1500px] flex-1 bg-[#E3E6E6]">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Blog</h1>
                     <Breadcrumb>
@@ -42,7 +42,7 @@ export default function FlashDealsPage() {
                     </Breadcrumb>
                 </div>
             </section>
-            <section className="pb-4 container mx-auto px-[104px] max-w-[1500px] bg-[#F5F5F5]">
+            <section className="pb-4 container mx-auto px-[104px] max-w-[1500px] bg-[#E3E6E6]">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {blogPosts.map((post, index) => (
                         <motion.div

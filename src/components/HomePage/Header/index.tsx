@@ -106,7 +106,7 @@ export function Header() {
             <div className="relative flex-1 max-w-[550px]">
                 <Input placeholder="Tôi đang tìm mua..." className="py-2 pr-10 h-[38px] rounded-sm w-full" />
                 <div className="absolute right-0 top-0 h-full flex items-center justify-center bg-[#febd69] w-[45px] rounded-r-sm cursor-pointer">
-                    <Icon path={mdiMagnify} size={0.8} color="#F5F5F5" />
+                    <Icon path={mdiMagnify} size={0.8} color="#E3E6E6" />
                 </div>
             </div>
 
@@ -163,7 +163,7 @@ export function Header() {
                 {/* Shopping Cart */}
                 <Link href="/cart" className="flex items-center px-2">
                     <div className="relative flex items-center">
-                        <Icon path={mdiCart} size={1} color="#F5F5F5" />
+                        <Icon path={mdiCart} size={1} color="#E3E6E6" />
                         <span className="ml-1 font-bold text-gray-400 transition-all duration-300 hover:text-white">{cartItemCount} giỏ hàng</span>
                     </div>
                 </Link>

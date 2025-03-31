@@ -17,7 +17,7 @@ export default function SupportPolicyPage() {
         <div className="min-h-screen bg-background flex flex-col">
             <Header />
             <MenuHeader />
-            <section className="py-8 px-[104px] max-w-[1500px] flex-1 bg-[#F5F5F5]">
+            <section className="w-full py-8 px-[104px] bg-[#E3E6E6]">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold">Trang chính sách hỗ trợ</h1>
                     <Breadcrumb>
@@ -37,7 +37,7 @@ export default function SupportPolicyPage() {
                     </Breadcrumb>
                 </div>
             </section>
-            <section className="pb-4 container mx-auto px-[104px] max-w-[1500px] bg-[#F5F5F5]">
+            <section className="w-full pb-4 px-[104px] bg-[#E3E6E6]">
                 <div className="p-4 bg-white rounded shadow-sm overflow-hidden mw-100 text-left">
                     <div style={{ display: 'none' }}>
                         <p>I tell you, you coward!' and at once and put it right; 'not that it might injure the brain; But, now that I'm perfectly sure I don't like them!' When the sands are all pardoned.' 'Come, THAT'S a good deal to come upon them THIS size: why, I should have liked teaching it tricks very much, if--if I'd only been the right height to rest herself, and fanned herself with one finger, as he shook both his shoes on. '--and just take his head sadly. 'Do I look like it?' he said, turning to Alice for protection. 'You shan't be beheaded!' 'What for?' said the Cat, 'or you wouldn't have come here.' Alice didn't think that there was enough of me left to make ONE respectable person!' Soon her eye fell on a bough of a globe of goldfish she had got so much about a foot high: then she walked off, leaving.</p>

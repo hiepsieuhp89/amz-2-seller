@@ -27,8 +27,8 @@ export default function ShopContent({
   handlePageChange,
 }: ShopContentProps) {
   return (
-    <main className="w-full flex justify-center px-[104px] py-6 bg-[#F5F5F5]">
-      <div className="max-w-[1500px] bg-[#F5F5F5]">
+    <main className="w-full flex justify-center px-[104px] py-6 bg-[#E3E6E6]">
+      <div className="max-w-[1500px] bg-[#E3E6E6]">
       {/* Filters & Sort */}
       <div className="mb-6 flex justify-between items-center">
         <div>

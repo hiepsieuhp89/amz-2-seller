@@ -143,7 +143,7 @@ const SellerOrders = () => {
             </div>
           </Col>
           <Col xs={24} sm={12} md={8} lg={6} xl={4}>
-            <div className="p-4 rounded-lg bg-gradient-to-r from-[#F5F5F5]0/60 to-yellow-500/60 text-white h-full">
+            <div className="p-4 rounded-lg bg-gradient-to-r from-[#E3E6E6]0/60 to-yellow-500/60 text-white h-full">
               <div className="flex flex-col items-center">
                 <div className="w-[30px] h-full rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
                   <span className="text-xl">$</span>

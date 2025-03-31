@@ -300,7 +300,7 @@ export default function ChatPage() {
                     </div>
                   </div>
                 </div>
-                <ScrollArea className="flex flex-col h-full bg-[#F5F5F5]">
+                <ScrollArea className="flex flex-col h-full bg-[#E3E6E6]">
                   <div className="flex flex-col h-full">
                     {transformedChatList?.map((item: any) => (
                       <div
@@ -360,7 +360,7 @@ export default function ChatPage() {
           )}
 
           {/* Main Content */}
-          <div className="flex-1 flex flex-col bg-[#F5F5F5]">
+          <div className="flex-1 flex flex-col bg-[#E3E6E6]">
             {selectedUser ? (
               <>
                 <div className="p-4 border-b bg-white !h-[86px]">
@@ -463,7 +463,7 @@ export default function ChatPage() {
                         )
                       })
                     ) : (
-                      <div className="flex items-center justify-center h-full bg-[#F5F5F5] to-amber-50">
+                      <div className="flex items-center justify-center h-full bg-[#E3E6E6] to-amber-50">
                         <motion.div
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -527,7 +527,7 @@ export default function ChatPage() {
                 </div>
               </>
             ) : (
-              <div className="flex items-center justify-center h-full bg-[#F5F5F5] to-amber-50">
+              <div className="flex items-center justify-center h-full bg-[#E3E6E6] to-amber-50">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
