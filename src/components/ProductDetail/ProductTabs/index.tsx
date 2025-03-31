@@ -8,6 +8,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
 
 // Types
 interface Review {
@@ -32,13 +33,22 @@ interface ReviewsTabProps {
 
 // Description Tab Component
 function DescriptionTab({ images }: DescriptionTabProps) {
+  const { selectedProduct } = useSelectedProduct()
+
   return (
-    <div className="p-4">
+    <div className="p-6">
+      <div className="mb-4 flex flex-col gap-1">
+        <p className="text-sm text-gray-500">Ngày đăng: {new Date(selectedProduct?.createdAt || "").toLocaleDateString()}</p>
+        <p className="text-sm text-gray-500">Tồn kho: {selectedProduct?.stock}</p>
+      </div>
+      <div className="mb-6">
+        <p className="text-gray-700">{selectedProduct?.description}</p>
+      </div>
       <div className="overflow-hidden">
-        {images.map((image, index) => (
+        {selectedProduct?.imageUrls.map((image, index) => (
           <div key={index} className="w-full mb-4">
             <Image
-              src={image || "/placeholder.svg"}
+              src={image }
               alt={`Product description ${index + 1}`}
               width={800}
               height={600}
@@ -101,10 +111,11 @@ function ReviewsTab({ reviews }: ReviewsTabProps) {
 
 // Main ProductTabs Component
 export default function ProductTabs({ defaultActiveTab }: ProductTabsProps) {
+  const { selectedProduct } = useSelectedProduct()
   const tabs = [
     {
       id: "tab_default_1",
-      label: "Sự miêu tả",
+      label: "Miêu tả",
       content: ProductTabs.createDescriptionTab([
         "https://sg-live-01.slatic.net/p/1d376211c4b98d216490a86eae654d28.png",
         "https://sg-live-01.slatic.net/p/d0de0881014095549d52b4f950b0bcb8.png",

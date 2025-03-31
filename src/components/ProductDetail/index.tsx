@@ -23,21 +23,16 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-
-const productImages = [
-  "https://m.media-amazon.com/images/I/51FANKJajxL._AC_SL1500_.jpg",
-  "https://m.media-amazon.com/images/I/41oWqbjbYQL._AC_SL1500_.jpg",
-  "https://m.media-amazon.com/images/I/41mUAj5oWCL._AC_SL1500_.jpg",
-]
+import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
 
 export default function ProductDetail() {
+  const { selectedProduct } = useSelectedProduct()
   const [quantity, setQuantity] = useState<number>(1)
   const [currentImage, setCurrentImage] = useState<number>(0)
-  const price = 6.8
+  const price = parseFloat(selectedProduct?.price || "0")
   const totalPrice = price * quantity
-  const availableQuantity = 4999
+  const availableQuantity = selectedProduct?.stock || 0
 
   const imgContainerRef = useRef<HTMLDivElement>(null)
   const [isZoomed, setIsZoomed] = useState(false)
@@ -87,7 +82,7 @@ export default function ProductDetail() {
                 }
               >
                 <Image
-                  src={productImages[currentImage]}
+                  src={selectedProduct?.imageUrls[currentImage] || ""}
                   alt="Product image"
                   fill
                   className="object-contain p-4"
@@ -97,7 +92,7 @@ export default function ProductDetail() {
             </div>
 
             <div className="flex flex-col gap-2 w-20">
-              {productImages.map((img, index) => (
+              {selectedProduct?.imageUrls.map((img, index) => (
                 <motion.div
                   key={index}
                   whileHover={{ scale: 1.05 }}
@@ -111,7 +106,7 @@ export default function ProductDetail() {
                   )}
                 >
                   <Image
-                    src={img || "/placeholder.svg"}
+                    src={img }
                     alt={`Thumbnail ${index + 1}`}
                     fill
                     className="object-contain p-1"
@@ -125,8 +120,7 @@ export default function ProductDetail() {
         {/* Product Details */}
         <div className="product-info space-y-6">
           <div>
-            <h1 className="text-xl font-semibold">KAKA Bange Series Laptop Backpack Bag with Waterproof Anti-theft lock with USB Charging Travel Business Office Bagpack
-            </h1>
+            <h1 className="text-xl font-semibold">{selectedProduct?.name}</h1>
 
             <div className="mt-2 flex items-center gap-2">
               <div className="flex">
@@ -147,7 +141,7 @@ export default function ProductDetail() {
           <div className="flex items-center justify-between gap-4">
             <div className="text-sm text-muted-foreground flex flex-col">
               <span>Được bán bởi</span>
-              <span className="font-medium">Phạm Văn sư</span>
+              <span className="font-medium">Ẩn danh</span>
             </div>
             <Button variant="outline" className="ml-4 px-3 py-1 font-semibold border-main-golden-orange !text-main-golden-orange hover:bg-main-golden-orange/30">Nhắn tin với người bán</Button>
           </div>
@@ -215,11 +209,11 @@ export default function ProductDetail() {
             </motion.div>
           </div>
           <div className="flex gap-4">
-            <Button variant="link" className="h-auto p-0 text-muted-foreground">
+            <Button variant="link" className="h-auto p-0 text-muted-foreground text-wrap break-words">
               <Icon path={mdiHeart} size={0.8} className="mr-2" />
               Thêm vào danh sách yêu thích
             </Button>
-            <Button variant="link" className="h-auto p-0 text-muted-foreground">
+            <Button variant="link" className="h-auto p-0 text-muted-foreground text-wrap break-words">
               <Icon path={mdiShareVariant} size={0.8} className="mr-2" />
               Thêm vào để so sánh
             </Button>

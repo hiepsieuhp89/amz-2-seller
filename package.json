@@ -60,7 +60,8 @@
     "tailwindcss-animate": "^1.0.7",
     "use-image": "^1.1.1",
     "uuid": "^10.0.0",
-    "yet-another-react-lightbox": "^3.21.8"
+    "yet-another-react-lightbox": "^3.21.8",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",

@@ -145,7 +145,7 @@ const LeftSideSection = () => {
                   {/* Shop Name & Location */}
                   <div>
                     <Link href="/shop/Shop-Hoa-Hong" className="text-sm flex items-center font-semibold">
-                      Shop Hoa Hong
+                      Shop ẩn danh
                       <motion.span
                         className="ml-2 text-blue-500"
                       >
@@ -169,7 +169,7 @@ const LeftSideSection = () => {
                         </svg>
                       </motion.span>
                     </Link>
-                    <Text className="text-xs !text-gray-400">Yên Sơn Tuyên Quang Việt Nam</Text>
+                    <Text className="text-xs !text-gray-400">123 Main Street, Austin, TX 78701, Hoa Kỳ</Text>
                   </div>
                 </div>
                 {/* Rating */}

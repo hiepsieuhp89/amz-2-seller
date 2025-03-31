@@ -21,6 +21,7 @@ export interface IProductSearchParams {
     minPrice?: number
     maxPrice?: number
     limit?: number
+    take?: number
 }
 
 export interface IAddShopProductsRequest {
