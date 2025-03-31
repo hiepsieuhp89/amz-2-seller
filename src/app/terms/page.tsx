@@ -12,14 +12,14 @@ import {
 } from "@/components/ui/breadcrumb"
 import Image from "next/image"
 
-export default function SellerPolicyPage() {
+export default function TermsPage() {
     return (
         <div className="min-h-screen bg-background flex flex-col">
             <Header />
             <MenuHeader />
             <section className="w-full py-8 px-[104px] bg-[#E3E6E6]">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Trang chính sách bán hàng</h1>
+                    <h1 className="text-2xl font-bold">Trang điều kiện và điều khoản</h1>
                     <Breadcrumb>
                         <BreadcrumbList>
                             <BreadcrumbItem>
@@ -29,8 +29,8 @@ export default function SellerPolicyPage() {
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
                             <BreadcrumbItem>
-                                <BreadcrumbLink className="font-semibold" href="/seller-policy">
-                                    <span>Chính sách người bán</span>
+                                <BreadcrumbLink className="font-semibold" href="/terms">
+                                    <span>Điều kiện và điều khoản</span>
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                         </BreadcrumbList>
@@ -50,42 +50,104 @@ export default function SellerPolicyPage() {
                     <br />
                     <br />
                     <span>
-                        1.1 Welcome to the  platform (hereinafter referred to as "this platform"). Please read these Terms of Service carefully before using the  platform or opening a  account ("Account") or opening a  store ("Store") to understand your relationship to  (individually and collectively, "", "we" or "our") legal rights and obligations. The services we provide (hereinafter referred to as "the service") include (1) the platform (including amazon-shop mobile applications), (2) the services provided by the platform and the  client software, and (3) through the platform or its related All information, linked web pages, functions, data, text, images, photos, graphics, music, sounds, videos, information, labels, content, programming, software, application services (including but not limited to any mobile Application Services) (hereinafter referred to as "Content"). Any new or upgraded features of the Service shall also be governed by these Terms of Service. These Terms of Service govern your use of the services provided by .
+                        Welcome to . where -registered Buyers will be able to enjoy the rights and privileges described in these  Terms of Service (these " Terms of Service") when purchasing Mall Items (defined below) on  from any of our participating Sellers that have been carefully selected by  (such Sellers, "Mall Sellers", and such Buyers, "Mall Buyers"). If you are a Mall Buyer, you will be deemed to have consented to the terms and conditions described in these  Terms of Service when you make purchases on . Similarly, if you are a Mall Seller, you will be deemed to have consented to the terms and conditions described in these  Terms of Service by your continued participation in . These  Terms of Service supplement the Terms of Service and the other  Policies, of which these  Terms of Service forms a part – please read the Terms of Service and the other  Policies available on the Site as they contain important information regarding your rights and obligations. Any terms that are used in these  Terms of Service that are not defined here will have the meanings given to such terms in the Terms of Service and/or the applicable  Policy. All terms and conditions described in these  Terms of Service are subject to change at 's discretion pursuant to the Terms of Service.
                     </span>
                     <br />
                     <br />
                     <span>
-                        1.2  Policy: Various terms or conditions applicable to sellers published on the  platform and updated from time to time, including but not limited to cross-border seller service terms, privacy policy, prohibited and restricted goods policy,  logistics service terms, seller center The policies and terms stated above, as well as new policies and terms that will be released in the future. Unless otherwise agreed in these Terms of Service, the definitions and interpretations of terms in the  Policy shall apply to these Terms of Service.
+                        <strong>1.1 Refunds and Return Policy</strong>
                     </span>
                     <br />
                     <br />
                     <span>
-                        1.3  platform, refers to the website and mobile shopping application provided and operated by , including but not limited to the global  shopping website and mobile shopping client;
+                        Mall Buyer may apply for a refund and/or return of an item purchased on  (a "Mall Item") by completing the return/ refund request on the Site and returning the Mall Item as described below at any time within seven (7) calendar days after the date that Mall Item was first made available for Mall Buyer to take delivery (the "Free Return Period"). Usually, that date would be the date Mall Buyer received delivery of the Mall Item; however, if Mall Buyer did not receive the Mall Item because of Mall Buyer's absence from the destination address or Mall Buyer's failure to input the proper destination address, that date would be the date on which delivery attempt was first made.
                     </span>
                     <br />
                     <br />
                     <span>
-                        1.4 If you use this service or open an account and store on this platform, you irrevocably accept and agree to these terms of service, including the additional terms and policies mentioned in these terms of service and/or provided by links to these terms of service. At the same time, you should still abide by the terms of service of the site platform where the store you have opened in each country/region is located, and accepting and agreeing to the terms of service will not exempt you from the obligation to read and abide by the terms of service of the site platform where the store is located. If there is a conflict between these terms of service and the terms of service of the platform where you open your store, the terms of service of the platform where you open your store shall prevail.
+                        1.2 Please note that Mall Buyer must ship or drop off the Mall Item to or at a location designated by  within five (5) days after the return request is raised and in any event no later than the last day of the Free Return Period. All Mall Items that are returned must be returned via a courier designated by  by no later than the last day of the Free Return Period.  reserves the right to reject any application where the Mall Item was dispatched later than five (5) days after the return request is raised.
                     </span>
                     <br />
                     <br />
                     <span>
-                        If you have entered into other written agreements with us for specific services, in the event of a conflict between the terms of the other written agreement and these Terms of Service, the terms of the other written agreement shall control.
+                        1.3 The approval of your request for refund and return will be made by  in its sole discretion after reviewing your completed refund/return request and inspecting the condition of the Mall Item that was returned. Mall Buyer acknowledges and agrees that 's decision is final, conclusive and binding, and covenants and agrees that it will not bring suit or otherwise assert any claim against  or its affiliates in relation to such decision. The Mall Item that was returned to  must be, at a minimum, in the following conditions:
+                    </span>
+                    <br />
+                    <span>
+                        ● New and sealed condition;
+                    </span>
+                    <br />
+                    <span>
+                        ● Complete, with all items included in the purchase; and
+                    </span>
+                    <br />
+                    <span>
+                        ● With original product packaging and price tags.
+                    </span>
+                    <br />
+                    <span>
+                        If any additional conditions apply to a certain Mall Item,  will inform you via the Site, SMS or email. The conditions for the Mall Items subject to return are referred to as the "Return Conditions".
                     </span>
                     <br />
                     <br />
                     <span>
-                        1.5 This service includes the provision of an online platform service that provides venues and opportunities for sellers (hereinafter referred to as "you", "users" and "sellers") to trade goods. The actual sales contract exists between the buyer (hereinafter referred to as the "buyer") and the seller,  is not the subject of this sales contract or other contracts between the buyer and the seller, and  is not responsible for such contracts. Buyers and sellers will assume full responsibility for sales contracts, product listings, purchase guarantees and similar matters during the use of  services.  does not participate in transactions between users.  reserves the right to pre-screen users or user-provided content or information.  reserves the right to remove any content or information you provide through the Platform in accordance with clause 6.5.  does not guarantee that the user will actually complete the transaction.
+                        1.4 In addition, please note that certain types of Mall Items may be excluded from the Refunds and Return Policy described in these  Terms of Service, including:
+                    </span>
+                    <br />
+                    <span>
+                        ● Digital goods, such as mobile top-up cards, audio or video recording or software;
+                    </span>
+                    <br />
+                    <span>
+                        ● Goods that are perishable or may otherwise deteriorate or expire rapidly, such as groceries; and
+                    </span>
+                    <br />
+                    <span>
+                        ● Goods that are not suitable for return due to health protection or hygienic reasons, such as cosmetics, swimwear and underwear.
+                    </span>
+                    <br />
+                    <span>
+                        If any Mall Item is excluded from the Refunds and Return Policy described in these  Terms of Service,  will make reasonable efforts to publish that information on our Site or otherwise inform the Mall Buyers; however, please note that our policies may change without notice at any time and certain Mall Items may be subject to exclusion after Mall Buyer has purchased them. Any Mall Item that is subject to exclusion from the Refunds and Return Policy described in these  Terms of Service is referred to as an "Excluded Item".
                     </span>
                     <br />
                     <br />
                     <span>
-                        1.6 Before becoming a user of this service, you must read and accept all terms contained in and linked to these Terms of Service, and you must agree to the Privacy Policy regarding the processing of sellers and buyers' personal data (such as have) provisions.
+                        1.5  reserves the right to (a) add to or otherwise amend the list of Excluded Items and/or the Return Conditions and (b) amend, terminate or suspend the Refunds and Return Policy described in these  Terms of Service (including the length of the Free Return Period), in each case, at any time in its sole discretion.
                     </span>
                     <br />
                     <br />
                     <span>
-                        1.7 Since you become a user of the Service, if you violate these Terms of Service and any other rules and policies that you should abide by (including but not limited to the additional terms mentioned in these Terms of Service/or the additional terms provided by links to these Terms of Service and  Policy),  has the right to deal with you and the accounts and stores you open on this platform in accordance with these terms of service and relevant rules and policies (including but not limited to a series of sanctions described in Article 7.1 of these terms of service). action), you undertake and agree to accept 's processing and assume corresponding responsibilities.
+                        1.6  may reject in its sole discretion any returned Mall Item (and the related request for refund and return):
+                    </span>
+                    <br />
+                    <span>
+                        ● that is an Excluded Item;
+                    </span>
+                    <br />
+                    <span>
+                        ● that does not meet the Return Conditions; or
+                    </span>
+                    <br />
+                    <span>
+                        ● if the Mall Item was returned in a manner that does not comply with Section 1.2 above.
+                    </span>
+                    <br />
+                    <span>
+                        Please note that 's determination will be based on the list of terms of conditions in effect at the time of such determination (including the list of Excluded Items, the Return Conditions and the Free Return Period), and therefore pursuant to Section 1.5 above, such list of Excluded Items, the Return Conditions and/or the length of Free Return Period may be different from those in effect at the time Mall Buyer has completed the refund/return request and/or returned the Mall Item.
+                    </span>
+                    <br />
+                    <span>
+                        If  rejects a request for refund and return,  will organize the delivery of such Mall Item to the relevant Mall Buyer's address to which the Mall Item was originally delivered, and  shall be entitled to seek compensation from such Mall Buyer for any costs incurred in delivering the Mall Item back to such Mall Buyer.
+                    </span>
+                    <br />
+                    <br />
+                    <span>
+                        1.7  reserves the right to terminate a User's access to  if it suspects any abuse of the Refunds and Return Policy described in these  Terms of Service and, if  deems appropriate, may also impose penalties (including recovery of any fees or charges incurred as a consequence of such abuse).
+                    </span>
+                    <br />
+                    <br />
+                    <span>
+                        1.8 The Refunds and Return Policy for Mall Items described in these  Terms of Service are in addition to the general Refunds and Return Policy described in the Refunds and Return Policy. If there is any inconsistency, the Refunds and Return Policy described in these  Terms of Service will prevail in respect of Mall Items.
                     </span>
                     <br />
                     <br />
