@@ -80,19 +80,31 @@ const AvatarDropdown = () => {
 
   const showProfileModal = () => {
     form.setFieldsValue({
-      username: user?.username,
-      email: user?.email,
-      phone: user?.phone,
-      fullName: user?.fullName,
-      invitationCode: user?.invitationCode,
+      // Tab thông tin cơ bản
+      fullName: profile?.data?.fullName,
+      phone: profile?.data?.phone,
+      email: profile?.data?.email,
+      username: profile?.data?.username,
+
+      // Tab cài đặt thanh toán
+      address: profile?.data?.address,
+      bankName: profile?.data?.bankName,
+      bankAccountNumber: profile?.data?.bankAccountNumber,
+      bankAccountName: profile?.data?.bankAccountName,
+      bankBranch: profile?.data?.bankBranch,
+      
+      // Thông tin shop
       shopName: profile?.data?.shopName,
-      shopAddress: profile?.data?.shopAddress
+      shopAddress: profile?.data?.shopAddress,
     })
     setIsModalOpen(true)
   }
 
+  const [bankAccountStatus, setBankAccountStatus] = useState<'success' | 'error' | ''>('')
+  const [bankAccountHelp, setBankAccountHelp] = useState('')
+
   const handleBankAccountVerification = async (accountNumber: string) => {
-    const bankCode = form.getFieldValue('bankName') // Lấy mã ngân hàng đã chọn
+    const bankCode = form.getFieldValue('bankName')
     if (!bankCode) {
       messageApi.warning('Vui lòng chọn ngân hàng trước!')
       return
@@ -101,22 +113,18 @@ const AvatarDropdown = () => {
     try {
       const response = await verifyBankAccount({ bankCode, accountNumber })
       if (response.data.isValid) {
-        form.setFieldsValue({ bankAccountName: response.data.accountName })
-        setBankAccountNameStatus('success')
-        setBankAccountNameHelp('')
+        setBankAccountStatus('success')
+        setBankAccountHelp('Số tài khoản hợp lệ')
       } else {
-        form.setFieldsValue({ bankAccountName: '' })
-        setBankAccountNameStatus('error')
-        setBankAccountNameHelp('Sai thông tin, vui lòng nhập lại...')
+        setBankAccountStatus('error')
+        setBankAccountHelp('Số tài khoản không hợp lệ')
       }
     } catch (error) {
-      setBankAccountNameStatus('error')
-      setBankAccountNameHelp('Có lỗi xảy ra khi kiểm tra thông tin')
-      form.setFieldsValue({ bankAccountName: '' })
+      setBankAccountStatus('error')
+      setBankAccountHelp('Có lỗi xảy ra khi kiểm tra thông tin')
     }
   }
 
-  // Thêm debounce để tránh gọi API quá nhiều
   const debouncedVerification = debounce(handleBankAccountVerification, 500)
 
   const BasicInfoTab = () => (
@@ -253,6 +261,8 @@ const AvatarDropdown = () => {
       <Form.Item
         label="Số tài khoản ngân hàng"
         name="bankAccountNumber"
+        validateStatus={bankAccountStatus}
+        help={bankAccountHelp}
         rules={[{ required: true, message: 'Vui lòng nhập số tài khoản!' }]}
       >
         <Input 
@@ -264,10 +274,9 @@ const AvatarDropdown = () => {
       <Form.Item
         label="Tên tài khoản ngân hàng"
         name="bankAccountName"
-        validateStatus={bankAccountNameStatus}
-        help={bankAccountNameHelp}
+        rules={[{ required: true, message: 'Vui lòng nhập tên tài khoản!' }]}
       >
-        <Input disabled />
+        <Input placeholder="NHẬP TÊN CHỦ TÀI KHOẢN" />
       </Form.Item>
     </Form>
   )
@@ -285,14 +294,42 @@ const AvatarDropdown = () => {
     },
   ]
 
+  const menuItems: MenuProps['items'] = [
+    {
+      key: '1',
+      icon: <UserOutlined />,
+      label: 'Hồ sơ',
+      onClick: showProfileModal
+    },
+    {
+      key: '2', 
+      icon: <LockOutlined />,
+      label: 'Đổi mật khẩu',
+      onClick: () => setIsPasswordModalOpen(true)
+    },
+    {
+      key: '3',
+      icon: <LogoutOutlined />,
+      label: 'Đăng xuất',
+      onClick: handleClickLogout
+    }
+  ]
+
   if (!isClient) {
     return <div className="avatar-placeholder"></div>
   }
 
+  console.log('profile', profile)
+
   return (
     <>
       {contextHolder}
-      <Dropdown menu={{ items }} trigger={["click"]} placement="bottomRight" arrow>
+      <Dropdown 
+        menu={{ items: menuItems }}
+        trigger={["click"]} 
+        placement="bottomRight" 
+        arrow
+      >
         <Space className="cursor-pointer rounded-md transition-all">
           <Avatar
             size={38}
