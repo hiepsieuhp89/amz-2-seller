@@ -153,7 +153,7 @@ export function Header() {
                 {/* Currency Selector */}
                 <Dropdown overlay={currencyMenu} trigger={["click"]} placement="bottomRight">
                     <div className="flex items-center cursor-pointer px-2">
-                        <span className="mr-1 text-gray-400 transition-all duration-300 hover:text-white font-bold">
+                        <span className="mr-1 text-gray-400 text-sm transition-all duration-300 hover:text-white font-bold">
                             {currentCurrency.name} {currentCurrency.symbol}
                         </span>
                         <Icon path={mdiChevronDown} size={0.6} />
@@ -164,7 +164,7 @@ export function Header() {
                 <Link href="/cart" className="flex items-center px-2">
                     <div className="relative flex items-center">
                         <Icon path={mdiCart} size={1} color="#E3E6E6" />
-                        <span className="ml-1 font-bold text-gray-400 transition-all duration-300 hover:text-white">{cartItemCount} giỏ hàng</span>
+                        <span className="ml-1 font-bold text-gray-400 text-sm transition-all duration-300 hover:text-white">{cartItemCount} giỏ hàng</span>
                     </div>
                 </Link>
             </nav>

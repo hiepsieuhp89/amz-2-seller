@@ -1,5 +1,5 @@
 "use client";
-import Header from "@/components/ProductDetail/Header";
+import { Header } from "@/components/Common/Header";
 import ShopContent from '@/components/Shop/ShopContent';
 import ShopFooter from '@/components/Shop/ShopFooter';
 import ShopHeader from '@/components/Shop/ShopHeader';
@@ -27,7 +27,6 @@ function ShopContentWrapper() {
   })
 
   const shopProducts = shopProductsData?.data?.data || [];
-  console.log(shopProducts)
   const meta = shopProductsData?.data?.meta;
   useEffect(() => {
     const params = new URLSearchParams();

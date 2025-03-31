@@ -24,7 +24,7 @@ export default function Categories2() {
                       whileHover={{ scale: 1.02 }}
                     >
                       <Image
-                        src={category.items[0].image || "/placeholder.svg"}
+                        src={category.items[0].image }
                         alt={category.items[0].label}
                         fill
                         className="object-cover"

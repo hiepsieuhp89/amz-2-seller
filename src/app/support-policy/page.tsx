@@ -1,8 +1,8 @@
 "use client"
 
-import { Footer } from "@/components/HomePage/Footer"
-import { Header } from "@/components/HomePage/Header"
-import MenuHeader from "@/components/HomePage/MenuHeader"
+import { Footer } from "@/components/Common/Footer"
+import { Header } from "@/components/Common/Header"
+import MenuHeader from "@/components/Common/MenuHeader"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -15,7 +15,7 @@ import Image from "next/image"
 export default function SupportPolicyPage() {
     return (
         <div className="min-h-screen bg-background flex flex-col">
-            <Header />
+            <Header/>
             <MenuHeader />
             <section className="w-full py-8 px-[104px] bg-[#E3E6E6]">
                 <div className="flex items-center justify-between">

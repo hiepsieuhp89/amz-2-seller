@@ -95,7 +95,7 @@ export function FeaturedCategories() {
                   <CardContent className="p-0 flex flex-col h-full">
                     <div className="relative aspect-square w-full">
                       <Image
-                        src={category.image || "/placeholder.svg"}
+                        src={category.image }
                         alt={category.name}
                         fill
                         className="object-cover"

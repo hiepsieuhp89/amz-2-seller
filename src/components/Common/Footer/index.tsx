@@ -150,7 +150,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Icon path={mdiEmailOutline} size={0.8} className="flex-shrink-0 text-gray-400" />
-                <span className="text-gray-400">sellercentralamazon.index@gmail.com</span>
+                <span className="text-gray-400 text-wrap max-w-[150px] break-words">sellercentralamazon.index@gmail.com</span>
               </li>
             </ul>
           </div>

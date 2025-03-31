@@ -1,0 +1,14 @@
+import { create } from 'zustand'
+import { IProduct } from '@/interface/response/products'
+
+interface SelectedProductState {
+  selectedProduct: IProduct | null
+  setSelectedProduct: (product: IProduct) => void
+  clearSelectedProduct: () => void
+}
+
+export const useSelectedProduct = create<SelectedProductState>((set) => ({
+  selectedProduct: null,
+  setSelectedProduct: (product) => set({ selectedProduct: product }),
+  clearSelectedProduct: () => set({ selectedProduct: null }),
+})) 
