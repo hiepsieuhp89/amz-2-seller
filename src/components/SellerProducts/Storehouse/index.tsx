@@ -1,7 +1,7 @@
 "use client"
 import type React from "react"
 import { useState, useEffect } from "react"
-import { Input, Button, Badge, Empty, Spin, message } from "antd"
+import { Input, Button, Badge, Empty, Spin, message, Pagination, Row, Col } from "antd"
 import { PlusOutlined, SearchOutlined, DeleteOutlined } from "@ant-design/icons"
 import styles from "./storehouse.module.scss"
 import { useGetAllShopProducts } from "@/hooks/shop-products"
@@ -18,10 +18,12 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+
 const Storehouse = () => {
   const { user } = useUser()
   const { data: productsData, isLoading, refetch } = useGetAllShopProducts({
     page: 1,
+    take: 10,
     shopId: user?.id
   })
   const { mutate: addShopProducts, isPending: isAddingProducts } = useAddShopProducts()
@@ -33,6 +35,8 @@ const Storehouse = () => {
   const [maxPrice, setMaxPrice] = useState<number | undefined>()
   const [quantity, setQuantity] = useState<number | undefined>()
   const [totalSelectedProducts, setTotalSelectedProducts] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
 
   const filterProducts = () => {
     if (keyword || minPrice !== undefined || maxPrice !== undefined) {
@@ -102,6 +106,11 @@ const Storehouse = () => {
         }
       }
     )
+  }
+
+  const handlePaginationChange = (page: number, pageSize?: number) => {
+    setCurrentPage(page)
+    if (pageSize) setPageSize(pageSize)
   }
 
   return (
@@ -244,6 +253,22 @@ const Storehouse = () => {
                   Tải thêm
                 </Button>
               </div>
+            )}
+
+            {filteredProducts.length > 0 && (
+              <Row justify="end" style={{ marginTop: 16 }}>
+                <Col>
+                  <Pagination
+                    current={currentPage}
+                    pageSize={pageSize}
+                    total={productsData?.data?.meta?.itemCount || 0}
+                    showSizeChanger
+                    showQuickJumper
+                    onChange={handlePaginationChange}
+                    onShowSizeChange={handlePaginationChange}
+                  />
+                </Col>
+              </Row>
             )}
           </div>
 
