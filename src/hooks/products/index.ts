@@ -32,7 +32,7 @@ export const useProducts = (params?: IProductSearchParams) => {
     }
 
     const {
-        data: productsData,
+        data,
         isLoading,
         isFetching,
         refetch,
@@ -42,7 +42,7 @@ export const useProducts = (params?: IProductSearchParams) => {
     })
 
     return {
-        productsData,
+        data,
         isLoading,
         isFetching,
         refetch,

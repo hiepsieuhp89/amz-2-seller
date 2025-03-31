@@ -14,6 +14,10 @@ import Link from "next/link"
 import { useCategories } from "@/hooks/categories"
 import { Skeleton } from "@/components/ui/skeleton"
 import Image from 'next/image'
+import { useEffect, useState } from 'react';
+import { motion, useScroll, useTransform, animate } from "framer-motion";
+import { mdiChevronUp } from "@mdi/js";
+import Icon from "@mdi/react";
 
 export default function CategoriesPage() {
     const { categoriesData, isLoading, isFetching, refetch } = useCategories({
@@ -21,6 +25,32 @@ export default function CategoriesPage() {
         take: 9999999
     })
     console.log(categoriesData)
+    const [showScroll, setShowScroll] = useState(false);
+    const { scrollY } = useScroll();
+    const opacity = useTransform(scrollY, [400, 500], [0, 1]);
+
+    const checkScrollTop = () => {
+        if (!showScroll && window.pageYOffset > 400) {
+            setShowScroll(true);
+        } else if (showScroll && window.pageYOffset <= 400) {
+            setShowScroll(false);
+        }
+    };
+
+    const scrollTop = () => {
+        animate(scrollY, 0, {
+            duration: 1,
+            ease: "easeInOut",
+            onUpdate: (latest) => {
+                window.scrollTo(0, latest);
+            }
+        });
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', checkScrollTop);
+        return () => window.removeEventListener('scroll', checkScrollTop);
+    }, [showScroll]);
 
     if (isLoading || isFetching) {
         return (
@@ -115,6 +145,13 @@ export default function CategoriesPage() {
                 </div>
             </section>
             <Footer />
+            <motion.button
+                style={{ opacity }}
+                onClick={scrollTop}
+                className="fixed bottom-4 right-4 p-3 bg-main-golden-orange text-white rounded-full shadow-lg hover:bg-main-golden-orange/80 transition-colors"
+            >
+                <Icon path={mdiChevronUp} size={1} />
+            </motion.button>
         </div>
     )
 }
