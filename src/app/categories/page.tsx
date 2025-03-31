@@ -13,11 +13,14 @@ import {
 import Link from "next/link"
 import { useCategories } from "@/hooks/categories"
 import { Skeleton } from "@/components/ui/skeleton"
+import Image from 'next/image'
 
 export default function CategoriesPage() {
     const { categoriesData, isLoading, isFetching, refetch } = useCategories({
         order: "DESC",
+        take: 9999999
     })
+    console.log(categoriesData)
 
     if (isLoading || isFetching) {
         return (
@@ -31,7 +34,7 @@ export default function CategoriesPage() {
                     </div>
                     <div className="mt-8 space-y-4">
                         {[...Array(3)].map((_, index) => (
-                            <div key={index} className="bg-white rounded-lg shadow-md">
+                            <div key={index} className="bg-white rounded-sm shadow-md">
                                 <div className="p-4 border-b border-gray-200">
                                     <Skeleton className="h-6 w-[150px]" />
                                 </div>
@@ -76,8 +79,11 @@ export default function CategoriesPage() {
                 </div>
                 <div className="mt-8 space-y-4">
                     {categoriesData?.data?.data.map((category) => (
-                        <div key={category.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                            <div className="p-4 border-b border-gray-200">
+                        <div key={category.id} className="bg-white rounded-sm shadow-md hover:shadow-lg transition-shadow duration-300">
+                            <div className="p-4  flex items-center">
+                                {category.imageUrl && (
+                                    <Image src={category.imageUrl} alt={category.name} className="h-16 w-16 object-cover rounded mr-4" width={64} height={64} />
+                                )}
                                 <Link href={`/categories/${category.id}`} className="font-semibold text-lg text-main-golden-orange hover:text-main-golden-orange/80 transition-colors">
                                     {category.name}
                                     {category.parent && (
@@ -85,10 +91,13 @@ export default function CategoriesPage() {
                                     )}
                                 </Link>
                             </div>
-                            <div className="p-4">
+                           {category.children.length > 0 && <div className="p-4 border-t border-gray-200">
                                 <div className="grid grid-cols-3 gap-6">
                                     {category.children.map((child) => (
-                                        <div key={child.id} className="group">
+                                        <div key={child.id} className="group flex items-center">
+                                            {child.imageUrl && (
+                                                <Image src={child.imageUrl} alt={child.name} className="h-10 w-10 object-cover rounded mr-2" width={40} height={40} />
+                                            )}
                                             <h6 className="mb-3">
                                                 <Link href={`/categories/${child.id}`} className="text-gray-700 hover:text-blue-600 transition-colors font-medium text-base">
                                                     <span className="group-hover:underline">{child.name}</span>
@@ -100,7 +109,7 @@ export default function CategoriesPage() {
                                         </div>
                                     ))}
                                 </div>
-                            </div>
+                            </div>}
                         </div>
                     ))}
                 </div>
