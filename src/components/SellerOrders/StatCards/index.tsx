@@ -10,10 +10,10 @@ interface StatCardProps {
 
 const StatCard = ({ title, value, gradientClass }: StatCardProps) => {
   return (
-    <div className={`rounded-[4px] overflow-hidden text-white ${gradientClass}`}>
+    <div className={`rounded-[4px] overflow-hidden !text-white/80 ${gradientClass}`}>
       <div className="flex flex-col items-center">
         <div className="w-[30px] h-[30px] rounded-full bg-white bg-opacity-20 flex items-center justify-center mt-3">
-          <DollarOutlined className="text-xl text-white" />
+          <DollarOutlined className="text-xl !text-white/80" />
         </div>
         <div className="px-3 pt-3 pb-3 text-center">
           <div className="text-xl font-bold">{value}</div>

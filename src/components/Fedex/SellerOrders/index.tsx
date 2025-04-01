@@ -62,9 +62,7 @@ const SellerOrders = () => {
 
   // Add this new function to handle currency conversion
   const handleCurrencyConversion = () => {
-    // Add your currency conversion logic here
     console.log("Currency conversion clicked");
-    // You might want to open a modal or navigate to a conversion page
   };
 
   // Columns for wallet transactions table
@@ -110,7 +108,7 @@ const SellerOrders = () => {
         {/* Wallet Cards */}
         <Row gutter={16} className="mb-4 justify-center items-stretch flex-wrap gap-2">
           <Col xs={24} sm={12} md={8} lg={6} xl={4}>
-            <div className="p-4 rounded-lg bg-gradient-to-r from-pink-500/60 to-purple-500/60 text-white h-full">
+            <div className="p-4 rounded-lg bg-gradient-to-r from-pink-500/60 to-purple-500/60 !text-white/80 h-full">
               <div className="flex flex-col items-center">
                 <div className="w-[30px] h-full rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
                   <span className="text-xl">$</span>
@@ -121,7 +119,7 @@ const SellerOrders = () => {
             </div>
           </Col>
           <Col xs={24} sm={12} md={8} lg={6} xl={4}>
-            <div className="p-4 rounded-lg bg-gradient-to-r from-indigo-600/60 to-blue-500/60 text-white h-full">
+            <div className="p-4 rounded-lg bg-gradient-to-r from-indigo-600/60 to-blue-500/60 !text-white/80 h-full">
               <div className="flex flex-col items-center">
                 <div className="w-[30px] h-full rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
                   <span className="text-xl">$</span>
@@ -132,7 +130,7 @@ const SellerOrders = () => {
             </div>
           </Col>
           <Col xs={24} sm={12} md={8} lg={6} xl={4}>
-            <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/60 to-teal-500/60 text-white h-full">
+            <div className="p-4 rounded-lg bg-gradient-to-r from-green-500/60 to-teal-500/60 !text-white/80 h-full">
               <div className="flex flex-col items-center">
                 <div className="w-[30px] h-full rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
                   <span className="text-xl">$</span>
@@ -143,7 +141,7 @@ const SellerOrders = () => {
             </div>
           </Col>
           <Col xs={24} sm={12} md={8} lg={6} xl={4}>
-            <div className="p-4 rounded-lg bg-gradient-to-r from-[#E3E6E6]0/60 to-yellow-500/60 text-white h-full">
+            <div className="p-4 rounded-lg bg-gradient-to-r from-[#E3E6E6]0/60 to-yellow-500/60 !text-white/80 h-full">
               <div className="flex flex-col items-center">
                 <div className="w-[30px] h-full rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
                   <span className="text-xl">$</span>
@@ -160,7 +158,7 @@ const SellerOrders = () => {
             >
               <div className="flex flex-col items-center">
                 <div className="w-[60px] h-[60px] rounded-full bg-main-gunmetal-blue/50 flex items-center justify-center mb-3">
-                  <PlusOutlined className="!text-white text-2xl" />
+                  <PlusOutlined className="!!text-white/80 text-2xl" />
                 </div>
                 <div className="text-lg  font-semibold">Quy đổi USD</div>
               </div>

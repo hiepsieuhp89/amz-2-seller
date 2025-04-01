@@ -97,7 +97,6 @@ const Storehouse = () => {
           setTotalSelectedProducts(0)
         },
         onError: (error: any) => {
-          console.log(error)
           message.error(`Lỗi khi thêm sản phẩm: ${error.response?.data?.message || 'Có lỗi xảy ra'}`)
         }
       }

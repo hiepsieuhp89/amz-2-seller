@@ -24,7 +24,6 @@ export default function CategoriesPage() {
         order: "DESC",
         take: 9999999
     })
-    console.log(categoriesData)
     const [showScroll, setShowScroll] = useState(false);
     const { scrollY } = useScroll();
     const opacity = useTransform(scrollY, [400, 500], [0, 1]);
@@ -148,7 +147,7 @@ export default function CategoriesPage() {
             <motion.button
                 style={{ opacity }}
                 onClick={scrollTop}
-                className="fixed bottom-4 right-4 p-3 bg-main-golden-orange text-white rounded-full shadow-lg hover:bg-main-golden-orange/80 transition-colors"
+                className="fixed bottom-4 right-4 p-3 bg-main-golden-orange !text-white/80 rounded-full shadow-lg hover:bg-main-golden-orange/80 transition-colors"
             >
                 <Icon path={mdiChevronUp} size={1} />
             </motion.button>

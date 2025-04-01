@@ -35,17 +35,16 @@ const PackageInfo = () => {
   return (
     <div style={{ borderRadius: "15px", padding: "20px", background: "#fff" }}>
       <h5 className="text-lg font-medium mb-4">Gói đã mua</h5>
-      <div className="flex justify-center items-center p-4">
+      <div className="flex flex-col justify-center items-center p-4 pt-0">
         <img
           src="https://shop.shop-worldwide-amz.top/public/uploads/all/LAqQwhcT7SII4cm2jolwm3DyqONCvQHhMmCt2ziu.png?v=2"
           alt="Silver Shop"
           className="w-24"
         />
-        <h5 className="my-auto text-center mx-3 text-lg font-medium">
+            <h5 className="my-auto text-center mx-3 text-base font-semibold bg-gradient-to-l from-[#949DA9] to-[#AFC2D5] text-transparent bg-clip-text">
           {detailStatistics?.sellerPackage?.name || "Gói bán hàng mặc định"}
         </h5>
       </div>
-
       <div className="space-y-3">
         {packageItems.map((item, index) => (
           <div key={index} className="flex items-center my-3">

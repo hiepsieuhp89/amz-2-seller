@@ -43,7 +43,7 @@ export function HeroBanner() {
             style={{ backgroundImage: `url(${banners[currentBanner].image})` }}
           >
             <div className="absolute inset-0 bg-black/30" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center !text-white/80 p-4">
               <motion.h1
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -83,7 +83,7 @@ export function HeroBanner() {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 !bg-black/30 !text-white rounded-none !hover:bg-black/50"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 !bg-black/30 !!text-white/80 rounded-none !hover:bg-black/50"
         onClick={prevBanner}
       >
         <Icon path={mdiChevronLeft} size={1.5} />
@@ -92,7 +92,7 @@ export function HeroBanner() {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 !bg-black/30 !text-white !rounded-none !hover:bg-black/50"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 !bg-black/30 !!text-white/80 !rounded-none !hover:bg-black/50"
         onClick={nextBanner}
       >
         <Icon path={mdiChevronRight} size={1.5} />

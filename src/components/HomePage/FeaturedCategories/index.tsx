@@ -64,7 +64,7 @@ export function FeaturedCategories() {
           <div className="flex gap-2">
             <Button
               className={cn(
-                "w-10 h-10 !bg-black/70 !rounded-none !text-white !hover:bg-black/50 flex items-center justify-center border transition-all",
+                "w-10 h-10 !bg-black/70 !rounded-none !!text-white/80 !hover:bg-black/50 flex items-center justify-center border transition-all",
                 !prevBtnEnabled && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollPrev}
@@ -75,7 +75,7 @@ export function FeaturedCategories() {
             </Button>
             <Button
               className={cn(
-                "w-10 h-10  flex items-center justify-center border !bg-black/70 !rounded-none !text-white rounded-none !hover:bg-black/50 shadow-sm transition-all",
+                "w-10 h-10  flex items-center justify-center border !bg-black/70 !rounded-none !!text-white/80 rounded-none !hover:bg-black/50 shadow-sm transition-all",
                 !nextBtnEnabled && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollNext}

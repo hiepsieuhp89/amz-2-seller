@@ -15,7 +15,7 @@ export const ProductsStats = () => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Uploads Remaining Card */}
-            <div className="relative bg-gradient-to-r from-[#c471ed60] to-[#f64f5960] rounded-lg overflow-hidden text-white">
+            <div className="relative bg-gradient-to-r from-[#c471ed60] to-[#f64f5960] rounded-lg overflow-hidden !text-white/80">
                 <div className="flex flex-col items-center p-3">
                     <div className="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center mt-3">
                         <Icon path={mdiPackageVariantClosed} size={0.8} />
@@ -35,7 +35,7 @@ export const ProductsStats = () => {
                     shape="circle"
                     size="large"
                     className="!bg-gray-400 !flex !items-center !justify-center !mb-3"
-                    icon={<PlusOutlined className="!text-white !text-3xl" />}
+                    icon={<PlusOutlined className="!!text-white/80 !text-3xl" />}
                 />
                 <div className="text-base font-medium ">Thêm sản phẩm mới</div>
             </div>
@@ -54,7 +54,7 @@ export const ProductsStats = () => {
                 <Button 
                 type="default" 
                 className="
-               !text-white !font-medium
+               !!text-white/80 !font-medium
                 py-1 px-3 text-sm !rounded-[4px] !border !border-[#1890FF] !bg-[#188DFA]"
                 icon={<Icon path={mdiInboxArrowUp} size={0.8} />}>
                     Gói nâng cấp

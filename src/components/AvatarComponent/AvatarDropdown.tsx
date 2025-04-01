@@ -135,12 +135,11 @@ const AvatarDropdown = () => {
             {getFirstLetter()}
           </Avatar>
           <div className="flex flex-col">
-            <Text strong className="!text-white">{user?.username}</Text>
-            <Text
-              className="!text-xs"
-              type={user?.role === "admin" ? "secondary" : "success"}>
+            <p className="!!text-white/80/80 font-bold">{user?.username}</p>
+            <p
+              className="!text-xs !!text-white/80/80">
               {user?.role === "admin" ? "Admin" : "Seller"}
-            </Text>
+            </p>
           </div>
         </Space>
       </Dropdown>
