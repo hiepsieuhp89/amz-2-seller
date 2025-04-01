@@ -6,6 +6,10 @@ export interface ICategory {
     status: string
     createdAt: string
     updatedAt: string
+    deletedAt: string | null
+    imageUrl: string
+    children: ICategory[]
+    parent: ICategory | null
 }
 
 export interface ICategoryResponse {
@@ -17,16 +21,20 @@ export interface ICategoryResponse {
 }
 
 export interface ICategoriesListResponse {
+    status: boolean
     message: string
-    statusCode: number
     data: {
-        categories: ICategory[]
-        pagination: {
-            total: number
+        data: ICategory[]
+        meta: {
+            hasNextPage: boolean
+            hasPreviousPage: boolean
+            itemCount: number
+            pageCount: number
             page: number
-            limit: number
-            totalPages: number
+            take: number
         }
     }
+    errors: null
+    timestamp: string
 }
 

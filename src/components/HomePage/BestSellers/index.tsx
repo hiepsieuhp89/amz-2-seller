@@ -8,7 +8,11 @@ import { ChevronLeft, ChevronRight, Star } from "lucide-react"
 import useEmblaCarousel from "embla-carousel-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { bestSellers, bestSellingToys, featuredProducts } from "./mockData"
+import { bestSellers, bestSellingToys } from "./mockData"
+import { useProducts } from "@/hooks/products"
+import { IProduct } from "@/interface/response/products"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useSelectedProduct } from '@/app/stores/useSelectedProduct'
 
 const RatingStars = ({ rating }: { rating: number }) => {
   return (
@@ -27,6 +31,28 @@ const RatingStars = ({ rating }: { rating: number }) => {
 }
 
 export function BestSellers() {
+  const randomPage = () => {
+    return Math.floor(Math.random() * 100) + 1;
+  }
+  const [page, setPage] = useState(randomPage());
+
+  const {data: featuredProducts, isLoading} = useProducts(
+    {
+      order: "DESC",
+      page: page,
+      take: 20,
+      // isFeatured: true,
+    }
+  )
+
+  const {data: bestSellersProducts, isLoading: isBestSellersLoading} = useProducts(
+    {
+      order: "DESC",
+      take: 20,
+      name: "sport",
+    }
+  )
+  
   // Thêm state isMobile
   const [isMobile, setIsMobile] = useState(false)
 
@@ -140,7 +166,7 @@ export function BestSellers() {
           <div className="flex gap-2">
             <Button
               className={cn(
-                "w-10 h-10 !bg-black/70 !text-white rounded-none !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
+                "w-10 h-10 !bg-black/70 !rounded-none !text-white !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
                 !prevBtnEnabled1 && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollPrev1}
@@ -151,7 +177,7 @@ export function BestSellers() {
             </Button>
             <Button
               className={cn(
-                "w-10 h-10  flex items-center justify-center border !bg-black/70 !text-white rounded-none !hover:bg-black/50 shadow-sm transition-all",
+                "w-10 h-10  flex items-center justify-center border !bg-black/70 !rounded-none !text-white !hover:bg-black/50 shadow-sm transition-all",
                 !nextBtnEnabled1 && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollNext1}
@@ -164,39 +190,72 @@ export function BestSellers() {
         </div>
         <div className="overflow-hidden" ref={emblaRef1}>
           <div className="flex -ml-4">
-            {featuredProducts.map((product) => (
-              <div
-                key={product.id}
-                className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
-              >
-                <Link href={`/product/${product.id}`} className="block h-full">
-                  <Card className="overflow-hidden h-full transition-all duration-200 hover:shadow-md" style={{ maxWidth: '200px' }}>
+            {isLoading ? (
+              Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
+                >
+                  <Card className="overflow-hidden h-full" style={{ maxWidth: '200px' }}>
                     <CardContent className="p-0 flex flex-col h-full">
-                      <div className="relative aspect-square w-full">
-                        <Image
-                          src={product.image || "/placeholder.svg"}
-                          alt={product.category}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="p-4 text-center">
-                        <h3 className="font-medium text-sm sm:text-base line-clamp-2">{product.name}</h3>
-                        <h4 className="text-sm text-gray-600 line-clamp-2">{product.category}</h4>
-                        <RatingStars rating={product.rating} />
+                      <Skeleton className="aspect-square w-full" />
+                      <div className="p-4 space-y-2">
+                        <Skeleton className="h-4 w-[150px]" />
+                        <Skeleton className="h-4 w-[100px]" />
+                        <div className="flex justify-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Skeleton key={i} className="h-3 w-3 rounded-full" />
+                          ))}
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
-                </Link>
-              </div>
-            ))}
+                </div>
+              ))
+            ) : (
+              featuredProducts?.data.data.map((product: IProduct) => (
+                <div
+                  key={product.id}
+                  className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
+                >
+                  <Link 
+                    href={`/product?id=${product.id}`} 
+                    className="block h-full"
+                    onClick={() => useSelectedProduct.getState().setSelectedProduct(product)}
+                  >
+                    <Card className="overflow-hidden h-full transition-all duration-200 hover:shadow-md" style={{ maxWidth: '200px' }}>
+                      <CardContent className="p-0 flex flex-col h-full">
+                        <div className="relative aspect-square w-full">
+                          <Image
+                            src={product.imageUrl}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="p-4 text-center">
+                          <h3 className="font-medium text-sm sm:text-base line-clamp-2">{product.name}</h3>
+                          <h4 className="text-sm text-gray-600 line-clamp-2">${product.price}</h4>
+                          <RatingStars rating={parseFloat(product.averageRating)} />
+                          {product.isNew && (
+                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full mt-1">
+                              Mới
+                            </span>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
         {isMobile && (
           <div className="flex justify-center mt-4">
             <div className="flex gap-1">
-              {Array.from({ length: Math.ceil(featuredProducts.length / 2) }).map((_, index) => (
+              {Array.from({ length: Math.ceil(featuredProducts?.data?.data?.length || 0 / 2) }).map((_, index) => (
                 <div
                   key={index}
                   className={cn(
@@ -217,7 +276,7 @@ export function BestSellers() {
           <div className="flex gap-2">
             <Button
               className={cn(
-                "w-10 h-10 !bg-black/70 !text-white rounded-none !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
+                "w-10 h-10 !bg-black/70 !rounded-none !text-white !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
                 !prevBtnEnabled2 && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollPrev2}
@@ -228,7 +287,7 @@ export function BestSellers() {
             </Button>
             <Button
               className={cn(
-                "w-10 h-10  flex items-center justify-center border !bg-black/70 !text-white rounded-none !hover:bg-black/50 shadow-sm transition-all",
+                "w-10 h-10  flex items-center justify-center border !bg-black/70 !rounded-none !text-white !hover:bg-black/50 shadow-sm transition-all",
                 !nextBtnEnabled2 && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollNext2}
@@ -241,32 +300,60 @@ export function BestSellers() {
         </div>
         <div className="overflow-hidden" ref={emblaRef2}>
           <div className="flex -ml-4">
-            {bestSellers.map((product) => (
-              <div
-                key={product.id}
-                className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
-              >
-                <Link href={`/product/${product.id}`} className="block h-full">
-                  <Card className="overflow-hidden h-full transition-all duration-200 hover:shadow-md" style={{ maxWidth: '200px' }}>
+            {isBestSellersLoading ? (
+              Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
+                >
+                  <Card className="overflow-hidden h-full" style={{ maxWidth: '200px' }}>
                     <CardContent className="p-0 flex flex-col h-full">
-                      <div className="relative aspect-square w-full">
-                        <Image
-                          src={product.image || "/placeholder.svg"}
-                          alt={product.category}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div className="p-4 text-center">
-                        <h3 className="font-medium text-sm sm:text-base line-clamp-2">{product.name}</h3>
-                        <h4 className="text-sm text-gray-600 line-clamp-2">{product.category}</h4>
-                        <RatingStars rating={product.rating} />
+                      <Skeleton className="aspect-square w-full" />
+                      <div className="p-4 space-y-2">
+                        <Skeleton className="h-4 w-[150px]" />
+                        <Skeleton className="h-4 w-[100px]" />
+                        <div className="flex justify-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Skeleton key={i} className="h-3 w-3 rounded-full" />
+                          ))}
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
-                </Link>
-              </div>
-            ))}
+                </div>
+              ))
+            ) : (
+              bestSellersProducts?.data.data.map((product: IProduct) => (
+                <div
+                  key={product.id}
+                  className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
+                >
+                  <Link 
+                    href={`/product?id=${product.id}`} 
+                    className="block h-full"
+                    onClick={() => useSelectedProduct.getState().setSelectedProduct(product as unknown as IProduct)}
+                  >
+                    <Card className="overflow-hidden h-full transition-all duration-200 hover:shadow-md" style={{ maxWidth: '200px' }}>
+                      <CardContent className="p-0 flex flex-col h-full">
+                        <div className="relative aspect-square w-full">
+                          <Image
+                            src={product.imageUrl}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="p-4 text-center">
+                          <h3 className="font-medium text-sm sm:text-base line-clamp-2">{product.name}</h3>
+                          <h4 className="text-sm text-gray-600 line-clamp-2">${product.price}</h4>
+                          <RatingStars rating={parseFloat(product.averageRating)} />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -294,7 +381,7 @@ export function BestSellers() {
           <div className="flex gap-2">
             <Button
               className={cn(
-                "w-10 h-10 !bg-black/70 !text-white rounded-none !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
+                "w-10 h-10 !bg-black/70 !rounded-none !text-white !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
                 !prevBtnEnabled3 && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollPrev3}
@@ -305,7 +392,7 @@ export function BestSellers() {
             </Button>
             <Button
               className={cn(
-                "w-10 h-10  flex items-center justify-center border !bg-black/70 !text-white rounded-none !hover:bg-black/50 shadow-sm transition-all",
+                "w-10 h-10  flex items-center justify-center border !bg-black/70 !rounded-none !text-white !hover:bg-black/50 shadow-sm transition-all",
                 !nextBtnEnabled3 && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollNext3}
@@ -323,12 +410,16 @@ export function BestSellers() {
                 key={product.id}
                 className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
               >
-                <Link href={`/product/${product.id}`} className="block h-full">
+                <Link 
+                  href={`/product?id=${product.id}`} 
+                  className="block h-full"
+                  onClick={() => useSelectedProduct.getState().setSelectedProduct(product as unknown as IProduct)}
+                >
                   <Card className="overflow-hidden h-full transition-all duration-200 hover:shadow-md" style={{ maxWidth: '200px' }}>
                     <CardContent className="p-0 flex flex-col h-full">
                       <div className="relative aspect-square w-full">
                         <Image
-                          src={product.image || "/placeholder.svg"}
+                          src={product.image }
                           alt={product.category}
                           fill
                           className="object-cover"

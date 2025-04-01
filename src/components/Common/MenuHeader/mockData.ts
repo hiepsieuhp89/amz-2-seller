@@ -179,6 +179,6 @@ export const menuItems: MenuItem[] = [
     },
     {
         label: 'Người bán',
-        href: '/sellers',
+        href: '/all-seller',
     },
 ];

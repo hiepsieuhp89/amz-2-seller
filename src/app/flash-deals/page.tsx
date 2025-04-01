@@ -1,8 +1,8 @@
 "use client"
 
-import { Footer } from "@/components/HomePage/Footer"
-import { Header } from "@/components/HomePage/Header"
-import MenuHeader from "@/components/HomePage/MenuHeader"
+import { Footer } from "@/components/Common/Footer"
+import { Header } from "@/components/Common/Header"
+import MenuHeader from "@/components/Common/MenuHeader"
 import {
     Breadcrumb,
     BreadcrumbItem,

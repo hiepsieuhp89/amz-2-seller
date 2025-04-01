@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation';
 
 function PathChecker({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isDisplayMenu = pathname?.includes('seller');
+  const isDisplayMenu = pathname?.includes('/seller') && !pathname?.includes('seller-policy');
 
   if (isDisplayMenu) {
     return <LayoutProvider>{children}</LayoutProvider>;

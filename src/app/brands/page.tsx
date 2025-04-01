@@ -1,8 +1,8 @@
 "use client"
 
-import { Footer } from "@/components/HomePage/Footer"
-import { Header } from "@/components/HomePage/Header"
-import MenuHeader from "@/components/HomePage/MenuHeader"
+import { Footer } from "@/components/Common/Footer"
+import { Header } from "@/components/Common/Header"
+import MenuHeader from "@/components/Common/MenuHeader"
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -10,13 +10,8 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Card } from "@/components/ui/card"
 import Link from "next/link"
 import Image from "next/image"
-import { motion } from "framer-motion"
-import { Icon } from '@mdi/react'
-import { mdiArrowRight } from '@mdi/js'
-import { Button } from "@/components/ui/button"
 import { brandsData } from './mockData'
 
 export default function BrandsPage() {

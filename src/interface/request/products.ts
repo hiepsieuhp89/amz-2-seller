@@ -16,10 +16,19 @@ export interface IProductUpdate {
 export interface IProductSearchParams {
     order?: string
     page?: number
+    take?: number
+    search?: string
+    status?: string
+    name?: string
+    shopId?: string
     keyword?: string
     category?: string
     minPrice?: number
     maxPrice?: number
+    inStock?: boolean
+    isNew?: boolean
+    isFeatured?: boolean
+    isHot?: boolean 
     limit?: number
 }
 

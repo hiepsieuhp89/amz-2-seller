@@ -18,13 +18,13 @@ export default function Categories() {
               <h2 className="text-lg font-medium mb-3 ">{category.title}</h2>
               {category.items.length === 1 ? (
                 <div className="mb-3">
-                  <Link href={category.items[0].link} className="block">
+                  <Link href={`/category?id=${category.items[0].link}`} className="block">
                     <motion.div 
                       className="relative aspect-[4/3] overflow-hidden mb-2"
                       whileHover={{ scale: 1.02 }}
                     >
                       <Image
-                        src={category.items[0].image || "/placeholder.svg"}
+                        src={category.items[0].image }
                         alt={category.items[0].label}
                         fill
                         className="object-cover"

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Icon } from '@mdi/react';
-import { mdiMenu, mdiPaw, mdiDresser, mdiSunglasses, mdiShoeHeel, mdiGlasses, mdiBagPersonal, mdiGift, mdiLaptop, mdiToyBrick, mdiWashingMachine, mdiHeart, mdiLipstick, mdiArrowRight, mdiChevronRight } from '@mdi/js';
+import { mdiMenu, mdiPaw, mdiDresser, mdiBagPersonal, mdiGift, mdiLaptop, mdiToyBrick, mdiWashingMachine, mdiHeart, mdiLipstick, mdiArrowRight, mdiChevronRight } from '@mdi/js';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { menuItems } from './mockData';
 import React from 'react';

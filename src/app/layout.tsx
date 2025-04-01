@@ -28,6 +28,7 @@ export default function RootLayout({
         crawl={true}
         easing="ease"
         speed={200}
+        showSpinner={false}
       />
       <Toaster
         position="bottom-right"

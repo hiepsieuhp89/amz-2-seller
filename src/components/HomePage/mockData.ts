@@ -117,7 +117,7 @@ export const banners = [
   {
     id: "banner3",
     title: "Miễn phí vận chuyển",
-    subtitle: "Cho đơn hàng trên 500.000đ",
+    subtitle: "Cho đơn hàng trên $25",
     image: "https://img0.yeshen.cc/vn-alibaba/9d/37/9dfe7a5905535ae120a03806e6f1f6a04c40df37.jpg",
     buttonText: "Tìm hiểu thêm",
     buttonLink: "/shipping",
