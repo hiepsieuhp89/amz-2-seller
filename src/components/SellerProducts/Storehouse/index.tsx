@@ -27,13 +27,11 @@ const Storehouse = () => {
     shopId: user?.id
   })
   const { mutate: addShopProducts, isPending: isAddingProducts } = useAddShopProducts()
-  const [products, setProducts] = useState<IProduct[]>([])
   const [filteredProducts, setFilteredProducts] = useState<any[]>(productsData?.data?.data || [])
   const [selectedProducts, setSelectedProducts] = useState<any[]>([])
   const [keyword, setKeyword] = useState("")
   const [minPrice, setMinPrice] = useState<number | undefined>()
   const [maxPrice, setMaxPrice] = useState<number | undefined>()
-  const [quantity, setQuantity] = useState<number | undefined>()
   const [totalSelectedProducts, setTotalSelectedProducts] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
@@ -174,24 +172,25 @@ const Storehouse = () => {
                         height: '100%'
                       }}
                     >
-                      <div className={styles.imageContainer}>
-                        <Badge.Ribbon
+                       <Badge.Ribbon
                           text={`Trong kho: ${product.stock || 0}`}
                           color="green"
                           className={styles.stockBadge}
                           placement="start"
                         >
+                      <div className={styles.imageContainer}>
+                       
                           <Image
                             src={checkImageUrl(product.imageUrl || "")}
                             alt={product.name || "Product Image"}
-                            className={`${styles.productImage}`}
+                            className={`${styles.productImage} object-cover`}
                             width={500}
                             height={500}
                             draggable={false}
                             quality={100}
                           />
-                        </Badge.Ribbon>
                       </div>
+                        </Badge.Ribbon>
                       <div className={styles.productName}>
                         Tên sản phẩm: {product.name.length > 20 ? `${product.name.substring(0, 20)}...` : product.name}
                       </div>
@@ -223,9 +222,7 @@ const Storehouse = () => {
                           Lợi nhuận:
                         </span>
                         <span className="!text-red-500 font-bold">
-                          {product.salePrice && product.price
-                            ? (Number(product.salePrice) - Number(product.price)).toLocaleString()
-                            : '0.00'}
+                        {product.profit ? Number(product.price).toLocaleString() : '0.00'}
                         </span>
                       </div>
                       <div

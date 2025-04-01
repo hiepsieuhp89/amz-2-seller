@@ -16,12 +16,12 @@
 
     .imageContainer {
         position: relative;
-        padding: 12px;
+        padding: 8px;
+        padding-top: 0;
         display: flex;
         justify-content: center;
         align-items: center;
         transition: background 0.3s ease;
-
         &:hover {
             background: linear-gradient(135deg, #e9ecef 0%, #e6e8eb 100%);
         }
@@ -36,11 +36,10 @@
 
     .productImage {
         height: 120px;
-        object-fit: cover;
+        object-fit: contain;
         width: 100%;
         border-radius: 2px;
         transition: transform 0.3s ease;
-        background-color: #ffffff;
         backface-visibility: hidden;
         &:hover {
             transform: scale(1.05);
