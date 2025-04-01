@@ -47,7 +47,6 @@ export interface IProfileResponse {
     email: string
     username: string
     fullName: string
-    phone: string
     logoUrl: string | null
     invitationCode: string | null
     referralCode: string
@@ -101,6 +100,10 @@ export interface IProfileResponse {
       maxProducts: number
     }
     spreadPackage: null
+    idCardType: string
+    idCardNumber: string
+    idCardFrontImage: string
+    idCardBackImage: string
   }
 }
 

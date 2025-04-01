@@ -61,7 +61,7 @@ const TransactionTables = ({
 
   return (
     <>
-      <div title="Lịch sử yêu cầu rút tiền" className="!mb-4 rounded-[4px]">
+      {/* <div title="Lịch sử yêu cầu rút tiền" className="!mb-4 rounded-[4px]">
         <Table 
           columns={withdrawColumns} 
           dataSource={withdrawRequests} 
@@ -69,7 +69,7 @@ const TransactionTables = ({
           scroll={{ x: true }}
           bordered={true}
         />
-      </div>
+      </div> */}
 
       <div title="Biến Động Số Dư Ví" className="!mb-4 rounded-[4px]">
         <Table 
