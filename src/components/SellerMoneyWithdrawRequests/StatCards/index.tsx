@@ -16,7 +16,7 @@ interface StatCardProps {
 
 const StatCard = ({ title, value, gradientClass, icon = <DollarOutlined /> }: StatCardProps) => {
   return (
-    <div className={`rounded-[4px] overflow-hidden text-white ${gradientClass}`}>
+    <div className={`rounded-[4px] overflow-hidden !text-white/80 ${gradientClass}`}>
       <div className="flex flex-col items-center">
         <div className="w-[30px] h-[30px] rounded-full bg-white bg-opacity-20 flex items-center justify-center mt-3">
           {icon}
@@ -37,7 +37,7 @@ const ActionCard = ({ title, onClick }: { title: string, onClick?: () => void })
       onClick={onClick}
     >
       <div className="w-[60px] h-[60px] rounded-full bg-gray-500 flex items-center justify-center mb-3 mx-auto">
-        <PlusOutlined className="text-3xl !text-white" />
+        <PlusOutlined className="text-3xl !!text-white/80" />
       </div>
       <div className="text-lg text-blue-600">{title}</div>
     </div>

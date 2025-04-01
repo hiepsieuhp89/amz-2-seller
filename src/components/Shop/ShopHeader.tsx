@@ -27,7 +27,7 @@ export default function ShopHeader() {
           <div className="text-sm text-gray-500 mb-1">Member Since</div>
           <div className="font-medium">27 Mar 2025</div>
         </div>
-        <button className="ml-4 bg-[#FF9900] hover:bg-[#f3a847] text-white px-6 py-2 rounded-full flex items-center">
+        <button className="ml-4 bg-[#FF9900] hover:bg-[#f3a847] !text-white/80 px-6 py-2 rounded-full flex items-center">
           <span className="mr-1">+</span>
           <span>Follow Seller (0)</span>
         </button>

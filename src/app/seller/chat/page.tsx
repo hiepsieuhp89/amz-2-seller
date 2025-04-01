@@ -118,7 +118,6 @@ export default function ChatPage() {
   }
 
   const handleSendMessage = () => {
-    console.log(selectedUser)
     if (message.trim() && selectedUser) {
       sendMessage(
         { userId: selectedUser, message },
@@ -151,7 +150,7 @@ export default function ChatPage() {
           <Button
             variant="ghost"
             size="icon"
-            className={`h-6 w-6 p-0 opacity-70 hover:opacity-100 transition-opacity rounded-full ${isSender ? "!text-white hover:bg-orange-300" : "hover:bg-gray-100"}`}
+            className={`h-6 w-6 p-0 opacity-70 hover:opacity-100 transition-opacity rounded-full ${isSender ? "!!text-white/80 hover:bg-orange-300" : "hover:bg-gray-100"}`}
           >
             <MoreVertical className="h-4 w-4" />
             <span className="sr-only">Tùy chọn</span>
@@ -233,7 +232,7 @@ export default function ChatPage() {
                         <div className="relative flex-shrink-0">
                           <Avatar className="h-12 w-12 border-2 border-white ">
                             <AvatarImage src={item.userAvatar} alt={item.userName} />
-                            <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white">
+                            <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] !text-white/80">
                               {getInitials(item.userName)}
                             </AvatarFallback>
                           </Avatar>
@@ -316,7 +315,7 @@ export default function ChatPage() {
                             <div className="relative flex-shrink-0">
                               <Avatar className="h-12 w-12 border-2 border-white ">
                                 <AvatarImage src={item.userAvatar} alt={item.userName} />
-                                <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white">
+                                <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] !text-white/80">
                                   {getInitials(item.userName)}
                                 </AvatarFallback>
                               </Avatar>
@@ -371,7 +370,7 @@ export default function ChatPage() {
                           src={transformedChatList.find((chat: any) => chat.userId === selectedUser)?.userAvatar}
                           alt="User avatar"
                         />
-                        <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white">
+                        <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] !text-white/80">
                           {getInitials(
                             transformedChatList.find((chat: any) => chat.userId === selectedUser)?.userName || "",
                           )}
@@ -434,7 +433,7 @@ export default function ChatPage() {
                                       }
                                       alt="User avatar"
                                     />
-                                    <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] text-white text-xs">
+                                    <AvatarFallback className="bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] !text-white/80 text-xs">
                                       {getInitials(
                                         transformedChatList.find((chat: any) => chat.userId === selectedUser)
                                           ?.userName || "",
@@ -442,11 +441,11 @@ export default function ChatPage() {
                                     </AvatarFallback>
                                   </Avatar>
                                 )}
-                                <div className={`rounded-lg p-4 border ${isSender ? 'bg-orange-400 text-white' : 'bg-white border-gray-200'
+                                <div className={`rounded-lg p-4 border ${isSender ? 'bg-orange-400 !text-white/80' : 'bg-white border-gray-200'
                                   }`}>
                                   <div className="flex justify-between items-start gap-2">
                                     {isSender && renderMessageActions(msg.id, isSender)}
-                                    <p className={`text-sm font-medium ${isSender ? 'text-white' : ''
+                                    <p className={`text-sm font-medium ${isSender ? '!text-white/80' : ''
                                       }`}>
                                       {msg.message}
                                     </p>
@@ -472,7 +471,7 @@ export default function ChatPage() {
                         >
                           <div className="mb-6 flex justify-center">
                             <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] flex items-center justify-center ">
-                              <MessageCircle className="h-8 w-8 text-white" />
+                              <MessageCircle className="h-8 w-8 !text-white/80" />
                             </div>
                           </div>
 
@@ -517,7 +516,7 @@ export default function ChatPage() {
                       />
                       <Button
                         onClick={handleSendMessage}
-                        className="h-10 transition-shadow !bg-main-dark-blue text-white"
+                        className="h-10 transition-shadow !bg-main-dark-blue !text-white/80"
                       >
                         <Send className="h-4 w-4 mr-2" />
                         Gửi
@@ -536,7 +535,7 @@ export default function ChatPage() {
                 >
                   <div className="mb-6 flex justify-center">
                     <div className="h-16 w-16 rounded-full bg-gradient-to-br from-[#FCAF17] to-[#FF8C00] flex items-center justify-center ">
-                      <MessageCircle className="h-8 w-8 text-white" />
+                      <MessageCircle className="h-8 w-8 !text-white/80" />
                     </div>
                   </div>
 

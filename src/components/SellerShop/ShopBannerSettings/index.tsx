@@ -106,7 +106,6 @@ const ShopBannerSettings = ({ onSave }: ShopBannerSettingsProps) => {
       bannerImage2: bannerImage2List[0]?.url || '',
     };
     
-    console.log("values", submitData);
     onSave(submitData);
     message.success("Cài đặt biểu ngữ đã được lưu");
   }

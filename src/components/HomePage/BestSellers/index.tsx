@@ -166,7 +166,7 @@ export function BestSellers() {
           <div className="flex gap-2">
             <Button
               className={cn(
-                "w-10 h-10 !bg-black/70 !rounded-none !text-white !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
+                "w-10 h-10 !bg-black/70 !rounded-none !!text-white/80 !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
                 !prevBtnEnabled1 && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollPrev1}
@@ -177,7 +177,7 @@ export function BestSellers() {
             </Button>
             <Button
               className={cn(
-                "w-10 h-10  flex items-center justify-center border !bg-black/70 !rounded-none !text-white !hover:bg-black/50 shadow-sm transition-all",
+                "w-10 h-10  flex items-center justify-center border !bg-black/70 !rounded-none !!text-white/80 !hover:bg-black/50 shadow-sm transition-all",
                 !nextBtnEnabled1 && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollNext1}
@@ -276,7 +276,7 @@ export function BestSellers() {
           <div className="flex gap-2">
             <Button
               className={cn(
-                "w-10 h-10 !bg-black/70 !rounded-none !text-white !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
+                "w-10 h-10 !bg-black/70 !rounded-none !!text-white/80 !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
                 !prevBtnEnabled2 && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollPrev2}
@@ -287,7 +287,7 @@ export function BestSellers() {
             </Button>
             <Button
               className={cn(
-                "w-10 h-10  flex items-center justify-center border !bg-black/70 !rounded-none !text-white !hover:bg-black/50 shadow-sm transition-all",
+                "w-10 h-10  flex items-center justify-center border !bg-black/70 !rounded-none !!text-white/80 !hover:bg-black/50 shadow-sm transition-all",
                 !nextBtnEnabled2 && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollNext2}
@@ -381,7 +381,7 @@ export function BestSellers() {
           <div className="flex gap-2">
             <Button
               className={cn(
-                "w-10 h-10 !bg-black/70 !rounded-none !text-white !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
+                "w-10 h-10 !bg-black/70 !rounded-none !!text-white/80 !hover:bg-black/50 flex items-center justify-center border shadow-sm transition-all",
                 !prevBtnEnabled3 && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollPrev3}
@@ -392,7 +392,7 @@ export function BestSellers() {
             </Button>
             <Button
               className={cn(
-                "w-10 h-10  flex items-center justify-center border !bg-black/70 !rounded-none !text-white !hover:bg-black/50 shadow-sm transition-all",
+                "w-10 h-10  flex items-center justify-center border !bg-black/70 !rounded-none !!text-white/80 !hover:bg-black/50 shadow-sm transition-all",
                 !nextBtnEnabled3 && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollNext3}

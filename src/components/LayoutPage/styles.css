@@ -64,3 +64,13 @@
   scrollbar-width: none;  /* Ẩn thanh scrollbar trên Firefox */
   -ms-overflow-style: none;  /* Ẩn thanh scrollbar trên IE/Edge */
 }
+
+.hidden-on-mobile {
+  display: block;
+}
+
+@media (max-width: 767.98px) {
+  .hidden-on-mobile {
+    display: none;
+  }
+}

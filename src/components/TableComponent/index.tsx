@@ -189,7 +189,7 @@ const TableComponent = ({
           <Button
             danger
             onClick={() => setShowDelete(true)}
-            className="!rounded-[2px] !px-4 !text-sm !bg-[#DA251D] !text-white"
+            className="!rounded-[2px] !px-4 !text-sm !bg-[#DA251D] !!text-white/80"
             icon={<DeleteOutlined/>}
           >
             Xóa

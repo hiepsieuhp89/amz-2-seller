@@ -231,7 +231,7 @@ export default function MainSection({
               <Link
                 key={page}
                 href={`?page=${page}`}
-                className={`h-9 w-9 flex items-center justify-center mx-1 rounded-full ${page === pagination.currentPage ? 'bg-main-charcoal-blue text-white' : 'text-gray-700 hover:bg-main-charcoal-blue bg-white hover:text-white'}`}
+                className={`h-9 w-9 flex items-center justify-center mx-1 rounded-full ${page === pagination.currentPage ? 'bg-main-charcoal-blue !text-white/80' : 'text-gray-700 hover:bg-main-charcoal-blue bg-white hover:!text-white/80'}`}
                 
               >
                 {page}

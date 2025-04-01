@@ -12,6 +12,7 @@ import {
   mdiMessageTextOutline,
   mdiMessageText,
   mdiStar,
+  mdiMenu,
 } from "@mdi/js"
 import Icon from "@mdi/react"
 import type { MenuProps } from "antd"
@@ -24,6 +25,8 @@ import Image from "next/image"
 import { useUser } from "@/context/useUserContext"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useLayout } from "@/components/LayoutProvider"
 
 interface LayoutGAProps {
   isSidebarOpen: boolean
@@ -37,6 +40,8 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const { user } = useUser()
   const [shopLink, setShopLink] = useState("/shop?id=")
+  const [isClient, setIsClient] = useState(false)
+  const { isMobileSidebarOpen, toggleMobileSidebar } = useLayout()
 
   const menu = [
     {
@@ -138,6 +143,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     if (user?.id) {
       setShopLink(`/shop?id=${user.id}`)
     }
+    setIsClient(true)
   }, [pathname, user?.id])
 
   const isActive = (menuPath: string | undefined) => {
@@ -291,21 +297,48 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
     },
   }
 
+  const MobileSidebar = () => {
+    return (
+      <Sheet open={isMobileSidebarOpen} onOpenChange={toggleMobileSidebar}>
+        <SheetContent side="left" className="w-[280px] p-2 pt-10">
+          <div className="flex flex-col space-y-2">
+            {menu.map((item) => (
+              <Link
+                key={item.key}
+                href={item.path || ""}
+                className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded"
+                onClick={toggleMobileSidebar}
+              >
+                {item.icon}
+                <span>{item.name}</span>
+              </Link>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+    )
+  }
+
   return (
     <motion.div
-      className="sidebar"
-      initial={isSidebarOpen ? "open" : "closed"}
-      animate={isSidebarOpen ? "open" : "closed"}
-      variants={sidebarVariants}
-      style={{
-        backgroundColor: "#131921 !important",
-        height: "100%",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <div className="fixed top-0 left-0 h-full flex flex-col pt-[68px] overflow-y-auto w-fit">
+    className="!hidden md:!flex"
+    initial={isSidebarOpen ? "open" : "closed"}
+    animate={isSidebarOpen ? "open" : "closed"}
+    variants={sidebarVariants}
+    style={{
+      backgroundColor: "#131921 !important",
+      height: "100%",
+      overflow: "hidden",
+      display: "flex",
+      flexDirection: "column",
+    }}
+  >
+      <div className="
+      hidden md:flex
+      fixed top-0 left-0 h-full flex-col pt-[68px] overflow-y-auto w-fit">
+        <div className="md:hidden p-2">
+          <MobileSidebar />
+        </div>
         <motion.div
           className="w-full"
           initial={isSidebarOpen ? "open" : "closed"}
@@ -315,7 +348,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
           <AnimatePresence mode="wait">
             {isSidebarOpen && (
               <motion.div
-                className="flex flex-col items-center p-4 text-white gap-4"
+                className="flex flex-col items-center p-4 !text-white/80 gap-4"
                 initial="closed"
                 animate="open"
                 exit="closed"
@@ -352,7 +385,9 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
                     </div>
 
                     {/* Email */}
-                    <div className="text-sm text-gray-300 flex-shrink-0">{user?.email}</div>
+                    {isClient && (
+                      <div className="text-sm text-gray-300 flex-shrink-0">{user?.email}</div>
+                    )}
                   </div>
 
                   {/* Rating Stars */}
@@ -366,7 +401,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
 
                   {/* Trust Score */}
                   <div className="mb-4">
-                    <span className="text-white font-medium text-sm">Điểm uy tín: </span>
+                    <span className="!text-white/80 font-medium text-sm">Điểm uy tín: </span>
                     <span className="text-green-400 text-sm">100</span>
                   </div>
 
@@ -399,6 +434,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
             <Menu
               mode="inline"
               theme="dark"
+              className="hidden-on-mobile"
               style={{
                 borderRight: "none",
                 width: "100%",
@@ -412,6 +448,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
           </motion.div>
         </motion.div>
       </div>
+      <MobileSidebar />
     </motion.div>
   )
 }

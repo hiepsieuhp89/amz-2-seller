@@ -46,46 +46,46 @@ export function Footer() {
               Cửa hàng trực tuyến với đa dạng sản phẩm chất lượng cao và dịch vụ khách hàng tuyệt vời.
             </p>
             <div className="flex space-x-4">
-              <Link href="#" className="text-gray-400 hover:text-white">
+              <Link href="#" className="text-gray-400 hover:!text-white/80">
                 <Icon path={mdiFacebook} size={1} />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-white">
+              <Link href="#" className="text-gray-400 hover:!text-white/80">
                 <Icon path={mdiInstagram} size={1} />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-white">
+              <Link href="#" className="text-gray-400 hover:!text-white/80">
                 <Icon path={mdiTwitter} size={1} />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-white">
+              <Link href="#" className="text-gray-400 hover:!text-white/80">
                 <Icon path={mdiYoutube} size={1} />
               </Link>
             </div>
           </div>
 
           <div>
-            <h3 className="text-lg font-bold mb-4 text-white">Thông tin</h3>
+            <h3 className="text-lg font-bold mb-4 !text-white/80">Thông tin</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/support-policy" className="text-gray-400 hover:text-white ">
+                <Link href="/support-policy" className="text-gray-400 hover:!text-white/80 ">
                   Chính sách hỗ trợ
                 </Link>
               </li>
               <li>
-                <Link href="/return-policy" className="text-gray-400 hover:text-white">
+                <Link href="/return-policy" className="text-gray-400 hover:!text-white/80">
                   Chính sách hoàn trả
                 </Link>
               </li>
               <li>
-                <Link href="/privacy-policy" className="text-gray-400 hover:text-white">
+                <Link href="/privacy-policy" className="text-gray-400 hover:!text-white/80">
                   Chính sách bảo mật
                 </Link>
               </li>
               <li>
-                <Link href="/seller-policy" className="text-gray-400 hover:text-white">
+                <Link href="/seller-policy" className="text-gray-400 hover:!text-white/80">
                   Chính sách người bán
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-gray-400 hover:text-white">
+                <Link href="/terms" className="text-gray-400 hover:!text-white/80">
                   Điều khoản và điều kiện
                 </Link>
               </li>
@@ -93,16 +93,16 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-lg font-bold mb-4 text-white">Tài khoản của tôi</h3>
+            <h3 className="text-lg font-bold mb-4 !text-white/80">Tài khoản của tôi</h3>
             <ul className="space-y-2">
               {/* Only render user-dependent content on the client side */}
               {isClient ? (
                 user ? (
-                  <li className="text-gray-400 hover:text-white cursor-pointer" onClick={() => logout()}>
+                  <li className="text-gray-400 hover:!text-white/80 cursor-pointer" onClick={() => logout()}>
                     Đăng xuất
                   </li>
                 ) : (
-                  <li className="text-gray-400 hover:text-white cursor-pointer" onClick={() => router.push("/sign-in")}>
+                  <li className="text-gray-400 hover:!text-white/80 cursor-pointer" onClick={() => router.push("/sign-in")}>
                     Đăng nhập
                   </li>
                 )
@@ -113,22 +113,22 @@ export function Footer() {
                 </li>
               )}
               <li>
-                <Link href="/orders" className="text-gray-400 hover:text-white">
+                <Link href="/orders" className="text-gray-400 hover:!text-white/80">
                   Đơn hàng
                 </Link>
               </li>
               <li>
-                <Link href="/wishlist" className="text-gray-400 hover:text-white">
+                <Link href="/wishlist" className="text-gray-400 hover:!text-white/80">
                   Danh sách yêu thích
                 </Link>
               </li>
               <li>
-                <Link href="/returns" className="text-gray-400 hover:text-white">
+                <Link href="/returns" className="text-gray-400 hover:!text-white/80">
                   Theo dõi thứ tự
                 </Link>
               </li>
               <li>
-                <Link href="/notifications" className="text-gray-400 hover:text-white">
+                <Link href="/notifications" className="text-gray-400 hover:!text-white/80">
                   Thông báo
                 </Link>
               </li>
@@ -136,7 +136,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-lg font-bold mb-4 text-white">Liên hệ</h3>
+            <h3 className="text-lg font-bold mb-4 !text-white/80">Liên hệ</h3>
             <ul className="space-y-2">
               <li className="flex items-center gap-2">
                 <Icon path={mdiMapMarkerOutline} size={0.8} className="flex-shrink-0 text-gray-400" />

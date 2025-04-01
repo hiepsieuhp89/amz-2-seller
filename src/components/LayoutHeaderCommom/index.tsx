@@ -99,8 +99,8 @@ export default function LayoutHeaderCommon() {
   }
 
   return (
-    <header className="!h-[70px] min-h-[70px] bg-main-dark-blue text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full  z-50">
-      <Link href="/" className="relative h-8 left-[64px] cursor-pointer">
+    <header className="!h-[70px] min-h-[70px] bg-main-dark-blue !text-white/80 px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full  z-50">
+      <Link href="/" className="relative h-8 left-8 md:left-[64px] cursor-pointer scale-75 md:scale-100">
         <Image
           quality={100}
           draggable={false}
@@ -217,7 +217,7 @@ export default function LayoutHeaderCommon() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="flex-1 rounded-sm !bg-orange-400 hover:!bg-[#E3E6E6]0 !text-white transition-all duration-300"
+                    className="flex-1 rounded-sm !bg-orange-400 hover:!bg-[#E3E6E6]0 !!text-white/80 transition-all duration-300"
                   >
                     Xem tất cả thông báo <Bell className="h-4 w-4 ml-1" />
                   </Button>

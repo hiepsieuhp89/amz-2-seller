@@ -10,7 +10,6 @@ interface BestSellingProductsProps {
 
 const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
   const { data: topSellingProducts, isLoading } = useTopSellingProducts()
-
   const columns: ColumnsType<ProductData> = [
     {
       title: "#",
@@ -50,7 +49,7 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
   }
 
   return (
-    <div style={{ borderRadius: "15px" }} className="p-5">
+    <div className="rounded-xl bg-white p-4">
       <h5 className="text-lg font-medium mb-4">Sản phẩm bán chạy</h5>
       <Table
         columns={columns}
@@ -59,6 +58,7 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
         pagination={false}
         expandable={{ expandedRowRender }}
         rowKey={(record: any) => record?.id}
+        bordered
       />
     </div>
   )

@@ -39,7 +39,7 @@ export default function LayoutHeaderCommon() {
     });
   }
   return (
-    <header className="bg-[#4D148C] text-white px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full z-10 ">
+    <header className="bg-[#4D148C] !text-white/80 px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full z-10 ">
       <div className="relative h-[30px] w-[110px] left-[64px] top-1/2">
         <Image
           quality={100}

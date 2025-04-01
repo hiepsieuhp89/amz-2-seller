@@ -1,13 +1,13 @@
 import { IQueryParams } from "@/interface/request/managedocument";
-import { httpDelete, httpGet, httpPost, httpPostFile, httpPut } from "./axios";
 import { IExportFile, IQueryParmaPlanWeek, IQueryParmaVersionHistory } from "@/interface/request/planWeek";
 import { camelizeConvert } from "@/utils";
 import axios from "axios";
 import { error } from "console";
 import { saveAs } from "file-saver";
+import { sendDelete, sendGet, sendPost, sendPut } from "./axios";
 
 export const getAllPlanWeek = async (params:IQueryParams): Promise<any> => {
-    const res = await httpGet('/v1/weekly',params);
+    const res = await sendGet('/v1/weekly',params);
     const { data }: { data: any } = res;
     return data;
   };
@@ -15,7 +15,7 @@ export const getAllPlanWeek = async (params:IQueryParams): Promise<any> => {
     params: IQueryParmaPlanWeek
   ): Promise<any> => {
     try {
-      const res = await httpGet('/v1/weekly/detail', params);
+      const res = await sendGet('/v1/weekly/detail', params);
       const { data }: { data: any } = res;
       return data;
     } catch (error:any) {
@@ -29,7 +29,7 @@ export const getAllPlanWeek = async (params:IQueryParams): Promise<any> => {
     params: IQueryParmaPlanWeek
   ) => {
     const { year, week_number } = params;
-    const res = await httpDelete(`/v1/weekly?year=${year}&week_number=${week_number}`);
+    const res = await sendDelete(`/v1/weekly?year=${year}&week_number=${week_number}`);
     const { data } = camelizeConvert(res);
     return data;
   };
@@ -42,7 +42,7 @@ export const getAllPlanWeek = async (params:IQueryParams): Promise<any> => {
    
   ) => {
     const {year,week_number}=params
-    const res = await httpPut(
+    const res = await sendPut(
       `/v1/weekly?year=${year}&week_number=${week_number}`,
       payload
     );
@@ -59,7 +59,7 @@ export const getAllPlanWeek = async (params:IQueryParams): Promise<any> => {
    
   ) => {
     const {year,week_number}=params
-    const res = await httpPost(
+    const res = await sendPost(
       `/v1/weekly/GA?year=${year}&week_number=${week_number}`,
       payload
     );
@@ -72,7 +72,7 @@ export const getAllPlanWeek = async (params:IQueryParams): Promise<any> => {
   export const getDetailVersion = async (
     params: IQueryParmaVersionHistory
   ): Promise<any> => {
-      const res = await httpGet('/v1/version', params);
+      const res = await sendGet('/v1/version', params);
       const { data }: { data: any } = res;
       return data;
   };
@@ -82,11 +82,11 @@ export const getAllPlanWeek = async (params:IQueryParams): Promise<any> => {
   ) => Promise<any> = async (payload: IExportFile) => {
     const url = '/v1/weekly/export-ld-word';
     
-    return httpPostFile(url, payload)
-      .then((response) => {
+    return sendPost(url, payload)
+      .then((response: any) => {
         return response
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error('Lỗi khi tải xuống:', error);
       });
   };
@@ -95,11 +95,11 @@ export const getAllPlanWeek = async (params:IQueryParams): Promise<any> => {
   ) => Promise<any> = async (payload: IExportFile) => {
     const url = '/v1/weekly/export-ld-pdf'; 
     
-    return httpPostFile(url, payload)
-      .then((response) => {
+    return sendPost(url, payload)
+      .then((response: any) => {
         return response
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error('Lỗi khi tải xuống:', error);
       });
   };
@@ -112,11 +112,11 @@ export const getAllPlanWeek = async (params:IQueryParams): Promise<any> => {
   ) => Promise<any> = async (payload: IExportFile) => {
     const url = '/v1/weekly/export-word'; 
     
-    return httpPostFile(url, payload)
-      .then((response) => {
+    return sendPost(url, payload)
+      .then((response: any) => {
         return response
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error('Lỗi khi tải xuống:', error);
       });
   };
@@ -126,11 +126,11 @@ export const getAllPlanWeek = async (params:IQueryParams): Promise<any> => {
   ) => Promise<any> = async (payload: IExportFile) => {
     const url = '/v1/weekly/export-pdf'; 
     
-    return httpPostFile(url, payload)
-      .then((response) => {
+    return sendPost(url, payload)
+      .then((response: any) => {
         return response
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error('Lỗi khi tải xuống:', error);
       });
   };

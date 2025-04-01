@@ -246,3 +246,13 @@ ul.ant-menu.ant-menu-sub.ant-menu-inline {
 .nextjs-toploader-spinner {
   display: none !important;
 }
+
+.ant-btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button[type="button"].absolute:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}

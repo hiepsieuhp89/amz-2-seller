@@ -267,7 +267,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
                 <div key={review.id} className="mb-4 p-4 border rounded-lg">
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-400 to-orange-600 flex items-center justify-center text-white font-medium">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-400 to-orange-600 flex items-center justify-center !text-white/80 font-medium">
                         {review.userId.slice(0, 1).toUpperCase()}
                       </div>
                       <div className="font-medium">

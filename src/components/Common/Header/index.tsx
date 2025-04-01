@@ -138,14 +138,14 @@ export function Header() {
                                 className="text-xs text-gray-400 transition-all duration-300 cursor-pointer">Xin chào. Đăng nhập</span>}
                                 {user && <span 
                                 onClick={() => router.push("/seller/products/storehouse")}
-                                className="font-bold text-sm text-gray-400 hover:text-white transition-all duration-300">Bảng điều khiển của tôi</span>}
-                                {!user && <span className="font-bold text-sm text-gray-400 hover:text-white transition-all duration-300">Tài khoản và danh sách mong muốn</span>}
+                                className="font-bold text-sm text-gray-400 hover:!text-white/80 transition-all duration-300">Bảng điều khiển của tôi</span>}
+                                {!user && <span className="font-bold text-sm text-gray-400 hover:!text-white/80 transition-all duration-300">Tài khoản và danh sách mong muốn</span>}
                             </>
                         )}
                     </div>
                 </Link>
                 {isMounted && user && (
-                    <div className="font-bold text-sm text-gray-400 cursor-pointer hover:text-white transition-all duration-300" onClick={() => logout()}>
+                    <div className="font-bold text-sm text-gray-400 cursor-pointer hover:!text-white/80 transition-all duration-300" onClick={() => logout()}>
                         Đăng xuất
                     </div>
                 )}
@@ -153,7 +153,7 @@ export function Header() {
                 {/* Currency Selector */}
                 <Dropdown overlay={currencyMenu} trigger={["click"]} placement="bottomRight">
                     <div className="flex items-center cursor-pointer px-2">
-                        <span className="mr-1 text-gray-400 text-sm transition-all duration-300 hover:text-white font-bold">
+                        <span className="mr-1 text-gray-400 text-sm transition-all duration-300 hover:!text-white/80 font-bold">
                             {currentCurrency.name} {currentCurrency.symbol}
                         </span>
                         <Icon path={mdiChevronDown} size={0.6} />
@@ -164,7 +164,7 @@ export function Header() {
                 <Link href="/cart" className="flex items-center px-2">
                     <div className="relative flex items-center">
                         <Icon path={mdiCart} size={1} color="#E3E6E6" />
-                        <span className="ml-1 font-bold text-gray-400 text-sm transition-all duration-300 hover:text-white">{cartItemCount} giỏ hàng</span>
+                        <span className="ml-1 font-bold text-gray-400 text-sm transition-all duration-300 hover:!text-white/80">{cartItemCount} giỏ hàng</span>
                     </div>
                 </Link>
             </nav>

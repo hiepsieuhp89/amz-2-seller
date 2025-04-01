@@ -94,7 +94,7 @@ function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
         className={`fixed top-0 left-0 w-full h-full flex flex-col pt-[68px]`}>
         <div className={`${isSidebarOpen ? "w-fit overflow-y-auto" : "w-fit overflow-hidden"}`}>
           {isSidebarOpen && (
-            <div className="flex flex-col items-center p-4 text-white gap-4">
+            <div className="flex flex-col items-center p-4 !text-white/80 gap-4">
               {/* User Info */}
               <div className="flex flex-col gap-0 w-full items-center">
                 <div className="flex items-center gap-1">
