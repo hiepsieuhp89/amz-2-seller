@@ -19,14 +19,6 @@ export const verifyBankAccount = async (
   
   // Giả lập delay network
   await new Promise(resolve => setTimeout(resolve, 500))
-  
   return fakeResponse
-
-  // Comment lại code gọi API thật
-  // const res = await sendPost("/banks/verify-account", {
-  //   bankCode,
-  //   accountNumber,
-  // });
-  // const data: IVerifyBankAccountResponse = res;
-  // return data;
+  
 }
