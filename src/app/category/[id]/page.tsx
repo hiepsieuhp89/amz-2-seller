@@ -10,7 +10,7 @@ export default function page({
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <CategoryPage />
+      <CategoryPage id={categoryId} />
     </Suspense>
   );
 } 

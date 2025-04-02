@@ -15,9 +15,13 @@ export const getCategories = async (params: ICategoryQueryParams): Promise<ICate
 }
 
 export const getCategoryById = async (id: string): Promise<ICategoryResponse> => {
-  const res = await sendGet(`/categories/${id}`)
-  const data: ICategoryResponse = res
-  return data
+  try {
+    const res = await sendGet(`/categories/${id}`);
+    return res;
+  } catch (error) {
+    console.error('Error fetching category by id:', error);
+    throw error;
+  }
 }
 
 export const updateCategory = async (id: string, payload: ICategoryUpdate): Promise<ICategoryResponse> => {

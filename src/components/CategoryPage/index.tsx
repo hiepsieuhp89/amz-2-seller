@@ -9,8 +9,19 @@ import { SidebarProvider } from './SidebarContext'
 import { Header } from '../Common/Header'
 import { Footer } from '../Common/Footer'
 import MenuHeader from '../Common/MenuHeader'
+import { useCategoryDetail } from '@/hooks/categories'
 
-export default function CategoryPage() {
+export default function CategoryPage({ id }: { id: string }) {
+  const { categoryData, isLoading, isFetching } = useCategoryDetail(id)
+
+  if (isLoading || isFetching) {
+    return <div>Loading...</div>
+  }
+
+  if (!categoryData) {
+    return <div>Category not found</div>
+  }
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
