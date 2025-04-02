@@ -334,7 +334,7 @@ export default function MenuHeader() {
           <div className="p-2">
             {/* Main menu items */}
             <div className="mb-4">
-              {menuItems.map((item, index) => (
+              {menuItems.slice(3, menuItems.length).map((item, index) => (
                 <Link
                   key={index}
                   href={item.href}
@@ -631,13 +631,6 @@ export default function MenuHeader() {
             ))}
           </div>
         </div>
-
-        <button
-          className="text-gray-400 hover:text-main-golden-orange"
-          onClick={() => setIsPopoverOpen(!isPopoverOpen)}
-        >
-          <Icon path={mdiChevronDown} size={0.8} />
-        </button>
       </div>
 
       {/* Mobile Menu Drawer */}
