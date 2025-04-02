@@ -6,7 +6,6 @@ import { PlusOutlined, SearchOutlined, DeleteOutlined } from "@ant-design/icons"
 import styles from "./storehouse.module.scss"
 import { useGetAllShopProducts } from "@/hooks/shop-products"
 import { useAddShopProducts } from "@/hooks/shop-products"
-import { IProduct } from "@/interface/response/products"
 import Image from "next/image"
 import Link from "next/link"
 import { useUser } from "@/context/useUserContext"
@@ -30,6 +29,7 @@ const Storehouse = () => {
     take: pageSize,
     shopId: user?.id
   })
+  console.log(productsData)
   const { mutate: addShopProducts, isPending: isAddingProducts } = useAddShopProducts()
   const [filteredProducts, setFilteredProducts] = useState<any[]>(productsData?.data?.data || [])
   const [selectedProducts, setSelectedProducts] = useState<any[]>([])
@@ -196,7 +196,7 @@ const Storehouse = () => {
                         <div className={styles.imageContainer}>
 
                           <Image
-                            src={checkImageUrl(product.imageUrl || "")}
+                            src={checkImageUrl(product.imageUrls?.[0] || "")}
                             alt={product.name || "Product Image"}
                             className={`${styles.productImage} object-cover`}
                             width={500}
@@ -209,9 +209,11 @@ const Storehouse = () => {
                       <div className={styles.productName}>
                         Tên sản phẩm: {product.name.length > 20 ? `${product.name.substring(0, 20)}...` : product.name}
                       </div>
-                      <div className={styles.productDescription}>
+                      <div className={`${styles.productDescription} line-clamp-2`}>
                         <strong>Mô tả: </strong>
-                        {product.description}
+                        <div className="rounded-md bg-red-500 p-2 h-fit">
+                          <span className="!text-gray-500" dangerouslySetInnerHTML={{ __html: product.description }} />
+                        </div>
                       </div>
                       <div className={styles.priceInfo}>
                         <span className="flex items-center gap-1">
@@ -306,7 +308,7 @@ const Storehouse = () => {
                         >
                           <div className="flex items-center">
                             <Image
-                              src={checkImageUrl(product.imageUrl || "")}
+                              src={checkImageUrl(product.imageUrls?.[0] || "")}
                               alt={product.name}
                               className="w-20 h-20 object-cover rounded-[4px] mr-3"
                               width={64}
@@ -317,7 +319,7 @@ const Storehouse = () => {
                               <div className="text-sm font-medium mb-1">
                                 {product.name.length > 20 ? `${product.name.substring(0, 20)}...` : product.name}
                               </div>
-                              <div className="text-xs text-gray-500 mb-1 line-clamp-2">{product.description.length > 70 ? `${product.description.substring(0, 70)}...` : product.description}</div>
+                              <div className="text-xs text-gray-500 mb-1 line-clamp-2" dangerouslySetInnerHTML={{ __html: product.description }}></div>
                               <div className="flex flex-wrap gap-x-3 text-xs">
                                 <span className="text-green-600 font-medium">Giá bán: ${Number(product.salePrice).toFixed(2)}</span>
                                 <span className="text-amber-600 font-medium">Giá nhập: ${Number(product.price).toFixed(2)}</span>

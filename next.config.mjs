@@ -29,6 +29,18 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'm.media-amazon.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'axm-vn.shop',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img6.yeshen.cc',
+      },
+      {
+        protocol: 'https',
+        hostname: 'shop.shop-worldwide-amz.top',
+      },
     ],
   },
 };

@@ -168,7 +168,7 @@ export default function MainSection({
                 <Link href={`/shop/product?id=${product.id}`}>
                   <div className="aspect-square relative overflow-hidden">
                     <Image 
-                      src={product.imageUrl} 
+                      src={product.imageUrl  || "/images/white-image.png"} 
                       alt={product.title}
                       fill
                       className="object-cover transition-transform hover:scale-105"

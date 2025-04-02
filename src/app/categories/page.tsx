@@ -131,7 +131,7 @@ export default function CategoriesPage() {
                                     {category.children.map((child) => (
                                         <div key={child.id} className="group flex items-center">
                                             {child.imageUrl && (
-                                                <Image src={child.imageUrl} alt={child.name} className="h-10 w-10 object-cover rounded mr-2" width={40} height={40} />
+                                                <Image src={child.imageUrl  || "/images/white-image.png"} alt={child.name} className="h-10 w-10 object-cover rounded mr-2" width={40} height={40} />
                                             )}
                                             <h6 className="mb-3">
                                                 <Link href={`/categories/${child.id}`} className="text-gray-700 hover:text-blue-600 transition-colors font-medium text-base">

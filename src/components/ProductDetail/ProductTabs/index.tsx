@@ -34,28 +34,26 @@ interface ReviewsTabProps {
 // Description Tab Component
 function DescriptionTab({ images }: DescriptionTabProps) {
   const { selectedProduct } = useSelectedProduct()
+  console.log(selectedProduct)
   return (
     <div className="p-6">
       <div className="mb-4 flex flex-col gap-1">
         <p className="text-sm text-gray-500">Ngày đăng: {new Date(selectedProduct?.createdAt || "").toLocaleDateString()}</p>
         <p className="text-sm text-gray-500">Tồn kho: {selectedProduct?.stock}</p>
       </div>
-      <div className="mb-6">
-        <p className="text-gray-700">{selectedProduct?.description}</p>
-      </div>
-      <div className="overflow-hidden">
-        {selectedProduct?.imageUrls.map((image, index) => (
-          <div key={index} className="w-full mb-4">
-            <Image
-              src={image }
-              alt={`Product description ${index + 1}`}
-              width={800}
-              height={600}
-              className="w-full"
+      {/* Product Description */}
+      {selectedProduct?.description && (
+        <>
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold">Mô tả sản phẩm</h2>
+            <div
+              className="text-sm text-gray-700 prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: selectedProduct.description }}
             />
           </div>
-        ))}
-      </div>
+          <div className="border-t border-gray-200 my-6"></div>
+        </>
+      )}
     </div>
   )
 }
@@ -74,9 +72,9 @@ function ReviewsTab({ reviews }: ReviewsTabProps) {
             <AvatarImage src="/avatars/default.jpg" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <Input 
-          className="!rounded-none"
-          placeholder="Viết nhận xét của bạn..." />
+          <Input
+            className="!rounded-none"
+            placeholder="Viết nhận xét của bạn..." />
           <Button className="!rounded-none">Gửi</Button>
         </div>
 
@@ -140,9 +138,8 @@ export default function ProductTabs({ defaultActiveTab }: ProductTabsProps) {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`p-3 text-base font-semibold text-gray-700 relative ${
-              activeTab === tab.id ? "text-gray-900" : "hover:text-gray-900"
-            }`}
+            className={`p-3 text-base font-semibold text-gray-700 relative ${activeTab === tab.id ? "text-gray-900" : "hover:text-gray-900"
+              }`}
             aria-selected={activeTab === tab.id}
             role="tab"
           >
@@ -191,7 +188,7 @@ ProductTabs.createReviewsTab = (reviews: Review[]) => {
       content: "Chất lượng đúng như mô tả, sẽ ủng hộ shop dài dài."
     }
   ]
-  
+
   return <ReviewsTab reviews={reviews.length > 0 ? reviews : sampleReviews} />
 }
 
@@ -233,8 +230,8 @@ export function CommentTab() {
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <Input
-          className="!rounded-none"
-          placeholder="Viết nhận xét của bạn..." />
+            className="!rounded-none"
+            placeholder="Viết nhận xét của bạn..." />
           <Button className="!rounded-none">Gửi</Button>
         </div>
 

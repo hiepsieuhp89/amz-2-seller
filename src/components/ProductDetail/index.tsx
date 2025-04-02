@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import Icon from "@mdi/react"
@@ -19,13 +19,32 @@ import {
   mdiFacebook,
   mdiLinkedin,
   mdiWhatsapp,
+  mdiChevronLeft,
+  mdiChevronRight,
 } from "@mdi/js"
+import useEmblaCarousel from "embla-carousel-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
+import { Star } from "lucide-react"
 
+const RatingStars = ({ rating }: { rating: number }) => {
+  return (
+    <div className="flex justify-center gap-0.5 mt-1">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <Star
+          key={index}
+          className={cn(
+            "w-4 h-4",
+            index < rating ? "fill-yellow-400 stroke-yellow-400" : "fill-gray-300 stroke-gray-300"
+          )}
+        />
+      ))}
+    </div>
+  )
+}
 export default function ProductDetail() {
   const { selectedProduct } = useSelectedProduct()
   const [quantity, setQuantity] = useState<number>(1)
@@ -37,6 +56,56 @@ export default function ProductDetail() {
   const imgContainerRef = useRef<HTMLDivElement>(null)
   const [isZoomed, setIsZoomed] = useState(false)
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 })
+
+  // Embla Carousel setup for thumbnails
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "start",
+    containScroll: "keepSnaps",
+    loop: false,
+    slidesToScroll: 1,
+  })
+  const [prevBtnEnabled, setPrevBtnEnabled] = useState(false)
+  const [nextBtnEnabled, setNextBtnEnabled] = useState(false)
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return
+    setPrevBtnEnabled(emblaApi.canScrollPrev())
+    setNextBtnEnabled(emblaApi.canScrollNext())
+  }, [emblaApi])
+
+  useEffect(() => {
+    if (!emblaApi) return
+    onSelect()
+    emblaApi.on("select", onSelect)
+    emblaApi.on("reInit", onSelect)
+    // Set initial state for buttons
+    setPrevBtnEnabled(emblaApi.canScrollPrev())
+    setNextBtnEnabled(emblaApi.canScrollNext())
+  }, [emblaApi, onSelect])
+
+  // Update currentImage when carousel scrolls (optional, but good for consistency)
+  useEffect(() => {
+    if (!emblaApi) return;
+    const handleScroll = () => {
+      // Optional: Update main image based on the center-most slide in view
+      // const centerIndex = emblaApi.slidesInView(true)[Math.floor(emblaApi.slidesInView(true).length / 2)];
+      // if (centerIndex !== undefined && centerIndex !== currentImage) {
+      //   setCurrentImage(centerIndex);
+      // }
+    };
+    emblaApi.on("scroll", handleScroll);
+    return () => { emblaApi.off("scroll", handleScroll); };
+  }, [emblaApi, currentImage]);
+
+  const handleThumbnailClick = (index: number) => {
+    setCurrentImage(index);
+    if (emblaApi) {
+      emblaApi.scrollTo(index);
+    }
+  };
 
   const handleMouseEnter = () => {
     setIsZoomed(true)
@@ -60,7 +129,8 @@ export default function ProductDetail() {
     <div className="w-full py-6 px-4 md:px-6 lg:px-[104px] bg-[#E3E6E6] flex justify-center">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[1500px] bg-white p-4">
         <div className="sticky top-20">
-          <div className="product-gallery flex flex-row-reverse gap-4">
+          <div className="product-gallery flex flex-col gap-4">
+            {/* Main Image */}
             <div
               ref={imgContainerRef}
               className="relative w-full h-[500px] overflow-hidden rounded-md cursor-zoom-in border border-gray-200"
@@ -82,37 +152,77 @@ export default function ProductDetail() {
                 }
               >
                 <Image
-                  src={selectedProduct?.imageUrls[currentImage] || ""}
+                  src={selectedProduct?.imageUrls[currentImage] || "/images/white-image.png"}
                   alt="Product image"
-                  fill
+                  height={1000}
+                  width={1000}
                   className="object-contain p-4"
                   priority
                 />
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 w-20">
-              {selectedProduct?.imageUrls.map((img, index) => (
-                <motion.div
-                  key={index}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setCurrentImage(index)}
-                  className={cn(
-                    "relative w-full h-20 cursor-pointer overflow-hidden rounded-md border bg-white",
-                    currentImage === index
-                      ? "ring-1 ring-main-golden-orange border-main-golden-orange"
-                      : "border-gray-200 hover:border-gray-300",
-                  )}
-                >
-                  <Image
-                    src={img }
-                    alt={`Thumbnail ${index + 1}`}
-                    fill
-                    className="object-contain p-1"
-                  />
-                </motion.div>
-              ))}
+            {/* Thumbnail Carousel */}
+            <div className="relative w-full">
+              <div className="overflow-hidden" ref={emblaRef}>
+                <div className="flex -ml-2 bg-blue-500">
+                  {selectedProduct?.imageUrls.map((img, index) => (
+                    <div
+                      key={index}
+                      className="pl-2 flex-shrink-0 flex-grow-0 bg-red-500"
+                      style={{ flexBasis: "25%" }} // Show 4 items
+                    >
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleThumbnailClick(index)}
+                        className={cn(
+                          "relative w-full h-20 cursor-pointer overflow-hidden rounded-md border bg-white",
+                          currentImage === index
+                            ? "ring-1 ring-main-golden-orange border-main-golden-orange"
+                            : "border-gray-200 hover:border-gray-300",
+                        )}
+                      >
+                        <Image
+                          src={img}
+                          alt={`Thumbnail ${index + 1}`}
+                          fill
+                          className="object-contain p-1"
+                        />
+                      </motion.div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Carousel Controls */}
+              {emblaApi && (selectedProduct?.imageUrls?.length || 0) > 4 && (
+                 <>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={cn(
+                      "absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 h-8 w-8 !text-white bg-black/80 hover:bg-black border-none rounded-none shadow",
+                      !prevBtnEnabled && "opacity-50 cursor-not-allowed",
+                    )}
+                    onClick={scrollPrev}
+                    disabled={!prevBtnEnabled}
+                  >
+                    <Icon path={mdiChevronLeft} size={0.8} />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={cn(
+                      "absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 h-8 w-8 rounded-full bg-black/80 hover:bg-black shadow",
+                      !nextBtnEnabled && "opacity-50 cursor-not-allowed",
+                    )}
+                    onClick={scrollNext}
+                    disabled={!nextBtnEnabled}
+                  >
+                    <Icon path={mdiChevronRight} size={0.8} />
+                  </Button>
+                 </>
+              )}
             </div>
           </div>
         </div>
@@ -124,13 +234,10 @@ export default function ProductDetail() {
 
             <div className="mt-2 flex items-center gap-2">
               <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="h-5 w-5 fill-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                  </svg>
-                ))}
+                <RatingStars 
+                rating={Number(selectedProduct?.averageRating || 0)} />
               </div>
-              <span className="text-sm text-muted-foreground">(0 Nhận xét)</span>
+              <span className="text-sm text-muted-foreground">(2 Nhận xét)</span>
             </div>
 
             <p className="mt-2 text-sm text-muted-foreground">
@@ -267,6 +374,7 @@ export default function ProductDetail() {
               </motion.div>
             </div>
           </div>
+          
         </div>
       </div>
     </div>
