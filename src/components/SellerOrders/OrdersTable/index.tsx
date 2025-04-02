@@ -25,7 +25,7 @@ interface OrderData {
     quantity: number
 }
 
-const OrdersTable  = () => {
+const OrdersTable = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
     const { data: ordersData, isLoading } = useGetMyOrders({
@@ -48,9 +48,14 @@ const OrdersTable  = () => {
     }
 
     if (!ordersData || !ordersData.data || ordersData.data.data?.length === 0) {
-        return <Empty 
-        image={Empty.PRESENTED_IMAGE_SIMPLE}
-        description="Không có đơn hàng nào" className="flex justify-center items-center h-96" />
+        return (
+            <div className="flex justify-center items-center h-60 flex-1 max-h-screen bg-white rounded-md border">
+                <Empty
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    description="Chưa có đơn hàng"
+                />
+            </div>
+        )
     }
 
     const columns: ColumnsType<OrderData> = [
@@ -109,29 +114,29 @@ const OrdersTable  = () => {
             width: 110,
             render: () => (
                 <Space size="middle">
-                <Tooltip title="Xem chi tiết">
-                  <Icon
-                    path={mdiEye} 
-                    size={0.7} 
-                    color={"#A3A3A3"}
-                   
-                  />
-                </Tooltip>
-                <Tooltip title="Chỉnh sửa">
-                  <Icon 
-                    path={mdiContentSaveEdit} 
-                    size={0.7} 
-                    color={"#A3A3A3"}
-                  />
-                </Tooltip>
-                <Tooltip title="Xóa">
-                  <Icon 
-                    path={mdiTrashCan} 
-                    size={0.7} 
-                    color={"#A3A3A3"}
-                  />
-                </Tooltip>
-              </Space>
+                    <Tooltip title="Xem chi tiết">
+                        <Icon
+                            path={mdiEye}
+                            size={0.7}
+                            color={"#A3A3A3"}
+
+                        />
+                    </Tooltip>
+                    <Tooltip title="Chỉnh sửa">
+                        <Icon
+                            path={mdiContentSaveEdit}
+                            size={0.7}
+                            color={"#A3A3A3"}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Xóa">
+                        <Icon
+                            path={mdiTrashCan}
+                            size={0.7}
+                            color={"#A3A3A3"}
+                        />
+                    </Tooltip>
+                </Space>
             ),
         },
     ];
@@ -146,11 +151,11 @@ const OrdersTable  = () => {
                         <Title level={5} style={{ margin: 0 }}>
                             Tất cả đơn hàng
                         </Title>
-                        <Badge 
+                        <Badge
                             size='default'
-                            count={ordersData?.data?.data?.length || 0} 
-                            showZero 
-                            style={{ backgroundColor: "#1890ff" }} 
+                            count={ordersData?.data?.data?.length || 0}
+                            showZero
+                            style={{ backgroundColor: "#1890ff" }}
                         />
                     </Space>
                 </Col>
@@ -162,8 +167,8 @@ const OrdersTable  = () => {
                             style={{ width: '100%', maxWidth: 250, borderRadius: "6px" }}
                             allowClear
                         />
-                        <Select 
-                            placeholder="Lọc trạng thái" 
+                        <Select
+                            placeholder="Lọc trạng thái"
                             style={{ width: '100%', maxWidth: 250, borderRadius: "6px" }}
                         >
                             <Option value="pending">Đang chờ xử lý</Option>

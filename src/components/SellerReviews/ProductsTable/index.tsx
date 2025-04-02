@@ -9,6 +9,7 @@ import { SearchOutlined, FilterOutlined, ReloadOutlined } from "@ant-design/icon
 import type { IShopProduct } from "@/interface/response/shop-products"
 import { useGetMyShopProducts } from "@/hooks/shop-products"
 import Image from "next/image"
+import Link from "next/link"
 import Lightbox from "yet-another-react-lightbox"
 import "yet-another-react-lightbox/styles.css"
 import "./styles.css"
@@ -16,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { checkImageUrl } from "@/lib/utils"
 import { Breakpoint } from "antd/lib"
+import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
 const { Title, Text } = Typography
 
 interface ProductsTableProps {
@@ -40,6 +42,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
   const productImages = products.map((product: any) => product.product.imageUrl).filter(Boolean)
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
   const [selectedProductReviews, setSelectedProductReviews] = useState<any[]>([])
+  const { setSelectedProduct } = useSelectedProduct()
 
   const handleSearch = (value: string) => {
     setSearchText(value)
@@ -127,9 +130,15 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       sorter: (a: IShopProduct, b: IShopProduct) => a.product.name.localeCompare(b.product.name),
       render: (text: string, record: IShopProduct) => (
         <Space direction="vertical" size={0}>
-          <Text strong style={{ fontSize: "14px", wordWrap: "break-word", whiteSpace: "normal" }}>
-            {text}
-          </Text>
+          <Link
+            href={`/product?id=${record?.product?.id}`}
+            target="_blank"
+            onClick={() => setSelectedProduct(record.product)}
+          >
+            <Text strong style={{ fontSize: "14px", wordWrap: "break-word", whiteSpace: "normal" }}>
+              {text}
+            </Text>
+          </Link>
           <Text
             type="secondary"
             style={{ fontSize: "12px", wordWrap: "break-word", whiteSpace: "normal" }}

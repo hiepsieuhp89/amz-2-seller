@@ -176,11 +176,9 @@ const Storehouse = () => {
                 </div>
               ) : filteredProducts.length > 0 ? (
                 filteredProducts.map((product: any) => (
-                  <Link 
-                  onClick={() => setSelectedProduct(product)}
-                  target="_blank"
-                  key={product.id} 
-                  href={`/product?id=${product.id}`} className={styles.productCard}>
+                  <div
+                    key={product.id}
+                  >
                     <div
                       className={`${styles.card} !rounded-[8px] overflow-hidden bg-white`}
                       style={{
@@ -253,7 +251,7 @@ const Storehouse = () => {
                         <PlusOutlined className={styles.plusIcon} />
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 ))
               ) : (
                 <Empty description="Không tìm thấy sản phẩm" />
@@ -303,10 +301,7 @@ const Storehouse = () => {
                   <ul className="list-group list-group-flush">
                     {selectedProducts.map((product, index) => (
                       <li key={`${product.id}-${index}`} className={`${styles.selectedItem} hover:bg-gray-50 border-b`}>
-                        <Link
-                          onClick={() => setSelectedProduct(product)}
-                          target="_blank"
-                          href={`/product?id=${product?.id}`}
+                        <div
                           className="block p-4"
                         >
                           <div className="flex items-center">
@@ -340,8 +335,7 @@ const Storehouse = () => {
                             />
                           </div>
 
-                        </Link>
-
+                        </div>
                       </li>
                     ))}
                   </ul>
@@ -353,7 +347,6 @@ const Storehouse = () => {
                 )}
               </div>
             </div>
-
             <Button
               className="!rounded-[4px] !h-11 mt-4"
               type="primary"

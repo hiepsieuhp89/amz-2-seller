@@ -1,8 +1,10 @@
 import type React from "react"
-import { Card, Table } from "antd"
+import { Table } from "antd"
 import type { ColumnsType } from "antd/es/table"
 import { useTopSellingProducts } from "@/hooks/dashboard"
 import { ProductData } from "../types"
+import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
+import Link from "next/link"
 
 interface BestSellingProductsProps {
   data: ProductData[]
@@ -10,6 +12,7 @@ interface BestSellingProductsProps {
 
 const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
   const { data: topSellingProducts, isLoading } = useTopSellingProducts()
+  const {setSelectedProduct} = useSelectedProduct()
   const columns: ColumnsType<ProductData> = [
     {
       title: "#",
@@ -24,6 +27,15 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
       dataIndex: ["product", "name"],
       key: "name",
       ellipsis: true,
+      render: (text, record) => (
+        <Link
+          href={`/product?id=${(record as any)?.product?.id}`}
+          target="_blank"
+          onClick={() => setSelectedProduct((record as any)?.product)}
+        >
+          {text}
+        </Link>
+      ),
     },
     {
       title: "Lượt bán",
