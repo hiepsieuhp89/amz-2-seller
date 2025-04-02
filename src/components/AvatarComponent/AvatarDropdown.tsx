@@ -88,6 +88,7 @@ const AvatarDropdown = () => {
 
       // Tab cài đặt thanh toán
       address: profile?.data?.address,
+      
       bankName: profile?.data?.bankName,
       bankAccountNumber: profile?.data?.bankAccountNumber,
       bankAccountName: profile?.data?.bankAccountName,
