@@ -43,6 +43,16 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    const domain =
+      process.env.NEXT_PUBLIC_API_URL || "amz.dunghaysai.site";
+    return [
+      {
+        source: "/api/:path*",
+        destination: `https://${domain}/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
