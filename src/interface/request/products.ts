@@ -21,8 +21,6 @@ export interface IProductSearchParams {
     status?: string
     name?: string
     shopId?: string
-    keyword?: string
-    category?: string
     minPrice?: number
     maxPrice?: number
     inStock?: boolean
@@ -30,6 +28,7 @@ export interface IProductSearchParams {
     isFeatured?: boolean
     isHot?: boolean 
     limit?: number
+    categoryId?: string
 }
 
 export interface IAddShopProductsRequest {
