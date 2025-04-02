@@ -48,7 +48,9 @@ const OrdersTable  = () => {
     }
 
     if (!ordersData || !ordersData.data || ordersData.data.data?.length === 0) {
-        return <Empty description="Không có đơn hàng nào" className="flex justify-center items-center h-96" />
+        return <Empty 
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description="Không có đơn hàng nào" className="flex justify-center items-center h-96" />
     }
 
     const columns: ColumnsType<OrderData> = [

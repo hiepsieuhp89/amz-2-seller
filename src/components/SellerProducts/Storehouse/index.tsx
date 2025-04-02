@@ -29,7 +29,6 @@ const Storehouse = () => {
     take: pageSize,
     shopId: user?.id
   })
-  console.log(productsData)
   const { mutate: addShopProducts, isPending: isAddingProducts } = useAddShopProducts()
   const [filteredProducts, setFilteredProducts] = useState<any[]>(productsData?.data?.data || [])
   const [selectedProducts, setSelectedProducts] = useState<any[]>([])
@@ -120,7 +119,7 @@ const Storehouse = () => {
   if (!isClient) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <Spin tip="Đang tải..." />
+        <Spin size="small" tip="Đang tải..." />
       </div>
     )
   }
@@ -176,8 +175,12 @@ const Storehouse = () => {
                   <Spin size="small" />
                 </div>
               ) : filteredProducts.length > 0 ? (
-                filteredProducts.map((product) => (
-                  <div key={product.id} className={styles.productCard}>
+                filteredProducts.map((product: any) => (
+                  <Link 
+                  onClick={() => setSelectedProduct(product)}
+                  target="_blank"
+                  key={product.id} 
+                  href={`/product?id=${product.id}`} className={styles.productCard}>
                     <div
                       className={`${styles.card} !rounded-[8px] overflow-hidden bg-white`}
                       style={{
@@ -209,12 +212,12 @@ const Storehouse = () => {
                       <div className={styles.productName}>
                         Tên sản phẩm: {product.name.length > 20 ? `${product.name.substring(0, 20)}...` : product.name}
                       </div>
-                      <div className={`${styles.productDescription} line-clamp-2`}>
+                      {/* <div className={`${styles.productDescription} line-clamp-2`}>
                         <strong>Mô tả: </strong>
                         <div className="rounded-md bg-red-500 p-2 h-fit">
                           <span className="!text-gray-500" dangerouslySetInnerHTML={{ __html: product.description }} />
                         </div>
-                      </div>
+                      </div> */}
                       <div className={styles.priceInfo}>
                         <span className="flex items-center gap-1">
                           <DollarSign className="w-4 h-4 text-green-500" />
@@ -250,7 +253,7 @@ const Storehouse = () => {
                         <PlusOutlined className={styles.plusIcon} />
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))
               ) : (
                 <Empty description="Không tìm thấy sản phẩm" />
@@ -366,7 +369,7 @@ const Storehouse = () => {
         </div>
       ) : (
         <div className="flex justify-center items-center h-screen">
-          <Spin tip="Đang tải dữ liệu người dùng..." />
+          <Spin size="small" tip="Đang tải dữ liệu người dùng..." />
         </div>
       )}
     </div>

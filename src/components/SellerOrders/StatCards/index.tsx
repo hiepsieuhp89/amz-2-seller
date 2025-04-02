@@ -28,7 +28,7 @@ const StatCards: React.FC = () => {
   const { statistics } = useShopStatistics()
   
   if (!statistics) {
-    return <div>Đang tải thống kê...</div>
+    return <div></div>
   }
 
   return (

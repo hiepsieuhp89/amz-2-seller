@@ -30,6 +30,8 @@ import { Input } from "@/components/ui/input"
 import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
 import { Star } from "lucide-react"
 
+const MAX_NAME_LENGTH = 60; // Define maximum length for the name
+
 const RatingStars = ({ rating }: { rating: number }) => {
   return (
     <div className="flex justify-center gap-0.5 mt-1">
@@ -49,6 +51,7 @@ export default function ProductDetail() {
   const { selectedProduct } = useSelectedProduct()
   const [quantity, setQuantity] = useState<number>(1)
   const [currentImage, setCurrentImage] = useState<number>(0)
+  const [showFullName, setShowFullName] = useState(false); // State to toggle full name display
   const price = parseFloat(selectedProduct?.price || "0")
   const totalPrice = price * quantity
   const availableQuantity = selectedProduct?.stock || 0
@@ -165,11 +168,11 @@ export default function ProductDetail() {
             {/* Thumbnail Carousel */}
             <div className="relative w-full">
               <div className="overflow-hidden" ref={emblaRef}>
-                <div className="flex -ml-2 bg-blue-500">
+                <div className="flex -ml-2">
                   {selectedProduct?.imageUrls.map((img, index) => (
                     <div
                       key={index}
-                      className="pl-2 flex-shrink-0 flex-grow-0 bg-red-500"
+                      className="pl-2 flex-shrink-0 flex-grow-0"
                       style={{ flexBasis: "25%" }} // Show 4 items
                     >
                       <motion.div
@@ -201,7 +204,7 @@ export default function ProductDetail() {
                     variant="outline"
                     size="icon"
                     className={cn(
-                      "absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 h-8 w-8 !text-white bg-black/80 hover:bg-black border-none rounded-none shadow",
+                      "absolute left-2 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 h-8 w-8 !text-white bg-black/80 hover:bg-black border-none rounded-none shadow",
                       !prevBtnEnabled && "opacity-50 cursor-not-allowed",
                     )}
                     onClick={scrollPrev}
@@ -213,7 +216,7 @@ export default function ProductDetail() {
                     variant="outline"
                     size="icon"
                     className={cn(
-                      "absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 h-8 w-8 rounded-full bg-black/80 hover:bg-black shadow",
+                      "absolute right-2 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 h-8 w-8 bg-black/80 hover:bg-black shadow !text-white rounded-none border-none",
                       !nextBtnEnabled && "opacity-50 cursor-not-allowed",
                     )}
                     onClick={scrollNext}
@@ -230,8 +233,22 @@ export default function ProductDetail() {
         {/* Product Details */}
         <div className="product-info space-y-6">
           <div>
-            <h1 className="text-xl font-semibold">{selectedProduct?.name}</h1>
-
+            <h1 className="text-xl font-semibold">
+              {selectedProduct?.name && selectedProduct.name.length > MAX_NAME_LENGTH && !showFullName
+                ? (
+                  <>
+                    {selectedProduct.name.slice(0, MAX_NAME_LENGTH)}...
+                    <button
+                      onClick={() => setShowFullName(true)}
+                      className="text-sm text-blue-600 hover:underline ml-1 focus:outline-none"
+                    >
+                      Xem thêm
+                    </button>
+                  </>
+                ) : (
+                  selectedProduct?.name
+                )}
+            </h1>
             <div className="mt-2 flex items-center gap-2">
               <div className="flex">
                 <RatingStars 
