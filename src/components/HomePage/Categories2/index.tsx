@@ -18,7 +18,8 @@ export default function Categories2() {
               <h2 className="text-lg font-medium mb-3 ">{category.title}</h2>
               {category.items.length === 1 ? (
                 <div className="mb-3">
-                  <Link href={category.items[0].link} className="block">
+                  <Link 
+                    href={`/category?id=${category.items[0].link}&name=${category.items[0].label}`} className="block">
                     <motion.div 
                       className="relative aspect-[4/3] overflow-hidden mb-2"
                       whileHover={{ scale: 1.02 }}
@@ -28,9 +29,6 @@ export default function Categories2() {
                         alt={category.items[0].label}
                         fill
                         className="object-cover"
-                        onError={(e) =>
-                          (e.currentTarget.src = "https://axm-vn.shop/public/assets/img/az-placeholder.jpg")
-                        }
                       />
                     </motion.div>
                   </Link>
@@ -68,13 +66,10 @@ export default function Categories2() {
                           whileHover={{ scale: 1.05 }}
                         >
                           <Image
-                            src={item.image}
+                            src={item.image || "/images/white-image.png"}
                             alt={item.label}
                             fill
                             className="object-cover"
-                            onError={(e) =>
-                              (e.currentTarget.src = "https://axm-vn.shop/public/assets/img/az-placeholder.jpg")
-                            }
                           />
                         </motion.div>
                         <span className="text-xs  line-clamp-1">{item.label}</span>

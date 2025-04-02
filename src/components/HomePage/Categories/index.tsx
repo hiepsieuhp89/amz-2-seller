@@ -18,7 +18,7 @@ export default function Categories() {
               <h2 className="text-lg font-medium mb-3 ">{category.title}</h2>
               {category.items.length === 1 ? (
                 <div className="mb-3">
-                  <Link href={`/category?id=${category.items[0].link}`} className="block">
+                  <Link href={`/category?id=${category.items[0].link}&name=${category.items[0].label}`} className="block">
                     <motion.div 
                       className="relative aspect-[4/3] overflow-hidden mb-2"
                       whileHover={{ scale: 1.02 }}
@@ -28,14 +28,11 @@ export default function Categories() {
                         alt={category.items[0].label}
                         fill
                         className="object-cover"
-                        onError={(e) =>
-                          (e.currentTarget.src = "https://axm-vn.shop/public/assets/img/az-placeholder.jpg")
-                        }
                       />
                     </motion.div>
                   </Link>
                   <div className="mt-4">
-                    <Link href={category.items[0].link} className="text-sm text-blue-600 hover:underline">
+                    <Link href={`/category?id=${category.items[0].link}&name=${category.items[0].label}`} className="text-sm text-blue-600 hover:underline">
                       Mua ngay
                     </Link>
                   </div>
@@ -44,7 +41,7 @@ export default function Categories() {
                 <>
                   <div className="grid grid-cols-2 gap-2 mb-2">
                     {category.items.slice(0, 2).map((item) => (
-                      <Link key={item.id} href={item.link} className="block">
+                      <Link key={item.id} href={`/category?id=${item.link}&name=${item.label}`} className="block">
                         <motion.div 
                           className="relative aspect-square overflow-hidden mb-1"
                           whileHover={{ scale: 1.05 }}
@@ -62,19 +59,16 @@ export default function Categories() {
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     {category.items.slice(2, 4).map((item) => (
-                      <Link key={item.id} href={item.link} className="block">
+                      <Link key={item.id} href={`/category?id=${item.link}&name=${item.label}`} className="block">
                         <motion.div 
                           className="relative aspect-square overflow-hidden mb-1"
                           whileHover={{ scale: 1.05 }}
                         >
                           <Image
-                            src={item.image}
+                            src={item.image || "/images/white-image.png"}
                             alt={item.label}
                             fill
                             className="object-cover"
-                            onError={(e) =>
-                              (e.currentTarget.src = "https://axm-vn.shop/public/assets/img/az-placeholder.jpg")
-                            }
                           />
                         </motion.div>
                         <span className="text-xs  line-clamp-1">{item.label}</span>
@@ -84,10 +78,9 @@ export default function Categories() {
                 </>
               )}
 
-              {/* Show "Mua ngay" link for categories with a single item */}
               {category.items.length > 1 && (
                 <div className="mt-3">
-                  <Link href={`/category/${category.id}`} className="text-sm text-blue-600 hover:underline">
+                  <Link href={`/categories`} className="text-sm text-blue-600 hover:underline">
                     Xem tất cả
                   </Link>
                 </div>

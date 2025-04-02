@@ -94,7 +94,7 @@ export function FeaturedCategories() {
                 key={category.id}
                 className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
               >
-                <Link href={`/category?id=${category.id}`} className="block h-full">
+                <Link href={`/category?id=${category.id}&name=${category.name}`} className="block h-full">
                   <Card className="overflow-hidden h-full transition-all duration-200 hover:shadow-md">
                     <CardContent className="p-0 flex flex-col h-full">
                       <div className="relative aspect-square w-full">

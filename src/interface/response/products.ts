@@ -68,7 +68,7 @@ export interface IProduct {
     deletedAt: string | null
     name: string
     description: string
-    imageUrl: string
+    imageUrl: string | null
     imageUrls: string[]
     salePrice: string
     price: string
@@ -77,6 +77,7 @@ export interface IProduct {
     soldCount: number
     isHot: boolean
     isNew: boolean
+    isFeatured: boolean
     shopProducts: IShopProduct[]
 }
 

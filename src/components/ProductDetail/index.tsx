@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef, useCallback, useEffect } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
@@ -30,8 +29,6 @@ import { Input } from "@/components/ui/input"
 import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
 import { Star } from "lucide-react"
 
-const MAX_NAME_LENGTH = 60; // Define maximum length for the name
-
 const RatingStars = ({ rating }: { rating: number }) => {
   return (
     <div className="flex justify-center gap-0.5 mt-1">
@@ -51,11 +48,9 @@ export default function ProductDetail() {
   const { selectedProduct } = useSelectedProduct()
   const [quantity, setQuantity] = useState<number>(1)
   const [currentImage, setCurrentImage] = useState<number>(0)
-  const [showFullName, setShowFullName] = useState(false); // State to toggle full name display
   const price = parseFloat(selectedProduct?.price || "0")
   const totalPrice = price * quantity
   const availableQuantity = selectedProduct?.stock || 0
-
   const imgContainerRef = useRef<HTMLDivElement>(null)
   const [isZoomed, setIsZoomed] = useState(false)
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 })
@@ -84,12 +79,10 @@ export default function ProductDetail() {
     onSelect()
     emblaApi.on("select", onSelect)
     emblaApi.on("reInit", onSelect)
-    // Set initial state for buttons
     setPrevBtnEnabled(emblaApi.canScrollPrev())
     setNextBtnEnabled(emblaApi.canScrollNext())
   }, [emblaApi, onSelect])
 
-  // Update currentImage when carousel scrolls (optional, but good for consistency)
   useEffect(() => {
     if (!emblaApi) return;
     const handleScroll = () => {
@@ -155,7 +148,7 @@ export default function ProductDetail() {
                 }
               >
                 <Image
-                  src={selectedProduct?.imageUrls[currentImage] || "/images/white-image.png"}
+                  src={selectedProduct?.imageUrls && selectedProduct?.imageUrls[currentImage] || "/images/white-image.png"}
                   alt="Product image"
                   height={1000}
                   width={1000}
@@ -169,7 +162,7 @@ export default function ProductDetail() {
             <div className="relative w-full">
               <div className="overflow-hidden" ref={emblaRef}>
                 <div className="flex -ml-2">
-                  {selectedProduct?.imageUrls.map((img, index) => (
+                  {selectedProduct?.imageUrls && selectedProduct?.imageUrls.map((img, index) => (
                     <div
                       key={index}
                       className="pl-2 flex-shrink-0 flex-grow-0"
@@ -198,7 +191,7 @@ export default function ProductDetail() {
                 </div>
               </div>
               {/* Carousel Controls */}
-              {emblaApi && (selectedProduct?.imageUrls?.length || 0) > 4 && (
+              {emblaApi && (selectedProduct?.imageUrls && selectedProduct?.imageUrls.length > 4) && (
                  <>
                   <Button
                     variant="outline"
@@ -234,20 +227,7 @@ export default function ProductDetail() {
         <div className="product-info space-y-6">
           <div>
             <h1 className="text-xl font-semibold">
-              {selectedProduct?.name && selectedProduct.name.length > MAX_NAME_LENGTH && !showFullName
-                ? (
-                  <>
-                    {selectedProduct.name.slice(0, MAX_NAME_LENGTH)}...
-                    <button
-                      onClick={() => setShowFullName(true)}
-                      className="text-sm text-blue-600 hover:underline ml-1 focus:outline-none"
-                    >
-                      Xem thêm
-                    </button>
-                  </>
-                ) : (
-                  selectedProduct?.name
-                )}
+              {selectedProduct?.name}
             </h1>
             <div className="mt-2 flex items-center gap-2">
               <div className="flex">

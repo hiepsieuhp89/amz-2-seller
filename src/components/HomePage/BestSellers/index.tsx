@@ -35,13 +35,12 @@ export function BestSellers() {
     return Math.floor(Math.random() * 100) + 1;
   }
   const [page, setPage] = useState(randomPage());
-
+  const {setSelectedProduct} = useSelectedProduct()
   const {data: featuredProducts, isLoading} = useProducts(
     {
       order: "DESC",
       page: page,
       take: 20,
-      // isFeatured: true,
     }
   )
 
@@ -221,13 +220,13 @@ export function BestSellers() {
                   <Link 
                     href={`/product?id=${product.id}`} 
                     className="block h-full"
-                    onClick={() => useSelectedProduct.getState().setSelectedProduct(product)}
+                    onClick={() => setSelectedProduct(product as unknown as IProduct)}
                   >
                     <Card className="overflow-hidden h-full transition-all duration-200 hover:shadow-md" style={{ maxWidth: '200px' }}>
                       <CardContent className="p-0 flex flex-col h-full">
                         <div className="relative aspect-square w-full">
                           <Image
-                            src={product.imageUrl  || "/images/white-image.png"}
+                            src={product.imageUrls[0]  || "/images/white-image.png"}
                             alt={product.name}
                             fill
                             className="object-cover"
@@ -331,7 +330,7 @@ export function BestSellers() {
                   <Link 
                     href={`/product?id=${product.id}`} 
                     className="block h-full"
-                    onClick={() => useSelectedProduct.getState().setSelectedProduct(product as unknown as IProduct)}
+                    onClick={() => setSelectedProduct(product as unknown as IProduct)}
                   >
                     <Card className="overflow-hidden h-full transition-all duration-200 hover:shadow-md" style={{ maxWidth: '200px' }}>
                       <CardContent className="p-0 flex flex-col h-full">
@@ -413,7 +412,7 @@ export function BestSellers() {
                 <Link 
                   href={`/product?id=${product.id}`} 
                   className="block h-full"
-                  onClick={() => useSelectedProduct.getState().setSelectedProduct(product as unknown as IProduct)}
+                  onClick={() => setSelectedProduct(product as unknown as IProduct)}
                 >
                   <Card className="overflow-hidden h-full transition-all duration-200 hover:shadow-md" style={{ maxWidth: '200px' }}>
                     <CardContent className="p-0 flex flex-col h-full">

@@ -30,7 +30,6 @@ export const useProducts = (params?: IProductSearchParams) => {
         page: 1,
         ...params,
     }
-
     const {
         data,
         isLoading,
@@ -40,7 +39,6 @@ export const useProducts = (params?: IProductSearchParams) => {
         queryKey: ["products", queryParams],
         queryFn: () => getProducts(queryParams),
     })
-
     return {
         data,
         isLoading,

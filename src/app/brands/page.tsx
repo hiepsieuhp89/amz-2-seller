@@ -10,7 +10,6 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import Link from "next/link"
 import Image from "next/image"
 import { brandsData } from './mockData'
 
@@ -43,7 +42,7 @@ export default function BrandsPage() {
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         {brandsData.map((brand, index) => (
                             <div key={index} className="p-4 rounded-sm shadow-sm border flex items-center justify-center">
-                                <Link href={brand.link} className="relative h-[70px] w-[105px]">
+                                <div className="relative h-[70px] w-[105px]">
                                     <Image
                                         src={brand.imageUrl || "/images/white-image.png"}
                                         alt={brand.name}
@@ -53,7 +52,7 @@ export default function BrandsPage() {
                                         draggable={false}
                                         className="object-contain h-[70px] w-[105px]"
                                     />
-                                </Link>
+                                </div>
                             </div>
                         ))}
                     </div>

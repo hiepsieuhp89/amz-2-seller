@@ -1,26 +1,13 @@
-export interface CategoryItem {
-  id: string;
-  label: string;
-  image: string;
-  link: string;
-}
-
-export interface Category {
-  id: string;
-  title: string;
-  items: CategoryItem[];
-}
-
-export const categories2: Category[] = [
+export const categories2= [
   {
     id: "cat1",
     title: "Đồ dùng cho thú cưng",
     items: [
       {
         id: "item1",
-        label: "Mua ngay",
+        label: "Đồ dùng cho thú cưng",
         image: "https://axm-vn.shop/public/assets/img/amazon/pet_products.jpg",
-        link: "https://axm-vn.shop/category/luxury-43d7m",
+        link: "02cb9b31-440f-4850-813a-7d6f3ab0fdb5",
       },
     ],
   },
@@ -32,7 +19,7 @@ export const categories2: Category[] = [
         id: "item2",
         label: "Xem thêm",
         image: "https://axm-vn.shop/public/assets/img/amazon/electronics.jpg",
-        link: "https://axm-vn.shop/category/electronic-devices-p7hnl",
+        link: "89d851d9-f52a-4126-9843-38fcd30c9b83",
       },
     ],
   },
@@ -44,7 +31,7 @@ export const categories2: Category[] = [
         id: "item3",
         label: "Xem thêm",
         image: "https://axm-vn.shop/public/assets/img/amazon/home_fitness.jpg",
-        link: "https://axm-vn.shop/category/Exercise--Fitness-Equipment-Iugik",
+        link: "0986510a-489d-4d55-831b-282e804ff57c",
       },
     ],
   },
@@ -56,7 +43,7 @@ export const categories2: Category[] = [
         id: "item4",
         label: "Xem thêm",
         image: "https://axm-vn.shop/public/assets/img/amazon/game_zone.jpg",
-        link: "https://axm-vn.shop/category/Console-Gaming-Accessories-q6k14",
+        link: "2ca7706e-08ab-468e-a11e-a6e1adff6472",
       },
     ],
   },

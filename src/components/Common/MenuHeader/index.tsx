@@ -17,6 +17,7 @@ import {
   mdiChevronRight,
   mdiClose,
   mdiChevronDown,
+  mdiPackage,
 } from "@mdi/js"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { menuItems } from "./mockData"
@@ -73,7 +74,7 @@ export default function MenuHeader() {
         {/* Pet Supplies */}
         <li className="group relative">
           <Link
-            href="https://axm-vn.shop/category/luxury-43d7m"
+            href="/categories"
             className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
           >
             <Icon path={mdiPaw} size={0.8} className="cat-image mr-2 opacity-60" />
@@ -103,17 +104,17 @@ export default function MenuHeader() {
                 <div className="shadow-none border-0">
                   <ul className="list-unstyled mb-3">
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/Women-Underwear-VV7W5" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Women Underwear
                       </Link>
                     </li>
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/Women-Sunglasses-qoNVN" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Kính mát nữ
                       </Link>
                     </li>
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/women-shoes-rk61s" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Giày dép nữ
                       </Link>
                     </li>
@@ -122,18 +123,18 @@ export default function MenuHeader() {
                 <div className="card shadow-none border-0">
                   <ul className="list-unstyled mb-3">
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/women-eye-glasses-tjpk4" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Kính mắt nữ
                       </Link>
                     </li>
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/Women-Clothing-O9nEj" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Quần áo nữ
                       </Link>
                     </li>
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
                       <Link
-                        href="https://axm-vn.shop/category/Women-Clothing-Lingerie-Sleep--Lounge-JXhOi"
+                        href="/categories"
                         className="text-reset"
                       >
                         Quần áo nữ nội y, ngủ & thư giãn
@@ -144,17 +145,17 @@ export default function MenuHeader() {
                 <div className="card shadow-none border-0">
                   <ul className="list-unstyled mb-3">
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/women-bags-cjsn5" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Túi xách phụ nữ
                       </Link>
                     </li>
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/Women-Accessories-25Cim" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Phụ kiện nữ
                       </Link>
                     </li>
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/Swimwear-and-Beachwear-bu57h" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Đồ bơi và đồ dạo biển
                       </Link>
                     </li>
@@ -187,17 +188,17 @@ export default function MenuHeader() {
                 <div className="shadow-none border-0">
                   <ul className="list-unstyled mb-3">
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/underwear-usij6" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Đồ lót nam
                       </Link>
                     </li>
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/Topi-Pria-nNhrV" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Mũ nam
                       </Link>
                     </li>
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/Sandal-Pria-8qJTS" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Dép nam
                       </Link>
                     </li>
@@ -206,17 +207,17 @@ export default function MenuHeader() {
                 <div className="card shadow-none border-0">
                   <ul className="list-unstyled mb-3">
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/Men-Sunglasses-dtGSX" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Kính mát nam
                       </Link>
                     </li>
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/Men-Shoes-NGV6r" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Giày dép nam
                       </Link>
                     </li>
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/Men-Eyeglasses-IaCCW" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Kính mắt nam
                       </Link>
                     </li>
@@ -225,17 +226,17 @@ export default function MenuHeader() {
                 <div className="card shadow-none border-0">
                   <ul className="list-unstyled mb-3">
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/Men-Clothing-HjbPr" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Quần áo nam
                       </Link>
                     </li>
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/men-bags-eisg" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Túi xách nam
                       </Link>
                     </li>
                     <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="https://axm-vn.shop/category/Men-Accessories-4MidG" className="text-reset">
+                      <Link href="/categories" className="text-reset">
                         Phụ kiện nam
                       </Link>
                     </li>
@@ -248,7 +249,7 @@ export default function MenuHeader() {
         {/* Travel Accessories */}
         <li className="group relative">
           <Link
-            href="https://axm-vn.shop/category/travel-accessories"
+            href="/categories"
             className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
           >
             <Icon path={mdiBagPersonal} size={0.8} className="cat-image mr-2 opacity-60" />
@@ -258,7 +259,7 @@ export default function MenuHeader() {
         {/* Souvenirs */}
         <li className="group relative">
           <Link
-            href="https://axm-vn.shop/category/souvenirs"
+            href="/categories"
             className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
           >
             <Icon path={mdiGift} size={0.8} className="cat-image mr-2 opacity-60" />
@@ -268,7 +269,7 @@ export default function MenuHeader() {
         {/* Electronics */}
         <li className="group relative">
           <Link
-            href="https://axm-vn.shop/category/electronics"
+            href="/categories"
             className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
           >
             <Icon path={mdiLaptop} size={0.8} className="cat-image mr-2 opacity-60" />
@@ -278,7 +279,7 @@ export default function MenuHeader() {
         {/* Kids & Toys */}
         <li className="group relative">
           <Link
-            href="https://axm-vn.shop/category/kids-toys"
+            href="/categories"
             className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
           >
             <Icon path={mdiToyBrick} size={0.8} className="cat-image mr-2 opacity-60" />
@@ -288,7 +289,7 @@ export default function MenuHeader() {
         {/* Cleaning & Laundry */}
         <li className="group relative">
           <Link
-            href="https://axm-vn.shop/category/cleaning-laundry"
+            href="/categories"
             className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
           >
             <Icon path={mdiWashingMachine} size={0.8} className="cat-image mr-2 opacity-60" />
@@ -298,7 +299,7 @@ export default function MenuHeader() {
         {/* Adult Products */}
         <li className="group relative">
           <Link
-            href="https://axm-vn.shop/category/adult-products"
+            href="/categories"
             className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
           >
             <Icon path={mdiHeart} size={0.8} className="cat-image mr-2 opacity-60" />
@@ -308,7 +309,7 @@ export default function MenuHeader() {
         {/* Health & Beauty */}
         <li className="group relative">
           <Link
-            href="https://axm-vn.shop/category/health-beauty"
+            href="/categories"
             className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
           >
             <Icon path={mdiLipstick} size={0.8} className="cat-image mr-2 opacity-60" />
@@ -353,7 +354,7 @@ export default function MenuHeader() {
               {/* Pet Supplies */}
               <AccordionItem value="pet-supplies" className="border-b">
                 <Link
-                  href="https://axm-vn.shop/category/luxury-43d7m"
+                  href="/categories"
                   className="flex items-center py-3 px-4 hover:bg-gray-100"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -373,42 +374,42 @@ export default function MenuHeader() {
                 <AccordionContent>
                   <div className="pl-8 pr-4">
                     <Link
-                      href="https://axm-vn.shop/category/Women-Underwear-VV7W5"
+                      href="/categories"
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Women Underwear
                     </Link>
                     <Link
-                      href="https://axm-vn.shop/category/Women-Sunglasses-qoNVN"
+                      href="/categories"
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Kính mát nữ
                     </Link>
                     <Link
-                      href="https://axm-vn.shop/category/women-shoes-rk61s"
+                      href="/categories"
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Giày dép nữ
                     </Link>
                     <Link
-                      href="https://axm-vn.shop/category/women-eye-glasses-tjpk4"
+                      href="/categories"
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Kính mắt nữ
                     </Link>
                     <Link
-                      href="https://axm-vn.shop/category/Women-Clothing-O9nEj"
+                      href="/categories"
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Quần áo nữ
                     </Link>
                     <Link
-                      href="https://axm-vn.shop/category/women-bags-cjsn5"
+                      href="/categories"
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
@@ -429,35 +430,35 @@ export default function MenuHeader() {
                 <AccordionContent>
                   <div className="pl-8 pr-4">
                     <Link
-                      href="https://axm-vn.shop/category/underwear-usij6"
+                      href="/categories"
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Đồ lót nam
                     </Link>
                     <Link
-                      href="https://axm-vn.shop/category/Topi-Pria-nNhrV"
+                      href="/categories"
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Mũ nam
                     </Link>
                     <Link
-                      href="https://axm-vn.shop/category/Men-Sunglasses-dtGSX"
+                      href="/categories"
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Kính mát nam
                     </Link>
                     <Link
-                      href="https://axm-vn.shop/category/Men-Shoes-NGV6r"
+                      href="/categories"
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Giày dép nam
                     </Link>
                     <Link
-                      href="https://axm-vn.shop/category/Men-Clothing-HjbPr"
+                      href="/categories"
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
@@ -470,7 +471,7 @@ export default function MenuHeader() {
               {/* Other categories */}
               <AccordionItem value="travel" className="border-b">
                 <Link
-                  href="https://axm-vn.shop/category/travel-accessories"
+                  href="/categories"
                   className="flex items-center py-3 px-4 hover:bg-gray-100"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -481,7 +482,7 @@ export default function MenuHeader() {
 
               <AccordionItem value="souvenirs" className="border-b">
                 <Link
-                  href="https://axm-vn.shop/category/souvenirs"
+                  href="/categories"
                   className="flex items-center py-3 px-4 hover:bg-gray-100"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -492,7 +493,7 @@ export default function MenuHeader() {
 
               <AccordionItem value="electronics" className="border-b">
                 <Link
-                  href="https://axm-vn.shop/category/electronics"
+                  href="/categories"
                   className="flex items-center py-3 px-4 hover:bg-gray-100"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -503,7 +504,7 @@ export default function MenuHeader() {
 
               <AccordionItem value="kids" className="border-b">
                 <Link
-                  href="https://axm-vn.shop/category/kids-toys"
+                  href="/categories"
                   className="flex items-center py-3 px-4 hover:bg-gray-100"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -514,7 +515,7 @@ export default function MenuHeader() {
 
               <AccordionItem value="cleaning" className="border-b">
                 <Link
-                  href="https://axm-vn.shop/category/cleaning-laundry"
+                  href="/categories"
                   className="flex items-center py-3 px-4 hover:bg-gray-100"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -525,7 +526,7 @@ export default function MenuHeader() {
 
               <AccordionItem value="adult" className="border-b">
                 <Link
-                  href="https://axm-vn.shop/category/adult-products"
+                  href="/categories"
                   className="flex items-center py-3 px-4 hover:bg-gray-100"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -536,7 +537,7 @@ export default function MenuHeader() {
 
               <AccordionItem value="health" className="border-b">
                 <Link
-                  href="https://axm-vn.shop/category/health-beauty"
+                  href="/categories"
                   className="flex items-center py-3 px-4 hover:bg-gray-100"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -613,7 +614,7 @@ export default function MenuHeader() {
       {/* Mobile Navigation */}
       <div className="md:hidden flex items-center justify-between px-4 h-10 bg-[#37475A]">
         <button onClick={toggleMobileMenu} className="text-gray-400 hover:text-main-golden-orange" aria-label="Menu">
-          <Icon path={mdiMenu} size={1} />
+          <Icon path={mdiPackage} size={1} />
         </button>
 
         <div className="overflow-x-auto no-scrollbar flex-1 mx-2">

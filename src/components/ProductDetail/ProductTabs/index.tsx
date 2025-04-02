@@ -2,7 +2,6 @@
 
 import type React from "react"
 import { useState } from "react"
-import Image from "next/image"
 import { motion } from "framer-motion"
 import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -37,10 +36,10 @@ function DescriptionTab({ images }: DescriptionTabProps) {
   console.log(selectedProduct)
   return (
     <div className="p-6">
-      <div className="mb-4 flex flex-col gap-1">
+      {selectedProduct?.description && <div className="mb-4 flex flex-col gap-1">
         <p className="text-sm text-gray-500">Ngày đăng: {new Date(selectedProduct?.createdAt || "").toLocaleDateString()}</p>
         <p className="text-sm text-gray-500">Tồn kho: {selectedProduct?.stock}</p>
-      </div>
+      </div>}
       {/* Product Description */}
       {selectedProduct?.description && (
         <>
