@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { IProduct } from '@/interface/response/products'
 
 interface SelectedProductState {
@@ -7,8 +8,15 @@ interface SelectedProductState {
   clearSelectedProduct: () => void
 }
 
-export const useSelectedProduct = create<SelectedProductState>((set) => ({
-  selectedProduct: null,
-  setSelectedProduct: (product: IProduct) => set({ selectedProduct: product }),
-  clearSelectedProduct: () => set({ selectedProduct: null }),
-})) 
+export const useSelectedProduct = create(
+  persist<SelectedProductState>(
+    (set) => ({
+      selectedProduct: null,
+      setSelectedProduct: (product: IProduct) => set({ selectedProduct: product }),
+      clearSelectedProduct: () => set({ selectedProduct: null }),
+    }),
+    {
+      name: 'selected-product-storage',
+    }
+  )
+) 

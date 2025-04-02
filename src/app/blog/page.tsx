@@ -56,7 +56,7 @@ export default function FlashDealsPage() {
                                 <Link href={post.link} className="flex flex-col h-full">
                                     <div className="relative aspect-video ">
                                         <Image
-                                            src={post.image}
+                                            src={post.image || "/images/white-image.png"}
                                             alt={post.title}
                                             fill
                                             className="object-cover"

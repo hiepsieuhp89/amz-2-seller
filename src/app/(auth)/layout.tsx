@@ -16,7 +16,7 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
       <div className={`form  w-[380px]  flex flex-col justify-center`}>
         {children}
       </div>
-      {pathName.startsWith("/sign-in") && (
+      {pathName?.startsWith("/sign-in") && (
         <div>
           <p className="text-[#767676] text-center mt-4 text-xs">
             New to Amazon ?

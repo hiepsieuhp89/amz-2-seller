@@ -3,7 +3,7 @@ import type { PaginationProps, TableProps } from "antd";
 import { Button, Empty, Table } from "antd";
 import type { SorterResult } from "antd/lib/table/interface";
 import type { HTMLAttributes, TdHTMLAttributes } from "react";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 import { errorMessage } from "@/utils";
 import { DeleteOutlined } from "@ant-design/icons";
@@ -101,6 +101,10 @@ const TableComponent = ({
       handleErrorMessage(error?.response?.data?.description);
     }
   };
+
+  useEffect(() => {
+    handleDelete();
+  }, []);
 
   const handleChange: TableProps<any>["onChange"] = (
     pagination,

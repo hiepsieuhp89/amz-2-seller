@@ -11,6 +11,7 @@ export interface ISellerPackage {
   duration: number
   percentProfit: number
   maxProducts: number
+  title: string
 }
 
 export interface ISellerPackageResponse {

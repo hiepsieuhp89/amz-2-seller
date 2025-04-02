@@ -319,8 +319,6 @@ const AvatarDropdown = () => {
     return <div className="avatar-placeholder"></div>
   }
 
-  console.log('profile', profile)
-
   return (
     <>
       {contextHolder}

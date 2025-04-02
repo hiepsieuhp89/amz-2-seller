@@ -92,8 +92,13 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       children: [
         {
           key: "seller-packages",
-          name: "Các gói",
+          name: "Các gói tài khoản",
           path: "/seller/seller-packages",
+        },
+        {
+          key: "purchased-seller-packages",
+          name: "Các gói đã mua",
+          path: "/seller/purchased-seller-packages",
         },
       ],
     },
@@ -105,8 +110,13 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       children: [
         {
           key: "spread-packages",
-          name: "Các gói",
+          name: "Các gói tiếp thị",
           path: "/seller/spread-packages",
+        },
+        {
+          key: "purchased-spread-packages",
+          name: "Các gói đã mua",
+          path: "/seller/purchased-spread-packages",
         },
       ],
     },
@@ -139,7 +149,7 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
   ]
 
   useEffect(() => {
-    setPath(pathname)
+    setPath(pathname || "")
     if (user?.id) {
       setShopLink(`/shop?id=${user.id}`)
     }

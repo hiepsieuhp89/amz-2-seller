@@ -9,6 +9,7 @@ import Image from "next/image"
 import { useUser } from "@/context/useUserContext"
 import { logout } from "@/api/axios"
 import { useRouter } from "next/navigation"
+import { ItemType } from "antd/es/menu/interface"
 
 interface LanguageOption {
     code: string
@@ -113,7 +114,7 @@ export function Header() {
             {/* Navigation */}
             <nav className="flex items-center gap-2">
                 {/* Language Selector */}
-                <Dropdown overlay={languageMenu} trigger={["click"]} placement="bottomRight">
+                <Dropdown menu={{ items: languageMenu as unknown as ItemType[] }} trigger={["click"]} placement="bottomRight">
                     <div className="flex items-center cursor-pointer px-2">
                         <Image
                             quality={100}
@@ -151,7 +152,7 @@ export function Header() {
                 )}
 
                 {/* Currency Selector */}
-                <Dropdown overlay={currencyMenu} trigger={["click"]} placement="bottomRight">
+                <Dropdown menu={{ items: currencyMenu as unknown as ItemType[] }} trigger={["click"]} placement="bottomRight">
                     <div className="flex items-center cursor-pointer px-2">
                         <span className="mr-1 text-gray-400 text-sm transition-all duration-300 hover:!text-white/80 font-bold">
                             {currentCurrency.name} {currentCurrency.symbol}

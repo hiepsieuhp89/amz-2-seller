@@ -2,8 +2,6 @@
 import {
   mdiPackageVariantClosed,
   mdiPackageVariantClosedCheck,
-  mdiChevronDown,
-  mdiChevronRight,
 } from "@mdi/js"
 import Icon from "@mdi/react"
 import type { MenuProps } from "antd"
@@ -35,7 +33,7 @@ function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
   ]
 
   useEffect(() => {
-    setPath(pathname)
+    setPath(pathname || "")
   }, [pathname])
 
   const isActive = (menuPath: string | undefined) => {
@@ -63,12 +61,10 @@ function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
     return menu.map((item) => {
       const isItemActive = isActive(item.path);
       const displayIcon = isItemActive ? item.activeIcon : item.icon;
-
-
       return {
         key: item.key,
         icon: displayIcon,
-        label: <span className="font-semibold">{item.name}</span>,
+        label: <span className={`${isItemActive ? "font-semibold !text-main-golden-orange" : "font-semibold"}`}>{item.name}</span>,
         onClick: () => handleMenuClick(item.key),
       }
     })
@@ -79,7 +75,7 @@ function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
       className="sidebar"
       style={{
         width: isSidebarOpen ? "280px" : "60px",
-        backgroundColor: "#4D148C", // FedEx purple color
+        backgroundColor: "#4D148C", // Fedex purple color
         height: "100%",
         transition: "width 0.3s",
         overflow: "hidden",

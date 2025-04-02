@@ -6,6 +6,8 @@ import {
   getBankList,
   updateUser,
   changePassword,
+  getSpreadPackageHistory,
+  getPackageHistory,
 } from "@/api/authentication";
 import type {
   ISignIn,
@@ -13,8 +15,14 @@ import type {
   IUpdateBank,
   IUpdateUser,
   IChangePassword,
+  ISpreadPackageHistoryParams,
+  IPackageHistoryParams,
 } from "@/interface/request/authentication";
-import type { IAuthResponse } from "@/interface/response/authentication";
+import type {
+  IAuthResponse,
+  ISpreadPackageHistoryResponse,
+  IPackageHistoryResponse,
+} from "@/interface/response/authentication";
 import {
   type UseMutationResult,
   useMutation,
@@ -149,4 +157,44 @@ export const useChangePassword = (): UseMutationResult<
       return result;
     },
   });
+};
+
+export const useSpreadPackageHistory = (
+  params?: ISpreadPackageHistoryParams
+) => {
+  const {
+    data: spreadPackageHistoryData,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ["spreadPackageHistory", params],
+    queryFn: () => getSpreadPackageHistory(params),
+  });
+
+  return {
+    spreadPackageHistoryData,
+    isLoading,
+    isFetching,
+    refetch,
+  };
+};
+
+export const usePackageHistory = (params?: IPackageHistoryParams) => {
+  const {
+    data: packageHistoryData,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ["packageHistory", params],
+    queryFn: () => getPackageHistory(params),
+  });
+
+  return {
+    packageHistoryData,
+    isLoading,
+    isFetching,
+    refetch,
+  };
 };

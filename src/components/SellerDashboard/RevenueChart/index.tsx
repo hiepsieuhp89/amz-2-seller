@@ -15,7 +15,7 @@ interface DailyStats {
 const RevenueChart = () => {
   const [days, setDays] = useState("7")
   const { data: revenueData } = useGetRevenueStatistics({ days: Number.parseInt(days) })
-
+  console.log(revenueData)
   const chartData =
     revenueData?.data.dailyStats.map((item: DailyStats) => ({
       date: item.date,

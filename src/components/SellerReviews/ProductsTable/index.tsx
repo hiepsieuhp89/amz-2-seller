@@ -165,7 +165,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
         </Button>
       ),
       align: "center" as const,
-      width: 120,
+      width: 100,
     },
   ]
 

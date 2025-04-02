@@ -45,7 +45,7 @@ export default function BrandsPage() {
                             <div key={index} className="p-4 rounded-sm shadow-sm border flex items-center justify-center">
                                 <Link href={brand.link} className="relative h-[70px] w-[105px]">
                                     <Image
-                                        src={brand.imageUrl}
+                                        src={brand.imageUrl || "/images/white-image.png"}
                                         alt={brand.name}
                                         quality={100}
                                         height={70}

@@ -60,11 +60,6 @@ export function HeroBanner() {
               >
                 {banners[currentBanner].subtitle}
               </motion.p>
-              <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
-                <Button size="lg" asChild>
-                  <Link href={banners[currentBanner].buttonLink}>{banners[currentBanner].buttonText}</Link>
-                </Button>
-              </motion.div>
             </div>
           </div>
         </motion.div>

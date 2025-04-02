@@ -1,7 +1,7 @@
 "use client"
 
 import Icon from "@mdi/react"
-import { mdiContentSaveEdit, mdiEye, mdiTrashCan } from "@mdi/js"
+import { mdiArrowTopRightThin, mdiContentSaveEdit, mdiEye, mdiTrashCan } from "@mdi/js"
 import type React from "react"
 import { useState } from "react"
 import { Table, Input, Button, Space, Typography, Row, Col, Pagination, Tooltip, Badge, Divider } from "antd"
@@ -13,6 +13,8 @@ import Lightbox from "yet-another-react-lightbox"
 import "yet-another-react-lightbox/styles.css"
 import "./styles.css"
 import { checkImageUrl } from "@/lib/utils"
+import Link from "next/link"
+import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
 
 const { Title, Text } = Typography
 type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl"
@@ -32,7 +34,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
   const [openLightbox, setOpenLightbox] = useState(false)
   const [currentImage, setCurrentImage] = useState("")
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-
+  const { setSelectedProduct } = useSelectedProduct()
   const products = shopProductsData?.data?.data || []
   const totalItems = shopProductsData?.data?.meta?.itemCount || 0
   const productImages = products.map((product: any) => product.product.imageUrl).filter(Boolean)
@@ -231,21 +233,23 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       title: "Hành động",
       key: "action",
       render: (_: any, record: IShopProduct) => (
-        <Space size="middle">
-          <Tooltip title="Xem chi tiết">
-            <Icon path={mdiEye} size={0.7} color={"#A3A3A3"} />
-          </Tooltip>
-          <Tooltip title="Chỉnh sửa">
-            <Icon path={mdiContentSaveEdit} size={0.7} color={"#A3A3A3"} />
-          </Tooltip>
-          <Tooltip title="Xóa">
-            <Icon path={mdiTrashCan} size={0.7} color={"#A3A3A3"} />
-          </Tooltip>
-        </Space>
+        <Link 
+        onClick={() => setSelectedProduct(record.product)}
+        target="_blank"
+        href={`/product?id=${record?.product?.id}`}>
+          <Button
+            icon={<Icon path={mdiArrowTopRightThin} size={0.7} color={"#ffffff"} />}
+            iconPosition="end"
+            className="!bg-main-golden-orange !rounded-[4px]"
+            type="primary"
+            size="small"
+          >
+            Chi tiết sản phẩm
+          </Button>
+        </Link>
       ),
       align: "center" as const,
-      width: 110,
-      responsive: ["xs", "sm", "md"] as Breakpoint[],
+      width: 100,
     },
   ]
 

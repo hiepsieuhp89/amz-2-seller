@@ -28,7 +28,6 @@ export interface IUpdateUser {
   address?: string
   avatar?: string
   shopName?: string
-  phone?: string
   shopAddress?: string
   city?: string
   district?: string
@@ -58,5 +57,19 @@ export interface IChangePassword {
   currentPassword: string
   newPassword: string
   confirmPassword: string
+}
+
+export interface ISpreadPackageHistoryParams {
+  order?: 'ASC' | 'DESC'
+  page?: number
+  take?: number
+  search?: string
+}
+
+export interface IPackageHistoryParams {
+  order?: 'ASC' | 'DESC'
+  page?: number
+  take?: number
+  search?: string
 }
 

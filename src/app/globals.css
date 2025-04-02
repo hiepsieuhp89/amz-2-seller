@@ -256,3 +256,15 @@ button[type="button"].absolute:focus {
   box-shadow: none !important;
   outline: none !important;
 }
+
+:global(.ant-pagination-options .ant-select-selector) {
+  display: none !important;
+}
+
+.paginationContainer :global(.ant-select-selector) {
+  display: none !important;
+}
+
+.ant-pagination-options {
+  display: none !important;
+}

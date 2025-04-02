@@ -4,11 +4,15 @@ import {
   IUpdateBank,
   IUpdateUser,
   IChangePassword,
+  ISpreadPackageHistoryParams,
+  IPackageHistoryParams,
 } from "@/interface/request/authentication";
 import {
   IAuthResponse,
   IProfileResponse,
   IBankListResponse,
+  ISpreadPackageHistoryResponse,
+  IPackageHistoryResponse,
 } from "@/interface/response/authentication";
 import { sendGet, sendPost, sendPut } from "./axios";
 
@@ -57,5 +61,21 @@ export const changePassword = async (
 ): Promise<IAuthResponse> => {
   const res = await sendPut("/auth/changePassword", payload);
   const data: IAuthResponse = res;
+  return data;
+};
+
+export const getSpreadPackageHistory = async (
+  params?: ISpreadPackageHistoryParams
+): Promise<ISpreadPackageHistoryResponse> => {
+  const res = await sendGet("/auth/spread-package-purchase-history", params);
+  const data: ISpreadPackageHistoryResponse = res;
+  return data;
+};
+
+export const getPackageHistory = async (
+  params?: IPackageHistoryParams
+): Promise<IPackageHistoryResponse> => {
+  const res = await sendGet("/auth/package-purchase-history", params);
+  const data: IPackageHistoryResponse = res;
   return data;
 };

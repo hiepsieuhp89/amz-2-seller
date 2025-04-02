@@ -115,3 +115,85 @@ export interface IBankListResponse {
   }
 }
 
+export interface ISpreadPackageHistoryItem {
+  id: string
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+  userId: string
+  spreadPackageId: string
+  price: number
+  duration: number
+  expiryDate: string
+  status: string
+  spreadPackage: {
+    id: string
+    createdAt: string
+    updatedAt: string
+    deletedAt: string | null
+    name: string
+    price: number
+    description: string
+    image: string
+    isActive: boolean
+    duration: number
+  }
+}
+
+export interface IPaginationMeta {
+  page: number
+  take: number
+  itemCount: number
+  pageCount: number
+  hasPreviousPage: boolean
+  hasNextPage: boolean
+}
+
+export interface ISpreadPackageHistoryResponse {
+  status: boolean
+  message: string
+  data: {
+    data: ISpreadPackageHistoryItem[]
+    meta: IPaginationMeta
+  }
+  errors: null | any // Hoặc định nghĩa kiểu lỗi cụ thể nếu có
+  timestamp: string
+}
+
+export interface IPackage {
+  id: string
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+  name: string
+  price: number
+  description: string
+  image: string
+  isActive: boolean
+  duration: number
+  percentProfit: number
+  maxProducts: number
+}
+
+export interface IPackageHistoryItem {
+  id: string
+  createdAt: string
+  updatedAt: string
+  deletedAt: string | null
+  expiryDate: string
+  status: string
+  amountPaid: number
+  package: IPackage // Sử dụng interface IPackage vừa tạo
+}
+
+export interface IPackageHistoryResponse {
+  status: boolean
+  message: string
+  data: {
+    data: IPackageHistoryItem[]
+    meta: IPaginationMeta // Sử dụng interface IPaginationMeta dùng chung
+  }
+  errors: null | any
+  timestamp: string
+}
+

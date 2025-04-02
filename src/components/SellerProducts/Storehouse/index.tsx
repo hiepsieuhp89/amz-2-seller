@@ -8,6 +8,7 @@ import { useGetAllShopProducts } from "@/hooks/shop-products"
 import { useAddShopProducts } from "@/hooks/shop-products"
 import { IProduct } from "@/interface/response/products"
 import Image from "next/image"
+import Link from "next/link"
 import { useUser } from "@/context/useUserContext"
 import { DollarSign, Coins, Import } from "lucide-react"
 import { checkImageUrl } from "@/lib/utils"
@@ -18,12 +19,15 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
+import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
 
 const Storehouse = () => {
   const { user } = useUser()
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
   const { data: productsData, isLoading, refetch } = useGetAllShopProducts({
-    page: 1,
-    take: 10,
+    page: currentPage,
+    take: pageSize,
     shopId: user?.id
   })
   const { mutate: addShopProducts, isPending: isAddingProducts } = useAddShopProducts()
@@ -33,8 +37,11 @@ const Storehouse = () => {
   const [minPrice, setMinPrice] = useState<number | undefined>()
   const [maxPrice, setMaxPrice] = useState<number | undefined>()
   const [totalSelectedProducts, setTotalSelectedProducts] = useState(0)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
+  const [isClient, setIsClient] = useState(false)
+  const { setSelectedProduct } = useSelectedProduct()
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const filterProducts = () => {
     if (keyword || minPrice !== undefined || maxPrice !== undefined) {
@@ -110,6 +117,14 @@ const Storehouse = () => {
     if (pageSize) setPageSize(pageSize)
   }
 
+  if (!isClient) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spin tip="Đang tải..." />
+      </div>
+    )
+  }
+
   return (
     <div className="p-4 bg-[#E3E6E6]">
       <Breadcrumb className="!mb-4">
@@ -172,14 +187,14 @@ const Storehouse = () => {
                         height: '100%'
                       }}
                     >
-                       <Badge.Ribbon
-                          text={`Trong kho: ${product.stock || 0}`}
-                          color="green"
-                          className={styles.stockBadge}
-                          placement="start"
-                        >
-                      <div className={styles.imageContainer}>
-                       
+                      <Badge.Ribbon
+                        text={`Trong kho: ${product.stock || 0}`}
+                        color="green"
+                        className={styles.stockBadge}
+                        placement="start"
+                      >
+                        <div className={styles.imageContainer}>
+
                           <Image
                             src={checkImageUrl(product.imageUrl || "")}
                             alt={product.name || "Product Image"}
@@ -189,8 +204,8 @@ const Storehouse = () => {
                             draggable={false}
                             quality={100}
                           />
-                      </div>
-                        </Badge.Ribbon>
+                        </div>
+                      </Badge.Ribbon>
                       <div className={styles.productName}>
                         Tên sản phẩm: {product.name.length > 20 ? `${product.name.substring(0, 20)}...` : product.name}
                       </div>
@@ -222,7 +237,7 @@ const Storehouse = () => {
                           Lợi nhuận:
                         </span>
                         <span className="!text-red-500 font-bold">
-                        {product.profit ? Number(product.price).toLocaleString() : '0.00'}
+                          {product.profit ? Number(product.price).toLocaleString() : '0.00'}
                         </span>
                       </div>
                       <div
@@ -252,14 +267,12 @@ const Storehouse = () => {
             )}
 
             {filteredProducts.length > 0 && (
-              <Row justify="end" style={{ marginTop: 16 }}>
+              <Row justify="end" style={{ marginTop: 24 }}>
                 <Col>
                   <Pagination
                     current={currentPage}
                     pageSize={pageSize}
                     total={productsData?.data?.meta?.itemCount || 0}
-                    showSizeChanger
-                    showQuickJumper
                     onChange={handlePaginationChange}
                     onShowSizeChange={handlePaginationChange}
                   />
@@ -284,37 +297,46 @@ const Storehouse = () => {
                 {selectedProducts.length > 0 ? (
                   <ul className="list-group list-group-flush">
                     {selectedProducts.map((product, index) => (
-                      <li key={`${product.id}-${index}`} className={`${styles.selectedItem} hover:bg-gray-50 border-b p-4`}>
-                        <div className="flex items-center">
-                          <Image
-                            src={checkImageUrl(product.imageUrl || "")}
-                            alt={product.name}
-                            className="w-20 h-20 object-cover rounded-[4px] mr-3"
-                            width={64}
-                            height={64}
-                            draggable={false}
-                          />
-                          <div className="flex-1 pr-1">
-                            <div className="text-sm font-medium mb-1">
-                              {product.name.length > 20 ? `${product.name.substring(0, 20)}...` : product.name}
+                      <li key={`${product.id}-${index}`} className={`${styles.selectedItem} hover:bg-gray-50 border-b`}>
+                        <Link
+                          onClick={() => setSelectedProduct(product)}
+                          target="_blank"
+                          href={`/product?id=${product?.id}`}
+                          className="block p-4"
+                        >
+                          <div className="flex items-center">
+                            <Image
+                              src={checkImageUrl(product.imageUrl || "")}
+                              alt={product.name}
+                              className="w-20 h-20 object-cover rounded-[4px] mr-3"
+                              width={64}
+                              height={64}
+                              draggable={false}
+                            />
+                            <div className="flex-1 pr-1">
+                              <div className="text-sm font-medium mb-1">
+                                {product.name.length > 20 ? `${product.name.substring(0, 20)}...` : product.name}
+                              </div>
+                              <div className="text-xs text-gray-500 mb-1 line-clamp-2">{product.description.length > 70 ? `${product.description.substring(0, 70)}...` : product.description}</div>
+                              <div className="flex flex-wrap gap-x-3 text-xs">
+                                <span className="text-green-600 font-medium">Giá bán: ${Number(product.salePrice).toFixed(2)}</span>
+                                <span className="text-amber-600 font-medium">Giá nhập: ${Number(product.price).toFixed(2)}</span>
+                                <span className="text-red-600 font-medium">Lợi nhuận: ${(Number(product.salePrice) - Number(product.price)).toFixed(2)}</span>
+                              </div>
                             </div>
-                            <div className="text-xs text-gray-500 mb-1 line-clamp-2">{product.description.length > 70 ? `${product.description.substring(0, 70)}...` : product.description}</div>
-                            <div className="flex flex-wrap gap-x-3 text-xs">
-                              <span className="text-green-600 font-medium">Giá bán: ${Number(product.salePrice).toFixed(2)}</span>
-                              <span className="text-amber-600 font-medium">Giá nhập: ${Number(product.price).toFixed(2)}</span>
-                              <span className="text-red-600 font-medium">Lợi nhuận: ${(Number(product.salePrice) - Number(product.price)).toFixed(2)}</span>
-                            </div>
+                            <Button
+                              type="text"
+                              size="small"
+                              danger
+                              shape="circle"
+                              icon={<DeleteOutlined />}
+                              onClick={() => removeProduct(index)}
+                              className="flex items-center justify-center !bg-red-100 absolute right-0"
+                            />
                           </div>
-                          <Button
-                            type="text"
-                            size="small"
-                            danger
-                            shape="circle"
-                            icon={<DeleteOutlined />}
-                            onClick={() => removeProduct(index)}
-                            className="flex items-center justify-center !bg-red-100"
-                          />
-                        </div>
+
+                        </Link>
+
                       </li>
                     ))}
                   </ul>

@@ -34,7 +34,6 @@ interface ReviewsTabProps {
 // Description Tab Component
 function DescriptionTab({ images }: DescriptionTabProps) {
   const { selectedProduct } = useSelectedProduct()
-
   return (
     <div className="p-6">
       <div className="mb-4 flex flex-col gap-1">

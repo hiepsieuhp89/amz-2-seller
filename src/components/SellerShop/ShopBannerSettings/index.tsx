@@ -6,6 +6,7 @@ import { UploadOutlined } from "@ant-design/icons"
 import type { ShopData } from "../types"
 import { useUploadFile } from '@/hooks/upload'
 import { useUser } from "@/context/useUserContext"
+import { useEffect } from "react"
 
 interface ShopBannerSettingsProps {
   onSave: (data: Partial<ShopData>) => void
@@ -39,7 +40,7 @@ const ShopBannerSettings = ({ onSave }: ShopBannerSettingsProps) => {
     bannerImage2: profile?.data?.bannerImage2,
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     form.setFieldsValue({
       bannerImage: profile?.data?.bannerImage || '',
       mobileBannerImage: profile?.data?.mobileBannerImage || '',

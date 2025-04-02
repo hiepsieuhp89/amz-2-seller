@@ -103,7 +103,6 @@ export const banners = [
     title: "Khuyến mãi mùa hè",
     subtitle: "Giảm giá lên đến 50%",
     image: "https://img5.yeshen.cc/vn-alibaba/dc/59/dcdd2db638bed31a8c0c19d6753b63ca7a319459.jpg",
-    buttonText: "Mua ngay",
     buttonLink: "/sale",
   },
   {
@@ -111,7 +110,6 @@ export const banners = [
     title: "Bộ sưu tập mới",
     subtitle: "Khám phá các sản phẩm mới nhất",
     image: "https://img9.yeshen.cc/vn-alibaba/9c/2e/9cd5ae8d634077c46e52d8128b63ac23b60dc22e.jpg",
-    buttonText: "Xem ngay",
     buttonLink: "/new-arrivals",
   },
   {
@@ -119,7 +117,6 @@ export const banners = [
     title: "Miễn phí vận chuyển",
     subtitle: "Cho đơn hàng trên $25",
     image: "https://img0.yeshen.cc/vn-alibaba/9d/37/9dfe7a5905535ae120a03806e6f1f6a04c40df37.jpg",
-    buttonText: "Tìm hiểu thêm",
     buttonLink: "/shipping",
   },
 ]
