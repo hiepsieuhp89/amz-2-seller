@@ -337,7 +337,7 @@ export function BestSellers() {
                       <CardContent className="p-0 flex flex-col h-full">
                         <div className="relative aspect-square w-full">
                           <Image
-                            src={product.imageUrl}
+                            src={product.imageUrl || "/images/white-image.png"}
                             alt={product.name}
                             fill
                             className="object-cover"

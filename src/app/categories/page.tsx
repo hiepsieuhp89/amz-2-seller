@@ -111,7 +111,13 @@ export default function CategoriesPage() {
                         <div key={category.id} className="bg-white rounded-sm shadow-md hover:shadow-lg transition-shadow duration-300">
                             <div className="p-4  flex items-center">
                                 {category.imageUrl && (
-                                    <Image src={category.imageUrl} alt={category.name} className="h-16 w-16 object-cover rounded mr-4" width={64} height={64} />
+                                    <Image 
+                                        src={category.imageUrl || "/images/white-image.png"}
+                                        alt={category.name}
+                                        className="h-16 w-16 object-cover rounded mr-4"
+                                        width={64}
+                                        height={64}
+                                    />
                                 )}
                                 <Link href={`/categories/${category.id}`} className="font-semibold text-lg text-main-golden-orange hover:text-main-golden-orange/80 transition-colors">
                                     {category.name}
