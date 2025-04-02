@@ -4,20 +4,9 @@ import { Header } from "@/components/Common/Header";
 import ProductDetail from "@/components/ProductDetail";
 import LeftSideSection from "@/components/ProductDetail/LeftSideSection";
 import ProductTabs from "@/components/ProductDetail/ProductTabs";
-import { Button, Divider, Rate, Typography } from "antd";
-import Title from "antd/es/typography/Title";
-import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-const descriptionImages = [
-  'https://example.com/image1.png',
-  'https://example.com/image2.png'
-]
-const { Text } = Typography;
 
 function ProductDetailContent() {
-  const searchParams = useSearchParams();
-  const productId = searchParams.get("id");
-
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
