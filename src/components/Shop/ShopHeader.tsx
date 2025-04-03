@@ -2,7 +2,7 @@ import "./styles.css"
 export default function ShopHeader() {
   return (
     <div className="bg-red border-b px-[104px] py-6">
-      <div className="container mx-auto max-w-[1500px] flex items-center">
+      <div className="container mx-auto max-w-7xl flex items-center">
         <div className="w-16 h-16 bg-gray-100 rounded-full mr-4 flex items-center justify-center">
           <span className="text-3xl text-gray-400">a</span>
         </div>

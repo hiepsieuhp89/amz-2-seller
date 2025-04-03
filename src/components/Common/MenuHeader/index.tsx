@@ -18,6 +18,8 @@ import {
   mdiClose,
   mdiChevronDown,
   mdiPackage,
+  mdiBookOpen,
+  mdiCart,
 } from "@mdi/js"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { menuItems } from "./mockData"
@@ -74,7 +76,7 @@ export default function MenuHeader() {
         {/* Pet Supplies */}
         <li className="group relative">
           <Link
-            href="/categories"
+            href="/category?id=e63bba6f-cacc-4820-af21-5f474aea2529&name=Đồ dùng cho thú cưng"
             className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
           >
             <Icon path={mdiPaw} size={0.8} className="cat-image mr-2 opacity-60" />
@@ -82,89 +84,7 @@ export default function MenuHeader() {
           </Link>
         </li>
         {/* Women's Fashion */}
-        <li className="flex items-center">
-          <Popover>
-            <PopoverTrigger
-              className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              <Icon path={mdiDresser} size={0.8} className="cat-image mr-2 opacity-60" />
-              <span className="cat-name">Thời trang nữ và phụ kiện</span>
-              <Icon path={mdiChevronRight} size={0.8} className="ml-auto opacity-60" />
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-full rounded-none border shadow-sm !p-1"
-              align="center"
-              side="right"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              <div className="grid grid-cols-3 gap-4">
-                <div className="shadow-none border-0">
-                  <ul className="list-unstyled mb-3">
-                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="/categories" className="text-reset">
-                        Women Underwear
-                      </Link>
-                    </li>
-                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="/categories" className="text-reset">
-                        Kính mát nữ
-                      </Link>
-                    </li>
-                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="/categories" className="text-reset">
-                        Giày dép nữ
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-                <div className="card shadow-none border-0">
-                  <ul className="list-unstyled mb-3">
-                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="/categories" className="text-reset">
-                        Kính mắt nữ
-                      </Link>
-                    </li>
-                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="/categories" className="text-reset">
-                        Quần áo nữ
-                      </Link>
-                    </li>
-                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link
-                        href="/categories"
-                        className="text-reset"
-                      >
-                        Quần áo nữ nội y, ngủ & thư giãn
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-                <div className="card shadow-none border-0">
-                  <ul className="list-unstyled mb-3">
-                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="/categories" className="text-reset">
-                        Túi xách phụ nữ
-                      </Link>
-                    </li>
-                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="/categories" className="text-reset">
-                        Phụ kiện nữ
-                      </Link>
-                    </li>
-                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
-                      <Link href="/categories" className="text-reset">
-                        Đồ bơi và đồ dạo biển
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </li>
+        
         {/* Men's Fashion */}
         <li className="flex items-center">
           <Popover>
@@ -249,7 +169,7 @@ export default function MenuHeader() {
         {/* Travel Accessories */}
         <li className="group relative">
           <Link
-            href="/categories"
+            href="/category?id=5676a518-3c6b-459a-83a0-c8e0ef3fad5c&name=Xe hơi và xe máy"
             className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
           >
             <Icon path={mdiBagPersonal} size={0.8} className="cat-image mr-2 opacity-60" />
@@ -259,7 +179,7 @@ export default function MenuHeader() {
         {/* Souvenirs */}
         <li className="group relative">
           <Link
-            href="/categories"
+            href="/category?id=05b9431d-dec9-4c3b-a342-3708f137f235&name=Quà lưu niệm"
             className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
           >
             <Icon path={mdiGift} size={0.8} className="cat-image mr-2 opacity-60" />
@@ -267,14 +187,85 @@ export default function MenuHeader() {
           </Link>
         </li>
         {/* Electronics */}
-        <li className="group relative">
-          <Link
-            href="/categories"
+        <li className="flex items-center">
+          <Popover>
+            <PopoverTrigger
             className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
           >
             <Icon path={mdiLaptop} size={0.8} className="cat-image mr-2 opacity-60" />
             <span className="cat-name">Thiết bị điện tử</span>
-          </Link>
+              <Icon path={mdiChevronRight} size={0.8} className="ml-auto opacity-60" />
+                  </PopoverTrigger>
+                  <PopoverContent
+              className="w-full rounded-none border shadow-sm !p-1"
+              align="center"
+              side="right"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+            >
+              <div className="grid grid-cols-3 gap-4">
+                <div className="shadow-none border-0">
+                  <ul className="list-unstyled mb-3">
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=2440992e-f551-4a80-a15b-d4768ca5d6d6&name=Laptop" className="text-reset">
+                        Laptop
+                </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=368654bf-8c90-4833-bddf-fbace3268c33&name=Máy ảnh kỹ thuật số" className="text-reset">
+                        Máy ảnh kỹ thuật số
+              </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=05d1d17f-e51e-48be-bb91-5f3ac290fe8c&name=Máy tính bảng" className="text-reset">
+                        Máy tính bảng
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+                <div className="card shadow-none border-0">
+                  <ul className="list-unstyled mb-3">
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=02bb1893-0e28-4be9-a0e6-3726a50a4d35&name=Gadget & Các máy ảnh khác" className="text-reset">
+                        Gadget & Các máy ảnh khác
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=00eb3d2a-d56f-4086-9970-51857ac27d42&name=Trò chơi trên máy console" className="text-reset">
+                        Trò chơi trên máy console
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=13ec6568-ffc5-4492-b9ac-6963272d6119&name=Máy tính để bàn" className="text-reset">
+                        Máy tính để bàn
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+                <div className="card shadow-none border-0">
+                  <ul className="list-unstyled mb-3">
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=845a2e32-cff9-4b17-b1af-d26357818f58&name=Camera hành động / Video" className="text-reset">
+                        Camera hành động / Video
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=8f87d10d-5d7b-4577-90a4-b35f032dcc93&name=Điện thoại di động" className="text-reset">
+                        Điện thoại di động
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=f488c94f-b738-4947-b7d8-2dd749335e21&name=Camera an ninh & Hệ thống" className="text-reset">
+                        Camera an ninh & Hệ thống
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </li>
         {/* Kids & Toys */}
         <li className="group relative">
@@ -316,6 +307,168 @@ export default function MenuHeader() {
             <span className="cat-name">Sức khoẻ và làm đẹp</span>
           </Link>
         </li>
+        {/* Books */}
+        <li className="flex items-center">
+          <Popover>
+            <PopoverTrigger
+              className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <Icon path={mdiBookOpen} size={0.8} className="cat-image mr-2 opacity-60" />
+              <span className="cat-name">Sách</span>
+              <Icon path={mdiChevronRight} size={0.8} className="ml-auto opacity-60" />
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-full rounded-none border shadow-sm !p-1"
+              align="center"
+              side="right"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <div className="grid grid-cols-3 gap-4">
+                <div className="shadow-none border-0">
+                  <ul className="list-unstyled mb-3">
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=44c0d761-b522-4c21-9075-ed1dd1735cc3&name=Art Books" className="text-reset">
+                        Sách nghệ thuật
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=6cb2a264-6b02-4448-b717-05a527b6c2b0&name=Self-Help" className="text-reset">
+                        Sách tự lực
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=5b68cef9-324b-44f9-9e87-36038ae26189&name=Magazines" className="text-reset">
+                        Tạp chí
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+                <div className="card shadow-none border-0">
+                  <ul className="list-unstyled mb-3">
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=3bfd1500-ea22-4071-9ef8-b15eed347586&name=Textbooks" className="text-reset">
+                        Sách giáo khoa
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=41da44a5-5c73-495a-a37d-691024fc1d18&name=Comics" className="text-reset">
+                        Truyện tranh
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=d9a5e6fb-1b62-429e-9283-03294b68dfed&name=Stationery" className="text-reset">
+                        Văn phòng phẩm
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+                <div className="card shadow-none border-0">
+                  <ul className="list-unstyled mb-3">
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=8e41aca3-27e2-4f81-9213-f10a1372725f&name=Children's Books" className="text-reset">
+                        Sách thiếu nhi
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=e302c668-b6ef-4356-8088-c4352a7c5a79&name=Fiction" className="text-reset">
+                        Tiểu thuyết
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=90789283-c3cf-484c-aab8-d3ab84c2a0a9&name=Cookbooks" className="text-reset">
+                        Sách nấu ăn
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </li>
+        {/* New category: Hàng tạp hoá */}
+        <li className="flex items-center">
+          <Popover>
+            <PopoverTrigger
+              className="py-2 px-3 hover:bg-gray-100 w-full flex items-center"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <Icon path={mdiCart} size={0.8} className="cat-image mr-2 opacity-60" />
+              <span className="cat-name">Hàng tạp hoá</span>
+              <Icon path={mdiChevronRight} size={0.8} className="ml-auto opacity-60" />
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-full rounded-none border shadow-sm !p-1"
+              align="center"
+              side="right"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <div className="grid grid-cols-3 gap-4">
+                <div className="shadow-none border-0">
+                  <ul className="list-unstyled mb-3">
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=6441ca14-5838-4f6a-917a-c6a44ef80d39&name=Frozen Foods" className="text-reset">
+                        Thực phẩm đông lạnh
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=f43f3000-c4ff-431f-98e2-973827d71f9c&name=Dairy" className="text-reset">
+                        Sản phẩm từ sữa
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=1a7fb407-4089-496e-9efe-9ef785daa5bf&name=Fresh Produce" className="text-reset">
+                        Rau củ quả tươi
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+                <div className="card shadow-none border-0">
+                  <ul className="list-unstyled mb-3">
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=23c88963-914d-4d62-9c03-15211ae6196f&name=Canned Goods" className="text-reset">
+                        Đồ hộp
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=0008eb50-aacb-4ea7-b1fd-331b1839112a&name=Bakery" className="text-reset">
+                        Bánh mì & bánh ngọt
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=934134bf-f856-45f3-a749-ff8c21de607e&name=Condiments" className="text-reset">
+                        Gia vị & nước sốt
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+                <div className="card shadow-none border-0">
+                  <ul className="list-unstyled mb-3">
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=18dc4525-1a3d-47cf-a78c-10aaf7ec39de&name=Snacks" className="text-reset">
+                        Đồ ăn vặt
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=2ba17ef6-3a0a-460b-b283-360f98303de4&name=Pasta & Grains" className="text-reset">
+                        Mì & ngũ cốc
+                      </Link>
+                    </li>
+                    <li className="py-2 px-3 hover:bg-gray-100 w-full">
+                      <Link href="/category?id=97360822-e84c-4151-84da-4c9bad68ce24&name=Beverages" className="text-reset">
+                        Đồ uống
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </li>
       </ul>
     </div>
   )
@@ -354,7 +507,7 @@ export default function MenuHeader() {
               {/* Pet Supplies */}
               <AccordionItem value="pet-supplies" className="border-b">
                 <Link
-                  href="/categories"
+                  href="/category?id=e63bba6f-cacc-4820-af21-5f474aea2529&name=Đồ dùng cho thú cưng"
                   className="flex items-center py-3 px-4 hover:bg-gray-100"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -365,58 +518,14 @@ export default function MenuHeader() {
 
               {/* Women's Fashion */}
               <AccordionItem value="womens-fashion" className="border-b">
-                <AccordionTrigger className="py-3 px-4 hover:bg-gray-100 hover:no-underline">
-                  <div className="flex items-center">
-                    <Icon path={mdiDresser} size={0.8} className="mr-2 opacity-60" />
-                    <span>Thời trang nữ và phụ kiện</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="pl-8 pr-4">
-                    <Link
-                      href="/categories"
-                      className="block py-2 text-gray-700 hover:text-main-golden-orange"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Women Underwear
-                    </Link>
-                    <Link
-                      href="/categories"
-                      className="block py-2 text-gray-700 hover:text-main-golden-orange"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Kính mát nữ
-                    </Link>
-                    <Link
-                      href="/categories"
-                      className="block py-2 text-gray-700 hover:text-main-golden-orange"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Giày dép nữ
-                    </Link>
-                    <Link
-                      href="/categories"
-                      className="block py-2 text-gray-700 hover:text-main-golden-orange"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Kính mắt nữ
-                    </Link>
-                    <Link
-                      href="/categories"
-                      className="block py-2 text-gray-700 hover:text-main-golden-orange"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Quần áo nữ
-                    </Link>
-                    <Link
-                      href="/categories"
-                      className="block py-2 text-gray-700 hover:text-main-golden-orange"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Túi xách phụ nữ
-                    </Link>
-                  </div>
-                </AccordionContent>
+                <Link
+                  href="/category?id=YOUR_WOMEN_FASHION_CATEGORY_ID&name=Thời trang nữ"
+                  className="flex items-center py-3 px-4 hover:bg-gray-100"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Icon path={mdiDresser} size={0.8} className="mr-2 opacity-60" />
+                  <span>Thời trang nữ</span>
+                </Link>
               </AccordionItem>
 
               {/* Men's Fashion */}
@@ -448,6 +557,13 @@ export default function MenuHeader() {
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
+                      Dép nam
+                    </Link>
+                    <Link
+                      href="/categories"
+                      className="block py-2 text-gray-700 hover:text-main-golden-orange"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
                       Kính mát nam
                     </Link>
                     <Link
@@ -462,16 +578,37 @@ export default function MenuHeader() {
                       className="block py-2 text-gray-700 hover:text-main-golden-orange"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
+                      Kính mắt nam
+                    </Link>
+                    <Link
+                      href="/categories"
+                      className="block py-2 text-gray-700 hover:text-main-golden-orange"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
                       Quần áo nam
+                    </Link>
+                    <Link
+                      href="/categories"
+                      className="block py-2 text-gray-700 hover:text-main-golden-orange"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Túi xách nam
+                    </Link>
+                    <Link
+                      href="/categories"
+                      className="block py-2 text-gray-700 hover:text-main-golden-orange"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Phụ kiện nam
                     </Link>
                   </div>
                 </AccordionContent>
               </AccordionItem>
 
-              {/* Other categories */}
+              {/* Travel Accessories */}
               <AccordionItem value="travel" className="border-b">
                 <Link
-                  href="/categories"
+                  href="/category?id=5676a518-3c6b-459a-83a0-c8e0ef3fad5c&name=Đồ dùng du lịch"
                   className="flex items-center py-3 px-4 hover:bg-gray-100"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -480,9 +617,10 @@ export default function MenuHeader() {
                 </Link>
               </AccordionItem>
 
+              {/* Souvenirs */}
               <AccordionItem value="souvenirs" className="border-b">
                 <Link
-                  href="/categories"
+                  href="/category?id=05b9431d-dec9-4c3b-a342-3708f137f235&name=Quà lưu niệm"
                   className="flex items-center py-3 px-4 hover:bg-gray-100"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -491,17 +629,30 @@ export default function MenuHeader() {
                 </Link>
               </AccordionItem>
 
+              {/* Electronics */}
               <AccordionItem value="electronics" className="border-b">
-                <Link
-                  href="/categories"
-                  className="flex items-center py-3 px-4 hover:bg-gray-100"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <Icon path={mdiLaptop} size={0.8} className="mr-2 opacity-60" />
-                  <span>Thiết bị điện tử</span>
-                </Link>
+                <AccordionTrigger className="py-3 px-4 hover:bg-gray-100 hover:no-underline">
+                  <div className="flex items-center">
+                    <Icon path={mdiLaptop} size={0.8} className="mr-2 opacity-60" />
+                    <span>Thiết bị điện tử</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="pl-8 pr-4">
+                    <Link href="/category?id=2440992e-f551-4a80-a15b-d4768ca5d6d6&name=Laptop" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Laptop</Link>
+                    <Link href="/category?id=368654bf-8c90-4833-bddf-fbace3268c33&name=Máy ảnh kỹ thuật số" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Máy ảnh kỹ thuật số</Link>
+                    <Link href="/category?id=05d1d17f-e51e-48be-bb91-5f3ac290fe8c&name=Máy tính bảng" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Máy tính bảng</Link>
+                    <Link href="/category?id=02bb1893-0e28-4be9-a0e6-3726a50a4d35&name=Gadget & Các máy ảnh khác" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Gadget & Các máy ảnh khác</Link>
+                    <Link href="/category?id=00eb3d2a-d56f-4086-9970-51857ac27d42&name=Trò chơi trên máy console" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Trò chơi trên máy console</Link>
+                    <Link href="/category?id=13ec6568-ffc5-4492-b9ac-6963272d6119&name=Máy tính để bàn" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Máy tính để bàn</Link>
+                    <Link href="/category?id=845a2e32-cff9-4b17-b1af-d26357818f58&name=Camera hành động / Video" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Camera hành động / Video</Link>
+                    <Link href="/category?id=8f87d10d-5d7b-4577-90a4-b35f032dcc93&name=Điện thoại di động" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Điện thoại di động</Link>
+                    <Link href="/category?id=f488c94f-b738-4947-b7d8-2dd749335e21&name=Camera an ninh & Hệ thống" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Camera an ninh & Hệ thống</Link>
+                  </div>
+                </AccordionContent>
               </AccordionItem>
 
+              {/* Kids & Toys */}
               <AccordionItem value="kids" className="border-b">
                 <Link
                   href="/categories"
@@ -513,6 +664,7 @@ export default function MenuHeader() {
                 </Link>
               </AccordionItem>
 
+              {/* Cleaning & Laundry */}
               <AccordionItem value="cleaning" className="border-b">
                 <Link
                   href="/categories"
@@ -524,6 +676,7 @@ export default function MenuHeader() {
                 </Link>
               </AccordionItem>
 
+              {/* Adult Products */}
               <AccordionItem value="adult" className="border-b">
                 <Link
                   href="/categories"
@@ -535,6 +688,7 @@ export default function MenuHeader() {
                 </Link>
               </AccordionItem>
 
+              {/* Health & Beauty */}
               <AccordionItem value="health" className="border-b">
                 <Link
                   href="/categories"
@@ -545,6 +699,53 @@ export default function MenuHeader() {
                   <span>Sức khoẻ và làm đẹp</span>
                 </Link>
               </AccordionItem>
+
+              {/* Books */}
+              <AccordionItem value="books" className="border-b">
+                <AccordionTrigger className="py-3 px-4 hover:bg-gray-100 hover:no-underline">
+                  <div className="flex items-center">
+                    <Icon path={mdiBookOpen} size={0.8} className="mr-2 opacity-60" />
+                    <span>Sách</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="pl-8 pr-4">
+                    <Link href="/category?id=44c0d761-b522-4c21-9075-ed1dd1735cc3&name=Art Books" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Sách nghệ thuật</Link>
+                    <Link href="/category?id=6cb2a264-6b02-4448-b717-05a527b6c2b0&name=Self-Help" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Sách tự lực</Link>
+                    <Link href="/category?id=5b68cef9-324b-44f9-9e87-36038ae26189&name=Magazines" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Tạp chí</Link>
+                    <Link href="/category?id=3bfd1500-ea22-4071-9ef8-b15eed347586&name=Textbooks" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Sách giáo khoa</Link>
+                    <Link href="/category?id=41da44a5-5c73-495a-a37d-691024fc1d18&name=Comics" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Truyện tranh</Link>
+                    <Link href="/category?id=d9a5e6fb-1b62-429e-9283-03294b68dfed&name=Stationery" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Văn phòng phẩm</Link>
+                    <Link href="/category?id=8e41aca3-27e2-4f81-9213-f10a1372725f&name=Children's Books" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Sách thiếu nhi</Link>
+                    <Link href="/category?id=e302c668-b6ef-4356-8088-c4352a7c5a79&name=Fiction" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Tiểu thuyết</Link>
+                    <Link href="/category?id=90789283-c3cf-484c-aab8-d3ab84c2a0a9&name=Cookbooks" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Sách nấu ăn</Link>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Groceries */}
+              <AccordionItem value="groceries" className="border-b">
+                <AccordionTrigger className="py-3 px-4 hover:bg-gray-100 hover:no-underline">
+                  <div className="flex items-center">
+                    <Icon path={mdiCart} size={0.8} className="mr-2 opacity-60" />
+                    <span>Hàng tạp hoá</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="pl-8 pr-4">
+                    <Link href="/category?id=6441ca14-5838-4f6a-917a-c6a44ef80d39&name=Frozen Foods" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Thực phẩm đông lạnh</Link>
+                    <Link href="/category?id=f43f3000-c4ff-431f-98e2-973827d71f9c&name=Dairy" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Sản phẩm từ sữa</Link>
+                    <Link href="/category?id=1a7fb407-4089-496e-9efe-9ef785daa5bf&name=Fresh Produce" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Rau củ quả tươi</Link>
+                    <Link href="/category?id=23c88963-914d-4d62-9c03-15211ae6196f&name=Canned Goods" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Đồ hộp</Link>
+                    <Link href="/category?id=0008eb50-aacb-4ea7-b1fd-331b1839112a&name=Bakery" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Bánh mì & bánh ngọt</Link>
+                    <Link href="/category?id=934134bf-f856-45f3-a749-ff8c21de607e&name=Condiments" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Gia vị & nước sốt</Link>
+                    <Link href="/category?id=18dc4525-1a3d-47cf-a78c-10aaf7ec39de&name=Snacks" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Đồ ăn vặt</Link>
+                    <Link href="/category?id=2ba17ef6-3a0a-460b-b283-360f98303de4&name=Pasta & Grains" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Mì & ngũ cốc</Link>
+                    <Link href="/category?id=97360822-e84c-4151-84da-4c9bad68ce24&name=Beverages" className="block py-2 text-gray-700 hover:text-main-golden-orange" onClick={() => setIsMobileMenuOpen(false)}>Đồ uống</Link>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
             </Accordion>
           </div>
         </div>

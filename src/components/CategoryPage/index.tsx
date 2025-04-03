@@ -12,32 +12,37 @@ import MenuHeader from '../Common/MenuHeader'
 
 export default function CategoryPage() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="bg-gray-100 min-h-screen"
-    >
+    <main className="bg-[#E3E6E6]">
       <Header />
       <MenuHeader />
-      <SidebarProvider>
-        <div className="flex  max-w-[1500px] bg-[#E3E6E6] pt-4 pb-8
+      <div className="max-w-7xl mx-auto relative">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="bg-gray-100 min-h-screen"
+      >
+
+        <SidebarProvider>
+          <div className="flex  max-w-7xl bg-[#E3E6E6] pt-4 pb-8
         px-4
         md:px-10
         lg:px-20
         xl:px-[104px]
         ">
-          <Sidebar
-            categories={mockData.categories}
-            priceRange={mockData.priceRange}
-          />
-          <MainSection
-            brands={mockData.brands}
-            sortOptions={mockData.sortOptions}
-          />
-        </div>
-      </SidebarProvider>
+            <Sidebar
+              categories={mockData.categories}
+              priceRange={mockData.priceRange}
+            />
+            <MainSection
+              brands={mockData.brands}
+              sortOptions={mockData.sortOptions}
+            />
+          </div>
+        </SidebarProvider>
+      </motion.div>
+      </div>
       <Footer />
-    </motion.div>
+    </main>
   )
 }

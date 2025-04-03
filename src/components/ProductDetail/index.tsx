@@ -123,7 +123,7 @@ export default function ProductDetail() {
 
   return (
     <div className="w-full py-6 px-4 md:px-6 lg:px-[104px] bg-[#E3E6E6] flex justify-center">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-[1500px] bg-white p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl bg-white p-4">
         <div className="sticky top-20">
           <div className="product-gallery flex flex-col gap-4">
             {/* Main Image */}

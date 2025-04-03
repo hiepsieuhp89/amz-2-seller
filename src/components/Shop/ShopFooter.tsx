@@ -9,7 +9,7 @@ export default function ShopFooter() {
     <>
       {/* Main Footer */}
       <footer className="bg-slate-950 !text-white/80 p-8">
-        <div className="container mx-auto max-w-[1500px]">
+        <div className="container mx-auto max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-base font-bold mb-3">Tìm hiểu về chúng tôi</h3>
@@ -59,7 +59,7 @@ export default function ShopFooter() {
 
       {/* Language and Currency Selector */}
       <div className="bg-slate-900 !text-white/80 py-4">
-        <div className="container mx-auto max-w-[1500px] flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
+        <div className="container mx-auto max-w-7xl flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
           <div className="flex items-center space-x-2">
             <div className="flex items-center">
               <Select defaultValue="vi">
@@ -103,7 +103,7 @@ export default function ShopFooter() {
 
       {/* Final CTA */}
       <div className="bg-slate-800 !text-white/80 py-3 text-center">
-        <div className="container mx-auto max-w-[1500px]">
+        <div className="container mx-auto max-w-7xl">
           <p className="mb-2 text-sm">
             Start selling products on Amazon today!{" "}
             <Button variant="link" className="text-sky-400 hover:text-sky-300 p-0 h-auto text-sm">

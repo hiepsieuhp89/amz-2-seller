@@ -7,7 +7,6 @@ import styles from "./storehouse.module.scss"
 import { useGetAllShopProducts } from "@/hooks/shop-products"
 import { useAddShopProducts } from "@/hooks/shop-products"
 import Image from "next/image"
-import Link from "next/link"
 import { useUser } from "@/context/useUserContext"
 import { DollarSign, Coins, Import } from "lucide-react"
 import { checkImageUrl } from "@/lib/utils"
@@ -210,12 +209,6 @@ const Storehouse = () => {
                       <div className={styles.productName}>
                         Tên sản phẩm: {product.name.length > 20 ? `${product.name.substring(0, 20)}...` : product.name}
                       </div>
-                      {/* <div className={`${styles.productDescription} line-clamp-2`}>
-                        <strong>Mô tả: </strong>
-                        <div className="rounded-md bg-red-500 p-2 h-fit">
-                          <span className="!text-gray-500" dangerouslySetInnerHTML={{ __html: product.description }} />
-                        </div>
-                      </div> */}
                       <div className={styles.priceInfo}>
                         <span className="flex items-center gap-1">
                           <DollarSign className="w-4 h-4 text-green-500" />

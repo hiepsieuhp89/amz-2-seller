@@ -42,35 +42,41 @@ export default function HomePage() {
   }, [showScroll]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#E3E6E6]">
       <Header />
       <MenuHeader />
-      <main className="max-w-[1500px] mx-auto relative">
-        <motion.div 
+      <div className="max-w-7xl mx-auto relative">
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
+          
         >
           <HeroBanner />
         </motion.div>
-        
-        {/* Wrapper for all sections */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="w-full absolute top-2/3"
-        >
-          {/* Category Grid */}
-          <div className="px-4">
+      </div>
+      {/* Wrapper for all sections */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="w-full absolute top-2/3 bg-[#E3E6E6]"
+      >
+        {/* Category Grid */}
+        <div className="px-4 max-w-7xl mx-auto">
           <Categories />
-          </div>
-          <FeaturedCategories/>
-          <BestSellers/>
-          <Categories2/>
-          <Footer />
-        </motion.div>
-      </main>
+        </div>
+        <div className="px-4 max-w-7xl mx-auto">
+        <FeaturedCategories />
+        <BestSellers />
+        <Categories2 />
+        </div>
+        <Footer />
+
+      </motion.div>
+
+
+
       <motion.button
         style={{ opacity }}
         onClick={scrollTop}
