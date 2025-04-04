@@ -215,7 +215,7 @@ const Storehouse = () => {
                   <div className={styles.cartItemContent}>
                     <div className={styles.cartItemImageContainer}>
                       <Image
-                        src={checkImageUrl(product.imageUrls?.[0] || "")}
+                        src={checkImageUrl(product.imageUrls?.[0])}
                         alt={product.name}
                         className={styles.cartItemImage}
                         width={64}
@@ -298,7 +298,7 @@ const Storehouse = () => {
               <div key={`mini-${product.id}-${index}`} className={styles.miniCartItem}>
                 <div className={styles.miniCartItemContent}>
                   <Image
-                    src={checkImageUrl(product.imageUrls?.[0] || "")}
+                    src={checkImageUrl(product.imageUrls?.[0])}
                     alt={product.name}
                     className={styles.miniCartItemImage}
                     width={32}
@@ -378,7 +378,7 @@ const Storehouse = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-8 gap-4 h-[calc(100vh-210px)] flex-1 flex-grow overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4 h-[calc(100vh-210px)] flex-1 flex-grow overflow-y-auto">
               {isLoading && currentPage === 1 ? (
                 <div className="col-span-full flex justify-center items-center h-full">
                   <Spin size="small" />
@@ -398,7 +398,7 @@ const Storehouse = () => {
                       >
                         <div className={styles.imageContainer}>
                           <Image
-                            src={checkImageUrl(product.imageUrls?.[0] || "")}
+                            src={checkImageUrl(product.imageUrls?.[0])}
                             alt={product.name || "Product Image"}
                             className={`${styles.productImage} object-cover`}
                             width={500}
