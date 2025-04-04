@@ -2,6 +2,7 @@ import { Empty, Pagination, Select, Spin } from "antd";
 import Link from "next/link";
 import Image from "next/image";
 import "./styles.css";
+import { formatNumber } from "@/utils";
 
 interface ShopContentProps {
   shopProducts: any[];
@@ -104,13 +105,9 @@ export default function ShopContent({
                     <span className="text-xs text-[#007185]">(0)</span>
                   </div>
                   <div className="flex items-end">
-                    <span className="text-lg font-bold ">
-                      ${Number(item.salePrice).toFixed(2)}
-                    </span>
+                    <span className="text-lg font-bold ">${formatNumber(Number(item.salePrice))}</span>
                     {item.profit > 0 && (
-                      <span className="text-sm text-gray-500 ml-2 line-through">
-                        ${(Number(item.salePrice) - item.profit).toFixed(2)}
-                      </span>
+                      <span className="text-sm text-gray-500 ml-2 line-through">${formatNumber(Number(item.salePrice) - item.profit)}</span>
                     )}
                   </div>
                   <div className="text-xs text-[#007185]">

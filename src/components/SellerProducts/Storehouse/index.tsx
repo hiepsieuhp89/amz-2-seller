@@ -18,6 +18,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
+import { formatNumber } from "@/utils"
 
 const Storehouse = () => {
   const { user } = useUser()
@@ -161,15 +162,15 @@ const Storehouse = () => {
                       <div className={styles.cartItemPricing}>
                         <div className={styles.priceRow}>
                           <span className={styles.priceLabel}>Giá bán:</span>
-                          <span className={styles.priceValue}>${Number(product.salePrice).toFixed(2)}</span>
+                          <span className={styles.priceValue}>${formatNumber(Number(product.salePrice))}</span>
                         </div>
                         <div className={styles.priceRow}>
                           <span className={styles.priceLabel}>Giá nhập:</span>
-                          <span className={styles.priceValue}>${Number(product.price).toFixed(2)}</span>
+                          <span className={styles.priceValue}>${formatNumber(Number(product.price))}</span>
                         </div>
                         <div className={styles.priceRow}>
                           <span className={styles.priceLabel}>Lợi nhuận:</span>
-                          <span className={`${styles.priceValue} ${styles.profitValue}`}>${Number(product.profit).toFixed(2)}</span>
+                          <span className={`${styles.priceValue} ${styles.profitValue}`}>${formatNumber(Number(product.profit))}</span>
                         </div>
                       </div>
                     </div>
@@ -238,7 +239,7 @@ const Storehouse = () => {
                   />
                   <div className={styles.miniCartItemName}>{product.name}</div>
                 </div>
-                <div className={styles.miniCartItemPrice}>${Number(product.salePrice).toFixed(2)}</div>
+                <div className={styles.miniCartItemPrice}>${formatNumber(Number(product.salePrice))}</div>
               </div>
             ))}
           </div>
@@ -349,27 +350,21 @@ const Storehouse = () => {
                               <DollarSign className="w-3.5 h-3.5 text-green-500" />
                               Giá bán:
                             </span>
-                            <span className="text-green-600 font-semibold text-sm">
-                              ${Number(product.salePrice).toLocaleString()}
-                            </span>
+                            <span className="text-green-600 font-semibold text-sm">${formatNumber(Number(product.salePrice))}</span>
                           </div>
                           <div className="flex justify-between items-center">
                             <span className="flex items-center gap-1 text-xs text-gray-600">
                               <Import className="w-3.5 h-3.5 text-amber-500" />
                               Giá nhập:
                             </span>
-                            <span className="text-amber-600 font-semibold text-sm">
-                              ${Number(product.price).toLocaleString()}
-                            </span>
+                            <span className="text-amber-600 font-semibold text-sm">${formatNumber(Number(product.price))}</span>
                           </div>
                           <div className="flex justify-between items-center">
                             <span className="flex items-center gap-1 text-xs text-gray-600">
                               <Coins className="w-3.5 h-3.5 text-red-500" />
                               Lợi nhuận:
                             </span>
-                            <span className="text-red-600 font-bold text-sm">
-                              ${Number(product.profit).toLocaleString()}
-                            </span>
+                            <span className="text-red-600 font-bold text-sm">${formatNumber(Number(product.profit))}</span>
                           </div>
                         </div>
                       </div>

@@ -11,6 +11,7 @@ import { useSearchParams } from "next/navigation"
 import { IProduct } from "@/interface/response/products"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
+import { formatNumber } from "@/utils"
 
 interface Brand {
   id: string
@@ -208,7 +209,7 @@ export default function MainSection({ brands, sortOptions }: MainSectionProps) {
               </div>
 
               <div className="p-3">
-                <div className="text-primary font-bold">${Number.parseFloat(product.price).toFixed(2)}</div>
+                <div className="text-primary font-bold">${formatNumber(Number.parseFloat(product.price))}</div>
 
                 <div className="flex mt-1 mb-1">
                   {[...Array(5)].map((_, i) => (

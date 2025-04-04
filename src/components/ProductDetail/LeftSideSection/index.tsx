@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Star } from 'lucide-react';
+import { formatNumber } from '@/utils';
 const { Title, Text } = Typography;
 interface Product {
   id: string;
@@ -242,7 +243,7 @@ const LeftSideSection = () => {
                           </Text>
                         </div>
                         <Text className=" font-bold">
-                          ${product.price.toFixed(2)}
+                          ${formatNumber(product.price)}
                         </Text>
                       </div>
                     </div>

@@ -7,6 +7,7 @@ import { Icon } from "@mdi/react"
 import { mdiChevronLeft, mdiClose } from "@mdi/js"
 import { Slider } from "@/components/ui/slider"
 import { useSidebar } from "../SidebarContext"
+import { formatNumber } from "@/utils"
 
 interface Category {
   id: string
@@ -130,8 +131,8 @@ export default function Sidebar({ categories, priceRange }: SidebarProps) {
               className="my-6"
             />
             <div className="flex justify-between mt-2 text-sm">
-              <div className="font-semibold opacity-70">{priceValues[0].toFixed(2)}</div>
-              <div className="font-semibold opacity-70">{priceValues[1].toFixed(2)}</div>
+              <div className="font-semibold opacity-70">{formatNumber(priceValues[0])}</div>
+              <div className="font-semibold opacity-70">{formatNumber(priceValues[1])}</div>
             </div>
           </div>
         </div>
