@@ -1,8 +1,8 @@
 "use client"
-import type React from "react"
+import React from "react"
 import { useState, useEffect } from "react"
-import { Input, Button, Badge, Empty, Spin, message, Pagination, Row, Col } from "antd"
-import { PlusOutlined, SearchOutlined, DeleteOutlined } from "@ant-design/icons"
+import { Input, Button, Badge, Empty, Spin, message, Pagination, Row, Col, Drawer } from "antd"
+import { PlusOutlined, SearchOutlined, DeleteOutlined, ShoppingCartOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons"
 import styles from "./storehouse.module.scss"
 import { useGetAllShopProducts } from "@/hooks/shop-products"
 import { useAddShopProducts } from "@/hooks/shop-products"
@@ -37,6 +37,9 @@ const Storehouse = () => {
   const [totalSelectedProducts, setTotalSelectedProducts] = useState(0)
   const [isClient, setIsClient] = useState(false)
   const { setSelectedProduct } = useSelectedProduct()
+  const [drawerVisible, setDrawerVisible] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
+
   useEffect(() => {
     setIsClient(true)
   }, [])
@@ -102,6 +105,7 @@ const Storehouse = () => {
           message.success("Thêm sản phẩm vào cửa hàng thành công")
           setSelectedProducts([])
           setTotalSelectedProducts(0)
+          setDrawerVisible(false)
         },
         onError: (error: any) => {
           message.error(`Lỗi khi thêm sản phẩm: ${error.response?.data?.message || 'Có lỗi xảy ra'}`)
@@ -123,6 +127,143 @@ const Storehouse = () => {
     )
   }
 
+  const renderProductCart = () => (
+    <div className={styles.productCartContainer}>
+      {totalSelectedProducts > 0 && (
+        <div className={styles.cartHeader}>
+          <h3 className="text-sm font-medium">Tổng sản phẩm đã chọn</h3>
+          <Badge color="blue" count={totalSelectedProducts} className={styles.cartBadge} />
+        </div>
+      )}
+
+      <div className={styles.cartListContainer}>
+        <div>
+          {selectedProducts.length > 0 ? (
+            <ul className={styles.cartList}>
+              {selectedProducts.map((product, index) => (
+                <li key={`${product.id}-${index}`} className={styles.cartItem}>
+                  <div className={styles.cartItemContent}>
+                    <div className={styles.cartItemImageContainer}>
+                      <Image
+                        src={checkImageUrl(product.imageUrls?.[0] || "")}
+                        alt={product.name}
+                        className={styles.cartItemImage}
+                        width={64}
+                        height={64}
+                        draggable={false}
+                      />
+                    </div>
+                    <div className={styles.cartItemDetails}>
+                      <div className={styles.cartItemName}>
+                        {product.name.length > 30 ? `${product.name.substring(0, 30)}...` : product.name}
+                      </div>
+                      <div className={styles.cartItemDescription} dangerouslySetInnerHTML={{ __html: product.description?.substring(0, 70) + "..." }}></div>
+                      <div className={styles.cartItemPricing}>
+                        <div className={styles.priceRow}>
+                          <span className={styles.priceLabel}>Giá bán:</span>
+                          <span className={styles.priceValue}>${Number(product.salePrice).toFixed(2)}</span>
+                        </div>
+                        <div className={styles.priceRow}>
+                          <span className={styles.priceLabel}>Giá nhập:</span>
+                          <span className={styles.priceValue}>${Number(product.price).toFixed(2)}</span>
+                        </div>
+                        <div className={styles.priceRow}>
+                          <span className={styles.priceLabel}>Lợi nhuận:</span>
+                          <span className={`${styles.priceValue} ${styles.profitValue}`}>${Number(product.profit).toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeProduct(index)}
+                      className={styles.removeButton}
+                      aria-label="Remove product"
+                    >
+                      <DeleteOutlined />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className={styles.emptyCartContainer}>
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description="Chưa có sản phẩm nào được chọn"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+      
+      <div className={styles.cartFooter}>
+        <Button
+          type="primary"
+          block
+          size="large"
+          onClick={addAllSelectedProducts}
+          disabled={selectedProducts.length === 0 || isAddingProducts}
+          loading={isAddingProducts}
+          className={styles.addButton}
+        >
+          {isAddingProducts ? "Đang thêm sản phẩm..." : "Thêm sản phẩm"}
+        </Button>
+      </div>
+    </div>
+  )
+
+  // Render the collapsed mini cart view
+  const renderMiniCart = () => (
+    <div className={`${styles.miniCart} bg-white p-2 h-full rounded-l-lg border-l border-t border-b flex flex-col`}>
+      <button 
+        onClick={() => setIsCollapsed(false)}
+        className={styles.expandButton}
+      >
+        <LeftOutlined />
+      </button>
+      
+      <div className={styles.miniCartList}>
+        {selectedProducts.length > 0 ? (
+          <div className={styles.miniCartItems}>
+            {selectedProducts.map((product, index) => (
+              <div key={`mini-${product.id}-${index}`} className={styles.miniCartItem}>
+                <div className={styles.miniCartItemContent}>
+                  <Image
+                    src={checkImageUrl(product.imageUrls?.[0] || "")}
+                    alt={product.name}
+                    className={styles.miniCartItemImage}
+                    width={32}
+                    height={32}
+                    draggable={false}
+                  />
+                  <div className={styles.miniCartItemName}>{product.name}</div>
+                </div>
+                <div className={styles.miniCartItemPrice}>${Number(product.salePrice).toFixed(2)}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.miniCartEmpty}>Không có sản phẩm</div>
+        )}
+      </div>
+      
+      {selectedProducts.length > 0 && (
+        <Button
+          type="primary"
+          block
+          size="small"
+          onClick={addAllSelectedProducts}
+          disabled={isAddingProducts}
+          loading={isAddingProducts}
+          className={styles.miniAddButton}
+        >
+          Thêm
+        </Button>
+      )}
+      <Badge count={totalSelectedProducts} className={styles.miniCartBadge} />
+    </div>
+  )
+
   return (
     <div className="p-4 bg-[#E3E6E6]">
       <Breadcrumb className="!mb-4">
@@ -143,7 +284,7 @@ const Storehouse = () => {
 
       {user ? (
         <div className="flex flex-col md:flex-row gap-4">
-          <div className="md:flex-1 flex flex-col h-full">
+          <div className={`md:flex-1 flex flex-col h-full ${isCollapsed ? 'lg:pr-[70px]' : 'lg:pr-0'}`}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
               <Input
                 placeholder="Tìm kiếm sản phẩm"
@@ -168,24 +309,17 @@ const Storehouse = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-[calc(100vh-210px)] flex-1 flex-grow overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-8 gap-4 h-[calc(100vh-210px)] flex-1 flex-grow overflow-y-auto">
               {isLoading ? (
-                <div className="col-span-2 flex justify-center items-center h-full">
+                <div className="col-span-full flex justify-center items-center h-full">
                   <Spin size="small" />
                 </div>
               ) : filteredProducts.length > 0 ? (
                 filteredProducts.map((product: any) => (
-                  <div
-                    key={product.id}
-                  >
+                  <div key={product.id} className={styles.productWrapper}>
                     <div
-                      className={`${styles.card} !rounded-[8px] overflow-hidden bg-white`}
-                      style={{
-                        padding: "12px",
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: '100%'
-                      }}
+                      className={`${styles.card} !rounded-[8px] overflow-hidden bg-white h-full`}
+                      style={{ padding: "12px" }}
                     >
                       <Badge.Ribbon
                         text={`Trong kho: ${product.stock || 0}`}
@@ -194,7 +328,6 @@ const Storehouse = () => {
                         placement="start"
                       >
                         <div className={styles.imageContainer}>
-
                           <Image
                             src={checkImageUrl(product.imageUrls?.[0] || "")}
                             alt={product.name || "Product Image"}
@@ -206,61 +339,52 @@ const Storehouse = () => {
                           />
                         </div>
                       </Badge.Ribbon>
-                      <div className={styles.productName}>
-                        Tên sản phẩm: {product.name.length > 20 ? `${product.name.substring(0, 20)}...` : product.name}
+                      <div className="mt-2">
+                        <h3 className="text-sm font-medium mb-2 line-clamp-2">
+                          {product.name}
+                        </h3>
+                        <div className="space-y-1">
+                          <div className="flex justify-between items-center">
+                            <span className="flex items-center gap-1 text-xs text-gray-600">
+                              <DollarSign className="w-3.5 h-3.5 text-green-500" />
+                              Giá bán:
+                            </span>
+                            <span className="text-green-600 font-semibold text-sm">
+                              ${Number(product.salePrice).toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="flex items-center gap-1 text-xs text-gray-600">
+                              <Import className="w-3.5 h-3.5 text-amber-500" />
+                              Giá nhập:
+                            </span>
+                            <span className="text-amber-600 font-semibold text-sm">
+                              ${Number(product.price).toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="flex items-center gap-1 text-xs text-gray-600">
+                              <Coins className="w-3.5 h-3.5 text-red-500" />
+                              Lợi nhuận:
+                            </span>
+                            <span className="text-red-600 font-bold text-sm">
+                              ${Number(product.profit).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className={styles.priceInfo}>
-                        <span className="flex items-center gap-1">
-                          <DollarSign className="w-4 h-4 text-green-500" />
-                          Giá bán:
-                        </span>
-                        <span className="!text-green-500">
-                          {product.salePrice ? Number(product.salePrice).toLocaleString() : '0.00'}
-                        </span>
-                      </div>
-                      <div className={styles.priceInfo}>
-                        <span className="flex items-center gap-1">
-                          <Import className="w-4 h-4 text-amber-500" />
-                          Giá nhập:
-                        </span>
-                        <span className="!text-amber-500">
-                          {product.price ? Number(product.price).toLocaleString() : '0.00'}
-                        </span>
-                      </div>
-                      <div className={styles.priceInfo}>
-                        <span className="flex items-center gap-1">
-                          <Coins className="w-4 h-4 text-red-500" />
-                          Lợi nhuận:
-                        </span>
-                        <span className="!text-red-500 font-bold">
-                          {product.profit ? Number(product.price).toLocaleString() : '0.00'}
-                        </span>
-                      </div>
-                      <div
-                        className={styles.addButton}
-                        onClick={() => addProduct(product)}
-                      >
-                        <div className={styles.overlay}></div>
+                      <div className={styles.hoverOverlay} onClick={() => addProduct(product)}>
                         <PlusOutlined className={styles.plusIcon} />
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <Empty description="Không tìm thấy sản phẩm" />
+                <div className="col-span-full">
+                  <Empty description="Không tìm thấy sản phẩm" />
+                </div>
               )}
             </div>
-
-            {filteredProducts.length > 12 && (
-              <div className="text-center mt-4">
-                <Button
-                  type="primary"
-                  ghost
-                >
-                  Tải thêm
-                </Button>
-              </div>
-            )}
 
             {filteredProducts.length > 0 && (
               <Row justify="end" style={{ marginTop: 24 }}>
@@ -275,83 +399,61 @@ const Storehouse = () => {
                 </Col>
               </Row>
             )}
-          </div>
-
-          <div className="md:w-[400px]">
-            {totalSelectedProducts > 0 && (
-              <div className="flex items-center gap-2 text-center my-4 text-sm text-main-gunmetal-blue font-semibold">
-                Tổng sản phẩm đã chọn:
-                <Badge color="blue" count={totalSelectedProducts} />
-              </div>
-            )}
-
-            <div
-              className="mb-3 !rounded-[8px] overflow-hidden bg-white"
-              style={{ border: '1px solid #eee' }}
-            >
-              <div>
-                {selectedProducts.length > 0 ? (
-                  <ul className="list-group list-group-flush">
-                    {selectedProducts.map((product, index) => (
-                      <li key={`${product.id}-${index}`} className={`${styles.selectedItem} hover:bg-gray-50 border-b`}>
-                        <div
-                          className="block p-4"
-                        >
-                          <div className="flex items-center">
-                            <Image
-                              src={checkImageUrl(product.imageUrls?.[0] || "")}
-                              alt={product.name}
-                              className="w-20 h-20 object-cover rounded-[4px] mr-3"
-                              width={64}
-                              height={64}
-                              draggable={false}
-                            />
-                            <div className="flex-1 pr-1">
-                              <div className="text-sm font-medium mb-1">
-                                {product.name.length > 20 ? `${product.name.substring(0, 20)}...` : product.name}
-                              </div>
-                              <div className="text-xs text-gray-500 mb-1 line-clamp-2" dangerouslySetInnerHTML={{ __html: product.description }}></div>
-                              <div className="flex flex-wrap gap-x-3 text-xs">
-                                <span className="text-green-600 font-medium">Giá bán: ${Number(product.salePrice).toFixed(2)}</span>
-                                <span className="text-amber-600 font-medium">Giá nhập: ${Number(product.price).toFixed(2)}</span>
-                                <span className="text-red-600 font-medium">Lợi nhuận: ${(Number(product.salePrice) - Number(product.price)).toFixed(2)}</span>
-                              </div>
-                            </div>
-                            <Button
-                              type="text"
-                              size="small"
-                              danger
-                              shape="circle"
-                              icon={<DeleteOutlined />}
-                              onClick={() => removeProduct(index)}
-                              className="flex items-center justify-center !bg-red-100 absolute right-0"
-                            />
-                          </div>
-
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description="Chưa có sản phẩm nào được chọn"
+            
+            {/* Cart button for small screens */}
+            <div className="md:hidden fixed bottom-4 right-4 z-10">
+              <Button
+                type="primary"
+                shape="circle"
+                size="large"
+                icon={<ShoppingCartOutlined />}
+                onClick={() => setDrawerVisible(true)}
+                className="flex items-center justify-center !h-14 !w-14 shadow-lg"
+              >
+                {totalSelectedProducts > 0 && (
+                  <Badge 
+                    count={totalSelectedProducts} 
+                    style={{ position: 'absolute', top: 0, right: 0 }}
                   />
                 )}
-              </div>
+              </Button>
             </div>
-            <Button
-              className="!rounded-[4px] !h-11 mt-4"
-              type="primary"
-              block
-              size="large"
-              onClick={addAllSelectedProducts}
-              disabled={selectedProducts.length === 0 || isAddingProducts}
-              loading={isAddingProducts}
-            >
-              {isAddingProducts ? "Đang thêm sản phẩm..." : "Thêm sản phẩm"}
-            </Button>
           </div>
+
+          {/* Cart section for large screens */}
+          <div className={`hidden lg:block ${styles.sidebarContainer} ${isCollapsed ? styles.collapsed : styles.expanded}`}>
+            {isCollapsed ? (
+              renderMiniCart()
+            ) : (
+              <div className="relative">
+                <div className={styles.expandedSidebar}>
+                  <button 
+                    onClick={() => setIsCollapsed(true)}
+                    className="absolute -left-3 top-1/2 transform -translate-y-1/2 bg-white p-1 rounded-full border shadow-sm z-10 hover:bg-gray-100"
+                  >
+                    <RightOutlined />
+                  </button>
+                  {renderProductCart()}
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Visible only on md breakpoint */}
+          <div className="hidden md:block lg:hidden md:w-[400px]">
+            {renderProductCart()}
+          </div>
+          
+          {/* Drawer for small screens */}
+          <Drawer
+            title="Giỏ hàng đã chọn"
+            placement="right"
+            onClose={() => setDrawerVisible(false)}
+            open={drawerVisible}
+            width={320}
+          >
+            {renderProductCart()}
+          </Drawer>
         </div>
       ) : (
         <div className="flex justify-center items-center h-screen">
