@@ -5,12 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const checkImageUrl = (imageUrl: string): string => {
-  if (!imageUrl) return "https://picsum.photos/800/600"
-
-  if (imageUrl.includes("example.com") || !imageUrl.startsWith("http")) {
-    return "https://picsum.photos/800/600"
-  }
-
-  return imageUrl
+export const checkImageUrl = (imageUrls: string[]): string => {
+  return imageUrls[0]
 }

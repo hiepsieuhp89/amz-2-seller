@@ -79,10 +79,10 @@ const ProductsTable = ({
     if (pageSize) setPageSize(pageSize);
   };
 
-  const handleImageClick = (imageUrl: string) => {
-    const index = productImages.indexOf(imageUrl);
+  const handleImageClick = (imageUrls: string[]) => {
+    const index = productImages.indexOf(imageUrls[0]);
     setCurrentImageIndex(index);
-    setCurrentImage(imageUrl);
+    setCurrentImage(imageUrls[0]);
     setOpenLightbox(true);
   };
 
@@ -96,10 +96,10 @@ const ProductsTable = ({
   const columns = [
     {
       title: "Hình ảnh",
-      dataIndex: ["product", "imageUrl"],
+      dataIndex: ["product", "imageUrls"],
       key: "image",
-      render: (imageUrl: string) =>
-        imageUrl ? (
+      render: (imageUrls: string[]) =>
+        imageUrls ? (
           <div
             style={{
               width: "80px",
@@ -109,10 +109,10 @@ const ProductsTable = ({
               overflow: "hidden",
               cursor: "pointer",
             }}
-            onClick={() => handleImageClick(imageUrl)}
+            onClick={() => handleImageClick(imageUrls)}
           >
             <Image
-              src={checkImageUrl(imageUrl)}
+              src={checkImageUrl(imageUrls)}
               alt="Product"
               width={80}
               height={80}
