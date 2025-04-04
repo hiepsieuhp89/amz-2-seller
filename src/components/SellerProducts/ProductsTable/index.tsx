@@ -1,59 +1,97 @@
-"use client"
+"use client";
 
-import Icon from "@mdi/react"
-import { mdiArrowTopRightThin, mdiContentSaveEdit, mdiEye, mdiTrashCan } from "@mdi/js"
-import type React from "react"
-import { useState } from "react"
-import { Table, Input, Button, Space, Typography, Row, Col, Pagination, Tooltip, Badge, Divider } from "antd"
-import { SearchOutlined, FilterOutlined, ReloadOutlined } from "@ant-design/icons"
-import type { IShopProduct } from "@/interface/response/shop-products"
-import { useGetMyShopProducts } from "@/hooks/shop-products"
-import Image from "next/image"
-import Lightbox from "yet-another-react-lightbox"
-import "yet-another-react-lightbox/styles.css"
-import "./styles.css"
-import { checkImageUrl } from "@/lib/utils"
-import Link from "next/link"
-import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
+import Icon from "@mdi/react";
+import {
+  mdiArrowTopRightThin,
+  mdiContentSaveEdit,
+  mdiEye,
+  mdiTrashCan,
+} from "@mdi/js";
+import type React from "react";
+import { useState, useEffect } from "react";
+import {
+  Table,
+  Input,
+  Button,
+  Space,
+  Typography,
+  Row,
+  Col,
+  Pagination,
+  Tooltip,
+  Badge,
+  Divider,
+} from "antd";
+import {
+  SearchOutlined,
+  FilterOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons";
+import type { IShopProduct } from "@/interface/response/shop-products";
+import { useGetMyShopProducts } from "@/hooks/shop-products";
+import Image from "next/image";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+import "./styles.css";
+import { checkImageUrl } from "@/lib/utils";
+import Link from "next/link";
+import { useSelectedProduct } from "@/app/stores/useSelectedProduct";
 
-const { Title, Text } = Typography
-type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl"
+const { Title, Text } = Typography;
+type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
 interface ProductsTableProps {
-  onSearch: (value: string) => void
-  selectedRowKeys: React.Key[]
-  onSelectChange: (selectedRowKeys: React.Key[]) => void
+  onSearch: (value: string) => void;
+  selectedRowKeys: React.Key[];
+  onSelectChange: (selectedRowKeys: React.Key[]) => void;
 }
 
-const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTableProps) => {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
-  const [searchText, setSearchText] = useState<string>("")
+const ProductsTable = ({
+  onSearch,
+  selectedRowKeys,
+  onSelectChange,
+}: ProductsTableProps) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchText, setSearchText] = useState<string>("");
   const { data: shopProductsData, isLoading } = useGetMyShopProducts({
     page: currentPage,
-  })
-  const [openLightbox, setOpenLightbox] = useState(false)
-  const [currentImage, setCurrentImage] = useState("")
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const { setSelectedProduct } = useSelectedProduct()
-  const products = shopProductsData?.data?.data || []
-  const totalItems = shopProductsData?.data?.meta?.itemCount || 0
-  const productImages = products.map((product: any) => product.product.imageUrl).filter(Boolean)
+  });
+  const [openLightbox, setOpenLightbox] = useState(false);
+  const [currentImage, setCurrentImage] = useState("");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { setSelectedProduct } = useSelectedProduct();
+  const products = shopProductsData?.data?.data || [];
+  const totalItems = shopProductsData?.data?.meta?.itemCount || 0;
+  const productImages = products
+    .map((product: any) => product.product.imageUrl)
+    .filter(Boolean);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<
+    Record<string, boolean>
+  >({});
+
   const handleSearch = (value: string) => {
-    setSearchText(value)
-    onSearch(value)
-  }
+    setSearchText(value);
+    onSearch(value);
+  };
 
   const handlePaginationChange = (page: number, pageSize?: number) => {
-    setCurrentPage(page)
-    if (pageSize) setPageSize(pageSize)
-  }
+    setCurrentPage(page);
+    if (pageSize) setPageSize(pageSize);
+  };
 
   const handleImageClick = (imageUrl: string) => {
-    const index = productImages.indexOf(imageUrl)
-    setCurrentImageIndex(index)
-    setCurrentImage(imageUrl)
-    setOpenLightbox(true)
-  }
+    const index = productImages.indexOf(imageUrl);
+    setCurrentImageIndex(index);
+    setCurrentImage(imageUrl);
+    setOpenLightbox(true);
+  };
+
+  const toggleDescription = (productId: string) => {
+    setExpandedDescriptions((prev) => ({
+      ...prev,
+      [productId]: !prev[productId],
+    }));
+  };
 
   const columns = [
     {
@@ -106,28 +144,62 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       title: "Tên sản phẩm",
       dataIndex: ["product", "name"],
       key: "name",
-      sorter: (a: IShopProduct, b: IShopProduct) => a.product.name.localeCompare(b.product.name),
-      render: (text: string, record: IShopProduct) => (
-        <Space direction="vertical" size={0}>
-          <Text strong style={{ fontSize: "14px", wordWrap: "break-word", whiteSpace: "normal" }}>
-            {text}
-          </Text>
-          <Text
-            type="secondary"
-            style={{ fontSize: "12px", wordWrap: "break-word", whiteSpace: "normal" }}
-            ellipsis={{ tooltip: record.product?.description }}
-          >
-            {record.product?.description}
-          </Text>
-        </Space>
-      ),
+      sorter: (a: IShopProduct, b: IShopProduct) =>
+        a.product.name.localeCompare(b.product.name),
+      render: (text: string, record: IShopProduct) => {
+        const productId = record.product?.id || "";
+        const isExpanded = expandedDescriptions[productId];
+        const description = record.product?.description || "";
+
+        return (
+          <Space direction="vertical" size={0}>
+            <Text
+              strong
+              style={{
+                fontSize: "14px",
+                wordWrap: "break-word",
+                whiteSpace: "normal",
+              }}
+            >
+              {text}
+            </Text>
+            <div style={{ position: "relative" }}>
+              <div
+                className={`description-container ${
+                  isExpanded ? "expanded" : ""
+                }`}
+                style={{
+                  fontSize: "12px",
+                  wordWrap: "break-word",
+                  overflow: isExpanded ? "visible" : "hidden",
+                  maxHeight: isExpanded ? "none" : "60px",
+                  position: "relative",
+                }}
+              >
+                <div
+                  className="description-content"
+                  dangerouslySetInnerHTML={{ __html: description }}
+                />
+              </div>
+              {description && (
+                <ShowMoreButton
+                  description={description}
+                  isExpanded={isExpanded}
+                  toggleDescription={() => toggleDescription(productId)}
+                />
+              )}
+            </div>
+          </Space>
+        );
+      },
       responsive: ["xs", "sm", "md"] as Breakpoint[],
     },
     {
       title: "Số lượng",
       dataIndex: ["product", "stock"],
       key: "quantity",
-      sorter: (a: IShopProduct, b: IShopProduct) => a.product.stock - b.product.stock,
+      sorter: (a: IShopProduct, b: IShopProduct) =>
+        a.product.stock - b.product.stock,
       render: (stock: number) => (
         <Badge
           count={stock}
@@ -148,7 +220,8 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       title: "Giá nhập",
       dataIndex: ["product", "price"],
       key: "price",
-      sorter: (a: IShopProduct, b: IShopProduct) => Number(a.product.price) - Number(b.product.price),
+      sorter: (a: IShopProduct, b: IShopProduct) =>
+        Number(a.product.price) - Number(b.product.price),
       render: (price: number) => (
         <Button
           style={{
@@ -233,12 +306,15 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       title: "Hành động",
       key: "action",
       render: (_: any, record: IShopProduct) => (
-        <Link 
-        onClick={() => setSelectedProduct(record.product)}
-        target="_blank"
-        href={`/product?id=${record?.product?.id}`}>
+        <Link
+          onClick={() => setSelectedProduct(record.product)}
+          target="_blank"
+          href={`/product?id=${record?.product?.id}`}
+        >
           <Button
-            icon={<Icon path={mdiArrowTopRightThin} size={0.7} color={"#ffffff"} />}
+            icon={
+              <Icon path={mdiArrowTopRightThin} size={0.7} color={"#ffffff"} />
+            }
             iconPosition="end"
             className="!bg-main-golden-orange !rounded-[4px]"
             type="primary"
@@ -251,21 +327,31 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       align: "center" as const,
       width: 100,
     },
-  ]
+  ];
 
   return (
     <div className="border p-4 bg-white rounded-md">
-      <Row justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
+      <Row
+        justify="space-between"
+        align="middle"
+        gutter={[12, 12]}
+        style={{ marginBottom: 16 }}
+      >
         <Col>
           <Space size="middle">
             <Title level={5} style={{ margin: 0 }}>
               Tất cả sản phẩm
             </Title>
-            <Badge size="default" count={totalItems} showZero style={{ backgroundColor: "#1890ff" }} />
+            <Badge
+              size="default"
+              count={totalItems}
+              showZero
+              style={{ backgroundColor: "#1890ff" }}
+            />
           </Space>
         </Col>
         <Col>
-          <Space size="small" style={{ display: 'flex', width: '100%' }}>
+          <Space size="small" style={{ display: "flex", width: "100%" }}>
             <Input
               placeholder="Tìm kiếm sản phẩm"
               prefix={<SearchOutlined style={{ color: "#1890ff" }} />}
@@ -275,10 +361,16 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
               allowClear
             />
             <Tooltip title="Lọc sản phẩm">
-              <Button icon={<FilterOutlined />} style={{ borderRadius: "6px" }} />
+              <Button
+                icon={<FilterOutlined />}
+                style={{ borderRadius: "6px" }}
+              />
             </Tooltip>
             <Tooltip title="Làm mới">
-              <Button icon={<ReloadOutlined />} style={{ borderRadius: "6px" }} />
+              <Button
+                icon={<ReloadOutlined />}
+                style={{ borderRadius: "6px" }}
+              />
             </Tooltip>
           </Space>
         </Col>
@@ -344,9 +436,79 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
           view: ({ index }: { index: number }) => setCurrentImageIndex(index),
         }}
       />
+
+      <style jsx global>{`
+        .description-container {
+          transition: max-height 0.3s ease;
+        }
+        .description-container.expanded {
+          max-height: none;
+        }
+        .description-container:not(.expanded)::after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 20px;
+          background: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0),
+            rgba(255, 255, 255, 1)
+          );
+        }
+      `}</style>
     </div>
-  )
-}
+  );
+};
 
-export default ProductsTable
+const ShowMoreButton = ({
+  description,
+  isExpanded,
+  toggleDescription,
+}: {
+  description: string;
+  isExpanded: boolean;
+  toggleDescription: () => void;
+}) => {
+  const [shouldShowButton, setShouldShowButton] = useState(false);
 
+  useEffect(() => {
+    // Kiểm tra xem mô tả có bị cắt hay không bằng cách đo chiều cao của nội dung
+    const checkHeight = () => {
+      const descriptionElements = document.getElementsByClassName(
+        "description-content"
+      );
+      for (let i = 0; i < descriptionElements.length; i++) {
+        const el = descriptionElements[i] as HTMLElement;
+        if (el && el.scrollHeight > 60) {
+          setShouldShowButton(true);
+          return;
+        }
+      }
+      setShouldShowButton(false);
+    };
+
+    // Chạy kiểm tra sau khi render
+    setTimeout(checkHeight, 0);
+
+    // Chạy kiểm tra khi cửa sổ thay đổi kích thước
+    window.addEventListener("resize", checkHeight);
+    return () => window.removeEventListener("resize", checkHeight);
+  }, [description]);
+
+  if (!shouldShowButton) return null;
+
+  return (
+    <Button
+      type="link"
+      size="small"
+      style={{ padding: "0", fontSize: "12px", height: "auto" }}
+      onClick={toggleDescription}
+    >
+      {isExpanded ? "Thu gọn" : "Xem thêm"}
+    </Button>
+  );
+};
+
+export default ProductsTable;

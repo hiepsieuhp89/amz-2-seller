@@ -1,10 +1,11 @@
 "use client"
-import { Table, Button, Tag, Tooltip } from "antd"
+import { Table, Button, Tag, Tooltip, Empty, Spin } from "antd"
 import type { ColumnsType } from "antd/es/table"
-import { CopyOutlined, CheckOutlined, ClockCircleOutlined } from "@ant-design/icons"
+import { CheckCircleOutlined } from "@ant-design/icons"
 import { useState, useEffect, useRef } from "react"
 import { useGetMyOrders } from "@/hooks/shop-products"
 import dayjs from "dayjs"
+import { ClipboardCopy, Clock, CheckCheck, AlertCircle, User } from "lucide-react"
 
 const PendingOrders = () => {
   const { data, isLoading } = useGetMyOrders({
@@ -40,6 +41,19 @@ const PendingOrders = () => {
     }
   }, [data, isLoading])
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return "bg-amber-50 text-amber-700 border-amber-200";
+      case "COMPLETED":
+        return "bg-green-50 text-green-700 border-green-200";
+      case "CANCELLED":
+        return "bg-red-50 text-red-700 border-red-200";
+      default:
+        return "bg-gray-50 text-gray-700 border-gray-200";
+    }
+  };
+
   const columns: ColumnsType<any> = [
     {
       title: "Mã đặt hàng",
@@ -48,13 +62,22 @@ const PendingOrders = () => {
       className: "text-left",
       width: 200,
       render: (text) => (
-        <div className="flex items-center justify-between">
-          <span>{text}</span>
-          <Button
-            type="text"
-            icon={copiedId === text ? <CheckOutlined /> : <CopyOutlined />}
-            onClick={() => handleCopy(text)}
-          />
+        <div className="flex items-center space-x-2">
+          <span className="font-medium text-gray-800">{text.substring(0, 8)}...</span>
+          <Tooltip title={copiedId === text ? "Đã sao chép!" : "Sao chép"}>
+            <Button
+              type="text"
+              className="flex items-center justify-center p-1 hover:bg-gray-50 rounded-full"
+              onClick={() => handleCopy(text)}
+              icon={
+                copiedId === text ? (
+                  <CheckCheck className="h-4 w-4 text-green-500" />
+                ) : (
+                  <ClipboardCopy className="h-4 w-4 text-gray-400" />
+                )
+              }
+            />
+          </Tooltip>
         </div>
       ),
     },
@@ -65,17 +88,15 @@ const PendingOrders = () => {
       className: "text-left",
       width: 250,
       render: (text, record) => (
-        <div className="flex flex-col">
-          <div className="flex items-center justify-between">
-            <span>{text}</span>
-            <Button
-              type="text"
-              icon={copiedId === text ? <CheckOutlined /> : <CopyOutlined />}
-              onClick={() => handleCopy(text)}
-            />
+        <div className="flex items-start space-x-3">
+          <div className="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+            <User className="h-5 w-5 text-gray-500" />
           </div>
-          <div className="text-gray-500 text-sm">{record?.user?.email}</div>
-          {record?.user?.phone && <div className="text-gray-500 text-sm">{record?.user?.phone}</div>}
+          <div className="flex flex-col">
+            <div className="font-medium text-gray-800">{text}</div>
+            <div className="text-gray-500 text-xs">{record?.user?.email}</div>
+            {record?.user?.phone && <div className="text-gray-500 text-xs">{record?.user?.phone}</div>}
+          </div>
         </div>
       ),
     },
@@ -83,15 +104,21 @@ const PendingOrders = () => {
       title: "Thời gian",
       dataIndex: "orderTime",
       key: "orderTime",
-      className: "text-center",
+      className: "text-left",
       width: 180,
       render: (value, record) => (
-        <div className="flex flex-col items-center">
-          <span>{value ? dayjs(value).format("DD/MM/YYYY HH:mm") : "N/A"}</span>
+        <div className="flex flex-col">
+          <div className="font-medium text-gray-800">
+            {value ? dayjs(value).format("DD/MM/YYYY") : "N/A"}
+          </div>
+          <div className="text-gray-500 text-xs">
+            {value ? dayjs(value).format("HH:mm") : ""}
+          </div>
           <Tooltip title="Thời gian chờ xử lý">
-            <Tag icon={<ClockCircleOutlined />} color="warning">
-              {record?.delayStatus}
-            </Tag>
+            <div className="flex items-center mt-1 space-x-1">
+              <Clock className="h-3 w-3 text-amber-500" />
+              <span className="text-xs text-amber-600">{record?.delayStatus || "Đang xử lý"}</span>
+            </div>
           </Tooltip>
         </div>
       ),
@@ -100,12 +127,12 @@ const PendingOrders = () => {
       title: "Tổng tiền",
       dataIndex: "totalAmount",
       key: "totalAmount",
-      className: "text-center",
+      className: "text-right",
       width: 150,
       render: (value, record) => (
-        <div className="flex flex-col items-center">
-          <span className="font-medium">${Number(value).toFixed(2)}</span>
-          <span className="text-green-600 text-sm">Lợi nhuận: ${Number(record?.totalProfit).toFixed(2)}</span>
+        <div className="flex flex-col items-end">
+          <span className="font-bold text-gray-800">${Number(value).toLocaleString('vi-VN')}</span>
+          <span className="text-green-600 text-xs">Lợi nhuận: ${Number(record?.totalProfit).toLocaleString('vi-VN')}</span>
         </div>
       ),
     },
@@ -115,25 +142,55 @@ const PendingOrders = () => {
       className: "text-center",
       width: 150,
       render: (_, record) => (
-        <div className="flex flex-col items-center gap-1">
-          <Tag color={record?.status === "PENDING" ? "orange" : "green"}>{record?.status}</Tag>
-          <Tag color={record?.paymentStatus === "PENDING" ? "orange" : "green"}>{record?.paymentStatus}</Tag>
+        <div className="flex flex-col gap-2">
+          <div className={`px-2 py-1 rounded-full text-xs font-medium inline-flex items-center justify-center ${getStatusColor(record?.status)}`}>
+            {record?.status === "PENDING" ? (
+              <AlertCircle className="h-3 w-3 mr-1" />
+            ) : (
+              <CheckCircleOutlined className="mr-1 text-xs" />
+            )}
+            {record?.status}
+          </div>
+          <div className={`px-2 py-1 rounded-full text-xs font-medium inline-flex items-center justify-center ${getStatusColor(record?.paymentStatus)}`}>
+            {record?.paymentStatus === "PENDING" ? (
+              <Clock className="h-3 w-3 mr-1" />
+            ) : (
+              <CheckCircleOutlined className="mr-1 text-xs" />
+            )}
+            {record?.paymentStatus}
+          </div>
         </div>
       ),
     },
   ]
 
+  const CustomEmpty = () => (
+    <Empty
+      image={Empty.PRESENTED_IMAGE_SIMPLE}
+      description="Không có đơn hàng đang chờ xử lý"
+      className="my-6"
+    />
+  );
+
   return (
-    <div className="rounded-xl bg-white p-4">
-      <h5 className="text-lg font-medium mb-4">Thông tin đơn hàng</h5>
+    <div className="rounded-xl bg-white p-5 border border-gray-100 shadow-sm">
+      <div className="flex justify-between items-center mb-5">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800">Đơn hàng đang chờ</h3>
+          <p className="text-sm text-gray-500 mt-1">Danh sách đơn hàng cần xử lý</p>
+        </div>
+        {data?.data?.data && data.data.data.length > 0 && (
+          <div className="bg-amber-50 px-3 py-1 rounded-full border border-amber-100">
+            <span className="text-sm font-medium text-amber-700 flex items-center">
+              <Clock className="h-4 w-4 mr-1" /> {data.data.data.length} đơn chờ xử lý
+            </span>
+          </div>
+        )}
+      </div>
 
       <div
         ref={tableContainerRef}
-        style={{
-          width: "100%",
-          overflowX: "scroll",
-          display: "block",
-        }}
+        className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-50"
       >
         <Table
           columns={columns as any}
@@ -141,8 +198,13 @@ const PendingOrders = () => {
           rowKey="id"
           pagination={false}
           size="middle"
-          loading={isLoading}
-          bordered
+          loading={{
+            spinning: isLoading,
+            indicator: <Spin size="small" />,
+          }}
+          rowClassName="hover:bg-gray-50 transition-colors"
+          className="pending-orders-table"
+          locale={{ emptyText: <CustomEmpty /> }}
           style={{ minWidth: "1000px" }} 
         />
       </div>

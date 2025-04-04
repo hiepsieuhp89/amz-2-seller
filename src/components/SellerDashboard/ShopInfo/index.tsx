@@ -1,61 +1,72 @@
 import type React from "react"
-import { Card, Row, Col } from "antd"
+import { Row, Col } from "antd"
 import { useShopDetailStatistics } from "@/hooks/dashboard"
 import { BoxSeamIcon, StarsIcon, ReceiptIcon, PersonHeartsIcon, EyeIcon } from "../mockData"
+import { Package, DollarSign, ShoppingCart, Heart, Eye } from "lucide-react"
 
 const ShopInfo = () => {
   const { detailStatistics } = useShopDetailStatistics()
+  
   const infoItems = [
     {
-      icon: <BoxSeamIcon />,
+      icon: <Package className="h-5 w-5" />,
       value: detailStatistics?.totalProducts || 0,
-      label: "Các sản phẩm",
-      bgColor: "bg-[#eee5ff]",
-      iconColor: "text-[#a276fd]",
+      label: "Sản phẩm",
+      bgColor: "bg-purple-100",
+      textColor: "text-purple-700",
+      iconColor: "text-purple-500",
     },
     {
-      icon: <StarsIcon />,
-      value: detailStatistics?.totalProfit || 0,
-      label: "Tổng Lợi Nhuận",
-      bgColor: "bg-[#fff0a3]",
-      iconColor: "text-[#ffd700]",
+      icon: <DollarSign className="h-5 w-5" />,
+      value: `$${(detailStatistics?.totalProfit || 0).toLocaleString('vi-VN')}`,
+      label: "Lợi nhuận",
+      bgColor: "bg-amber-100",
+      textColor: "text-amber-700",
+      iconColor: "text-amber-500",
     },
     {
-      icon: <ReceiptIcon />,
+      icon: <ShoppingCart className="h-5 w-5" />,
       value: detailStatistics?.totalOrders || 0,
-      label: "Tổng số đơn đặt hàng",
-      bgColor: "bg-[#c9f7f5]",
-      iconColor: "text-[#1bc5bd]",
+      label: "Đơn hàng",
+      bgColor: "bg-cyan-100",
+      textColor: "text-cyan-700",
+      iconColor: "text-cyan-500",
     },
     {
-      icon: <PersonHeartsIcon />,
+      icon: <Heart className="h-5 w-5" />,
       value: detailStatistics?.totalSales || 0,
-      label: "Tổng Lượt Bán",
-      bgColor: "bg-[#ffe2e5]",
-      iconColor: "text-[#f64e60]",
+      label: "Lượt bán",
+      bgColor: "bg-rose-100",
+      textColor: "text-rose-700",
+      iconColor: "text-rose-500",
     },
     {
-      icon: <EyeIcon />,
+      icon: <Eye className="h-5 w-5" />,
       value: detailStatistics?.totalViews || 0,
       label: "Lượt xem",
-      bgColor: "bg-[#9DDE8B]",
-      iconColor: "text-[#40A578]",
+      bgColor: "bg-green-100",
+      textColor: "text-green-700",
+      iconColor: "text-green-500",
     },
   ]
 
   return (
-    <div style={{ borderRadius: "15px", padding: "20px", background: "#fff" }}>
-      <h5 className="text-lg font-medium mb-4">Thông tin cửa hàng</h5>
+    <div className="rounded-xl bg-white p-5 h-full border border-gray-100 shadow-sm">
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold text-gray-800">Thông tin cửa hàng</h3>
+        <p className="text-sm text-gray-500 mt-1">Tổng quan hoạt động cửa hàng</p>
+      </div>
+      
       <Row gutter={[16, 16]} className="mt-3">
         {infoItems.map((item, index) => (
           <Col xs={24} sm={12} key={index}>
-            <div className="flex items-center">
-              <div className={`w-[45px] h-[45px] flex-shrink-0 rounded-md mr-2.5 flex justify-center items-center ${item.bgColor}`}>
-                <span className={`text-2xl ${item.iconColor}`}>{item.icon}</span>
+            <div className="flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-gray-50">
+              <div className={`w-10 h-10 flex-shrink-0 rounded-lg mr-3 flex justify-center items-center ${item.bgColor}`}>
+                <span className={item.iconColor}>{item.icon}</span>
               </div>
               <div>
-                <h5 className="text-base font-bold text-[#474d58] m-0">{item.value}</h5>
-                <span className="text-xs font-bold text-[#b5b5c3]">{item.label}</span>
+                <h5 className={`text-lg font-bold ${item.textColor} m-0`}>{item.value}</h5>
+                <span className="text-xs font-medium text-gray-500">{item.label}</span>
               </div>
             </div>
           </Col>
