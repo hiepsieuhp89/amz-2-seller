@@ -115,7 +115,7 @@ const SellerMoneyWithdrawRequests = () => {
           <BreadcrumbSeparator className="text-main-dark-blue/80" />
           <BreadcrumbItem>
             <BreadcrumbLink className="text-main-dark-blue/80 font-semibold uppercase">
-              Rút tiền
+              Lịch sử thanh toán
             </BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
