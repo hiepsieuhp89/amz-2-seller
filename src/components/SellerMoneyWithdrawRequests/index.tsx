@@ -30,7 +30,7 @@ const SellerMoneyWithdrawRequests = () => {
     {
       title: "Số tiền",
       dataIndex: "money",
-      render: (text) => `${formatNumber(Math.abs(parseFloat(text)))} VND`,
+      render: (text) => `${formatNumber(Math.abs(parseFloat(text)))} USD`,
       align: "right",
     },
     {

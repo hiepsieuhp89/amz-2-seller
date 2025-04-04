@@ -92,7 +92,7 @@ export default function ShopFooter() {
                     U.S. Dollar $
                   </SelectItem>
                   <SelectItem value="vnd" className="text-sm !text-white/80 hover:bg-slate-800">
-                    VND ₫
+                    USD ₫
                   </SelectItem>
                 </SelectContent>
               </Select>

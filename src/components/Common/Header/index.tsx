@@ -34,7 +34,7 @@ const languages: LanguageOption[] = [
 
 const currencies: CurrencyOption[] = [
     { code: "USD", name: "U.S. Dollar", symbol: "$" },
-    { code: "VND", name: "Vietnamese Dong", symbol: "₫" },
+    { code: "USD", name: "Vietnamese Dong", symbol: "₫" },
     { code: "EUR", name: "Euro", symbol: "€" },
     { code: "GBP", name: "British Pound", symbol: "£" },
     { code: "JPY", name: "Japanese Yen", symbol: "¥" },

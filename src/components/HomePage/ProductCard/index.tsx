@@ -84,11 +84,11 @@ export function ProductCard({ product }: ProductCardProps) {
           <CardFooter className="p-4 pt-0 flex items-center">
             <div className="flex items-center gap-2">
               <span className="font-bold text-primary">
-                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price * 1000)}
+                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'USD' }).format(product.price * 1000)}
               </span>
               {product.originalPrice && (
                 <span className="text-sm text-muted-foreground line-through">
-                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.originalPrice * 1000)}
+                  {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'USD' }).format(product.originalPrice * 1000)}
                 </span>
               )}
             </div>
