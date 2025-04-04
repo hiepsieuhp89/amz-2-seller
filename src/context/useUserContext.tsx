@@ -104,7 +104,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
     // Also clear the cookie
     deleteCookie("accessToken")
-    router.push("/")
+    router.push("/sign-in")
     queryClient.clear()
   }
 
