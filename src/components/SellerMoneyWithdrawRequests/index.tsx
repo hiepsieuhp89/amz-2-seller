@@ -120,7 +120,7 @@ const SellerMoneyWithdrawRequests = () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <StatCards />
+      {/* <StatCards /> */}
       <div title="Lịch sử giao dịch" className="!mb-4 rounded-[4px]">
         <Table
           columns={columns}
