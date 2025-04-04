@@ -2,7 +2,7 @@
 import React from "react"
 import { useState, useEffect } from "react"
 import { Input, Button, Badge, Empty, Spin, message, Pagination, Row, Col, Drawer } from "antd"
-import { PlusOutlined, SearchOutlined, DeleteOutlined, ShoppingCartOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons"
+import { PlusOutlined, SearchOutlined, DeleteOutlined, ShoppingCartOutlined, LeftOutlined, RightOutlined, CheckOutlined } from "@ant-design/icons"
 import styles from "./storehouse.module.scss"
 import { useGetAllShopProducts } from "@/hooks/shop-products"
 import { useAddShopProducts } from "@/hooks/shop-products"
@@ -31,6 +31,7 @@ const Storehouse = () => {
   })
   const { mutate: addShopProducts, isPending: isAddingProducts } = useAddShopProducts()
   const [filteredProducts, setFilteredProducts] = useState<any[]>(productsData?.data?.data || [])
+  const [allProducts, setAllProducts] = useState<any[]>([])
   const [selectedProducts, setSelectedProducts] = useState<any[]>([])
   const [keyword, setKeyword] = useState("")
   const [minPrice, setMinPrice] = useState<number | undefined>()
@@ -40,14 +41,34 @@ const Storehouse = () => {
   const { setSelectedProduct } = useSelectedProduct()
   const [drawerVisible, setDrawerVisible] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isLastPage, setIsLastPage] = useState(false)
 
   useEffect(() => {
     setIsClient(true)
   }, [])
 
+  useEffect(() => {
+    if (productsData?.data?.data && (productsData.data.data as any[]).length > 0) {
+      if (currentPage === 1) {
+        setAllProducts(productsData.data.data as any[])
+      } else {
+        // Ensure we don't have duplicates
+        const newProducts = (productsData.data.data as any[]).filter(
+          (newProduct: any) => !allProducts.some((existingProduct: any) => existingProduct.id === newProduct.id)
+        );
+        setAllProducts(prev => [...prev, ...newProducts]);
+      }
+      filterProducts()
+    }
+  }, [productsData?.data?.data, currentPage, allProducts])
+
+  useEffect(() => {
+    filterProducts()
+  }, [keyword, minPrice, maxPrice, allProducts])
+
   const filterProducts = () => {
     if (keyword || minPrice !== undefined || maxPrice !== undefined) {
-      let filtered = [...productsData?.data?.data || []]
+      let filtered = [...allProducts]
 
       if (keyword) {
         filtered = filtered.filter((product: any) =>
@@ -69,15 +90,16 @@ const Storehouse = () => {
 
       setFilteredProducts(filtered)
     } else {
-      setFilteredProducts(productsData?.data?.data || [])
+      setFilteredProducts(allProducts)
     }
   }
 
   useEffect(() => {
-    if ((productsData?.data?.data as any)?.length > 0) {
-      filterProducts()
+    if (productsData?.data?.meta) {
+      const { page, pageCount } = productsData.data.meta
+      setIsLastPage(page >= pageCount)
     }
-  }, [keyword, minPrice, maxPrice, productsData?.data?.data])
+  }, [productsData])
 
   const addProduct = (product: any) => {
     const productExists = selectedProducts.some(item => item.id === product.id);
@@ -118,6 +140,16 @@ const Storehouse = () => {
   const handlePaginationChange = (page: number, pageSize?: number) => {
     setCurrentPage(page)
     if (pageSize) setPageSize(pageSize)
+  }
+
+  const handleLoadMore = () => {
+    const nextPage = currentPage + 1
+    setCurrentPage(nextPage)
+    refetch()
+  }
+
+  const isProductSelected = (product: any) => {
+    return selectedProducts.some(item => item.id === product.id)
   }
 
   if (!isClient) {
@@ -311,7 +343,7 @@ const Storehouse = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-8 gap-4 h-[calc(100vh-210px)] flex-1 flex-grow overflow-y-auto">
-              {isLoading ? (
+              {isLoading && currentPage === 1 ? (
                 <div className="col-span-full flex justify-center items-center h-full">
                   <Spin size="small" />
                 </div>
@@ -368,9 +400,22 @@ const Storehouse = () => {
                           </div>
                         </div>
                       </div>
-                      <div className={styles.hoverOverlay} onClick={() => addProduct(product)}>
-                        <PlusOutlined className={styles.plusIcon} />
+                      <div 
+                        className={`${styles.hoverOverlay} ${isProductSelected(product) ? styles.selectedOverlay : ''}`} 
+                        onClick={() => addProduct(product)}
+                      >
+                        {isProductSelected(product) ? (
+                          <CheckOutlined className={styles.selectedIcon} />
+                        ) : (
+                          <PlusOutlined className={styles.plusIcon} />
+                        )}
                       </div>
+                      
+                      {isProductSelected(product) && (
+                        <div className={styles.selectedBadge}>
+                          <CheckOutlined />
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))
@@ -381,18 +426,19 @@ const Storehouse = () => {
               )}
             </div>
 
-            {filteredProducts.length > 0 && (
-              <Row justify="end" style={{ marginTop: 24 }}>
-                <Col>
-                  <Pagination
-                    current={currentPage}
-                    pageSize={pageSize}
-                    total={productsData?.data?.meta?.itemCount || 0}
-                    onChange={handlePaginationChange}
-                    onShowSizeChange={handlePaginationChange}
-                  />
-                </Col>
-              </Row>
+            {filteredProducts.length > 0 && !isLastPage && (
+              <div className="w-full mt-6">
+                <Button
+                  type="primary"
+                  onClick={handleLoadMore}
+                  loading={isLoading}
+                  disabled={isLastPage}
+                  className="w-full text-center bg-white text-blue-700 border-blue-700 hover:bg-blue-50"
+                  ghost
+                >
+                  Xem thêm
+                </Button>
+              </div>
             )}
             
             {/* Cart button for small screens */}
@@ -460,4 +506,6 @@ const Storehouse = () => {
 }
 
 export default Storehouse
+
+
 

@@ -172,6 +172,37 @@
     font-size: 48px;
     color: white;
   }
+  
+  .selectedIcon {
+    font-size: 48px;
+    color: white;
+  }
+  
+  &.selectedOverlay {
+    opacity: 0.3;
+    background-color: rgba(0, 120, 255, 0.3);
+    
+    &:hover {
+      opacity: 0.6;
+      background-color: rgba(0, 120, 255, 0.6);
+    }
+  }
+}
+
+.selectedBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #1890ff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 12;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .imageContainer {
