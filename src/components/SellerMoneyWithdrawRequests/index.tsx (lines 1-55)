@@ -1,0 +1,57 @@
+"use client"
+
+import { useTransactionHistory } from "@/hooks/transaction";
+import { Table } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import StatCards from "../SellerOrders/StatCards";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "../ui/breadcrumb";
+
+const SellerMoneyWithdrawRequests = () => {
+  const { transactionHistoryData: transactionHistoryDataResponse, isLoading } = useTransactionHistory();
+
+  const transactionHistoryData = transactionHistoryDataResponse?.data?.data;
+  console.log(transactionHistoryData);
+
+  const columns: ColumnsType<any> = [
+    { title: "ID", dataIndex: "id" },
+    { title: "Ngày tạo", dataIndex: "createdAt" },
+    { title: "Số tiền", dataIndex: "money" },
+    { title: "Trạng thái", dataIndex: "status" },
+    { title: "Mô tả", dataIndex: "description" },
+    { title: "Loại", dataIndex: "type" },
+    { title: "ID tham chiếu", dataIndex: "referenceId" },
+  ];
+
+  return (
+    <div className="p-4 bg-[#E3E6E6]">
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/" className="text-main-dark-blue/80 hover:text-main-dark-blue uppercase">
+              Trang chủ
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator className="text-main-dark-blue/80" />
+          <BreadcrumbItem>
+            <BreadcrumbLink className="text-main-dark-blue/80 font-semibold uppercase">
+              Rút tiền
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <StatCards />
+      <div title="Lịch sử giao dịch" className="!mb-4 rounded-[4px]">
+        <Table 
+          columns={columns} 
+          dataSource={transactionHistoryData} 
+          pagination={false}
+          scroll={{ x: true }}
+          bordered={true}
+          loading={isLoading}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default SellerMoneyWithdrawRequests; 
