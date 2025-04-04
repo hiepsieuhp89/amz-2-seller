@@ -30,8 +30,8 @@ const Storehouse = () => {
     shopId: user?.id
   })
   const { mutate: addShopProducts, isPending: isAddingProducts } = useAddShopProducts()
-  const [filteredProducts, setFilteredProducts] = useState<any[]>(productsData?.data?.data || [])
   const [allProducts, setAllProducts] = useState<any[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([])
   const [selectedProducts, setSelectedProducts] = useState<any[]>([])
   const [keyword, setKeyword] = useState("")
   const [minPrice, setMinPrice] = useState<number | undefined>()
@@ -42,64 +42,95 @@ const Storehouse = () => {
   const [drawerVisible, setDrawerVisible] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isLastPage, setIsLastPage] = useState(false)
+  const [loadedPages, setLoadedPages] = useState<number[]>([])
 
   useEffect(() => {
     setIsClient(true)
+    
+    // Cleanup function to free memory when component unmounts
+    return () => {
+      setAllProducts([]);
+      setFilteredProducts([]);
+      setSelectedProducts([]);
+      setLoadedPages([]);
+    };
   }, [])
 
+  // Update allProducts when new data is loaded
   useEffect(() => {
     if (productsData?.data?.data && (productsData.data.data as any[]).length > 0) {
-      if (currentPage === 1) {
-        setAllProducts(productsData.data.data as any[])
-      } else {
-        // Ensure we don't have duplicates
-        const newProducts = (productsData.data.data as any[]).filter(
-          (newProduct: any) => !allProducts.some((existingProduct: any) => existingProduct.id === newProduct.id)
-        );
-        setAllProducts(prev => [...prev, ...newProducts]);
+      if (!loadedPages.includes(currentPage)) {
+        setLoadedPages(prev => [...prev, currentPage]);
+        
+        setAllProducts(prev => {
+          const newProductsData = productsData.data.data as any[];
+          const uniqueNewProducts = newProductsData.filter(
+            newProduct => !prev.some(existingProduct => existingProduct.id === newProduct.id)
+          );
+          
+          // Limit the number of products in memory to prevent performance issues
+          // This helps with navigation to other pages
+          const combinedProducts = [...prev, ...uniqueNewProducts];
+          const maxProductsToKeep = 500; // Adjust based on your app's performance
+          
+          return combinedProducts.length > maxProductsToKeep 
+            ? combinedProducts.slice(-maxProductsToKeep) 
+            : combinedProducts;
+        });
       }
-      filterProducts()
     }
-  }, [productsData?.data?.data, currentPage, allProducts])
-
+    
+    // Check if this is the last page
+    if (productsData?.data?.meta) {
+      const { page, pageCount } = productsData.data.meta;
+      setIsLastPage(page >= pageCount);
+    }
+  }, [productsData, currentPage, loadedPages]);
+  
+  // Filter products when search criteria or all products change
   useEffect(() => {
-    filterProducts()
-  }, [keyword, minPrice, maxPrice, allProducts])
+    filterProducts();
+  }, [keyword, minPrice, maxPrice, allProducts]);
 
   const filterProducts = () => {
     if (keyword || minPrice !== undefined || maxPrice !== undefined) {
-      let filtered = [...allProducts]
+      let filtered = [...allProducts];
 
       if (keyword) {
         filtered = filtered.filter((product: any) =>
           product.name.toLowerCase().includes(keyword.toLowerCase())
-        )
+        );
       }
 
       if (minPrice !== undefined) {
         filtered = filtered.filter((product: any) =>
           Number(product.salePrice) >= minPrice
-        )
+        );
       }
 
       if (maxPrice !== undefined) {
         filtered = filtered.filter((product: any) =>
           Number(product.salePrice) <= maxPrice
-        )
+        );
       }
 
-      setFilteredProducts(filtered)
+      // Limit the number of filtered products to prevent memory issues
+      const maxFilteredProducts = 300;
+      const limitedFiltered = filtered.length > maxFilteredProducts 
+        ? filtered.slice(0, maxFilteredProducts) 
+        : filtered;
+        
+      setFilteredProducts(limitedFiltered);
     } else {
-      setFilteredProducts(allProducts)
+      // Limit the number of displayed products to prevent memory issues
+      const maxDisplayProducts = 300;
+      const displayProducts = allProducts.length > maxDisplayProducts 
+        ? allProducts.slice(0, maxDisplayProducts) 
+        : allProducts;
+        
+      setFilteredProducts(displayProducts);
     }
-  }
-
-  useEffect(() => {
-    if (productsData?.data?.meta) {
-      const { page, pageCount } = productsData.data.meta
-      setIsLastPage(page >= pageCount)
-    }
-  }, [productsData])
+  };
 
   const addProduct = (product: any) => {
     const productExists = selectedProducts.some(item => item.id === product.id);
@@ -143,9 +174,15 @@ const Storehouse = () => {
   }
 
   const handleLoadMore = () => {
-    const nextPage = currentPage + 1
-    setCurrentPage(nextPage)
-    refetch()
+    if (isLoading || isLastPage) return;
+    
+    const nextPage = currentPage + 1;
+    setCurrentPage(nextPage);
+    
+    // Explicitly trigger refetch after state update
+    setTimeout(() => {
+      refetch();
+    }, 0);
   }
 
   const isProductSelected = (product: any) => {
@@ -245,7 +282,6 @@ const Storehouse = () => {
     </div>
   )
 
-  // Render the collapsed mini cart view
   const renderMiniCart = () => (
     <div className={`${styles.miniCart} bg-white p-2 h-full rounded-l-lg border-l border-t border-b flex flex-col`}>
       <button 
@@ -441,7 +477,6 @@ const Storehouse = () => {
               </div>
             )}
             
-            {/* Cart button for small screens */}
             <div className="md:hidden fixed bottom-4 right-4 z-10">
               <Button
                 type="primary"
@@ -461,7 +496,6 @@ const Storehouse = () => {
             </div>
           </div>
 
-          {/* Cart section for large screens */}
           <div className={`hidden lg:block ${styles.sidebarContainer} ${isCollapsed ? styles.collapsed : styles.expanded}`}>
             {isCollapsed ? (
               renderMiniCart()
@@ -480,12 +514,10 @@ const Storehouse = () => {
             )}
           </div>
           
-          {/* Visible only on md breakpoint */}
           <div className="hidden md:block lg:hidden md:w-[400px]">
             {renderProductCart()}
           </div>
           
-          {/* Drawer for small screens */}
           <Drawer
             title="Giỏ hàng đã chọn"
             placement="right"
