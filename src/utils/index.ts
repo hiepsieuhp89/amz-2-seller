@@ -123,5 +123,5 @@ export const filterSort=(optionA:any,optionB:any)=>{
 }
 
 export const formatNumber = (number: number): string => {
-  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return number.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };
