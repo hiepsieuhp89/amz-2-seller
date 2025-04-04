@@ -67,13 +67,6 @@ export const view={
   editPlan:'Chỉnh sửa kế hoạch'
 }
 
-export const minDateByWeekNumber=(value:any)=>{
-  return dayjs().week(toNumber(value)).startOf("isoWeek")
-}
-export const maxDateByWeekNumber=(value:any)=>{
-  return dayjs().week(toNumber(value)).endOf("isoWeek")
-}
-
 export const getStartWeek = (weekNumber: any): { startOfWeek: string, endOfWeek: string } => {
   if (!weekNumber ) {
     return { startOfWeek: '', endOfWeek: '' };
@@ -128,3 +121,7 @@ export const filterSort=(optionA:any,optionB:any)=>{
   const labelB=(optionB?.label??'').toLowerCase();
   return labelA.localeCompare(labelB);
 }
+
+export const formatNumber = (number: number): string => {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
