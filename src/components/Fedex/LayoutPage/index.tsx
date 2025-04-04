@@ -11,12 +11,10 @@ import Image from "next/image"
 import { useEffect, useState } from "react"
 import "./styles.css"
 import { useUser } from "@/context/useUserContext"
+import useSidebar from "@/stores/useSidebar"
 
-interface LayoutFedExProps {
-  isSidebarOpen: boolean
-}
-
-function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
+function LayoutPage() {
+  const { isSidebarOpen } = useSidebar(); // Sử dụng hook useSidebar
   const router = useRouter()
   const pathname = usePathname()
   const [path, setPath] = useState(`fedex`)

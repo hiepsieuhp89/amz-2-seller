@@ -12,7 +12,7 @@ import { bestSellers, bestSellingToys } from "./mockData"
 import { useProducts } from "@/hooks/products"
 import { IProduct } from "@/interface/response/products"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useSelectedProduct } from '@/app/stores/useSelectedProduct'
+import { useSelectedProduct } from '@/stores/useSelectedProduct'
 
 const RatingStars = ({ rating }: { rating: number }) => {
   return (

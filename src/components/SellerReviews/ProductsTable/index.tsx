@@ -17,7 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { checkImageUrl } from "@/lib/utils"
 import { Breakpoint } from "antd/lib"
-import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
+import { useSelectedProduct } from "@/stores/useSelectedProduct"
 const { Title, Text } = Typography
 
 interface ProductsTableProps {

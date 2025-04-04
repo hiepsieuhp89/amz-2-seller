@@ -26,7 +26,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useSelectedProduct } from "@/app/stores/useSelectedProduct";
+import { useSelectedProduct } from "@/stores/useSelectedProduct";
 import { Star } from "lucide-react";
 import { formatNumber } from "@/utils";
 

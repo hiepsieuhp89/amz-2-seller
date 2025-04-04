@@ -10,7 +10,7 @@ import { useProducts } from "@/hooks/products"
 import { useSearchParams } from "next/navigation"
 import { IProduct } from "@/interface/response/products"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
+import { useSelectedProduct } from "@/stores/useSelectedProduct"
 import { formatNumber } from "@/utils"
 
 interface Brand {

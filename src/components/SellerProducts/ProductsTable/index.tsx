@@ -35,7 +35,7 @@ import "yet-another-react-lightbox/styles.css";
 import "./styles.css";
 import { checkImageUrl } from "@/lib/utils";
 import Link from "next/link";
-import { useSelectedProduct } from "@/app/stores/useSelectedProduct";
+import { useSelectedProduct } from "@/stores/useSelectedProduct";
 
 const { Title, Text } = Typography;
 type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";

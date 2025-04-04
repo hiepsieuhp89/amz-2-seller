@@ -17,8 +17,9 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
+import { useSelectedProduct } from "@/stores/useSelectedProduct"
 import { formatNumber } from "@/utils"
+import useSidebar from "@/stores/useSidebar"
 
 const Storehouse = () => {
   const { user } = useUser()
@@ -43,7 +44,7 @@ const Storehouse = () => {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isLastPage, setIsLastPage] = useState(false)
   const [loadedPages, setLoadedPages] = useState<number[]>([])
-
+  const { isSidebarOpen } = useSidebar()
   useEffect(() => {
     setIsClient(true)
     
@@ -378,7 +379,7 @@ const Storehouse = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4 h-[calc(100vh-210px)] flex-1 flex-grow overflow-y-auto">
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${!isSidebarOpen ? 'xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6' : 'xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5'} gap-4 h-[calc(100vh-210px)] flex-1 flex-grow overflow-y-auto`}>
               {isLoading && currentPage === 1 ? (
                 <div className="col-span-full flex justify-center items-center h-full">
                   <Spin size="small" />

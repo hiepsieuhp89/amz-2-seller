@@ -7,7 +7,7 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useSelectedProduct } from "@/app/stores/useSelectedProduct"
+import { useSelectedProduct } from "@/stores/useSelectedProduct"
 
 // Types
 interface Review {

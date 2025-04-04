@@ -27,12 +27,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useLayout } from "@/components/LayoutProvider"
+import useSidebar from '@/stores/useSidebar'
 
-interface LayoutGAProps {
-  isSidebarOpen: boolean
-}
-
-function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
+function LayoutPage() {
+  const { isSidebarOpen } = useSidebar()
   const router = useRouter()
   const pathname = usePathname()
   const [path, setPath] = useState(`seller/dashboard`)

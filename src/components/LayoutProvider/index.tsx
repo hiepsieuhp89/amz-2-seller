@@ -4,13 +4,12 @@ import { lazy, useState, createContext, useContext, useEffect } from 'react';
 import { Button } from 'antd';
 import Icon from '@mdi/react';
 import { mdiMenu, mdiWindowClose } from '@mdi/js';
+import useSidebar from '@/stores/useSidebar';
 
 const LayoutPage = lazy(() => import('@/components/LayoutPage'));
 const LayoutHeaderCommon = lazy(() => import('@/components/LayoutHeaderCommom'));
 
 type LayoutContextType = {
-  isSidebarOpen: boolean;
-  toggleSidebar: () => void;
   isMobileSidebarOpen: boolean;
   toggleMobileSidebar: () => void;
 };
@@ -25,45 +24,37 @@ export const useLayout = () => {
   return context;
 };
 
-// Provider component
 export const LayoutProvider = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { isSidebarOpen, setIsSidebarOpen } = useSidebar();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-      if (window.innerWidth <= 768) {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (mobile) {
         setIsSidebarOpen(false);
       }
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const toggleSidebar = () => {
-    if (isMobile) {
-      setIsMobileSidebarOpen(!isMobileSidebarOpen);
-    } else {
-      setIsSidebarOpen(!isSidebarOpen);
-    }
-  };
+  }, [setIsSidebarOpen]);
 
   const toggleMobileSidebar = () => {
     setIsMobileSidebarOpen(!isMobileSidebarOpen);
   };
 
   return (
-    <LayoutContext.Provider value={{ isSidebarOpen, toggleSidebar, isMobileSidebarOpen, toggleMobileSidebar }}>
+    <LayoutContext.Provider value={{ isMobileSidebarOpen, toggleMobileSidebar }}>
       <div className={styles.root} suppressHydrationWarning>
         <div className='!bg-main-dark-blue'>
-          <LayoutPage isSidebarOpen={isMobile ? isMobileSidebarOpen : isSidebarOpen} />
+          <LayoutPage />
         </div>
 
         <div className={styles.outlet}>
@@ -77,7 +68,7 @@ export const LayoutProvider = ({
         {!isMobile && (
           <Button 
             type="text"
-            onClick={toggleSidebar}
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             style={{
               position: "fixed",
               zIndex: 1000,
