@@ -52,6 +52,13 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       path: `/seller/dashboard`,
     },
     {
+      key: "/seller/products/storehouse",
+      name: "Storehouse",
+      icon: <Icon path={mdiStoreOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiStoreOutline} size={0.8} color={"#FCAF17"} />,
+      path: `/seller/products/storehouse`,
+    },
+    {
       key: "/seller/products",
       name: "Các sản phẩm",
       icon: <Icon path={mdiPackageVariant} size={0.8} />,
@@ -59,11 +66,11 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       path: `/seller/products`,
     },
     {
-      key: "/seller/products/storehouse",
-      name: "Storehouse",
-      icon: <Icon path={mdiStoreOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiStoreOutline} size={0.8} color={"#FCAF17"} />,
-      path: `/seller/products/storehouse`,
+      key: "/seller/reviews",
+      name: "Đánh giá sản phẩm",
+      icon: <Icon path={mdiStar} size={0.8} />,
+      activeIcon: <Icon path={mdiStar} size={0.8} color={"#FCAF17"} />,
+      path: `/seller/reviews`,
     },
     {
       key: "/seller/orders",
@@ -76,13 +83,6 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
         count: 0,
         color: "#f08806",
       },
-    },
-    {
-      key: "/seller/reviews",
-      name: "Đánh giá sản phẩm",
-      icon: <Icon path={mdiStar} size={0.8} />,
-      activeIcon: <Icon path={mdiStar} size={0.8} color={"#FCAF17"} />,
-      path: `/seller/reviews`,
     },
     {
       key: "/seller/account-packages",
@@ -121,20 +121,6 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
       ],
     },
     {
-      key: "/seller/shop-settings",
-      name: "Cài đặt cửa hàng",
-      icon: <Icon path={mdiCogOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiCogOutline} size={0.8} color={"#FCAF17"} />,
-      path: "/seller/shop",
-    },
-    {
-      key: "/seller/payment-history",
-      name: "Lịch sử thanh toán",
-      icon: <Icon path={mdiPackageVariantClosed} size={0.8} />,
-      activeIcon: <Icon path={mdiPackageVariantClosed} size={0.8} color={"#FCAF17"} />,
-      path: "/seller/money-withdraw-requests",
-    },
-    {
       key: "/seller/chat",
       name: "Chat trực tuyến",
       icon: <Icon path={mdiMessageTextOutline} size={0.8} />,
@@ -145,6 +131,20 @@ function LayoutPage({ isSidebarOpen }: LayoutGAProps) {
         count: 0,
         color: "#f08806",
       },
+    },
+    {
+      key: "/seller/payment-history",
+      name: "Lịch sử thanh toán",
+      icon: <Icon path={mdiPackageVariantClosed} size={0.8} />,
+      activeIcon: <Icon path={mdiPackageVariantClosed} size={0.8} color={"#FCAF17"} />,
+      path: "/seller/money-withdraw-requests",
+    },
+    {
+      key: "/seller/shop-settings",
+      name: "Cài đặt cửa hàng",
+      icon: <Icon path={mdiCogOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiCogOutline} size={0.8} color={"#FCAF17"} />,
+      path: "/seller/shop",
     },
   ]
 
