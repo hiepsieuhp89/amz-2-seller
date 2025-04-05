@@ -29,7 +29,7 @@ export default function ShopContent({
 }: ShopContentProps) {
   return (
     <main className="w-full flex justify-center px-[104px] py-6 bg-[#E3E6E6]">
-      <div className="max-w-7xl bg-[#E3E6E6]">
+      <div className="max-w-[1440px] bg-[#E3E6E6]">
       {/* Filters & Sort */}
       <div className="mb-6 flex justify-between items-center">
         <div>

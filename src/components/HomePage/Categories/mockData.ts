@@ -95,7 +95,7 @@ export const categories = [
       },
       {
         id: "item12",
-        label: "储存与组织",
+        label: "Lưu trữ và tổ chức",
         image: "https://img6.yeshen.cc/vn-alibaba/1d/69/1d3480df9711e4268f2d245e6411b31c1aeeea69.jpg",
         link: "c75f6dcb-c36a-4817-8aa3-1a236bef2182",
       },

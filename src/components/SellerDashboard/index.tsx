@@ -11,7 +11,7 @@ import { Breadcrumb, BreadcrumbSeparator, BreadcrumbLink, BreadcrumbItem, Breadc
 const SellerDashboard = () => {
   return (
     <div className="min-h-screen py-8 px-4 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1440px] mx-auto">
         <div className="mb-8">
           <Breadcrumb className="mb-4">
             <BreadcrumbList>

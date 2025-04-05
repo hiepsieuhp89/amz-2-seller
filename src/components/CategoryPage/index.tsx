@@ -15,7 +15,7 @@ export default function CategoryPage() {
     <main className="bg-[#E3E6E6]">
       <Header />
       <MenuHeader />
-      <div className="max-w-7xl mx-auto relative">
+      <div className="max-w-[1440px] mx-auto relative">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -24,7 +24,7 @@ export default function CategoryPage() {
       >
 
         <SidebarProvider>
-          <div className="flex  max-w-7xl bg-[#E3E6E6] pt-4 pb-8
+          <div className="flex  max-w-[1440px] bg-[#E3E6E6] pt-4 pb-8
         px-4
         md:px-10
         lg:px-20

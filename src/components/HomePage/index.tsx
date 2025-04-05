@@ -45,7 +45,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#E3E6E6]">
       <Header />
       <MenuHeader />
-      <div className="max-w-7xl mx-auto relative">
+      <div className="max-w-[1440px] mx-auto relative">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -63,10 +63,10 @@ export default function HomePage() {
         className="w-full absolute top-2/3 bg-[#E3E6E6]"
       >
         {/* Category Grid */}
-        <div className="px-4 max-w-7xl mx-auto">
+        <div className="px-4 max-w-[1440px] mx-auto">
           <Categories />
         </div>
-        <div className="px-4 max-w-7xl mx-auto">
+        <div className="px-4 max-w-[1440px] mx-auto">
         <FeaturedCategories />
         <BestSellers />
         <Categories2 />

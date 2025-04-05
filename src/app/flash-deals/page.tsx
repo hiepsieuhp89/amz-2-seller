@@ -16,9 +16,9 @@ export default function FlashDealsPage() {
         <main className="bg-[#E3E6E6]">
             <Header />
             <MenuHeader />
-            <div className="max-w-7xl mx-auto relative">
+            <div className="max-w-[1440px] mx-auto relative">
                 <div className="min-h-screen bg-background flex flex-col">
-                    <section className="py-8 px-[104px] max-w-7xl flex-1 bg-[#E3E6E6]">
+                    <section className="py-8 px-[104px] max-w-[1440px] flex-1 bg-[#E3E6E6]">
                         <div className="flex items-center justify-between">
                             <h1 className="text-2xl font-bold">Giao dịch nhanh</h1>
                             <Breadcrumb>

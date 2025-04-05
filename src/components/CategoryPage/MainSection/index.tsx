@@ -39,6 +39,7 @@ export default function MainSection({ brands, sortOptions }: MainSectionProps) {
     categoryId: categoryId || undefined,
     page: Number.parseInt(page),
     order: "DESC",
+    take: 12,
   })
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -185,7 +186,7 @@ export default function MainSection({ brands, sortOptions }: MainSectionProps) {
               <div className="relative">
                 <Link
                   onClick={() => { setSelectedProduct(product) }}
-                  href={`/shop/product?id=${product.id}`}>
+                  href={`/shop/product?id=${product.id}&name=${product.name}`}>
                   <div className="aspect-square relative overflow-hidden">
                     <Image
                       src={product.imageUrls?.[0] || "/placeholder.svg?height=300&width=300"}
@@ -223,7 +224,7 @@ export default function MainSection({ brands, sortOptions }: MainSectionProps) {
                 </div>
 
                 <h3 className="text-sm font-semibold line-clamp-2 h-10 mb-2">
-                  <Link href={`/shop/product?id=${product.id}`} className="hover:text-primary">
+                  <Link href={`/shop/product?id=${product.id}&name=${product.name}`} className="hover:text-primary">
                     {product.name}
                   </Link>
                 </h3>
@@ -241,11 +242,11 @@ export default function MainSection({ brands, sortOptions }: MainSectionProps) {
           {data?.data.meta && (
             <nav className="flex items-center">
               <Link
-                href={data.data.meta.page > 1 ? `?page=${data.data.meta.page - 1}${categoryId ? `&id=${categoryId}` : ""}` : "#"}
+                href={data.data.meta.page > 1 ? `?page=${data.data.meta.page - 1}${categoryId ? `&id=${categoryId}` : ""}&name=${name}` : "#"}
                 className={`px-3 py-1 mx-1 rounded ${data.data.meta.page === 1 ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:bg-gray-200"}`}
                 aria-disabled={data.data.meta.page === 1}
               >
-                ‹
+                Trước
               </Link>
 
               {Array.from({ length: Math.min(5, data.data.meta.pageCount) }, (_, i) => {
@@ -255,7 +256,7 @@ export default function MainSection({ brands, sortOptions }: MainSectionProps) {
                   return (
                     <Link
                       key={pageNumber}
-                      href={`?page=${pageNumber}${categoryId ? `&id=${categoryId}` : ""}`}
+                      href={`?page=${pageNumber}${categoryId ? `&id=${categoryId}` : ""}&name=${name}`}
                       className={`h-9 w-9 flex items-center justify-center mx-1 rounded-full ${pageNumber === data.data.meta.page ? "bg-main-charcoal-blue !text-white/80" : "text-gray-700 hover:bg-main-charcoal-blue bg-white hover:!text-white/80"}`}
                     >
                       {pageNumber}
@@ -268,26 +269,16 @@ export default function MainSection({ brands, sortOptions }: MainSectionProps) {
               {data.data.meta.pageCount > 5 && data.data.meta.page < data.data.meta.pageCount - 2 && (
                 <span className="px-3 py-1 mx-1">...</span>
               )}
-
-              {data.data.meta.pageCount > 5 && data.data.meta.page < data.data.meta.pageCount - 1 && (
-                <Link
-                  href={`?page=${data.data.meta.pageCount}${categoryId ? `&id=${categoryId}` : ""}`}
-                  className="h-9 w-9 flex items-center justify-center mx-1 rounded-full text-gray-700 hover:bg-main-charcoal-blue bg-white hover:!text-white/80"
-                >
-                  {data.data.meta.pageCount}
-                </Link>
-              )}
-
               <Link
                 href={
                   data.data.meta.page < data.data.meta.pageCount
-                    ? `?page=${data.data.meta.page + 1}${categoryId ? `&id=${categoryId}` : ""}`
+                    ? `?page=${data.data.meta.page + 1}${categoryId ? `&id=${categoryId}` : ""}&name=${name}`
                     : "#"
                 }
                 className={`px-3 py-1 mx-1 rounded ${data.data.meta.page === data.data.meta.pageCount ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:bg-gray-200"}`}
                 aria-disabled={data.data.meta.page === data.data.meta.pageCount}
               >
-                ›
+                Kế tiếp
               </Link>
             </nav>
           )}

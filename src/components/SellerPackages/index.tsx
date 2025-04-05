@@ -148,7 +148,7 @@ const SellerPackages = () => {
 
   return (
     <div className="min-h-screen py-8 px-4 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1440px] mx-auto">
         <Breadcrumb className="mb-6">
           <BreadcrumbList>
             <BreadcrumbItem>
