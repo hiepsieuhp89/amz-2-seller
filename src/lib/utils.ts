@@ -5,11 +5,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const checkImageUrl = (imageUrl: string | undefined | null): string => {
+export const checkImageUrl = (imageUrls: string[] | undefined | null): string => {
   const placeholder = "/images/white-image.png";
-  if (!imageUrl) {
+  if (!imageUrls) {
     return placeholder;
   }
+  const imageUrl = imageUrls[0]
 
   if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
     return imageUrl;
