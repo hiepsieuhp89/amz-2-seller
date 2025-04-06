@@ -7,6 +7,12 @@ import { Divider, Badge, Spin } from "antd"
 import JSBarcode from "jsbarcode"
 import { QRCodeCanvas } from "qrcode.react"
 import Image from "next/image"
+import Icon from "@mdi/react"
+import { mdiPrinter } from "@mdi/js"
+import { Button } from "@/components/ui/button"
+import html2canvas from "html2canvas"
+import jsPDF from "jspdf"
+
 interface OrderDetailDialogProps {
     orderId: string
     open: boolean
@@ -16,6 +22,7 @@ interface OrderDetailDialogProps {
 const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogProps) => {
     const { data: orderDetailData, isLoading } = useGetOrderDetail(orderId)
     const [barcodeSvg, setBarcodeSvg] = React.useState<string>("")
+    const [isPrinting, setIsPrinting] = React.useState<boolean>(false)
     console.log(orderDetailData)
     React.useEffect(() => {
         if (open) {
@@ -31,6 +38,84 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
             setBarcodeSvg(canvas.toDataURL("image/png"))
         }
     }, [open])
+
+    const handlePrintInvoice = async () => {
+        try {
+            // Đặt trạng thái in thành true và đợi React cập nhật DOM
+            setIsPrinting(true)
+            
+            // Đợi React cập nhật DOM trước khi tiếp tục
+            await new Promise(resolve => setTimeout(resolve, 100))
+            
+            // Hiển thị thông báo đang xử lý
+            const processingMsg = document.createElement('div')
+            processingMsg.style.position = 'fixed'
+            processingMsg.style.top = '50%'
+            processingMsg.style.left = '50%'
+            processingMsg.style.transform = 'translate(-50%, -50%)'
+            processingMsg.style.padding = '20px'
+            processingMsg.style.background = 'rgba(0,0,0,0.7)'
+            processingMsg.style.color = 'white'
+            processingMsg.style.borderRadius = '5px'
+            processingMsg.style.zIndex = '9999'
+            processingMsg.textContent = 'Đang tạo PDF...'
+            document.body.appendChild(processingMsg)
+
+            const input = document.getElementById("preview");
+            if (!input) throw new Error("Preview element not found");
+
+            // Sử dụng html2canvas để chuyển đổi DOM thành canvas
+            const canvas = await html2canvas(input, {
+                scale: 1.5,
+                logging: false,
+                useCORS: true,
+                allowTaint: true,
+                scrollY: -window.scrollY
+            })
+
+            // Tạo PDF từ canvas
+            const imgData = canvas.toDataURL('image/png')
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            })
+
+            const pageWidth = pdf.internal.pageSize.getWidth()
+            const pageHeight = pdf.internal.pageSize.getHeight()
+            const imgWidth = pageWidth
+            const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+            // Thêm ảnh vào PDF
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
+
+            // Xử lý nếu nội dung vượt quá một trang
+            if (imgHeight > pageHeight) {
+                let heightLeft = imgHeight - pageHeight
+                let position = -pageHeight
+
+                while (heightLeft > 0) {
+                    pdf.addPage()
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+                    heightLeft -= pageHeight
+                    position -= pageHeight
+                }
+            }
+
+            // Lưu file PDF
+            pdf.save(`don-hang-${orderId.substring(0, 8)}.pdf`)
+        } catch (err) {
+            console.error(err)
+        } finally {
+            // Xóa thông báo đang xử lý
+            const processingMsg = document.querySelector('div[style*="position: fixed"][style*="z-index: 9999"]')
+            if (processingMsg && processingMsg.parentNode) {
+                processingMsg.parentNode.removeChild(processingMsg)
+            }
+            // Đặt trạng thái in thành false
+            setIsPrinting(false)
+        }
+    }
 
     if (isLoading) {
         return (
@@ -84,184 +169,229 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
         return statusMap[status] || status
     }
 
+    const maskUserInfo = (info: string, type: 'name' | 'email' | 'phone' | 'address') => {
+        if (!info) return '';
+        
+        switch (type) {
+            case 'name':
+                // Giữ lại 3 ký tự đầu, còn lại thay bằng *
+                return info.substring(0, 3) + '*'.repeat(info.length - 3);
+            case 'email':
+                // Giữ lại phần đầu trước @ và thay phần còn lại bằng *
+                const atIndex = info.indexOf('@');
+                if (atIndex === -1) return info.substring(0, 3) + '*'.repeat(info.length - 3);
+                const domain = info.substring(atIndex);
+                const username = info.substring(0, atIndex);
+                return username.substring(0, 3) + '*'.repeat(username.length - 3) + domain;
+            case 'phone':
+                // Giữ lại 3 số đầu và 2 số cuối
+                return info.substring(0, 3) + '*'.repeat(info.length - 5) + info.slice(-2);
+            case 'address':
+                // Thay toàn bộ bằng *
+                return '*'.repeat(Math.min(40, info.length));
+            default:
+                return info;
+        }
+    }
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[1000px] p-0 bg-white rounded-md max-h-[90vh] overflow-y-auto">
-                <div className="px-6 py-4">
-                    <h2 className="text-xl font-bold">Chi tiết đơn hàng</h2>
+                <div id="preview">
+                    <div className="px-6 py-4 border-b border-b-gray-200 flex justify-between items-center">
+                        <h2 className="text-xl font-bold">Chi tiết đơn hàng</h2>
+                    </div>
+
+                    <div className="px-6 mt-6">
+                        <div className="grid grid-cols-12 gap-4">
+                            <div className="col-span-12 lg:col-span-5 border p-4 relative">
+                                <div>
+                                    <p className="font-bold">{maskUserInfo(userInfo.name, 'name')}</p>
+                                    <p>{maskUserInfo(userInfo.email, 'email')}</p>
+                                    <p>{maskUserInfo(userInfo.phone, 'phone')}</p>
+                                    <p className="text-gray-600">{maskUserInfo(userInfo.address, 'address')}</p>
+                                </div>
+                            </div>
+
+                            {/* Trạng thái thanh toán */}
+                            <div className="col-span-12 lg:col-span-7 border p-4 relative">
+                                <div className="mb-2">
+                                    <p className="text-gray-600 mb-1">Tình trạng thanh toán</p>
+                                    {isPrinting ? (
+                                        <div className="flex gap-4">
+                                            <p className="py-2 px-4 font-medium">
+                                                {order?.paymentStatus === 'PAID' ? '✓ Đã nhận' : '○ Đã nhận'}
+                                            </p>
+                                            <p className="py-2 px-4 font-medium">
+                                                {order?.paymentStatus === 'PAID' ? '○ Đã thanh toán' : '✓ Đã thanh toán'}
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <div className="flex gap-4">
+                                            <div className={`py-2 px-4 font-medium ${order?.paymentStatus === 'PAID' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}>
+                                                Đã nhận
+                                            </div>
+                                            <div className={`py-2 px-4 font-medium ${order?.paymentStatus === 'PAID' ? 'bg-gray-100' : 'bg-blue-500 text-white'}`}>
+                                                Đã thanh toán
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <p className="text-gray-600">Đặt hàng #</p>
+                                        <p>{order?.id.substring(0, 8)}-{order?.id.substring(24, 32)}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-600">Tình trạng đặt hàng</p>
+                                        <Badge color={order?.status === 'DELIVERED' ? 'green' : 'blue'} text={getOrderStatusVN(order?.status || '')} />
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-600">Ngày đặt hàng</p>
+                                        <p>{formatDate(order?.orderTime || order?.createdAt || '')}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-600">Tổng cộng</p>
+                                        <p className="font-semibold">${order?.totalAmount}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-600">Phương thức thanh toán</p>
+                                        <p>WALLET</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-600">Thông tin bổ sung</p>
+                                        <p>-</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Thông tin sản phẩm */}
+                        <div className="my-6 border relative overflow-hidden">
+
+                            <table className="w-full text-sm">
+                                <thead className="bg-gray-50 text-gray-600">
+                                    <tr>
+                                        <th className="py-3 px-4 text-left">#</th>
+                                        <th className="py-3 px-4 text-left">Hình ảnh</th>
+                                        <th className="py-3 px-4 text-left">SỰ MIÊU TẢ</th>
+                                        <th className="py-3 px-4 text-center">LOẠI GIAO HÀNG</th>
+                                        <th className="py-3 px-4 text-center">QTY</th>
+                                        <th className="py-3 px-4 text-right">GIÁ BÁN</th>
+                                        <th className="py-3 px-4 text-right">TOÀN BỘ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {order?.items && order.items.map((item: any, index: number) => (
+                                        <tr key={item.id} className="border-t">
+                                            <td className="py-4 px-4">{index + 1}</td>
+                                            <td className="py-4 px-4">
+                                                <Image
+                                                    quality={100}
+                                                    draggable={false}
+                                                    src="/images/white-image.png"
+                                                    alt="white-image"
+                                                    width={100} height={100} />
+                                            </td>
+                                            <td className="py-4 px-4">
+                                                30 Pack Lapel Headset Microphone Windscreen, Microphone Sponge Foam Cover Mini Size Lavalier Microphone Windscreen Pink
+                                            </td>
+                                            <td className="py-4 px-4 text-center">-</td>
+                                            <td className="py-4 px-4 text-center">{item.quantity}</td>
+                                            <td className="py-4 px-4 text-right">${item.price}</td>
+                                            <td className="py-4 px-4 text-right">${item.totalAmount}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            {/* Mã vạch và QR code */}
+                            <div className="border p-4 relative">
+
+                                <div className="mb-4">
+                                    {barcodeSvg && <img src={barcodeSvg} alt="Barcode" className="w-full h-auto" />}
+                                    <p className="text-center mt-1 text-sm">086af6e4641abb18caafc151b9aa95c8</p>
+                                </div>
+                                <div className="flex justify-between items-center mt-6">
+                                    <div>
+                                        <p>r******************m</p>
+                                        <p>p******************g</p>
+                                        <p>+2******************43</p>
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                        <p>Colombia</p>
+                                        <QRCodeCanvas value="https://amazon-cms.vercel.app" size={80} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Thông tin giá */}
+                            <div className="border p-4 relative">
+
+                                <div className="space-y-3">
+                                    <div className="flex justify-between py-1">
+                                        <span className="text-gray-600">Giá nhà kho:</span>
+                                        <span>${(parseFloat(order?.totalAmount || '0') * 0.8).toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between py-1">
+                                        <span className="text-gray-600">Lợi nhuận:</span>
+                                        <span>${order?.totalProfit}</span>
+                                    </div>
+                                    <div className="flex justify-between py-1">
+                                        <span className="text-gray-600">Tổng phụ:</span>
+                                        <span>${order?.totalAmount}</span>
+                                    </div>
+                                    <div className="flex justify-between py-1">
+                                        <span className="text-gray-600">Thuế:</span>
+                                        <span>$0.00</span>
+                                    </div>
+                                    <div className="flex justify-between py-1">
+                                        <span className="text-gray-600">Đang chuyển hàng:</span>
+                                        <span>$0.00</span>
+                                    </div>
+                                    <div className="flex justify-between py-1">
+                                        <span className="text-gray-600">Phiếu mua hàng:</span>
+                                        <span>$0.00</span>
+                                    </div>
+                                    <Divider className="my-2" />
+                                    <div className="flex justify-between py-1 font-bold">
+                                        <span className="text-gray-600">TOÀN BỘ:</span>
+                                        <span>${order?.totalAmount}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Thông tin hậu cần */}
+                        <div className="border p-4">
+                            <h3 className="font-bold mb-4">Thông tin hậu cần</h3>
+                            <div className="space-y-4">
+                                {order?.statusHistory && order.statusHistory.map((history: any) => (
+                                    <div key={history.id} className="bg-green-50 p-3">
+                                        <p>{formatDate(history.time)} {history.description}</p>
+                                    </div>
+                                ))}
+                                {order?.status === 'DELIVERED' && (
+                                    <div className="bg-green-50 p-3">
+                                        <p>{formatDate(new Date().toISOString())} Người dùng đã ký tên và việc giao hàng đã được hoàn thành. Cảm ơn bạn đã chờ đợi.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
-                <div className="px-6">
-                    <div className="grid grid-cols-12 gap-4">
-                        {/* Thông tin khách hàng */}
-                        <div className="col-span-12 lg:col-span-4 border p-4 relative">
-
-                            <div>
-                                <p className="font-bold">{userInfo.name}</p>
-                                <p>{userInfo.email}</p>
-                                <p>{userInfo.phone}</p>
-                                <p className="text-gray-600">{userInfo.address}</p>
-                            </div>
-                        </div>
-
-                        {/* Trạng thái thanh toán */}
-                        <div className="col-span-12 lg:col-span-8 border p-4 relative">
-
-                            <div className="mb-2">
-                                <p className="text-gray-600 mb-1">Tình trạng thanh toán</p>
-                                <div className="flex gap-4">
-                                    <div className={`py-2 px-4 font-medium ${order?.paymentStatus === 'PAID' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}>
-                                        Đã nhận
-                                    </div>
-                                    <div className={`py-2 px-4 font-medium ${order?.paymentStatus === 'PAID' ? 'bg-gray-100' : 'bg-blue-500 text-white'}`}>
-                                        Đã thanh toán
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
-                                    <p className="text-gray-600">Đặt hàng #</p>
-                                    <p>{order?.id.substring(0, 8)}-{order?.id.substring(24, 32)}</p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-600">Tình trạng đặt hàng</p>
-                                    <Badge color={order?.status === 'DELIVERED' ? 'green' : 'blue'} text={getOrderStatusVN(order?.status || '')} />
-                                </div>
-                                <div>
-                                    <p className="text-gray-600">Ngày đặt hàng</p>
-                                    <p>{formatDate(order?.orderTime || order?.createdAt || '')}</p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-600">Tổng cộng</p>
-                                    <p className="font-semibold">${order?.totalAmount}</p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-600">Phương thức thanh toán</p>
-                                    <p>Ví điện tử</p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-600">Thông tin bổ sung</p>
-                                    <p>-</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Thông tin sản phẩm */}
-                    <div className="my-6 border relative overflow-hidden">
-
-                        <table className="w-full text-sm">
-                            <thead className="bg-gray-50 text-gray-600">
-                                <tr>
-                                    <th className="py-3 px-4 text-left">#</th>
-                                    <th className="py-3 px-4 text-left">Hình ảnh</th>
-                                    <th className="py-3 px-4 text-left">SỰ MIÊU TẢ</th>
-                                    <th className="py-3 px-4 text-center">LOẠI GIAO HÀNG</th>
-                                    <th className="py-3 px-4 text-center">QTY</th>
-                                    <th className="py-3 px-4 text-right">GIÁ BÁN</th>
-                                    <th className="py-3 px-4 text-right">TOÀN BỘ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {order?.items && order.items.map((item: any, index: number) => (
-                                    <tr key={item.id} className="border-t">
-                                        <td className="py-4 px-4">{index + 1}</td>
-                                        <td className="py-4 px-4">
-                                            <Image
-                                                quality={100}
-                                                draggable={false}
-                                                src="/images/white-image.png" 
-                                                alt="white-image" 
-                                                width={100} height={100} />
-                                        </td>
-                                        <td className="py-4 px-4">
-                                            30 Pack Lapel Headset Microphone Windscreen, Microphone Sponge Foam Cover Mini Size Lavalier Microphone Windscreen Pink
-                                        </td>
-                                        <td className="py-4 px-4 text-center">-</td>
-                                        <td className="py-4 px-4 text-center">{item.quantity}</td>
-                                        <td className="py-4 px-4 text-right">${item.price}</td>
-                                        <td className="py-4 px-4 text-right">${item.totalAmount}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                        {/* Mã vạch và QR code */}
-                        <div className="border p-4 relative">
-
-                            <div className="mb-4">
-                                {barcodeSvg && <img src={barcodeSvg} alt="Barcode" className="w-full h-auto" />}
-                                <p className="text-center mt-1 text-sm">086af6e4641abb18caafc151b9aa95c8</p>
-                            </div>
-                            <div className="flex justify-between items-center mt-6">
-                                <div>
-                                    <p>r******************m</p>
-                                    <p>p******************g</p>
-                                    <p>+2******************43</p>
-                                </div>
-                                <div className="flex flex-col items-end">
-                                    <p>Colombia</p>
-                                    <QRCodeCanvas value="https://amazon-cms.vercel.app" size={80} />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Thông tin giá */}
-                        <div className="border p-4 relative">
-
-                            <div className="space-y-3">
-                                <div className="flex justify-between py-1">
-                                    <span className="text-gray-600">Giá nhà kho:</span>
-                                    <span>${(parseFloat(order?.totalAmount || '0') * 0.8).toFixed(2)}</span>
-                                </div>
-                                <div className="flex justify-between py-1">
-                                    <span className="text-gray-600">Lợi nhuận:</span>
-                                    <span>${order?.totalProfit}</span>
-                                </div>
-                                <div className="flex justify-between py-1">
-                                    <span className="text-gray-600">Tổng phụ:</span>
-                                    <span>${order?.totalAmount}</span>
-                                </div>
-                                <div className="flex justify-between py-1">
-                                    <span className="text-gray-600">Thuế:</span>
-                                    <span>$0.00</span>
-                                </div>
-                                <div className="flex justify-between py-1">
-                                    <span className="text-gray-600">Đang chuyển hàng:</span>
-                                    <span>$0.00</span>
-                                </div>
-                                <div className="flex justify-between py-1">
-                                    <span className="text-gray-600">Phiếu mua hàng:</span>
-                                    <span>$0.00</span>
-                                </div>
-                                <Divider className="my-2" />
-                                <div className="flex justify-between py-1 font-bold">
-                                    <span className="text-gray-600">TOÀN BỘ:</span>
-                                    <span>${order?.totalAmount}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Thông tin hậu cần */}
-                    <div className="border p-4 mb-6">
-                        <h3 className="font-bold mb-4">Thông tin hậu cần</h3>
-                        <div className="space-y-4">
-                            {order?.statusHistory && order.statusHistory.map((history: any) => (
-                                <div key={history.id} className="bg-green-50 p-3">
-                                    <p>{formatDate(history.time)} {history.description}</p>
-                                </div>
-                            ))}
-                            {order?.status === 'DELIVERED' && (
-                                <div className="bg-green-50 p-3">
-                                    <p>{formatDate(new Date().toISOString())} Người dùng đã ký tên và việc giao hàng đã được hoàn thành. Cảm ơn bạn đã chờ đợi.</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                <div className="flex justify-end w-full my-6 px-6">
+                    <Button
+                        onClick={handlePrintInvoice}
+                        className="flex items-center h-10 w-10 rounded-sm bg-[#3B82F6] hover:bg-[#3B82F6]/80"
+                    >
+                        <Icon path={mdiPrinter} size={1} />
+                    </Button>
                 </div>
             </DialogContent>
         </Dialog>
