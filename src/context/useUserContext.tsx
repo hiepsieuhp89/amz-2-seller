@@ -56,7 +56,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     try {
       setIsLoadingProfile(true)
       await refetchProfile()
-      // Store profile in localStorage for persistence
       if (typeof window !== "undefined" && profileData) {
         localStorage.setItem("userProfile", JSON.stringify(profileData))
       }

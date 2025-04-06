@@ -139,3 +139,169 @@ export interface IShopProductReviewsResponse {
   }
 }
 
+export interface IOrderDetailsResponse {
+  status: boolean
+  message: string
+  data: {
+    id: string
+    createdAt: string
+    updatedAt: string
+    deletedAt: string | null
+    userId: string
+    shopId: string
+    totalAmount: string
+    totalProfit: string
+    status: string
+    delayStatus: string
+    paymentStatus: string
+    confirmedAt: string | null
+    deliveredAt: string | null
+    cancelledAt: string | null
+    email: string
+    phone: string | null
+    countryId: string | null
+    stateId: string | null
+    cityId: string | null
+    districtId: string | null
+    postalCode: string | null
+    orderTime: string
+    address: string
+    user: {
+      id: string
+      createdAt: string
+      updatedAt: string
+      deletedAt: string | null
+      email: string
+      username: string
+      fullName: string
+      phone: string
+      invitationCode: string
+      referralCode: string | null
+      role: string
+      isActive: boolean
+      isVerified: boolean
+      balance: string
+      fedexBalance: string
+      bankName: string | null
+      bankAccountNumber: string | null
+      bankAccountName: string | null
+      bankBranch: string | null
+      bankNumber: string | null
+      bankCode: string | null
+      address: string
+      countryId: string
+      stateId: string
+      cityId: string
+      districtId: string | null
+      postalCodeId: string | null
+      stars: number
+      reputationPoints: number
+      shopName: string | null
+      shopPhone: string | null
+      shopAddress: string | null
+      metaTitle: string | null
+      metaDescription: string | null
+      bannerImage: string | null
+      mobileBannerImage: string | null
+      fullBannerImage: string | null
+      halfBannerImage: string | null
+      bannerImage2: string | null
+      sellerPackageExpiry: string | null
+      spreadPackageExpiry: string | null
+      view: number
+      totalProfit: number
+      shopStatus: string | null
+      shopCreatedAt: string | null
+      shopDescription: string | null
+      logoUrl: string | null
+      postalCode: string | null
+      withdrawPassword: string | null
+      idCardType: string | null
+      idCardNumber: string | null
+      idCardFrontImage: string | null
+      idCardBackImage: string | null
+    }
+    shop: {
+      id: string
+      createdAt: string
+      updatedAt: string
+      deletedAt: string | null
+      email: string
+      username: string
+      fullName: string
+      phone: string
+      invitationCode: string | null
+      referralCode: string
+      role: string
+      isActive: boolean
+      isVerified: boolean
+      balance: string
+      fedexBalance: string
+      bankName: string
+      bankAccountNumber: string
+      bankAccountName: string
+      bankBranch: string | null
+      bankNumber: string | null
+      bankCode: string | null
+      address: string
+      countryId: string | null
+      stateId: string | null
+      cityId: string | null
+      districtId: string | null
+      postalCodeId: string | null
+      stars: number
+      reputationPoints: number
+      shopName: string
+      shopPhone: string | null
+      shopAddress: string
+      metaTitle: string
+      metaDescription: string
+      bannerImage: string
+      mobileBannerImage: string
+      fullBannerImage: string
+      halfBannerImage: string
+      bannerImage2: string
+      sellerPackageExpiry: string
+      spreadPackageExpiry: string | null
+      view: number
+      totalProfit: number
+      shopStatus: string | null
+      shopCreatedAt: string | null
+      shopDescription: string | null
+      logoUrl: string
+      postalCode: string | null
+      withdrawPassword: string
+      idCardType: string
+      idCardNumber: string
+      idCardFrontImage: string
+      idCardBackImage: string
+    }
+    items: {
+      id: string
+      createdAt: string
+      updatedAt: string
+      deletedAt: string | null
+      orderId: string
+      shopProductId: string
+      userId: string
+      quantity: number
+      price: string
+      totalAmount: string
+      fedexAmount: string | null
+      isFedexPaid: boolean
+    }[]
+    statusHistory: {
+      id: string
+      createdAt: string
+      updatedAt: string
+      deletedAt: string | null
+      orderId: string
+      description: string
+      time: string
+      index: number
+    }[]
+  }
+  errors: null | any
+  timestamp: string
+}
+

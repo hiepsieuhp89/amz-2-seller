@@ -1,5 +1,5 @@
 import type { IAddShopProductsRequest, IGetShopProductsRequest, IRemoveShopProductsRequest } from "@/interface/request/shop-products"
-import type { IShopProductsResponse, IShopProductReviewsResponse } from "@/interface/response/shop-products"
+import type { IShopProductsResponse, IShopProductReviewsResponse, IOrderDetailsResponse } from "@/interface/response/shop-products"
 import { sendDelete, sendPost, sendGet } from "./axios"
 
 export const addShopProducts = async (payload: IAddShopProductsRequest): Promise<IShopProductsResponse> => {
@@ -107,9 +107,9 @@ export const getShopProductDetail = async (id: string): Promise<IShopProductsRes
   return data
 }
 
-export const getOrderDetail = async (id: string): Promise<IShopProductsResponse> => {
+export const getOrderDetail = async (id: string): Promise<IOrderDetailsResponse> => {
   const res = await sendGet(`/shop-products/my-orders/${id}`)
-  const data: IShopProductsResponse = res
+  const data: IOrderDetailsResponse = res
   return data
 }
 

@@ -8,6 +8,8 @@ import { Badge, Card, Col, Divider, Empty, Input, Row, Select, Space, Spin, Tabl
 import type { ColumnsType } from "antd/es/table"
 import { useState } from "react"
 import { Option } from "antd/lib/mentions"
+import OrderDetailDialog from "../OrderDetailDialog"
+import type { IOrderDetailsResponse } from "@/interface/response/shop-products"
 const { Title } = Typography
 
 interface OrderData {
@@ -17,10 +19,10 @@ interface OrderData {
     totalAmount: string
     status: string
     delayStatus: string
+    paymentStatus: string
     email: string
     address: string
     itemsCount: number
-    paymentStatus: string
     userId: string
     quantity: number
 }
@@ -33,10 +35,17 @@ const OrdersTable = () => {
         page: currentPage
     })
     const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
+    const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
+    const [isDetailOpen, setIsDetailOpen] = useState(false)
 
     const handlePaginationChange = (page: number, pageSize?: number) => {
         setCurrentPage(page)
         if (pageSize) setPageSize(pageSize)
+    }
+
+    const handleOpenDetail = (orderId: string) => {
+        setSelectedOrderId(orderId)
+        setIsDetailOpen(true)
     }
 
     if (isLoading) {
@@ -86,13 +95,31 @@ const OrdersTable = () => {
             dataIndex: "status",
             key: "status",
             width: 110,
-            render: (status) => (
-                <Badge
-                    status={status === 'PENDING' ? 'warning' : 'success'}
-                    text={status === 'PENDING' ? 'Đang chờ xử lý' : 'Đã xử lý'}
-                />
-            ),
+            render: (status) => {
+                const statusMap: Record<string, { text: string, status: 'default' | 'success' | 'warning' | 'error' }> = {
+                    'PENDING': { text: 'Đang chờ xử lý', status: 'warning' },
+                    'CONFIRMED': { text: 'Đã xác nhận', status: 'default' },
+                    'SHIPPING': { text: 'Đang giao hàng', status: 'default' },
+                    'DELIVERED': { text: 'Đã giao hàng', status: 'success' },
+                    'CANCELLED': { text: 'Đã hủy', status: 'error' }
+                }
+                const statusInfo = statusMap[status] || { text: status, status: 'default' }
+                return <Badge status={statusInfo.status} text={statusInfo.text} />
+            },
             sorter: (a, b) => a.status.localeCompare(b.status),
+        },
+        {
+            title: "Thanh toán",
+            dataIndex: "paymentStatus",
+            key: "paymentStatus",
+            width: 110,
+            render: (paymentStatus) => {
+                return <Badge 
+                    status={paymentStatus === 'PAID' ? 'success' : 'warning'} 
+                    text={paymentStatus === 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán'} 
+                />
+            },
+            sorter: (a, b) => a.paymentStatus.localeCompare(b.paymentStatus),
         },
         {
             title: "Email khách hàng",
@@ -112,15 +139,19 @@ const OrdersTable = () => {
             title: "Hành động",
             key: "action",
             width: 110,
-            render: () => (
+            render: (_, record) => (
                 <Space size="middle">
                     <Tooltip title="Xem chi tiết">
-                        <Icon
-                            path={mdiEye}
-                            size={0.7}
-                            color={"#A3A3A3"}
-
-                        />
+                        <span 
+                            onClick={() => handleOpenDetail(record.orderCode)}
+                            style={{ cursor: 'pointer', display: 'inline-flex' }}
+                        >
+                            <Icon
+                                path={mdiEye}
+                                size={0.7}
+                                color={"#A3A3A3"}
+                            />
+                        </span>
                     </Tooltip>
                     <Tooltip title="Chỉnh sửa">
                         <Icon
@@ -142,7 +173,6 @@ const OrdersTable = () => {
     ];
 
     const totalItems = ordersData?.data?.meta?.itemCount || 0
-
     return (
         <div className="border p-4 bg-white rounded-md">
             <Row justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
@@ -171,11 +201,11 @@ const OrdersTable = () => {
                             placeholder="Lọc trạng thái"
                             style={{ width: '100%', maxWidth: 250, borderRadius: "6px" }}
                         >
-                            <Option value="pending">Đang chờ xử lý</Option>
-                            <Option value="confirmed">Đã xác nhận</Option>
-                            <Option value="on_the_way">Đang trên đường đi</Option>
-                            <Option value="delivered">Đã giao hàng</Option>
-                            <Option value="cancelled">Đã huỷ</Option>
+                            <Option value="PENDING">Đang chờ xử lý</Option>
+                            <Option value="CONFIRMED">Đã xác nhận</Option>
+                            <Option value="SHIPPING">Đang giao hàng</Option>
+                            <Option value="DELIVERED">Đã giao hàng</Option>
+                            <Option value="CANCELLED">Đã huỷ</Option>
                         </Select>
                     </Space>
                 </Col>
@@ -192,10 +222,10 @@ const OrdersTable = () => {
                     totalAmount: order.totalAmount,
                     status: order.status,
                     delayStatus: order.delayStatus,
+                    paymentStatus: order.paymentStatus || 'UNPAID',
                     email: order.email,
                     address: order.address,
                     itemsCount: order.items.length,
-                    paymentStatus: order.isFedexPaid ? 'Đã thanh toán' : 'Chưa thanh toán',
                     userId: order.userId,
                     quantity: order.items.reduce((acc: number, item: any) => acc + item.quantity, 0)
                 })) : []}
@@ -224,7 +254,9 @@ const OrdersTable = () => {
                             </p>
                             <p>
                                 <strong>Tình trạng thanh toán:</strong>{" "}
-                                <span className="bg-green-100 text-green-600 px-2 py-1 rounded">Đã thanh toán</span>
+                                <span className={`${record.paymentStatus === 'PAID' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'} px-2 py-1 rounded`}>
+                                    {record.paymentStatus === 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                                </span>
                             </p>
                         </div>
                     ),
@@ -247,6 +279,14 @@ const OrdersTable = () => {
                     />
                 </Col>
             </Row>
+            
+            {selectedOrderId && (
+                <OrderDetailDialog 
+                    orderId={selectedOrderId} 
+                    open={isDetailOpen} 
+                    onOpenChange={setIsDetailOpen} 
+                />
+            )}
         </div>
     )
 }
