@@ -12,13 +12,34 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
+import { useEffect, useState } from "react";
+import { getUserWithdrawals } from "@/api/withdrawals";
 
 const SellerMoneyWithdrawRequests = () => {
   const { transactionHistoryData: transactionHistoryDataResponse, isLoading } =
     useTransactionHistory();
+  const [withdrawals, setWithdrawals] = useState<any[]>([]);
+  const [isLoadingWithdrawals, setIsLoadingWithdrawals] = useState(false);
+
+  useEffect(() => {
+    console.log(1)
+    const fetchWithdrawals = async () => {
+      try {
+        setIsLoadingWithdrawals(true);
+        const response = await getUserWithdrawals();
+        console.log(response);
+        setWithdrawals(response.data.data || []);
+      } catch (error) {
+        console.error("Error fetching withdrawals:", error);
+      } finally {
+        setIsLoadingWithdrawals(false);
+      }
+    };
+
+    fetchWithdrawals();
+  }, []);
 
   const transactionHistoryData = transactionHistoryDataResponse?.data?.data;
-  console.log(transactionHistoryData);
 
   const columns: ColumnsType<any> = [
     { title: "ID", dataIndex: "id" },
@@ -102,6 +123,58 @@ const SellerMoneyWithdrawRequests = () => {
     },
   ];
 
+  const withdrawalColumns: ColumnsType<any> = [
+    { title: "ID", dataIndex: "id" },
+    {
+      title: "Ngày yêu cầu",
+      dataIndex: "createdAt",
+      render: (text) => new Date(text).toLocaleDateString(),
+    },
+    {
+      title: "Số tiền rút",
+      dataIndex: "amount",
+      render: (text) => `${formatNumber(Math.abs(parseFloat(text)))} USD`,
+      align: "right",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      render: (text) => {
+        const statusMap = {
+          COMPLETED: { label: "Hoàn thành", color: "green" },
+          PENDING: { label: "Đang chờ", color: "orange" },
+          REJECTED: { label: "Từ chối", color: "red" },
+          PROCESSING: { label: "Đang xử lý", color: "blue" },
+          FAILED: { label: "Thất bại", color: "red" },
+        };
+        const status = statusMap[text as keyof typeof statusMap] || {
+          label: text,
+          color: "gray",
+        };
+        return <span className="line-clamp-1 truncate" style={{ color: "white", backgroundColor: status.color, padding: "4px", borderRadius: "4px" }}>{status.label}</span>;
+      },
+    },
+    {
+      title: "Ghi chú Admin",
+      dataIndex: "adminNote",
+      render: (text) => text || "N/A"
+    },
+    {
+      title: "Lý do từ chối",
+      dataIndex: "rejectionReason",
+      render: (text) => text || "N/A"
+    },
+    {
+      title: "Ngày xử lý",
+      dataIndex: "completedAt",
+      render: (text, record) => {
+        if (record.completedAt) return new Date(record.completedAt).toLocaleDateString();
+        if (record.rejectedAt) return new Date(record.rejectedAt).toLocaleDateString();
+        return "Chưa xử lý";
+      }
+    },
+  ];
+
   return (
     <div className="p-4 bg-[#E3E6E6]">
       <Breadcrumb className="mb-4">
@@ -123,7 +196,9 @@ const SellerMoneyWithdrawRequests = () => {
         </BreadcrumbList>
       </Breadcrumb>
       <StatCards />
-      <div title="Lịch sử giao dịch" className="!mb-4 rounded-[4px]">
+
+      <div className="mb-6 border p-4 bg-white">
+        <h2 className="text-xl font-semibold mb-4">Lịch sử giao dịch</h2>
         <Table
           columns={columns}
           dataSource={transactionHistoryData}
@@ -131,6 +206,32 @@ const SellerMoneyWithdrawRequests = () => {
           scroll={{ x: true }}
           bordered={true}
           loading={isLoading}
+          size="middle"
+          rowClassName={() => "transaction-table-row"}
+          style={{
+            overflowX: 'auto',
+            tableLayout: 'auto',
+            width: '100%',
+          }}
+        />
+      </div>
+
+      <div className="mb-4 border p-4 bg-white">
+        <h2 className="text-xl font-semibold mb-4">Lịch sử nạp/rút tiền</h2>
+        <Table
+          columns={withdrawalColumns}
+          dataSource={withdrawals}
+          pagination={false}
+          scroll={{ x: true }}
+          bordered={true}
+          loading={isLoadingWithdrawals}
+          size="middle"
+          rowClassName={() => "withdrawal-table-row"}
+          style={{
+            overflowX: 'auto',
+            tableLayout: 'auto',
+            width: '100%',
+          }}
         />
       </div>
     </div>

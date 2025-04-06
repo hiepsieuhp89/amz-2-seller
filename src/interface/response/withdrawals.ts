@@ -17,7 +17,7 @@ export interface IWithdrawalListResponse {
   message: string
   statusCode: number
   data: {
-    withdrawals: IWithdrawalResponse['data'][]
+    data: any
     total: number
   }
 } 
