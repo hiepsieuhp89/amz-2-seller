@@ -122,20 +122,20 @@ const OrdersTable = () => {
 
                         />
                     </Tooltip>
-                    <Tooltip title="Chỉnh sửa">
+                    <Tooltip title="In đơn hàng">
                         <Icon
                             path={mdiContentSaveEdit}
                             size={0.7}
                             color={"#A3A3A3"}
                         />
                     </Tooltip>
-                    <Tooltip title="Xóa">
+                    {/* <Tooltip title="Xóa">
                         <Icon
                             path={mdiTrashCan}
                             size={0.7}
                             color={"#A3A3A3"}
                         />
-                    </Tooltip>
+                    </Tooltip> */}
                 </Space>
             ),
         },
