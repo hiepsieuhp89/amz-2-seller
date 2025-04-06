@@ -102,9 +102,9 @@ const SellerPackages = () => {
     sortedData.map((pkg: any) => {
       let image;
       if (pkg.price === 0) {
-        image = "/images/silver-shop.png";
+        image = pkg.image;
       } else {
-        image = nonZeroPriceImages[nonZeroIndex % nonZeroPriceImages.length];
+        image = pkg.image;
         nonZeroIndex++;
       }
 
@@ -131,6 +131,7 @@ const SellerPackages = () => {
         price: pkg.price,
         duration: pkg.duration,
         durationUnit: "ngày",
+        maxProducts: pkg.maxProducts,
       };
     }) || [];
 

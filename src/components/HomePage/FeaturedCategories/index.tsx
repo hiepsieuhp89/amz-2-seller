@@ -15,6 +15,7 @@ export function FeaturedCategories() {
     order: "DESC",
     take: 20,
   })
+  console.log("categoriesData", categoriesData)
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
     loop: false,
