@@ -54,6 +54,40 @@ const PendingOrders = () => {
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return "Đang xử lý";
+      case "COMPLETED":
+        return "Hoàn thành";
+      case "CANCELLED":
+        return "Đã hủy";
+      default:
+        return status;
+    }
+  };
+
+  const formatDelayStatus = (delayStatus: string) => {
+    if (!delayStatus) return "Đang xử lý";
+    
+    // Check if it matches the pattern DELAY_{number}H
+    const delayMatch = delayStatus.match(/DELAY_(\d+)H/);
+    if (delayMatch) {
+      const hours = delayMatch[1];
+      return `Chờ ${hours} giờ`;
+    }
+    
+    // For other statuses, just return the original or a default translation
+    switch (delayStatus) {
+      case "PROCESSING":
+        return "Đang xử lý";
+      case "URGENT":
+        return "Khẩn cấp";
+      default:
+        return delayStatus;
+    }
+  };
+
   const columns: ColumnsType<any> = [
     {
       title: "Mã đặt hàng",
@@ -117,7 +151,7 @@ const PendingOrders = () => {
           <Tooltip title="Thời gian chờ xử lý">
             <div className="flex items-center mt-1 space-x-1">
               <Clock className="h-3 w-3 text-amber-500" />
-              <span className="text-xs text-amber-600">{record?.delayStatus || "Đang xử lý"}</span>
+              <span className="text-xs text-amber-600">{formatDelayStatus(record?.delayStatus)}</span>
             </div>
           </Tooltip>
         </div>
@@ -149,7 +183,7 @@ const PendingOrders = () => {
             ) : (
               <CheckCircleOutlined className="mr-1 text-xs" />
             )}
-            {record?.status}
+            {getStatusText(record?.status)}
           </div>
           <div className={`px-2 py-1 rounded-full text-xs font-medium inline-flex items-center justify-center ${getStatusColor(record?.paymentStatus)}`}>
             {record?.paymentStatus === "PENDING" ? (
@@ -157,7 +191,7 @@ const PendingOrders = () => {
             ) : (
               <CheckCircleOutlined className="mr-1 text-xs" />
             )}
-            {record?.paymentStatus}
+            {getStatusText(record?.paymentStatus)}
           </div>
         </div>
       ),
@@ -197,7 +231,7 @@ const PendingOrders = () => {
           dataSource={Array.isArray(data?.data?.data) ? data.data.data : []}
           rowKey="id"
           pagination={false}
-          size="middle"
+          size="small"
           loading={{
             spinning: isLoading,
             indicator: <Spin size="small" />,
