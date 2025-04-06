@@ -19,15 +19,15 @@ export const useCreateWithdrawal = (): UseMutationResult<IWithdrawalResponse, Er
   })
 }
 
-export const useUserWithdrawals = () => {
+export const useUserWithdrawals = (params?: { page: number; take: number }) => {
   const {
     data: withdrawals,
     isLoading,
     isFetching,
     refetch,
   } = useQuery<IWithdrawalListResponse>({
-    queryKey: ["userWithdrawals"],
-    queryFn: () => getUserWithdrawals(),
+    queryKey: ["userWithdrawals", params],
+    queryFn: () => getUserWithdrawals(params),
   })
 
   return {

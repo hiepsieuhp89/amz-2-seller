@@ -2,7 +2,7 @@
 
 import { useTransactionHistory } from "@/hooks/transaction";
 import { formatNumber } from "@/utils";
-import { Table } from "antd";
+import { Table, Row, Col, Pagination } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import StatCards from "../SellerMoneyWithdrawRequests/StatCards";
 import {
@@ -13,33 +13,44 @@ import {
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
 import { useEffect, useState } from "react";
+import { useUserWithdrawals } from "@/hooks/withdrawals";
 import { getUserWithdrawals } from "@/api/withdrawals";
 
 const SellerMoneyWithdrawRequests = () => {
-  const { transactionHistoryData: transactionHistoryDataResponse, isLoading } =
-    useTransactionHistory();
-  const [withdrawals, setWithdrawals] = useState<any[]>([]);
-  const [isLoadingWithdrawals, setIsLoadingWithdrawals] = useState(false);
+  const [currentTransactionPage, setCurrentTransactionPage] = useState(1);
+  const [currentWithdrawalPage, setCurrentWithdrawalPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const {
+    transactionHistoryData: transactionHistoryDataResponse,
+    isLoading,
+    refetch: refetchTransactions
+  } = useTransactionHistory({
+    page: currentTransactionPage,
+    take: pageSize
+  });
+
+  const {
+    withdrawals,
+    isLoading: isLoadingWithdrawals,
+    refetch: refetchWithdrawals
+  } = useUserWithdrawals({
+    page: currentWithdrawalPage,
+    take: pageSize
+  });
 
   useEffect(() => {
-    console.log(1)
-    const fetchWithdrawals = async () => {
-      try {
-        setIsLoadingWithdrawals(true);
-        const response = await getUserWithdrawals();
-        console.log(response);
-        setWithdrawals(response.data.data || []);
-      } catch (error) {
-        console.error("Error fetching withdrawals:", error);
-      } finally {
-        setIsLoadingWithdrawals(false);
-      }
-    };
+    refetchTransactions();
+  }, [currentTransactionPage, pageSize, refetchTransactions]);
 
-    fetchWithdrawals();
-  }, []);
+  useEffect(() => {
+    refetchWithdrawals();
+  }, [currentWithdrawalPage, pageSize, refetchWithdrawals]);
 
   const transactionHistoryData = transactionHistoryDataResponse?.data?.data;
+  const transactionTotal = transactionHistoryDataResponse?.data?.total || 0;
+  const withdrawalTotal = withdrawals?.data?.total || 0;
+  const withdrawalData = withdrawals?.data?.data || [];
 
   const columns: ColumnsType<any> = [
     { title: "ID", dataIndex: "id" },
@@ -175,6 +186,16 @@ const SellerMoneyWithdrawRequests = () => {
     },
   ];
 
+  const handleTransactionPaginationChange = (page: number, pageSize?: number) => {
+    setCurrentTransactionPage(page);
+    if (pageSize) setPageSize(pageSize);
+  };
+
+  const handleWithdrawalPaginationChange = (page: number, pageSize?: number) => {
+    setCurrentWithdrawalPage(page);
+    if (pageSize) setPageSize(pageSize);
+  };
+
   return (
     <div className="p-4 bg-[#E3E6E6]">
       <Breadcrumb className="mb-4">
@@ -214,13 +235,30 @@ const SellerMoneyWithdrawRequests = () => {
             width: '100%',
           }}
         />
+
+        <Row justify="space-between" align="middle" style={{ marginTop: 16 }}>
+          <Col></Col>
+          <Col>
+            <Pagination
+              current={currentTransactionPage}
+              pageSize={pageSize}
+              total={transactionTotal}
+              showSizeChanger
+              showQuickJumper
+              onChange={handleTransactionPaginationChange}
+              onShowSizeChange={handleTransactionPaginationChange}
+              style={{ marginTop: "16px" }}
+              className="custom-pagination"
+            />
+          </Col>
+        </Row>
       </div>
 
       <div className="mb-4 border p-4 bg-white">
         <h2 className="text-xl font-semibold mb-4">Lịch sử nạp/rút tiền</h2>
         <Table
           columns={withdrawalColumns}
-          dataSource={withdrawals}
+          dataSource={withdrawalData}
           pagination={false}
           scroll={{ x: true }}
           bordered={true}
@@ -233,6 +271,23 @@ const SellerMoneyWithdrawRequests = () => {
             width: '100%',
           }}
         />
+
+        <Row justify="space-between" align="middle" style={{ marginTop: 16 }}>
+          <Col></Col>
+          <Col>
+            <Pagination
+              current={currentWithdrawalPage}
+              pageSize={pageSize}
+              total={withdrawalTotal}
+              showSizeChanger
+              showQuickJumper
+              onChange={handleWithdrawalPaginationChange}
+              onShowSizeChange={handleWithdrawalPaginationChange}
+              style={{ marginTop: "16px" }}
+              className="custom-pagination"
+            />
+          </Col>
+        </Row>
       </div>
     </div>
   );
