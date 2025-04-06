@@ -1,5 +1,6 @@
 export interface ICreateWithdrawal {
   amount: number
+  withdrawPassword: string
 }
 
 export interface IUpdateWithdrawalStatus {

@@ -51,6 +51,10 @@ export interface IUpdateUser {
   bankBranch?: string
   bankCode?: string
   bankNumber?: string
+  idCardType?: string
+  idCardNumber?: string
+  idCardFrontImage?: string
+  idCardBackImage?: string
 }
 
 export interface IChangePassword {

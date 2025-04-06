@@ -1,11 +1,12 @@
 import { useUser } from "@/context/useUserContext"
 import { useCreateWithdrawal } from "@/hooks/withdrawals"
 import { DollarOutlined, PlusOutlined } from "@ant-design/icons"
-import { Input, message, Modal } from "antd"
+import { Input, message, Modal, InputNumber } from "antd"
 import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { useShopStatistics } from "@/hooks/dashboard"
+import { formatNumber } from "@/utils"
 
 interface StatCardProps {
   title: string
@@ -37,7 +38,7 @@ const ActionCard = ({ title, onClick }: { title: string, onClick?: () => void })
       onClick={onClick}
     >
       <div className="w-[60px] h-[60px] rounded-full bg-gray-500 flex items-center justify-center mb-3 mx-auto">
-        <PlusOutlined className="text-3xl !!text-white/80" />
+        <PlusOutlined className="text-3xl !text-white" />
       </div>
       <div className="text-lg text-blue-600">{title}</div>
     </div>
@@ -47,6 +48,7 @@ const ActionCard = ({ title, onClick }: { title: string, onClick?: () => void })
 const StatCards = () => {
   const { profile } = useUser()
   const [amount, setAmount] = useState<number>(0)
+  const [withdrawPassword, setWithdrawPassword] = useState<string>("")
   const [isModalVisible, setIsModalVisible] = useState(false)
   const { mutate: createWithdrawal, isPending } = useCreateWithdrawal()
   const { statistics, isLoading } = useShopStatistics()
@@ -67,13 +69,22 @@ const StatCards = () => {
   }
 
   const handleWithdraw = () => {
-    createWithdrawal({ amount }, {
+    if (!withdrawPassword) {
+      message.error("Vui lòng nhập Mật khẩu giao dịch")
+      return
+    }
+
+    createWithdrawal({ amount, withdrawPassword }, {
       onSuccess: () => {
         message.success("Yêu cầu rút tiền thành công")
         setIsModalVisible(false)
+        setWithdrawPassword("")
+        setAmount(0)
       },
-      onError: () => {
-        message.error("Có lỗi xảy ra khi gửi yêu cầu rút tiền")
+      onError: (error: any) => {
+        // Display the specific error message from the API if available
+        const errorMessage = error?.response?.data?.message || "Có lỗi xảy ra khi gửi yêu cầu rút tiền"
+        message.error(errorMessage)
       }
     })
   }
@@ -123,19 +134,19 @@ const StatCards = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <StatCard
           title="Số dư đang chờ xử lý"
-          value={`$${statistics?.totalPendingOrderAmount || 0}`}
+          value={`$${formatNumber(Number(statistics?.totalPendingOrderAmount || 0))}`}
           gradientClass="bg-gradient-to-r from-pink-500 to-purple-500"
         />
         <StatCard
           title="Số dư trên Wallet"
-          value={`$${profile?.data?.balance || 0}`}
+          value={`$${formatNumber(Number(profile?.data?.balance || 0))}`}
           gradientClass="bg-gradient-to-r from-blue-400 to-cyan-500"
         />
         <ActionCard
           title="Gửi yêu cầu rút tiền"
           onClick={handleWithdrawClick}
         />
-        <ActionCard title="Nạp tiền" />
+        {/* <ActionCard title="Nạp tiền" /> */}
       </div>
 
       <Modal
@@ -145,12 +156,36 @@ const StatCards = () => {
         onCancel={() => setIsModalVisible(false)}
         confirmLoading={isPending}
       >
-        <Input
-          type="number"
-          placeholder="Nhập số tiền cần rút"
-          value={amount}
-          onChange={(e: any) => setAmount(Number(e.target.value))}
-        />
+        <div className="space-y-4">
+          <div className="bg-blue-50 p-3 rounded-md mb-3">
+            <p className="text-sm text-blue-700">
+              Số dư khả dụng: <span className="font-bold">${formatNumber(Number(profile?.data?.balance || 0))}</span>
+            </p>
+          </div>
+          <div>
+            <label className="block mb-1 text-sm font-medium">Số tiền cần rút</label>
+            <InputNumber
+              addonBefore="$"
+              placeholder="Nhập số tiền cần rút"
+              value={amount}
+              onChange={(value) => setAmount(Number(value || 0))}
+              min={0}
+              max={profile?.data?.balance || 0}
+              className="w-full"
+              formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+              parser={(value: any) => value!.replace(/\$\s?|(,*)/g, '')}
+            />
+          </div>
+          <div>
+            <label className="block mb-1 text-sm font-medium">Mật khẩu giao dịch</label>
+            <Input.Password
+              placeholder="Nhập Mật khẩu giao dịch"
+              value={withdrawPassword}
+              onChange={(e) => setWithdrawPassword(e.target.value)}
+              className="w-full"
+            />
+          </div>
+        </div>
       </Modal>
     </>
   )

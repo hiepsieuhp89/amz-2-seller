@@ -4,7 +4,7 @@ import { useTransactionHistory } from "@/hooks/transaction";
 import { formatNumber } from "@/utils";
 import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import StatCards from "../SellerOrders/StatCards";
+import StatCards from "../SellerMoneyWithdrawRequests/StatCards";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -47,7 +47,7 @@ const SellerMoneyWithdrawRequests = () => {
           label: text,
           color: "gray",
         };
-        return <span style={{ color: "white", backgroundColor: status.color, padding: "4px", borderRadius: "4px" }}>{status.label}</span>;
+        return <span className="line-clamp-1 truncate" style={{ color: "white", backgroundColor: status.color, padding: "4px", borderRadius: "4px" }}>{status.label}</span>;
       },
     },
     { title: "Mô tả", dataIndex: "description" },
@@ -60,6 +60,8 @@ const SellerMoneyWithdrawRequests = () => {
             return "Thanh toán vận chuyển Fedex";
           case "package_purchase":
             return "Mua gói bán hàng";
+          case "manual_fedex_amount":
+            return "Nạp tiền vận chuyển Fedex";
           default:
             return text;
         }
@@ -120,7 +122,7 @@ const SellerMoneyWithdrawRequests = () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      {/* <StatCards /> */}
+      <StatCards />
       <div title="Lịch sử giao dịch" className="!mb-4 rounded-[4px]">
         <Table
           columns={columns}

@@ -10,6 +10,7 @@ import { Modal, Form, Input } from "antd"
 import type { TabsProps } from "antd"
 import { useVerifyBankAccount } from "@/hooks/bank"
 import { debounce } from "lodash"
+import { useUploadFile } from "@/hooks/upload"
 
 const { Text, Title } = Typography
 
@@ -24,9 +25,11 @@ const AvatarDropdown = () => {
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser()
   const { mutateAsync: changePassword, isPending: isChangingPassword } = useChangePassword()
   const [messageApi, contextHolder] = message.useMessage()
-  const [bankAccountNameStatus, setBankAccountNameStatus] = useState<'success' | 'error' | ''>('')
-  const [bankAccountNameHelp, setBankAccountNameHelp] = useState('')
   const { mutateAsync: verifyBankAccount } = useVerifyBankAccount()
+  const { mutateAsync: uploadFile, isPending: isUploading } = useUploadFile()
+  const [idCardFrontImageUrl, setIdCardFrontImageUrl] = useState('')
+  const [idCardBackImageUrl, setIdCardBackImageUrl] = useState('')
+  const [avatarImageUrl, setAvatarImageUrl] = useState('')
 
   useEffect(() => {
     setIsClient(true)
@@ -49,12 +52,18 @@ const AvatarDropdown = () => {
       await updateUser({
         phone: values.phone,
         fullName: values.fullName,
+        address: values.address,
         shopName: values.shopName,
         shopAddress: values.shopAddress,
         bankName: values.bankName,
         bankAccountNumber: values.bankAccountNumber,
         bankAccountName: values.bankAccountName,
-        bankBranch: values.bankBranch
+        bankBranch: values.bankBranch,
+        idCardType: values.idCardType,
+        idCardNumber: values.idCardNumber,
+        idCardFrontImage: idCardFrontImageUrl,
+        idCardBackImage: idCardBackImageUrl,
+        logoUrl: avatarImageUrl
       })
       messageApi.success("Cập nhật thông tin thành công!")
       setIsModalOpen(false)
@@ -85,6 +94,7 @@ const AvatarDropdown = () => {
       phone: profile?.data?.phone,
       email: profile?.data?.email,
       username: profile?.data?.username,
+      logoUrl: profile?.data?.logoUrl,
 
       // Tab cài đặt thanh toán
       address: profile?.data?.address,
@@ -98,6 +108,7 @@ const AvatarDropdown = () => {
       shopName: profile?.data?.shopName,
       shopAddress: profile?.data?.shopAddress,
     })
+    setAvatarImageUrl(profile?.data?.logoUrl || '')
     setIsModalOpen(true)
   }
 
@@ -128,6 +139,41 @@ const AvatarDropdown = () => {
 
   const debouncedVerification = debounce(handleBankAccountVerification, 500)
 
+  const handleUploadImage = async (file: File, type: 'front' | 'back') => {
+    try {
+      const response = await uploadFile(file)
+      const imageUrl = response.data.url
+      
+      if (type === 'front') {
+        setIdCardFrontImageUrl(imageUrl)
+        form.setFieldsValue({ idCardFrontImage: imageUrl })
+      } else {
+        setIdCardBackImageUrl(imageUrl)
+        form.setFieldsValue({ idCardBackImage: imageUrl })
+      }
+      
+      return false
+    } catch (error) {
+      messageApi.error("Có lỗi xảy ra khi tải lên ảnh")
+      return false
+    }
+  }
+
+  const handleUploadAvatar = async (file: File) => {
+    try {
+      const response = await uploadFile(file)
+      const imageUrl = response.data.url
+      
+      setAvatarImageUrl(imageUrl)
+      form.setFieldsValue({ logoUrl: imageUrl })
+      
+      return false
+    } catch (error) {
+      messageApi.error("Có lỗi xảy ra khi tải lên ảnh đại diện")
+      return false
+    }
+  }
+
   const BasicInfoTab = () => (
     <Form
       form={form}
@@ -152,26 +198,44 @@ const AvatarDropdown = () => {
 
       <Form.Item
         label="Ảnh đại diện"
-        name="avatar"
+        name="logoUrl"
       >
-        <Space>
-          <Button>Duyệt qua</Button>
-          <Button>Chọn tập tin</Button>
-        </Space>
+        <Upload
+          listType="picture-card"
+          maxCount={1}
+          beforeUpload={(file) => handleUploadAvatar(file)}
+          showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
+          fileList={avatarImageUrl ? [
+            {
+              uid: '-1',
+              name: 'Avatar',
+              status: 'done',
+              url: avatarImageUrl,
+            }
+          ] : []}
+          onRemove={() => {
+            setAvatarImageUrl('')
+            form.setFieldsValue({ logoUrl: undefined })
+          }}
+        >
+          {!avatarImageUrl && (
+            <div>
+              <Button>Tải lên</Button>
+            </div>
+          )}
+        </Upload>
       </Form.Item>
 
       <Form.Item
-        label="Mật khẩu của bạn"
-        name="password"
+        label="Mật khẩu"
       >
-        <Input.Password disabled />
-      </Form.Item>
-
-      <Form.Item
-        label="Xác nhận mật khẩu"
-        name="confirmPassword"
-      >
-        <Input.Password disabled />
+        <Button 
+          type="primary" 
+          icon={<LockOutlined />}
+          onClick={() => setIsPasswordModalOpen(true)}
+        >
+          Thay đổi mật khẩu
+        </Button>
       </Form.Item>
     </Form>
   )
@@ -201,15 +265,25 @@ const AvatarDropdown = () => {
       <Form.Item
         label="Loại giấy tờ"
         name="idCardType"
+        rules={[{ required: true, message: 'Vui lòng chọn loại giấy tờ!' }]}
       >
         <Select
           placeholder="CHỌN LOẠI GIẤY TỜ"
           options={[
             { value: 'cccd', label: 'CCCD' },
+            { value: 'cmnd', label: 'CMND' },
             { value: 'passport', label: 'Passport' },
             { value: 'driver_license', label: 'Bằng lái xe' },
           ]}
         />
+      </Form.Item>
+
+      <Form.Item
+        label="Số giấy tờ"
+        name="idCardNumber"
+        rules={[{ required: true, message: 'Vui lòng nhập số giấy tờ!' }]}
+      >
+        <Input placeholder="NHẬP SỐ GIẤY TỜ" />
       </Form.Item>
 
       <Form.Item
@@ -220,11 +294,26 @@ const AvatarDropdown = () => {
         <Upload
           listType="picture-card"
           maxCount={1}
-          beforeUpload={() => false}
+          beforeUpload={(file) => handleUploadImage(file, 'front')}
+          showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
+          fileList={idCardFrontImageUrl ? [
+            {
+              uid: '-1',
+              name: 'ID Card Front',
+              status: 'done',
+              url: idCardFrontImageUrl,
+            }
+          ] : []}
+          onRemove={() => {
+            setIdCardFrontImageUrl('')
+            form.setFieldsValue({ idCardFrontImage: undefined })
+          }}
         >
-          <div>
-            <Button>Browse</Button>
-          </div>
+          {!idCardFrontImageUrl && (
+            <div>
+              <Button>Tải lên</Button>
+            </div>
+          )}
         </Upload>
       </Form.Item>
 
@@ -236,11 +325,26 @@ const AvatarDropdown = () => {
         <Upload
           listType="picture-card"
           maxCount={1}
-          beforeUpload={() => false}
+          beforeUpload={(file) => handleUploadImage(file, 'back')}
+          showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
+          fileList={idCardBackImageUrl ? [
+            {
+              uid: '-1',
+              name: 'ID Card Back',
+              status: 'done',
+              url: idCardBackImageUrl,
+            }
+          ] : []}
+          onRemove={() => {
+            setIdCardBackImageUrl('')
+            form.setFieldsValue({ idCardBackImage: undefined })
+          }}
         >
-          <div>
-            <Button>Browse</Button>
-          </div>
+          {!idCardBackImageUrl && (
+            <div>
+              <Button>Tải lên</Button>
+            </div>
+          )}
         </Upload>
       </Form.Item>
 
@@ -254,7 +358,16 @@ const AvatarDropdown = () => {
           options={[
             { value: 'vcb', label: 'Vietcombank' },
             { value: 'tcb', label: 'Techcombank' },
-            // Thêm các ngân hàng khác
+            { value: 'bidv', label: 'BIDV' },
+            { value: 'vib', label: 'VIB' },
+            { value: 'acb', label: 'ACB' },
+            { value: 'mb', label: 'MB Bank' },
+            { value: 'vp', label: 'VPBank' },
+            { value: 'agri', label: 'Agribank' },
+            { value: 'scb', label: 'Sacombank' },
+            { value: 'tpb', label: 'TPBank' },
+            { value: 'ocb', label: 'OCB' },
+            { value: 'hdbank', label: 'HDBank' },
           ]}
         />
       </Form.Item>
@@ -359,7 +472,10 @@ const AvatarDropdown = () => {
         onCancel={() => setIsModalOpen(false)}
         onOk={() => form.submit()}
         confirmLoading={isUpdating}
-        width={800}
+        width="100%"
+        style={{ maxWidth: '800px', margin: '0 auto' }}
+        bodyStyle={{ maxHeight: '70vh', overflowY: 'auto' }}
+        className="responsive-modal"
       >
         <Tabs
           defaultActiveKey="1"

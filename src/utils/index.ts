@@ -123,5 +123,11 @@ export const filterSort=(optionA:any,optionB:any)=>{
 }
 
 export const formatNumber = (number: number): string => {
-  return number.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  // Format with 1 decimal place only if needed
+  const formatted = Number.isInteger(number) 
+    ? number.toString() 
+    : number.toFixed(1);
+  
+  // Add thousand separators
+  return formatted.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };
