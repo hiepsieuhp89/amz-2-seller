@@ -3,18 +3,22 @@ import { useShopDetailStatistics } from "@/hooks/dashboard"
 import { useGetSellerPackageById } from "@/hooks/seller-packages"
 import { Package, Percent, Calendar, Layers } from "lucide-react"
 import Image from "next/image"
+import { useGetMyShopProducts } from "@/hooks/shop-products"
 
 const PackageInfo = () => {
   const { detailStatistics } = useShopDetailStatistics()
   const packageId = detailStatistics?.sellerPackage?.id || ""
   const { data: packageData } = useGetSellerPackageById(packageId)
-  
   const packageImage = packageData?.data?.image || "https://shop.shop-worldwide-amz.top/public/uploads/all/LAqQwhcT7SII4cm2jolwm3DyqONCvQHhMmCt2ziu.png?v=2"
+  const { data: shopProductsData } = useGetMyShopProducts({
+    page: 1,
+  });
+const totalItems = shopProductsData?.data?.meta?.itemCount || 0;
 
   const packageItems = [
     {
       icon: <Layers className="h-5 w-5" />,
-      value: `${detailStatistics?.activeProducts || 0} / ${detailStatistics?.sellerPackage?.maxProducts || 0}`,
+      value: `${totalItems || 0} / ${detailStatistics?.sellerPackage?.maxProducts || 0}`,
       label: "Sản phẩm đang hoạt động",
       bgColor: "bg-blue-100",
       textColor: "text-blue-700",

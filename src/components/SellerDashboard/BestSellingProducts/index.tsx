@@ -5,7 +5,6 @@ import { useTopSellingProducts } from "@/hooks/dashboard"
 import { ProductData } from "../types"
 import { useSelectedProduct } from "@/stores/useSelectedProduct"
 import Link from "next/link"
-import { BadgePercent, ShoppingCart, TrendingUp } from "lucide-react"
 import Image from "next/image"
 
 interface BestSellingProductsProps {
@@ -18,7 +17,7 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
   
   const columns: ColumnsType<ProductData> = [
     {
-      title: "#",
+      title: "STT",
       dataIndex: "index",
       key: "index",
       width: 60,
@@ -30,7 +29,7 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
       ),
     },
     {
-      title: "Sản phẩm",
+      title: "Tên sản phẩm",
       dataIndex: ["product", "name"],
       key: "name",
       ellipsis: true,
@@ -42,23 +41,17 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
           className="flex items-center gap-3 hover:text-blue-600 transition-colors"
         >
           <div className="w-10 h-10 rounded-md overflow-hidden bg-gray-50 border border-gray-100 flex-shrink-0">
-            {(record as any)?.product?.images?.[0] ? (
-              <Image 
-                src={(record as any)?.product?.images?.[0]} 
+          <Image 
+                src={(record as any)?.product?.imageUrls[0] || "/images/white-image.png"} 
                 alt={text} 
                 width={40} 
                 height={40} 
                 className="object-cover"
               />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                <ShoppingCart className="w-4 h-4 text-gray-400" />
-              </div>
-            )}
           </div>
           <div className="truncate">
             <Tooltip title={text}>
-              <span className="font-medium text-gray-800 hover:text-blue-600">{text}</span>
+              <span className="font-medium text-gray-800 hover:text-blue-600">{text || "Chưa có tên"}</span>
             </Tooltip>
           </div>
         </Link>
@@ -77,31 +70,6 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
       )
     },
   ]
-
-  const expandedRowRender = (record: any) => {
-    return (
-      <div className="p-3 bg-gray-50 rounded-lg space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center">
-              <BadgePercent className="w-4 h-4 text-blue-600" />
-            </div>
-            <span className="text-gray-600 font-medium">Doanh thu</span>
-          </div>
-          <span className="font-bold text-blue-600">${record.revenue?.toLocaleString('vi-VN') || 0}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-green-600" />
-            </div>
-            <span className="text-gray-600 font-medium">Lợi nhuận</span>
-          </div>
-          <span className="font-bold text-green-600">${record.profit?.toLocaleString('vi-VN') || 0}</span>
-        </div>
-      </div>
-    )
-  }
 
   const CustomEmpty = () => (
     <Empty
@@ -128,10 +96,6 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
           indicator: <Spin size="small" />,
         }}
         pagination={false}
-        expandable={{ 
-          expandedRowRender,
-          expandRowByClick: true,
-        }}
         rowKey={(record: any) => record?.id}
         className="best-selling-products-table"
         locale={{ emptyText: <CustomEmpty /> }}

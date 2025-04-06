@@ -6,12 +6,18 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { mdiPackageVariantClosed, mdiInboxArrowUp } from "@mdi/js";
 import { useGetMyShopProducts } from "@/hooks/shop-products";
+import { useGetSellerPackageById } from "@/hooks/seller-packages";
+import { useShopDetailStatistics } from "@/hooks/dashboard";
+import Link from "next/link";
 
 export const ProductsStats = () => {
   const router = useRouter();
   const { data: shopProductsData } = useGetMyShopProducts({ page: 1 });
   const totalItems = shopProductsData?.data?.meta?.itemCount || 0;
-
+  const { detailStatistics } = useShopDetailStatistics()
+  const packageId = detailStatistics?.sellerPackage?.id || ""
+  const { data: packageData } = useGetSellerPackageById(packageId)
+  const packageImage = packageData?.data?.image || "https://shop.shop-worldwide-amz.top/public/uploads/all/LAqQwhcT7SII4cm2jolwm3DyqONCvQHhMmCt2ziu.png?v=2"
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Uploads Remaining Card */}
@@ -30,38 +36,40 @@ export const ProductsStats = () => {
       </div>
 
       <div className="bg-white rounded-lg  hover:transition-shadow p-3 flex flex-col items-center justify-center cursor-pointer">
-        <Button
-          onClick={() => router.push("/seller/products/storehouse")}
+        <Link 
+        href="/seller/products/storehouse"><Button
           type="primary"
           shape="circle"
           size="large"
           className="!bg-gray-400 !flex !items-center !justify-center !mb-3"
           icon={<PlusOutlined className="!!text-white/80 !text-3xl" />}
-        />
+        /></Link>
+
         <div className="text-base font-medium ">Thêm sản phẩm mới</div>
       </div>
 
       {/* Account Package Card */}
-      <div className="bg-white rounded-lg  p-3 flex flex-col items-center">
-        <div className="h-11 w-11 relative">
+      <div className="bg-white rounded-lg p-3 flex flex-col items-center">
+        <div className="relative h-20 w-20">
           <Image
-            draggable={false}
-            quality={100}
-            height={100}
-            width={100}
-            src="/images/silver-shop.png"
-            alt="Shop rank"
+            src={packageImage}
+            alt="Package Icon"
+            width={80}
+            height={80}
             className="object-contain"
           />
         </div>
-        <span className="block text-base font-medium mb-2 mt-1">
-          Gói tài khoản hiện tại: Shop Bạc
-        </span>
+        <p className="block text-base font-medium mb-4">
+          <span>Gói tài khoản hiện tại: </span>
+          <span className="text-xl font-bold bg-gradient-to-r from-[#c471ed] to-[#f64f59] text-transparent bg-clip-text mb-1">
+            {packageData?.data?.name || detailStatistics?.sellerPackage?.name || "Gói bán hàng mặc định"}
+          </span>
+        </p>
         <Button
           type="default"
           className="
                !text-white !font-medium
-                py-1 px-3 text-sm !rounded-[4px] !border !border-[#1890FF] !bg-[#188DFA]"
+                py-1 px-3 text-sm !rounded-[4px] !border !border-[#c471ed] !bg-gradient-to-r !from-[#c471ed] !to-[#f64f59]"
           icon={<Icon path={mdiInboxArrowUp} size={0.8} />}
           onClick={() => router.push("/seller/seller-packages")}
         >

@@ -57,6 +57,7 @@ const ProductsTable = ({
   const [searchText, setSearchText] = useState<string>("");
   const { data: shopProductsData, isLoading } = useGetMyShopProducts({
     page: currentPage,
+    search: searchText,
   });
   const { mutate: removeShopProducts } = useRemoveShopProducts();
   const [openLightbox, setOpenLightbox] = useState(false);

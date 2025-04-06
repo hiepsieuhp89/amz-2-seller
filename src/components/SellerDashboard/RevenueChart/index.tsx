@@ -37,17 +37,19 @@ const RevenueChart = () => {
     { revenue: 0, profit: 0, orders: 0 }
   )
 
-  // Helper function to format date consistently
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return `${date.getDate().toString().padStart(2, "0")}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getFullYear()}`
-  }
-
   const config = {
     data: chartData,
     xField: "date",
     yField: "value",
     smooth: true,
+    smoothConstraint: true,
+    geometryOptions: [
+      {
+        geometry: 'line',
+        smooth: true,
+        tension: 0.8,
+      },
+    ],
     point: {
       size: 5,
       shape: "circle",
@@ -75,11 +77,9 @@ const RevenueChart = () => {
           },
         },
       },
-      // Add this to ensure proper date formatting
       tickLine: {
         alignWithLabel: true,
       },
-      // Add this to control date format at the axis level
       dateFormatter: (date: string) => {
         return date.split("T")[0] // Remove the time part before formatting
       },
