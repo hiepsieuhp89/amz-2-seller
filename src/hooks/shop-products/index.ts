@@ -12,6 +12,9 @@ export const useAddShopProducts = (): UseMutationResult<IShopProductsResponse, E
       queryClient.invalidateQueries({
         queryKey: ["shopProducts"],
       })
+      queryClient.invalidateQueries({
+        queryKey: ["myShopProducts"],
+      })
       return result
     },
     onError: (result) => {
@@ -32,6 +35,9 @@ export const useRemoveShopProducts = (): UseMutationResult<
     onSuccess: (result: IShopProductsResponse) => {
       queryClient.invalidateQueries({
         queryKey: ["shopProducts"],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ["myShopProducts"],
       })
       return result
     },

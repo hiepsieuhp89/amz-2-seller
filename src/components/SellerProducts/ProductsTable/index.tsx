@@ -21,6 +21,8 @@ import {
   Tooltip,
   Badge,
   Divider,
+  message,
+  Popconfirm,
 } from "antd";
 import {
   SearchOutlined,
@@ -28,7 +30,7 @@ import {
   ReloadOutlined,
 } from "@ant-design/icons";
 import type { IShopProduct } from "@/interface/response/shop-products";
-import { useGetMyShopProducts } from "@/hooks/shop-products";
+import { useGetMyShopProducts, useRemoveShopProducts } from "@/hooks/shop-products";
 import Image from "next/image";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -56,6 +58,7 @@ const ProductsTable = ({
   const { data: shopProductsData, isLoading } = useGetMyShopProducts({
     page: currentPage,
   });
+  const { mutate: removeShopProducts } = useRemoveShopProducts();
   const [openLightbox, setOpenLightbox] = useState(false);
   const [currentImage, setCurrentImage] = useState("");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -91,6 +94,20 @@ const ProductsTable = ({
       ...prev,
       [productId]: !prev[productId],
     }));
+  };
+
+  const handleRemoveProduct = (productId: string) => {
+    removeShopProducts(
+      { productIds: [productId] },
+      {
+        onSuccess: () => {
+          message.success("Xóa sản phẩm thành công");
+        },
+        onError: (error) => {
+          message.error("Xóa sản phẩm thất bại: " + error.message);
+        },
+      }
+    );
   };
 
   const columns = [
@@ -306,26 +323,44 @@ const ProductsTable = ({
       title: "Hành động",
       key: "action",
       render: (_: any, record: IShopProduct) => (
-        <Link
-          onClick={() => setSelectedProduct(record.product)}
-          target="_blank"
-          href={`/product?id=${record?.product?.id}`}
-        >
-          <Button
-            icon={
-              <Icon path={mdiArrowTopRightThin} size={0.7} color={"#ffffff"} />
-            }
-            iconPosition="end"
-            className="!bg-main-golden-orange !rounded-[4px]"
-            type="primary"
-            size="small"
+        <Space direction="vertical" size="small" style={{ width: '100%' }}>
+          <Popconfirm
+            title="Bạn có chắc chắn muốn xóa sản phẩm này?"
+            onConfirm={() => handleRemoveProduct(record.productId)}
+            okText="Có"
+            cancelText="Không"
           >
-            Chi tiết sản phẩm
-          </Button>
-        </Link>
+            <Button
+              icon={<Icon path={mdiTrashCan} size={0.7} color={"#ffffff"} />}
+              className="!bg-red-500 !rounded-[4px] w-full"
+              type="primary"
+              size="small"
+              danger
+            >
+              Xóa sản phẩm
+            </Button>
+          </Popconfirm>
+          <Link
+            onClick={() => setSelectedProduct(record.product)}
+            target="_blank"
+            href={`/product?id=${record?.product?.id}`}
+          >
+            <Button
+              icon={
+                <Icon path={mdiArrowTopRightThin} size={0.7} color={"#ffffff"} />
+              }
+              iconPosition="end"
+              className="!bg-main-golden-orange !rounded-[4px] w-full"
+              type="primary"
+              size="small"
+            >
+              Chi tiết sản phẩm
+            </Button>
+          </Link>
+        </Space>
       ),
       align: "center" as const,
-      width: 100,
+      width: 150,
     },
   ];
 
