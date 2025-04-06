@@ -80,6 +80,9 @@ importers:
       embla-carousel-react:
         specifier: ^8.5.2
         version: 8.5.2(react@18.3.1)
+      flag-icons:
+        specifier: ^7.3.2
+        version: 7.3.2
       framer-motion:
         specifier: ^12.6.3
         version: 12.6.3(@emotion/is-prop-valid@1.2.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1733,6 +1736,9 @@ packages:
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
+
+  flag-icons@7.3.2:
+    resolution: {integrity: sha512-QkaZ6Zvai8LIjx+UNAHUJ5Dhz9OLZpBDwCRWxF6YErxIcR16jTkIFm3bFu54EkvKQy4+wicW+Gm7/0631wVQyQ==}
 
   flru@1.0.2:
     resolution: {integrity: sha512-kWyh8ADvHBFz6ua5xYOPnUroZTT/bwWfrCeL0Wj1dzG4/YOmOcfJ99W8dOVyyynJN35rZ9aCOtHChqQovV7yog==}
@@ -5025,6 +5031,8 @@ snapshots:
   fill-range@7.1.1:
     dependencies:
       to-regex-range: 5.0.1
+
+  flag-icons@7.3.2: {}
 
   flru@1.0.2: {}
 

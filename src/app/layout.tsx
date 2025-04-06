@@ -4,6 +4,7 @@ import './globals.css';
 import ClientLayout from './ClientLayout';
 import NextTopLoader from 'nextjs-toploader';
 import { Toaster } from 'react-hot-toast';
+import 'flag-icons/css/flag-icons.min.css';
 
 export const metadata: Metadata = {
   title: 'Amazon',

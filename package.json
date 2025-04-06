@@ -33,6 +33,7 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "embla-carousel-react": "^8.5.2",
+    "flag-icons": "^7.3.2",
     "framer-motion": "^12.6.3",
     "js-cookie": "^3.0.5",
     "jsbarcode": "^3.11.6",

@@ -7,6 +7,13 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /flag-icons.*\.css$/,
+      type: "asset/resource",
+    });
+    return config;
+  },
   experimental: {
     outputFileTracingRoot: process.cwd(),
     outputFileTracingExcludes: {
