@@ -12,6 +12,7 @@ import { mdiPrinter } from "@mdi/js"
 import { Button } from "@/components/ui/button"
 import html2canvas from "html2canvas"
 import jsPDF from "jspdf"
+import { useEffect } from "react"
 
 interface OrderDetailDialogProps {
     orderId: string
@@ -23,8 +24,7 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
     const { data: orderDetailData, isLoading } = useGetOrderDetail(orderId)
     const [barcodeSvg, setBarcodeSvg] = React.useState<string>("")
     const [isPrinting, setIsPrinting] = React.useState<boolean>(false)
-    console.log(orderDetailData)
-    React.useEffect(() => {
+    useEffect(() => {
         if (open) {
             const barcodeValue = `086af6e4641abb18caafc151b9aa95c8`
             const canvas = document.createElement('canvas')
@@ -43,10 +43,10 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
         try {
             // Đặt trạng thái in thành true và đợi React cập nhật DOM
             setIsPrinting(true)
-            
+
             // Đợi React cập nhật DOM trước khi tiếp tục
             await new Promise(resolve => setTimeout(resolve, 100))
-            
+
             // Hiển thị thông báo đang xử lý
             const processingMsg = document.createElement('div')
             processingMsg.style.position = 'fixed'
@@ -171,7 +171,7 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
 
     const maskUserInfo = (info: string, type: 'name' | 'email' | 'phone' | 'address') => {
         if (!info) return '';
-        
+
         switch (type) {
             case 'name':
                 // Giữ lại 3 ký tự đầu, còn lại thay bằng *
@@ -209,7 +209,7 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                     <p className="font-bold">{maskUserInfo(userInfo.name, 'name')}</p>
                                     <p>{maskUserInfo(userInfo.email, 'email')}</p>
                                     <p>{maskUserInfo(userInfo.phone, 'phone')}</p>
-                                    <p className="text-gray-600">{maskUserInfo(userInfo.address, 'address')}</p>
+                                    <p className="text-gray-600">{userInfo.address}</p>
                                 </div>
                             </div>
 
@@ -290,7 +290,7 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                                 <Image
                                                     quality={100}
                                                     draggable={false}
-                                                    src="/images/white-image.png"
+                                                    src={item?.shopProduct?.product?.imageUrls[0] || "/images/white-image.png"}
                                                     alt="white-image"
                                                     width={100} height={100} />
                                             </td>
@@ -365,26 +365,28 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                             </div>
                         </div>
 
-                        {/* Thông tin hậu cần */}
-                        <div className="border p-4">
-                            <h3 className="font-bold mb-4">Thông tin hậu cần</h3>
-                            <div className="space-y-4">
-                                {order?.statusHistory && order.statusHistory.map((history: any) => (
-                                    <div key={history.id} className="bg-green-50 p-3">
-                                        <p>{formatDate(history.time)} {history.description}</p>
-                                    </div>
-                                ))}
-                                {order?.status === 'DELIVERED' && (
-                                    <div className="bg-green-50 p-3">
-                                        <p>{formatDate(new Date().toISOString())} Người dùng đã ký tên và việc giao hàng đã được hoàn thành. Cảm ơn bạn đã chờ đợi.</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+
 
                     </div>
                 </div>
-
+                {/* Thông tin hậu cần */}
+                <div className="px-6">
+                    <div className="border p-4">
+                        <h3 className="font-bold mb-4">Thông tin hậu cần</h3>
+                        <div className="space-y-4">
+                            {order?.statusHistory && order.statusHistory.map((history: any) => (
+                                <div key={history.id} className="bg-green-50 p-3">
+                                    <p>{formatDate(history.time)} {history.description}</p>
+                                </div>
+                            ))}
+                            {order?.status === 'DELIVERED' && (
+                                <div className="bg-green-50 p-3">
+                                    <p>{formatDate(new Date().toISOString())} Người dùng đã ký tên và việc giao hàng đã được hoàn thành. Cảm ơn bạn đã chờ đợi.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
                 <div className="flex justify-end w-full my-6 px-6">
                     <Button
                         onClick={handlePrintInvoice}
