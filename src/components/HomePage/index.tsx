@@ -45,24 +45,22 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#E3E6E6]">
       <Header />
       <MenuHeader />
-      <div className="max-w-[1440px] mx-auto relative">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          
-        >
-          <HeroBanner />
-        </motion.div>
-      </div>
       {/* Wrapper for all sections */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="w-full absolute top-2/3 bg-[#E3E6E6]"
       >
+         <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-[1440px] mx-auto relative"
+        >
+          <HeroBanner />
+        </motion.div>
         {/* Category Grid */}
+        <div className="flex flex-col transform translate-y-[-200px]">
         <div className="px-4 max-w-[1440px] mx-auto">
           <Categories />
         </div>
@@ -71,12 +69,9 @@ export default function HomePage() {
         <BestSellers />
         <Categories2 />
         </div>
+        </div>
         <Footer />
-
       </motion.div>
-
-
-
       <motion.button
         style={{ opacity }}
         onClick={scrollTop}
