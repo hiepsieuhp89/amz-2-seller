@@ -122,11 +122,21 @@ export const filterSort=(optionA:any,optionB:any)=>{
   return labelA.localeCompare(labelB);
 }
 
-export const formatNumber = (number: number): string => {
+export const formatNumber = (number: number | undefined | null): string => {
+  if (number === undefined || number === null) {
+    return '0';
+  }
+  
+  // Kiểm tra xem number có phải là một số hợp lệ không
+  const numValue = Number(number);
+  if (isNaN(numValue)) {
+    return '0';
+  }
+  
   // Format with 1 decimal place only if needed
-  const formatted = Number.isInteger(number) 
-    ? number.toString() 
-    : number.toFixed(1);
+  const formatted = Number.isInteger(numValue) 
+    ? numValue.toString() 
+    : numValue.toFixed(1);
   
   // Add thousand separators
   return formatted.replace(/\B(?=(\d{3})+(?!\d))/g, '.');

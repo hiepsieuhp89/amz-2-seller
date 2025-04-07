@@ -11,7 +11,9 @@ import { cn } from '@/lib/utils';
 import { Star } from 'lucide-react';
 import { formatNumber } from '@/utils';
 import { useTopSellingProducts } from '@/hooks/dashboard';
-const { Title, Text } = Typography;
+import { useSelectedProduct } from '@/stores/useSelectedProduct';
+import { useProfile } from '@/hooks/authentication';
+const { Text } = Typography;
 
 const RatingStars = ({ rating }: { rating: number }) => {
   return (
@@ -58,7 +60,8 @@ const LeftSideSection = () => {
   };
 
   const { data: topSellingProducts, isLoading } = useTopSellingProducts()
-
+  const {setSelectedProduct} = useSelectedProduct()
+  const {profileData} = useProfile()
   return (
     <div>
       <motion.div
@@ -78,26 +81,26 @@ const LeftSideSection = () => {
               <div className='p-4'>
                 <div className="flex items-start mb-3">
                   {/* Shop Logo */}
-                  <Link href="/shop/Shop-Hoa-Hong">
+                  <Link href={"/shop?id=" + profileData?.data?.id}>
                     <motion.div
-                      whileHover={{ scale: 1.05 }}
                       className="mr-3 w-14 h-14 bg-white border relative rounded-full"
                     >
                       <Image
                         draggable={false}
-                        src="/images/default-avatar.jpg"
-                        alt="Shop Hoa Hong"
-                        fill
+                        src={profileData?.data?.logoUrl || "/images/default-avatar.jpg"}
+                        alt={profileData?.data?.shopName || "Shop ẩn danh"}
+                        height={56}
+                        width={56}
                         quality={100}
-                        className="flex-shrink-0 rounded-full h-full w-full  object-contain !p-1"
+                        className="flex-shrink-0 rounded-full h-full w-full object-cover p-1"
                       />
                     </motion.div>
                   </Link>
 
                   {/* Shop Name & Location */}
                   <div>
-                    <Link href="/shop/Shop-Hoa-Hong" className="text-sm flex items-center font-semibold">
-                      Shop ẩn danh
+                    <Link href={"/shop?id=" + profileData?.data?.id} className="text-sm flex items-center font-semibold">
+                      {profileData?.data?.shopName || "Shop ẩn danh"}
                       <motion.span
                         className="ml-2 text-blue-500"
                       >
@@ -121,7 +124,7 @@ const LeftSideSection = () => {
                         </svg>
                       </motion.span>
                     </Link>
-                    <Text className="text-xs !text-gray-400">123 Main Street, Austin, TX 78701, Hoa Kỳ</Text>
+                    <Text className="text-xs !text-gray-400">{profileData?.data?.shopAddress || profileData?.data?.address}</Text>
                   </div>
                 </div>
                 {/* Rating */}
@@ -167,7 +170,9 @@ const LeftSideSection = () => {
                   whileHover="hover"
                   className="p-4"
                 >
-                  <Link href={product.url} className="block">
+                  <Link 
+                  onClick={()=> setSelectedProduct(product?.product)}
+                  href={"/product?id=" + product?.product.id} className="block">
                     <div className="flex items-center">
                       {/* Product Image */}
                       <div className="w-1/4 xl:w-1/3 overflow-hidden">
@@ -176,8 +181,8 @@ const LeftSideSection = () => {
                           transition={{ duration: 0.5 }}
                         >
                           <Image
-                            src={product.image}
-                            alt={product.name}
+                            src={product?.product?.imageUrls[0]}
+                            alt={product?.product?.name}
                             width={200}
                             height={200}
                             className="w-full h-20 object-cover"
@@ -190,11 +195,11 @@ const LeftSideSection = () => {
                       <div className="w-3/4 xl:w-2/3 pl-3">
                         <div className="hidden xl:block mb-2">
                           <Text className="text-sm line-clamp-2 hover:transition-colors">
-                            {product.name}
+                            {product?.product?.name && product?.product?.name.length > 20 ? product?.product?.name.slice(0, 20) + "..." : product?.product?.name}
                           </Text>
                         </div>
                         <Text className=" font-bold">
-                          ${formatNumber(product.price)}
+                          ${formatNumber(product?.product?.price)}
                         </Text>
                       </div>
                     </div>
