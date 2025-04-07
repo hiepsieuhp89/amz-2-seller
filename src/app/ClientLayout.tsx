@@ -2,10 +2,12 @@
 import LayoutProvider from '@/components/LayoutProvider';
 import WrapMessage from '@/components/WrapMessage';
 import { UserProvider } from '@/context/useUserContext';
+import { useGetMaintenanceMode } from '@/hooks/maintenance';
 import { ReactQueryClientProvider } from '@/provider/ReactQueryClientProvider';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { ConfigProvider, ThemeConfig } from 'antd';
 import { usePathname } from 'next/navigation';
+import MaintenanceGuard from '@/components/MaintenanceGuard';
 
 function PathChecker({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -41,18 +43,20 @@ export default function ClientLayout({
       },
     },
   };
-
+ 
   return (
     <ReactQueryClientProvider>
       <html suppressHydrationWarning>
         <body suppressHydrationWarning>
-          <AntdRegistry >
+          <AntdRegistry>
             <ConfigProvider theme={theme}>
               <UserProvider>
                 <WrapMessage>
-                  <PathChecker>
-                    {children}
-                  </PathChecker>
+                  <MaintenanceGuard>
+                    <PathChecker>
+                      {children}
+                    </PathChecker>
+                  </MaintenanceGuard>
                 </WrapMessage>
               </UserProvider>
             </ConfigProvider>
