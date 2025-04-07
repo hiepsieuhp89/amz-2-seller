@@ -17,6 +17,7 @@ type UserContextType = {
   logoutUser: () => void
   fetchUserProfile: () => Promise<void>
   isLoadingProfile: boolean
+  logoUrl: string | undefined
 }
 
 const UserContext = createContext<UserContextType | null>(null)
@@ -115,6 +116,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         loginUser,
         logoutUser,
         fetchUserProfile,
+        logoUrl: profileData?.data?.logoUrl || "",
         isLoadingProfile: isProfileLoading || isLoadingProfile
       }}
     >

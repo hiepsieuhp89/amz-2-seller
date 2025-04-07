@@ -30,6 +30,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
+export const USER_PROFILE_KEY = ["userProfile"] as const;
+
 export const useSignIn = (): UseMutationResult<
   IAuthResponse,
   Error,
@@ -69,8 +71,9 @@ export const useProfile = () => {
     isFetching,
     refetch,
   } = useQuery({
-    queryKey: ["userProfile"],
+    queryKey: USER_PROFILE_KEY,
     queryFn: () => getProfile(),
+    staleTime: 0
   });
 
   return {
@@ -92,7 +95,7 @@ export const useUpdateBank = (): UseMutationResult<
     mutationFn: (params: IUpdateBank) => updateBank(params),
     onSuccess: (result: IAuthResponse) => {
       queryClient.invalidateQueries({
-        queryKey: ["userProfile"],
+        queryKey: USER_PROFILE_KEY
       });
       return result;
     },
@@ -133,7 +136,7 @@ export const useUpdateUser = (): UseMutationResult<
       }),
     onSuccess: (result: IAuthResponse) => {
       queryClient.invalidateQueries({
-        queryKey: ["userProfile"],
+        queryKey: USER_PROFILE_KEY
       });
       return result;
     },

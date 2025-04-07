@@ -1,9 +1,9 @@
 "use client"
 
-import { type MenuProps, Dropdown, Avatar, Space, Typography, message, Button, Tabs, Select, Upload } from "antd"
+import { type MenuProps, Dropdown, Avatar, Space, message, Button, Tabs, Select, Upload, Spin } from "antd"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { UserOutlined, LockOutlined, LogoutOutlined } from "@ant-design/icons"
+import { UserOutlined, LockOutlined, LogoutOutlined, EyeOutlined, DeleteOutlined } from "@ant-design/icons"
 import { useUser } from "@/context/useUserContext"
 import { useUpdateUser, useChangePassword } from "@/hooks/authentication"
 import { Modal, Form, Input } from "antd"
@@ -11,12 +11,10 @@ import type { TabsProps } from "antd"
 import { useVerifyBankAccount } from "@/hooks/bank"
 import { debounce } from "lodash"
 import { useUploadFile } from "@/hooks/upload"
-
-const { Text, Title } = Typography
-
+import Image from "next/image"
 const AvatarDropdown = () => {
   const router = useRouter()
-  const { user, profile, logoutUser } = useUser()
+  const { user, profile, logoutUser, logoUrl } = useUser()
   const [isClient, setIsClient] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
@@ -30,6 +28,7 @@ const AvatarDropdown = () => {
   const [idCardFrontImageUrl, setIdCardFrontImageUrl] = useState('')
   const [idCardBackImageUrl, setIdCardBackImageUrl] = useState('')
   const [avatarImageUrl, setAvatarImageUrl] = useState('')
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
 
   useEffect(() => {
     setIsClient(true)
@@ -79,11 +78,11 @@ const AvatarDropdown = () => {
         newPassword: values.newPassword,
         confirmPassword: values.confirmPassword
       })
-      messageApi.success("Đổi mật khẩu thành công!")
+      messageApi.success("Đổi mật khẩu giao dịch thành công!")
       setIsPasswordModalOpen(false)
       passwordForm.resetFields()
     } catch (error) {
-      messageApi.error("Có lỗi xảy ra khi đổi mật khẩu")
+      messageApi.error("Có lỗi xảy ra khi đổi mật khẩu giao dịch")
     }
   }
 
@@ -98,12 +97,12 @@ const AvatarDropdown = () => {
 
       // Tab cài đặt thanh toán
       address: profile?.data?.address,
-      
+
       bankName: profile?.data?.bankName,
       bankAccountNumber: profile?.data?.bankAccountNumber,
       bankAccountName: profile?.data?.bankAccountName,
       bankBranch: profile?.data?.bankBranch,
-      
+
       // Thông tin shop
       shopName: profile?.data?.shopName,
       shopAddress: profile?.data?.shopAddress,
@@ -143,7 +142,7 @@ const AvatarDropdown = () => {
     try {
       const response = await uploadFile(file)
       const imageUrl = response.data.url
-      
+
       if (type === 'front') {
         setIdCardFrontImageUrl(imageUrl)
         form.setFieldsValue({ idCardFrontImage: imageUrl })
@@ -151,7 +150,7 @@ const AvatarDropdown = () => {
         setIdCardBackImageUrl(imageUrl)
         form.setFieldsValue({ idCardBackImage: imageUrl })
       }
-      
+
       return false
     } catch (error) {
       messageApi.error("Có lỗi xảy ra khi tải lên ảnh")
@@ -161,25 +160,24 @@ const AvatarDropdown = () => {
 
   const handleUploadAvatar = async (file: File) => {
     try {
+      setIsUploadingAvatar(true)
       const response = await uploadFile(file)
       const imageUrl = response.data.url
-      
+
       setAvatarImageUrl(imageUrl)
       form.setFieldsValue({ logoUrl: imageUrl })
-      
+
       return false
     } catch (error) {
       messageApi.error("Có lỗi xảy ra khi tải lên ảnh đại diện")
       return false
+    } finally {
+      setIsUploadingAvatar(false)
     }
   }
 
   const BasicInfoTab = () => (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={handleProfileUpdate}
-    >
+    <div>
       <Form.Item
         label="Tên của bạn"
         name="fullName"
@@ -204,12 +202,18 @@ const AvatarDropdown = () => {
           listType="picture-card"
           maxCount={1}
           beforeUpload={(file) => handleUploadAvatar(file)}
-          showUploadList={{ showPreviewIcon: true, showRemoveIcon: true }}
+          showUploadList={{
+            showPreviewIcon: true,
+            showRemoveIcon: true,
+            showDownloadIcon: false,
+            removeIcon: <DeleteOutlined style={{ color: '#ff4d4f' }} />,
+            previewIcon: <EyeOutlined style={{ color: '#1890ff' }} />
+          }}
           fileList={avatarImageUrl ? [
             {
               uid: '-1',
               name: 'Avatar',
-              status: 'done',
+              status: isUploadingAvatar ? 'uploading' : 'done',
               url: avatarImageUrl,
             }
           ] : []}
@@ -220,7 +224,11 @@ const AvatarDropdown = () => {
         >
           {!avatarImageUrl && (
             <div>
-              <Button>Tải lên</Button>
+              {
+                isUploadingAvatar ? <Spin /> : <Button variant="outlined">
+                  Tải lên
+                </Button>
+              }
             </div>
           )}
         </Upload>
@@ -229,23 +237,20 @@ const AvatarDropdown = () => {
       <Form.Item
         label="Mật khẩu"
       >
-        <Button 
-          type="primary" 
+        <Button
+          type="primary"
+          className="!rounded-sm"
           icon={<LockOutlined />}
           onClick={() => setIsPasswordModalOpen(true)}
         >
           Thay đổi mật khẩu
         </Button>
       </Form.Item>
-    </Form>
+    </div>
   )
 
   const PaymentSettingsTab = () => (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={handleProfileUpdate}
-    >
+    <div>
       <Form.Item
         label="Tên"
         name="fullName"
@@ -379,7 +384,7 @@ const AvatarDropdown = () => {
         help={bankAccountHelp}
         rules={[{ required: true, message: 'Vui lòng nhập số tài khoản!' }]}
       >
-        <Input 
+        <Input
           placeholder="NHẬP SỐ TÀI KHOẢN NGÂN HÀNG"
           onChange={(e) => debouncedVerification(e.target.value)}
         />
@@ -392,7 +397,7 @@ const AvatarDropdown = () => {
       >
         <Input placeholder="NHẬP TÊN CHỦ TÀI KHOẢN" />
       </Form.Item>
-    </Form>
+    </div>
   )
 
   const items: TabsProps['items'] = [
@@ -416,9 +421,9 @@ const AvatarDropdown = () => {
       onClick: showProfileModal
     },
     {
-      key: '2', 
+      key: '2',
       icon: <LockOutlined />,
-      label: 'Đổi mật khẩu',
+      label: 'Mật khẩu giao dịch',
       onClick: () => setIsPasswordModalOpen(true)
     },
     {
@@ -436,26 +441,37 @@ const AvatarDropdown = () => {
   return (
     <>
       {contextHolder}
-      <Dropdown 
+      <Dropdown
         menu={{ items: menuItems }}
-        trigger={["click"]} 
-        placement="bottomRight" 
+        trigger={["click"]}
+        placement="bottomRight"
         arrow
       >
         <Space className="cursor-pointer rounded-md transition-all">
-          <Avatar
-            size={38}
-            style={{
-              background: getAvatarColor(),
-              fontSize: "18px",
-              fontWeight: "bold",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {getFirstLetter()}
-          </Avatar>
+          {
+            logoUrl ? 
+            
+            <div className="flex-shrink-0 h-[38px] w-[38px] flex items-center justify-center !bg-main-charcoal-blue rounded-full overflow-hidden">
+              <Image 
+            className="flex-shrink-0 object-fill h-full w-full"
+            src={logoUrl} alt="avatar" width={100} height={100} quality={100} draggable={false} />
+              </div> :
+              <Avatar
+                size={38}
+                style={{
+                  background: logoUrl ? `url(${logoUrl})` : getAvatarColor(),
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
+                {getFirstLetter()}
+              </Avatar>
+          }
           <div className="flex flex-col">
             <p className="!!text-white/80/80 font-bold">{user?.username}</p>
             <p
@@ -477,15 +493,32 @@ const AvatarDropdown = () => {
         bodyStyle={{ maxHeight: '70vh', overflowY: 'auto' }}
         className="responsive-modal"
       >
-        <Tabs
-          defaultActiveKey="1"
-          items={items}
-          type="card"
-        />
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleProfileUpdate}
+        >
+          <Tabs
+            defaultActiveKey="1"
+            items={[
+              {
+                key: '1',
+                label: 'Thông tin cơ bản',
+                children: <BasicInfoTab />,
+              },
+              {
+                key: '2',
+                label: 'Cài đặt thanh toán',
+                children: <PaymentSettingsTab />,
+              },
+            ]}
+            type="card"
+          />
+        </Form>
       </Modal>
 
       <Modal
-        title="Đổi mật khẩu"
+        title="Đổi mật khẩu giao dịch"
         open={isPasswordModalOpen}
         onCancel={() => {
           setIsPasswordModalOpen(false)
