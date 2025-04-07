@@ -268,7 +268,7 @@ export default function ProductDetail() {
               <span className="font-medium">Ẩn danh</span>
             </div>
             <Button
-            onClick={()=> message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+              onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
               variant="outline"
               className="ml-4 px-3 py-1 font-semibold border-main-golden-orange !text-main-golden-orange hover:bg-main-golden-orange/30"
             >
@@ -346,6 +346,7 @@ export default function ProductDetail() {
           </div>
           <div className="flex gap-4">
             <Button
+              onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
               variant="link"
               className="h-auto p-0 text-muted-foreground text-wrap break-words"
             >
@@ -353,6 +354,7 @@ export default function ProductDetail() {
               Thêm vào danh sách yêu thích
             </Button>
             <Button
+              onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
               variant="link"
               className="h-auto p-0 text-muted-foreground text-wrap break-words"
             >
@@ -389,15 +391,15 @@ export default function ProductDetail() {
             <div className="text-sm text-muted-foreground">Chia sẻ:</div>
             <div className="col-span-2 flex gap-2">
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button 
-                  onClick={()=> message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
-                variant="outline" size="icon" className="rounded-full">
+                <Button
+                  onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                  variant="outline" size="icon" className="rounded-full">
                   <Icon path={mdiEmailOutline} size={0.8} />
                 </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                 <Button
-                  onClick={()=> message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                  onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
                   variant="outline"
                   size="icon"
                   className="rounded-full text-[#1DA1F2]"
@@ -407,7 +409,7 @@ export default function ProductDetail() {
               </motion.div>
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                 <Button
-                  onClick={()=> message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                  onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
                   variant="outline"
                   size="icon"
                   className="rounded-full text-[#4267B2]"
@@ -417,17 +419,17 @@ export default function ProductDetail() {
               </motion.div>
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                 <Button
-                  onClick={()=> message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                  onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
                   variant="outline"
                   size="icon"
                   className="rounded-full text-[#0077B5]"
                 >
                   <Icon path={mdiLinkedin} size={0.8} />
-                </Button> 
+                </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                 <Button
-                  onClick={()=> message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                  onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
                   variant="outline"
                   size="icon"
                   className="rounded-full text-[#25D366]"
