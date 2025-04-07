@@ -30,6 +30,7 @@ import { useSelectedProduct } from "@/stores/useSelectedProduct";
 import { Star } from "lucide-react";
 import { formatNumber } from "@/utils";
 import { message } from "antd";
+import Link from "next/link";
 
 const RatingStars = ({ rating }: { rating: number }) => {
   return (
@@ -50,7 +51,6 @@ const RatingStars = ({ rating }: { rating: number }) => {
 };
 export default function ProductDetail() {
   const { selectedProduct } = useSelectedProduct();
-  console.log(selectedProduct);
   const [quantity, setQuantity] = useState<number>(1);
   const [currentImage, setCurrentImage] = useState<number>(0);
   const price = parseFloat(selectedProduct?.price || "0");
@@ -330,6 +330,7 @@ export default function ProductDetail() {
           <div className="flex flex-wrap gap-4">
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
+                onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
                 variant="outline"
                 className="h-11 gap-2 bg-muted hover:bg-muted/80"
               >
@@ -338,7 +339,9 @@ export default function ProductDetail() {
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button className="h-11 gap-2 bg-primary -foreground">
+              <Button
+                onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                className="h-11 gap-2 bg-primary -foreground">
                 <Icon path={mdiCreditCardOutline} size={0.8} />
                 Mua ngay
               </Button>
@@ -380,9 +383,10 @@ export default function ProductDetail() {
                     30 Days Cash Back Guarantee
                   </p>
                 </div>
-                <Button variant="link" className="h-auto p-0">
-                  Xem Chính sách
-                </Button>
+                <Link href="/return-policy">
+                  <Button variant="link" className="h-auto p-0">
+                    Xem Chính sách
+                  </Button></Link>
               </div>
             </div>
           </div>

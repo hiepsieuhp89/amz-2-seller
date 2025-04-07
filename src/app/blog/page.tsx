@@ -26,7 +26,6 @@ function BlogContent() {
     const searchParams = useSearchParams()
     const id = searchParams.get("id")
     const { setSelectedBlog, selectedBlog } = useSelectedBlog()
-    console.log(selectedBlog)
     return (
         <div className="min-h-screen bg-background flex flex-col">
             <section className="py-8 px-[104px] max-w-[1440px] flex-1 bg-[#E3E6E6]">

@@ -1,6 +1,17 @@
 import Image from "next/image";
 import "./styles.css"
 import { useProfile } from "@/hooks/authentication";
+
+const formatDate = (dateString: string | undefined) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  }).replace(/\//g, '/');
+};
+
 export default function ShopHeader() {
   const { profileData } = useProfile()
   return (
@@ -8,8 +19,8 @@ export default function ShopHeader() {
       <div className="container mx-auto max-w-[1440px] flex items-center">
         <div className="w-16 h-16 border-2 border-main-golden-orange rounded-full bg-gray-200 items-center justify-center overflow-hidden mr-4">
           <Image
-            className="flex-shrink-0 object-fill h-full w-full"
-            src={profileData?.data?.logoUrl || "/images/white-image.png"} alt="avatar" width={100} height={100} quality={100} draggable={false} />
+            className="flex-shrink-0 object-fill h-full w-full rounded-full"
+            src={profileData?.data?.logoUrl || "/images/default-avatar.jpg"} alt="seller-avatar" width={100} height={100} quality={100} draggable={false} />
         </div>
         <div className="flex-1">
           <div className="flex items-center">
@@ -26,11 +37,11 @@ export default function ShopHeader() {
             ))}
             <span className="ml-2 text-sm text-gray-500">(0 Nhận xét)</span>
           </div>
-          <div className="text-sm text-gray-600">Yên Sơn Tuyên Quang Việt Nam</div>
+          <div className="text-sm text-gray-600">{profileData?.data?.shopAddress || profileData?.data?.address}</div>
         </div>
         <div className="flex flex-col items-end">
-          <div className="text-sm text-gray-500 mb-1">Member Since</div>
-          <div className="font-medium">27 Mar 2025</div>
+          <div className="text-sm text-gray-500">Member Since</div>
+          <div className="font-medium">{formatDate(profileData?.data?.createdAt || '')}</div>
         </div>
         <button className="ml-4 bg-[#FF9900] hover:bg-[#f3a847] !text-white/80 px-6 py-2 rounded-full flex items-center">
           <span className="mr-1">+</span>

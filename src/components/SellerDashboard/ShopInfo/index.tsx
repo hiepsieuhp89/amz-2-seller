@@ -11,7 +11,6 @@ const ShopInfo = () => {
     page: 1,
   });
   const totalItems = shopProductsData?.data?.meta?.itemCount || 0;
-  console.log(detailStatistics)
   const infoItems = [
     {
       icon: <Package className="h-5 w-5" />,

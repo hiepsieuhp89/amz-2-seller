@@ -27,7 +27,6 @@ export default function ShopContent({
   handleSortChange,
   handlePageChange,
 }: ShopContentProps) {
-  console.log("shopProducts", shopProducts)
   return (
     <main className="w-full flex justify-center px-[104px] py-6 bg-[#E3E6E6]">
       <div className="max-w-[1440px] bg-[#E3E6E6]">

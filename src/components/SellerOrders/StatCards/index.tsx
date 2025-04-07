@@ -26,7 +26,6 @@ const StatCard = ({ title, value, gradientClass }: StatCardProps) => {
 
 const StatCards: React.FC = () => {
   const { statistics } = useShopStatistics()
-  console.log(statistics)
   if (!statistics) {
     return <div></div>
   }

@@ -82,8 +82,6 @@ const SellerSpreadPackages = () => {
         <p className="text-red-500">Vui lòng thử lại sau</p>
       </div>
     );
-
-  console.log(packagesData);
   const packages =
     packagesData?.data.data.map((pkg: any) => ({
       id: Number(pkg.id),

@@ -55,9 +55,6 @@ function DescriptionTab({ images }: DescriptionTabProps) {
 
 // Reviews Tab Component
 function ReviewsTab({ reviews }: ReviewsTabProps) {
-  // const { selectedProduct } = useSelectedProduct()
-  // const { data: reviewsData } = useGetShopProductReviews(selectedProduct?.id || "")
-  // console.log(reviewsData);
   return (
     <Card className="border-none">
       <CardHeader>
@@ -67,7 +64,7 @@ function ReviewsTab({ reviews }: ReviewsTabProps) {
         {/* Form thêm nhận xét mới */}
         <div className="flex gap-4">
           <Avatar>
-            <AvatarImage src="/avatars/default.jpg" />
+            <AvatarImage src="/images/default-avatar.jpg" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <Input

@@ -448,30 +448,11 @@ const AvatarDropdown = () => {
         arrow
       >
         <Space className="cursor-pointer rounded-md transition-all">
-          {
-            logoUrl ? 
-            
-            <div className="flex-shrink-0 h-[38px] w-[38px] flex items-center justify-center !bg-main-charcoal-blue rounded-full overflow-hidden">
-              <Image 
-            className="flex-shrink-0 object-fill h-full w-full"
-            src={logoUrl} alt="avatar" width={100} height={100} quality={100} draggable={false} />
-              </div> :
-              <Avatar
-                size={38}
-                style={{
-                  background: logoUrl ? `url(${logoUrl})` : getAvatarColor(),
-                  fontSize: "18px",
-                  fontWeight: "bold",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                {getFirstLetter()}
-              </Avatar>
-          }
+          <div className="flex-shrink-0 p-0.5 h-[38px] w-[38px] flex items-center justify-center !bg-main-charcoal-blue rounded-full overflow-hidden">
+            <Image
+              className="flex-shrink-0 object-fill h-full w-full rounded-full"
+              src={logoUrl || "/images/default-avatar.jpg"} alt="seller-avatar" width={100} height={100} quality={100} draggable={false} />
+          </div>
           <div className="flex flex-col">
             <p className="!!text-white/80/80 font-bold">{user?.username}</p>
             <p

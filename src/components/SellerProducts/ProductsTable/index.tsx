@@ -329,7 +329,6 @@ const ProductsTable = ({
             title="Bạn có chắc chắn muốn xóa sản phẩm này?"
             onConfirm={() => 
               handleRemoveProduct(record?.product?.id)
-              // console.log(record)
             }
             okText="Có"
             cancelText="Không"

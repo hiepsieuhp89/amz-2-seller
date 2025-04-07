@@ -10,59 +10,8 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Star } from 'lucide-react';
 import { formatNumber } from '@/utils';
+import { useTopSellingProducts } from '@/hooks/dashboard';
 const { Title, Text } = Typography;
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  url: string;
-}
-
-const topSellingProducts: Product[] = [
-  {
-    id: 'd0UgfhsrIq',
-    name: 'Yousie Toddler Girls Kids Jumpsuit One Piece Floral Dinosaur Playsuit Strap Romper Summer Outfits Clothes - Clothes',
-    price: 9.98,
-    image: 'https://m.media-amazon.com/images/I/613VU3cydAL._AC_SL1500_.jpg',
-    url: '/product/d0UgfhsrIq'
-  },
-  {
-    id: 'uImrvQGcKp',
-    name: 'Hyhucoie Womens Sweatsuits 2 Piece Set Lounge Sets Long Sleeve Tops Jogger Sweatpants Track Sweats Suits Matching Pants Sets - Clothes',
-    price: 9.99,
-    image: 'https://m.media-amazon.com/images/I/51FANKJajxL._AC_SL1500_.jpg',
-    url: '/product/uImrvQGcKp'
-  },
-  {
-    id: 'IbxNrCi2om',
-    name: 'Christmas Decorations - Christmas Window Clings Christmas Decorations Indoor Christmas Decorations Clearance Snowflakes Christmas Window Decorations Stickers for Home Office Classroom',
-    price: 5.99,
-    image: 'https://m.media-amazon.com/images/I/81nlCjJ1NaL._AC_SL1500_.jpg',
-    url: '/product/IbxNrCi2om'
-  },
-  {
-    id: '15Pus3qiBm',
-    name: 'Sanniu Led String Lights, Mini Battery Powered Copper Wire Starry Fairy Lights, Battery Operated Lights for Bedroom, Christmas, Parties, Wedding, Centerpiece, Decoration (5m/16ft Warm White),1 Pack',
-    price: 6.99,
-    image: 'https://m.media-amazon.com/images/I/713LZ06UeJL._AC_SL1200_.jpg',
-    url: '/product/15Pus3qiBm'
-  },
-  {
-    id: 'PunXjMj9kG',
-    name: 'Green Christmas Decorations Door Cover Merry Christmas Door Cover 6 X 3ft Black Buffalo Grid Flag Photography Banner Christmas Xmas Winter Holiday Home Kitchen',
-    price: 9.99,
-    image: 'https://m.media-amazon.com/images/I/81OoO5y-okL._AC_SL1500_.jpg',
-    url: '/product/PunXjMj9kG'
-  },
-  {
-    id: 'MrzvVvHdQQ',
-    name: 'BLUE PANDA 8 Piece Christmas Headbands, Christmas Party Accessories for Kids Adults, Fun Festive Holiday Headband for Xmas Party Gatherings with Family Friends (4.4 x 7.15 In)',
-    price: 8.99,
-    image: 'https://m.media-amazon.com/images/I/61vjDAdS37L._SL1500_.jpg',
-    url: '/product/MrzvVvHdQQ'
-  }
-];
 
 const RatingStars = ({ rating }: { rating: number }) => {
   return (
@@ -108,6 +57,8 @@ const LeftSideSection = () => {
     }
   };
 
+  const { data: topSellingProducts, isLoading } = useTopSellingProducts()
+
   return (
     <div>
       <motion.div
@@ -134,7 +85,7 @@ const LeftSideSection = () => {
                     >
                       <Image
                         draggable={false}
-                        src="/images/silver-shop.png"
+                        src="/images/default-avatar.jpg"
                         alt="Shop Hoa Hong"
                         fill
                         quality={100}
@@ -210,7 +161,7 @@ const LeftSideSection = () => {
             <List
               itemLayout="horizontal"
               dataSource={topSellingProducts}
-              renderItem={(product) => (
+              renderItem={(product: any) => (
                 <motion.div
                   variants={hoverVariants}
                   whileHover="hover"
