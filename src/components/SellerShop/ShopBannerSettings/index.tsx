@@ -20,7 +20,7 @@ interface FileType {
   thumbUrl?: string;
 }
 
-const ShopBannerSettings = ({ onSave }: ShopBannerSettingsProps) => {
+const ShopBannerSettings = ({ profileData }: { profileData: any }) => {
   const [form] = Form.useForm()
   const uploadMutation = useUploadFile()
   const { profile } = useUser()
@@ -106,8 +106,6 @@ const ShopBannerSettings = ({ onSave }: ShopBannerSettingsProps) => {
       halfBannerImage: halfBannerImageList[0]?.url || '',
       bannerImage2: bannerImage2List[0]?.url || '',
     };
-    
-    onSave(submitData);
     message.success("Cài đặt biểu ngữ đã được lưu");
   }
 

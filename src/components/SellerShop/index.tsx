@@ -3,21 +3,11 @@
 import React from "react"
 import ShopBasicInfo from "./ShopBasicInfo"
 import ShopBannerSettings from "./ShopBannerSettings"
-import { mockShopData } from "./mockData"
-import { ShopData } from "./types"
-import { useUpdateUser } from "@/hooks/authentication"
+import { useProfile } from "@/hooks/authentication"
+import Link from "next/link"
 
 const SellerShop = () => {
-  const [shopData, setShopData] = React.useState<ShopData>(mockShopData)
-  const updateUserMutation = useUpdateUser()
-
-  const handleSave = (updatedData: Partial<ShopData>) => {
-    updateUserMutation.mutate(updatedData, {
-      onSuccess: () => {
-        setShopData(prev => ({ ...prev, ...updatedData }))
-      }
-    })
-  }
+  const { profileData } = useProfile()
 
   return (
     <div className="px-4 px-lg-6">
@@ -28,14 +18,14 @@ const SellerShop = () => {
               Cài đặt cửa hàng
               <span className="ml-3 text-sm">
                 (
-                <a
-                  href={`https://shop.shop-worldwide-amz.top/shop/${shopData.name.replace(/\s+/g, "-")}`}
+                <Link
+                  href={`/shop?id=${profileData?.data?.id}`}
                   className="text-blue-500 text-sm px-0"
                   target="_blank"
                   rel="noreferrer"
                 >
                   Ghé thăm cửa hàng <i className="las la-arrow-right"></i>
-                </a>
+                </Link>
                 )
               </span>
             </h1>
@@ -43,8 +33,8 @@ const SellerShop = () => {
         </div>
       </div>
 
-      <ShopBasicInfo onSave={handleSave} />
-      <ShopBannerSettings onSave={handleSave} />
+      <ShopBasicInfo profileData={profileData} />
+      <ShopBannerSettings profileData={profileData} />
     </div>
   )
 }

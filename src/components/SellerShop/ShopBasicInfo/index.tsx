@@ -7,10 +7,6 @@ import { Button, Form, Input, Upload, message } from "antd"
 import React from "react"
 import { ShopData } from "../types"
 
-interface ShopBasicInfoProps {
-  onSave: (data: Partial<ShopData>) => void
-}
-
 interface FileType {
   uid: string;
   name: string;
@@ -19,7 +15,7 @@ interface FileType {
   thumbUrl?: string;
 }
 
-const ShopBasicInfo = ({ onSave }: ShopBasicInfoProps) => {
+const ShopBasicInfo = ({ profileData }: { profileData: any }) => {
   const [form] = Form.useForm()
   const [fileList, setFileList] = React.useState<FileType[]>([])
   const uploadMutation = useUploadFile()
@@ -50,7 +46,6 @@ const ShopBasicInfo = ({ onSave }: ShopBasicInfoProps) => {
       ...values,
       logoUrl: fileList[0]?.url || null
     }
-    onSave(submitData)
     message.success("Thông tin cơ bản đã được lưu")
   }
 

@@ -28,6 +28,8 @@ import Link from "next/link"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useLayout } from "@/components/LayoutProvider"
 import useSidebar from '@/stores/useSidebar'
+import { Star } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 function LayoutPage() {
   const { isSidebarOpen } = useSidebar()
@@ -40,7 +42,8 @@ function LayoutPage() {
   const [shopLink, setShopLink] = useState("/shop?id=")
   const [isClient, setIsClient] = useState(false)
   const { isMobileSidebarOpen, toggleMobileSidebar } = useLayout()
-
+  const { profile } = useUser()
+  console.log(profile)
   const menu = [
     {
       key: "/seller/dashboard",
@@ -255,13 +258,6 @@ function LayoutPage() {
     })
   }
 
-  const { profile } = useUser()
-  const starSvg = (
-    <svg viewBox="0 0 576 512" width="20" fill="gold">
-      <path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path>
-    </svg>
-  )
-
   // Animation variants for consistent timing
   const sidebarVariants = {
     open: { width: 280, transition: { duration: 0.3, ease: "easeInOut" } },
@@ -303,6 +299,22 @@ function LayoutPage() {
       y: -10,
       transition: { duration: 0.2, ease: "easeIn" },
     },
+  }
+
+  const RatingStars = ({ rating }: { rating: number }) => {
+    return (
+      <div className="flex justify-center gap-0.5 mt-1">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <Star
+            key={index}
+            className={cn(
+              "w-5 h-5",
+              index < rating ? "fill-yellow-400 stroke-yellow-400" : "fill-gray-300 stroke-gray-300"
+            )}
+          />
+        ))}
+      </div>
+    )
   }
 
   const MobileSidebar = () => {
@@ -368,11 +380,11 @@ function LayoutPage() {
                 }}
               >
                 <motion.div variants={itemVariants} className="w-full flex flex-col items-center gap-1">
-                  <div className="text-[#ff9900] flex items-center cursor-pointer">
-                    <Link href={shopLink} className="font-medium text-sm flex-shrink-0">
+                  <div className="text-[#ff9900] hover:text-main-golden-orange transition-all duration-300 flex items-center cursor-pointer">
+                    <Link href={shopLink} className="font-medium text-base flex-shrink-0">
                       Ghé thăm cửa hàng
                     </Link>
-                    <span className="ml-1 flex-shrink-0">→</span>
+                    <span className="ml-1 flex-shrink-0 text-base">→</span>
                   </div>
 
                   <div className="flex flex-col gap-0 w-full items-center">
@@ -394,23 +406,17 @@ function LayoutPage() {
 
                     {/* Email */}
                     {isClient && (
-                      <div className="text-sm text-gray-300 flex-shrink-0">{user?.email}</div>
+                      <div className="text-sm text-gray-300 flex-shrink-0">{profile?.data?.email}</div>
                     )}
                   </div>
 
                   {/* Rating Stars */}
-                  <div className="flex">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span key={star} className="text-yellow-400 text-xl">
-                        {starSvg}
-                      </span>
-                    ))}
-                  </div>
+                  <RatingStars rating={profile?.data?.stars || 0} />
 
                   {/* Trust Score */}
                   <div className="mb-4">
                     <span className="!text-white/80 font-medium text-sm">Điểm uy tín: </span>
-                    <span className="text-green-400 text-sm">100</span>
+                    <span className="text-green-400 text-sm">{profile?.data?.reputationPoints || 0}</span>
                   </div>
 
                   {/* Search Box */}
