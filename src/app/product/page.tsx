@@ -12,13 +12,17 @@ function ProductDetailContent() {
       <Header />
       <div className="flex flex-col">
         <ProductDetail />
-        <div className="w-full flex flex-row py-6 px-4 md:px-6 lg:px-[104px] gap-4 bg-[#E3E6E6]">
+        <div className="w-full hidden md:flex flex-row py-6 px-4 md:px-6 lg:px-[104px] gap-4 bg-[#E3E6E6]">
           <div className="w-full lg:w-1/4">
             <LeftSideSection />
           </div>
           <div className="w-full lg:w-3/4">
             <ProductTabs/>
           </div>
+        </div>
+        <div className="flex flex-col md:hidden">
+          <LeftSideSection />
+          <div className="px-4 mb-4"><ProductTabs /></div>
         </div>
       </div>
       <Footer />

@@ -519,11 +519,11 @@ const AvatarDropdown = () => {
             <FormLabel>Tên ngân hàng</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="rounded-[6px]">
                   <SelectValue placeholder="VUI LÒNG CHỌN NGÂN HÀNG" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
+              <SelectContent className="rounded-[6px]">
                 <SelectItem value="vcb">Vietcombank</SelectItem>
                 <SelectItem value="tcb">Techcombank</SelectItem>
                 <SelectItem value="bidv">BIDV</SelectItem>
