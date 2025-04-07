@@ -195,7 +195,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
               <Space size="small" style={{ display: 'flex', width: '100%' }}>
                 <Input
                   placeholder="Tìm kiếm sản phẩm"
-                  prefix={<SearchOutlined style={{ color: "#1890ff" }} />}
+                  prefix={<SearchOutlined style={{ color: "#636363" }} />}
                   value={searchText}
                   onChange={(e: any) => handleSearch(e.target.value)}
                   style={{ flex: 1, borderRadius: "6px" }}

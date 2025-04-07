@@ -4,12 +4,18 @@ import { useGetMyOrders } from "@/hooks/shop-products"
 import { SearchOutlined } from "@ant-design/icons"
 import { mdiContentSaveEdit, mdiEye, mdiTrashCan } from "@mdi/js"
 import Icon from "@mdi/react"
-import { Badge, Card, Col, Divider, Empty, Input, Row, Select, Space, Spin, Table, Tooltip, Typography, Pagination } from "antd"
+import { Badge, Card, Col, Divider, Empty, Input, Row, Space, Spin, Table, Tooltip, Typography, Pagination } from "antd"
 import type { ColumnsType } from "antd/es/table"
 import { useState } from "react"
-import { Option } from "antd/lib/mentions"
 import OrderDetailDialog from "../OrderDetailDialog"
-import type { IOrderDetailsResponse } from "@/interface/response/shop-products"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+
 const { Title } = Typography
 
 interface OrderData {
@@ -20,8 +26,6 @@ interface OrderData {
     status: string
     delayStatus: string
     paymentStatus: string
-    email: string
-    address: string
     itemsCount: number
     userId: string
     quantity: number
@@ -30,9 +34,13 @@ interface OrderData {
 const OrdersTable = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [pageSize, setPageSize] = useState(10)
+    const [statusFilter, setStatusFilter] = useState<string | undefined>()
+    const [searchText, setSearchText] = useState<string>("")
     const { data: ordersData, isLoading } = useGetMyOrders({
         order: "DESC",
-        page: currentPage
+        page: currentPage,
+        status: statusFilter,
+        search: searchText
     })
     const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
@@ -48,24 +56,10 @@ const OrdersTable = () => {
         setIsDetailOpen(true)
     }
 
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center h-[50vh]">
-                <Spin size="small" />
-            </div>
-        )
-    }
-
-    if (!ordersData || !ordersData.data || ordersData.data.data?.length === 0) {
-        return (
-            <div className="flex justify-center items-center h-60 flex-1 max-h-screen bg-white rounded-md border">
-                <Empty
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    description="Chưa có đơn hàng"
-                />
-            </div>
-        )
-    }
+    const handleStatusChange = (value: string) => {
+        setStatusFilter(value);
+        setCurrentPage(1);
+    };
 
     const columns: ColumnsType<OrderData> = [
         {
@@ -86,7 +80,7 @@ const OrdersTable = () => {
             title: "Tổng tiền",
             dataIndex: "totalAmount",
             key: "totalAmount",
-            width: 110,
+            width: 80,
             render: (text) => `$${text}`,
             sorter: (a, b) => parseFloat(a.totalAmount) - parseFloat(b.totalAmount),
         },
@@ -122,17 +116,10 @@ const OrdersTable = () => {
             sorter: (a, b) => a.paymentStatus.localeCompare(b.paymentStatus),
         },
         {
-            title: "Email khách hàng",
-            dataIndex: "email",
-            key: "email",
-            width: '20%',
-            sorter: (a, b) => a.email.localeCompare(b.email),
-        },
-        {
             title: "Số sản phẩm",
             dataIndex: "itemsCount",
             key: "itemsCount",
-            width: 110,
+            width: 80,
             sorter: (a, b) => a.itemsCount - b.itemsCount,
         },
         {
@@ -140,7 +127,7 @@ const OrdersTable = () => {
             key: "action",
             width: 110,
             render: (_, record) => (
-                <Space size="middle">
+                <div className="flex items-center justify-center gap-6">
                     <Tooltip title="Xem chi tiết">
                         <span 
                             onClick={() => handleOpenDetail(record.orderCode)}
@@ -160,14 +147,7 @@ const OrdersTable = () => {
                             color={"#A3A3A3"}
                         />
                     </Tooltip>
-                    {/* <Tooltip title="Xóa">
-                        <Icon
-                            path={mdiTrashCan}
-                            size={0.7}
-                            color={"#A3A3A3"}
-                        />
-                    </Tooltip> */}
-                </Space>
+                </div>
             ),
         },
     ];
@@ -190,22 +170,26 @@ const OrdersTable = () => {
                     </Space>
                 </Col>
                 <Col xs={24} sm={12}>
-                    <Space size="small" style={{ width: '100%' }}>
+                    <Space size="small" style={{ width: '100%', display: "flex", justifyContent: "flex-end" }}>
                         <Input
-                            placeholder="Nhập Mã đơn hàng"
-                            prefix={<SearchOutlined style={{ color: "#1890ff" }} />}
+                            placeholder="Nhập mã đơn hàng"
+                            prefix={<SearchOutlined style={{ color: "#636363" }} />}
                             style={{ width: '100%', maxWidth: 250, borderRadius: "6px" }}
                             allowClear
+                            onChange={(e: any) => setSearchText(e.target.value)}
+                            value={searchText}
                         />
-                        <Select
-                            placeholder="Lọc trạng thái"
-                            style={{ width: '100%', maxWidth: 250, borderRadius: "6px" }}
-                        >
-                            <Option value="PENDING">Đang chờ xử lý</Option>
-                            <Option value="CONFIRMED">Đã xác nhận</Option>
-                            <Option value="SHIPPING">Đang giao hàng</Option>
-                            <Option value="DELIVERED">Đã giao hàng</Option>
-                            <Option value="CANCELLED">Đã huỷ</Option>
+                        <Select onValueChange={handleStatusChange} value={statusFilter}>
+                            <SelectTrigger className="w-[180px] h-10 rounded-sm">
+                                <SelectValue placeholder="Lọc trạng thái" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="PENDING">Đang chờ xử lý</SelectItem>
+                                <SelectItem value="CONFIRMED">Đã xác nhận</SelectItem>
+                                <SelectItem value="SHIPPING">Đang giao hàng</SelectItem>
+                                <SelectItem value="DELIVERED">Đã giao hàng</SelectItem>
+                                <SelectItem value="CANCELLED">Đã huỷ</SelectItem>
+                            </SelectContent>
                         </Select>
                     </Space>
                 </Col>
@@ -215,7 +199,7 @@ const OrdersTable = () => {
 
             <Table
                 columns={columns}
-                dataSource={Array.isArray(ordersData.data.data) ? ordersData.data.data.map((order: any) => ({
+                dataSource={Array.isArray(ordersData?.data?.data) ? ordersData.data.data.map((order: any) => ({
                     key: order.id,
                     time: new Date(order.createdAt).toLocaleString(),
                     orderCode: order.id,
@@ -223,8 +207,6 @@ const OrdersTable = () => {
                     status: order.status,
                     delayStatus: order.delayStatus,
                     paymentStatus: order.paymentStatus || 'UNPAID',
-                    email: order.email,
-                    address: order.address,
                     itemsCount: order.items.length,
                     userId: order.userId,
                     quantity: order.items.reduce((acc: number, item: any) => acc + item.quantity, 0)
@@ -240,6 +222,10 @@ const OrdersTable = () => {
                     width: '100%',
                 }}
                 bordered
+                locale={{
+                    emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Chưa có đơn hàng" />
+                }}
+                loading={isLoading}
                 expandable={{
                     expandedRowKeys,
                     expandIcon: () => null,

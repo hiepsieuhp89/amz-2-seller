@@ -184,7 +184,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearc
                     </Select>
                     <Input
                         className="placeholder-gray-400"
-                        placeholder="Nhập Mã đơn hàng và nhấn Enter"
+                        placeholder="Nhập mã đơn hàng"
                         style={{ width: 250 }}
                         onPressEnter={(e: any) => onSearch((e.target as HTMLInputElement).value)}
                     />
