@@ -186,7 +186,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
             <Col>
               <Space size="middle">
                 <Title level={5} style={{ margin: 0 }}>
-                  Tất cả sản phẩm có đánh giá
+                   có đánh giá
                 </Title>
                 <Badge size="default" count={totalItems} showZero style={{ backgroundColor: "#1890ff" }} />
               </Space>

@@ -20,16 +20,13 @@ import {
 import { useSelectedProduct } from "@/stores/useSelectedProduct"
 import { formatNumber } from "@/utils"
 import useSidebar from "@/stores/useSidebar"
+import Icon from "@mdi/react"
+import { mdiChevronDoubleLeft, mdiChevronDoubleRight } from "@mdi/js"
 
 const Storehouse = () => {
   const { user } = useUser()
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(50)
-  const { data: productsData, isLoading, refetch } = useGetAllShopProducts({
-    page: currentPage,
-    take: pageSize,
-    shopId: user?.id
-  })
   const { mutate: addShopProducts, isPending: isAddingProducts } = useAddShopProducts()
   const [allProducts, setAllProducts] = useState<any[]>([])
   const [filteredProducts, setFilteredProducts] = useState<any[]>([])
@@ -45,6 +42,12 @@ const Storehouse = () => {
   const [isLastPage, setIsLastPage] = useState(false)
   const [loadedPages, setLoadedPages] = useState<number[]>([])
   const { isSidebarOpen } = useSidebar()
+  const { data: productsData, isLoading, refetch } = useGetAllShopProducts({
+    page: currentPage,
+    take: pageSize,
+    shopId: user?.id,
+    search: keyword
+  })
   useEffect(() => {
     setIsClient(true)
     
@@ -289,7 +292,7 @@ const Storehouse = () => {
         onClick={() => setIsCollapsed(false)}
         className={styles.expandButton}
       >
-        <LeftOutlined />
+        <Icon path={mdiChevronDoubleLeft} size={1} className="!text-gray-500"/>
       </button>
       
       <div className={styles.miniCartList}>
@@ -470,7 +473,7 @@ const Storehouse = () => {
                   onClick={handleLoadMore}
                   loading={isLoading}
                   disabled={isLastPage}
-                  className="w-full text-center bg-white text-blue-700 border-blue-700 hover:bg-blue-50"
+                  className="w-full !rounded-sm text-center bg-white hover:bg-blue-50 !border-gray-500 !text-gray-500 !font-semibold"
                   ghost
                 >
                   Xem thêm
@@ -505,9 +508,9 @@ const Storehouse = () => {
                 <div className={styles.expandedSidebar}>
                   <button 
                     onClick={() => setIsCollapsed(true)}
-                    className="absolute -left-3 top-1/2 transform -translate-y-1/2 bg-white p-1 rounded-full border shadow-sm z-10 hover:bg-gray-100"
+                    className="absolute -left-3 top-1/2 transform -translate-y-1/2 bg-white p-1 rounded-full border shadow-sm z-10 hover:bg-gray-100 !flex-shrink-0 !h-8 !w-8 "
                   >
-                    <RightOutlined />
+                    <Icon path={mdiChevronDoubleRight} size={1} className="!text-gray-500"/>
                   </button>
                   {renderProductCart()}
                 </div>

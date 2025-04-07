@@ -327,7 +327,10 @@ const ProductsTable = ({
         <Space direction="vertical" size="small" style={{ width: '100%' }}>
           <Popconfirm
             title="Bạn có chắc chắn muốn xóa sản phẩm này?"
-            onConfirm={() => handleRemoveProduct(record.productId)}
+            onConfirm={() => 
+              handleRemoveProduct(record?.product?.id)
+              // console.log(record)
+            }
             okText="Có"
             cancelText="Không"
           >
@@ -427,7 +430,7 @@ const ProductsTable = ({
 
       <div className="table-responsive-container">
         <Table
-          rowKey="productId"
+          rowKey="id"
           columns={columns}
           dataSource={products as any}
           loading={isLoading}
