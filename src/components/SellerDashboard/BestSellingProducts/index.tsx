@@ -50,9 +50,7 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
               />
           </div>
           <div className="truncate">
-            <Tooltip title={text}>
-              <span className="font-medium text-gray-800 hover:text-blue-600">{text || "Chưa có tên"}</span>
-            </Tooltip>
+              <span className="font-medium text-gray-600 hover:text-main-golden-orange">{text || "Chưa có tên"}</span>
           </div>
         </Link>
       ),
