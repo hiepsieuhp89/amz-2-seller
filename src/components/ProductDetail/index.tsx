@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { useSelectedProduct } from "@/stores/useSelectedProduct";
 import { Star } from "lucide-react";
 import { formatNumber } from "@/utils";
+import { message } from "antd";
 
 const RatingStars = ({ rating }: { rating: number }) => {
   return (
@@ -49,6 +50,7 @@ const RatingStars = ({ rating }: { rating: number }) => {
 };
 export default function ProductDetail() {
   const { selectedProduct } = useSelectedProduct();
+  console.log(selectedProduct);
   const [quantity, setQuantity] = useState<number>(1);
   const [currentImage, setCurrentImage] = useState<number>(0);
   const price = parseFloat(selectedProduct?.price || "0");
@@ -95,11 +97,6 @@ export default function ProductDetail() {
   useEffect(() => {
     if (!emblaApi) return;
     const handleScroll = () => {
-      // Optional: Update main image based on the center-most slide in view
-      // const centerIndex = emblaApi.slidesInView(true)[Math.floor(emblaApi.slidesInView(true).length / 2)];
-      // if (centerIndex !== undefined && centerIndex !== currentImage) {
-      //   setCurrentImage(centerIndex);
-      // }
     };
     emblaApi.on("scroll", handleScroll);
     return () => {
@@ -154,8 +151,8 @@ export default function ProductDetail() {
                 style={
                   isZoomed
                     ? {
-                        transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                      }
+                      transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                    }
                     : {}
                 }
               >
@@ -271,6 +268,7 @@ export default function ProductDetail() {
               <span className="font-medium">Ẩn danh</span>
             </div>
             <Button
+            onClick={()=> message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
               variant="outline"
               className="ml-4 px-3 py-1 font-semibold border-main-golden-orange !text-main-golden-orange hover:bg-main-golden-orange/30"
             >
@@ -278,162 +276,166 @@ export default function ProductDetail() {
             </Button>
           </div>
           <div className="border-t border-gray-200 my-6"></div>
+          <div className="grid grid-cols-3 gap-4 items-center">
+            <div className="text-sm text-muted-foreground col-span-1">Giá bán:</div>
+            <p className="text-2xl font-bold text-green-500 col-span-2">
+              ${formatNumber(price)}<span className="ml-1 text-sm text-muted-foreground">/pc</span>
+            </p>
+          </div>
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-sm text-muted-foreground">Giá bán:</div>
-            <div className="col-span-2"></div>
-            <span className="text-2xl font-bold text-green-500">
-              ${formatNumber(price)}
-            </span>
-            <span className="ml-1 text-sm text-muted-foreground">/pc</span>
-          </div>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-sm text-muted-foreground">Định lượng:</div>
-          <div className="col-span-2 flex items-center gap-4">
-            <div className="flex items-center">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-9 w-9 rounded-r-none"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                disabled={quantity <= 1}
-              >
-                <Icon path={mdiMinus} size={0.8} />
-              </Button>
-              <Input
-                type="number"
-                min={1}
-                max={availableQuantity}
-                value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
-                className="h-9 w-12 rounded-none border-x-0 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-              />
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-9 w-9 rounded-l-none"
-                onClick={() =>
-                  setQuantity(Math.min(availableQuantity, quantity + 1))
-                }
-              >
-                <Icon path={mdiPlus} size={0.8} />
-              </Button>
-            </div>
-            <span className="text-sm text-muted-foreground">
-              ({availableQuantity} có sẵn)
-            </span>
-          </div>
-        </div>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-sm text-muted-foreground">Tổng giá:</div>
-          <div className="col-span-2">
-            <span className="text-2xl font-bold text-green-500">
-              ${formatNumber(totalPrice)}
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-4">
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button
-              variant="outline"
-              className="h-11 gap-2 bg-muted hover:bg-muted/80"
-            >
-              <Icon path={mdiCartOutline} size={0.8} />
-              Thêm vào giỏ hàng
-            </Button>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button className="h-11 gap-2 bg-primary -foreground">
-              <Icon path={mdiCreditCardOutline} size={0.8} />
-              Mua ngay
-            </Button>
-          </motion.div>
-        </div>
-        <div className="flex gap-4">
-          <Button
-            variant="link"
-            className="h-auto p-0 text-muted-foreground text-wrap break-words"
-          >
-            <Icon path={mdiHeart} size={0.8} className="mr-2" />
-            Thêm vào danh sách yêu thích
-          </Button>
-          <Button
-            variant="link"
-            className="h-auto p-0 text-muted-foreground text-wrap break-words"
-          >
-            <Icon path={mdiShareVariant} size={0.8} className="mr-2" />
-            Thêm vào để so sánh
-          </Button>
-        </div>
-        <div className="border-t border-gray-200 my-6"></div>
-        <div className="flex flex-col">
-          <div className="text-sm text-muted-foreground">Hoàn tiền:</div>
-          <div className="mt-6 bg-green-50 p-4 rounded-md">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
-                <Icon
-                  path={mdiCheckCircle}
-                  size={1}
-                  className="text-green-600"
+            <div className="text-sm text-muted-foreground col-span-1">Định lượng:</div>
+            <div className="col-span-2 flex items-center gap-4">
+              <div className="flex items-center">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 rounded-r-none"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  disabled={quantity <= 1}
+                >
+                  <Icon path={mdiMinus} size={0.8} />
+                </Button>
+                <Input
+                  type="number"
+                  min={1}
+                  max={availableQuantity}
+                  value={quantity}
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  className="h-9 w-12 rounded-none border-x-0 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 rounded-l-none"
+                  onClick={() =>
+                    setQuantity(Math.min(availableQuantity, quantity + 1))
+                  }
+                >
+                  <Icon path={mdiPlus} size={0.8} />
+                </Button>
               </div>
-              <div className="flex-1">
-                <p className="font-medium">Hoàn tiền đảm bảo</p>
-                <p className="text-sm text-muted-foreground">
-                  30 Days Cash Back Guarantee
-                </p>
-              </div>
-              <Button variant="link" className="h-auto p-0">
-                Xem Chính sách
-              </Button>
+              <span className="text-sm text-muted-foreground">
+                ({availableQuantity} có sẵn)
+              </span>
             </div>
           </div>
-        </div>
-        <div className="border-t border-gray-200 my-6"></div>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-sm text-muted-foreground">Chia sẻ:</div>
-          <div className="col-span-2 flex gap-2">
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button variant="outline" size="icon" className="rounded-full">
-                <Icon path={mdiEmailOutline} size={0.8} />
-              </Button>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-sm text-muted-foreground col-span-1">Tổng giá:</div>
+            <div className="col-span-2">
+              <span className="text-2xl font-bold text-green-500">
+                ${formatNumber(totalPrice)}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
                 variant="outline"
-                size="icon"
-                className="rounded-full text-[#1DA1F2]"
+                className="h-11 gap-2 bg-muted hover:bg-muted/80"
               >
-                <Icon path={mdiTwitter} size={0.8} />
+                <Icon path={mdiCartOutline} size={0.8} />
+                Thêm vào giỏ hàng
               </Button>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full text-[#4267B2]"
-              >
-                <Icon path={mdiFacebook} size={0.8} />
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button className="h-11 gap-2 bg-primary -foreground">
+                <Icon path={mdiCreditCardOutline} size={0.8} />
+                Mua ngay
               </Button>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full text-[#0077B5]"
-              >
-                <Icon path={mdiLinkedin} size={0.8} />
-              </Button>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button
-                variant="outline"
-                size="icon"
-                className="rounded-full text-[#25D366]"
-              >
-                <Icon path={mdiWhatsapp} size={0.8} />
-              </Button>
-            </motion.div>
+          </div>
+          <div className="flex gap-4">
+            <Button
+              variant="link"
+              className="h-auto p-0 text-muted-foreground text-wrap break-words"
+            >
+              <Icon path={mdiHeart} size={0.8} className="mr-2" />
+              Thêm vào danh sách yêu thích
+            </Button>
+            <Button
+              variant="link"
+              className="h-auto p-0 text-muted-foreground text-wrap break-words"
+            >
+              <Icon path={mdiShareVariant} size={0.8} className="mr-2" />
+              Thêm vào để so sánh
+            </Button>
+          </div>
+          <div className="border-t border-gray-200 my-6"></div>
+          <div className="flex flex-col">
+            <div className="text-sm text-muted-foreground">Hoàn tiền:</div>
+            <div className="mt-6 bg-green-50 p-4 rounded-md">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+                  <Icon
+                    path={mdiCheckCircle}
+                    size={1}
+                    className="text-green-600"
+                  />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium">Hoàn tiền đảm bảo</p>
+                  <p className="text-sm text-muted-foreground">
+                    30 Days Cash Back Guarantee
+                  </p>
+                </div>
+                <Button variant="link" className="h-auto p-0">
+                  Xem Chính sách
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-gray-200 my-6"></div>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-sm text-muted-foreground">Chia sẻ:</div>
+            <div className="col-span-2 flex gap-2">
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Button 
+                  onClick={()=> message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                variant="outline" size="icon" className="rounded-full">
+                  <Icon path={mdiEmailOutline} size={0.8} />
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Button
+                  onClick={()=> message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full text-[#1DA1F2]"
+                >
+                  <Icon path={mdiTwitter} size={0.8} />
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Button
+                  onClick={()=> message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full text-[#4267B2]"
+                >
+                  <Icon path={mdiFacebook} size={0.8} />
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Button
+                  onClick={()=> message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full text-[#0077B5]"
+                >
+                  <Icon path={mdiLinkedin} size={0.8} />
+                </Button> 
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Button
+                  onClick={()=> message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full text-[#25D366]"
+                >
+                  <Icon path={mdiWhatsapp} size={0.8} />
+                </Button>
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>

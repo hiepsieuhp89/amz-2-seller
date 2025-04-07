@@ -75,7 +75,7 @@ export function FeaturedCategories() {
             </Button>
             <Button
               className={cn(
-                "w-10 h-10  flex items-center justify-center border !bg-black/70 !rounded-none !!text-white/80 rounded-none !hover:bg-black/50 shadow-sm transition-all",
+                "w-10 h-10  flex items-center justify-center border !bg-black/70 !!text-white/80 rounded-none !hover:bg-black/50 shadow-sm transition-all",
                 !nextBtnEnabled && "opacity-50 cursor-not-allowed",
               )}
               onClick={scrollNext}
@@ -95,7 +95,9 @@ export function FeaturedCategories() {
                 className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
               >
                 <Link href={`/category?id=${category.id}&name=${category.name}`} className="block h-full">
-                  <Card className="overflow-hidden h-full transition-all duration-200 hover:shadow-md">
+                  <Card 
+                  style={{ maxWidth: '200px' }}
+                  className="overflow-hidden h-full transition-all duration-200 hover:shadow-md">
                     <CardContent className="p-0 flex flex-col h-full">
                       <div className="relative aspect-square w-full">
                         <Image
@@ -107,7 +109,7 @@ export function FeaturedCategories() {
                       </div>
                       <div className="p-4 text-center">
                         <h3 className="font-medium text-sm sm:text-base line-clamp-2">{category.name}</h3>
-                        <p className="text-xs text-muted-foreground mt-1">{category.description}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{category?.description && category?.description?.length > 50 ? category.description.slice(0, 50) + "..." : category.description}</p>
                       </div>
                     </CardContent>
                   </Card>

@@ -8,6 +8,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useSelectedProduct } from "@/stores/useSelectedProduct"
+import { useGetShopProductReviews } from "@/hooks/shop-products"
 
 // Types
 interface Review {
@@ -35,10 +36,6 @@ function DescriptionTab({ images }: DescriptionTabProps) {
   const { selectedProduct } = useSelectedProduct()
   return (
     <div className="p-6">
-      {selectedProduct?.description && <div className="mb-4 flex flex-col gap-1">
-        <p className="text-sm text-gray-500">Ngày đăng: {new Date(selectedProduct?.createdAt || "").toLocaleDateString()}</p>
-        <p className="text-sm text-gray-500">Tồn kho: {selectedProduct?.stock}</p>
-      </div>}
       {/* Product Description */}
       {selectedProduct?.description && (
         <>
@@ -58,10 +55,13 @@ function DescriptionTab({ images }: DescriptionTabProps) {
 
 // Reviews Tab Component
 function ReviewsTab({ reviews }: ReviewsTabProps) {
+  // const { selectedProduct } = useSelectedProduct()
+  // const { data: reviewsData } = useGetShopProductReviews(selectedProduct?.id || "")
+  // console.log(reviewsData);
   return (
     <Card className="border-none">
       <CardHeader>
-        <h2 className="text-xl font-semibold">Nhận xét ({reviews.length})</h2>
+        <h2 className="text-xl font-semibold !text-main-charcoal-blue">Nhận xét ({reviews.length})</h2>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Form thêm nhận xét mới */}
@@ -171,20 +171,20 @@ ProductTabs.createDescriptionTab = (images: string[]) => {
 
 ProductTabs.createReviewsTab = (reviews: Review[]) => {
   const sampleReviews: Review[] = [
-    {
-      id: "1",
-      author: "Nguyễn Văn A",
-      rating: 5,
-      date: "2 giờ trước",
-      content: "Sản phẩm rất tốt, giao hàng nhanh chóng!"
-    },
-    {
-      id: "2",
-      author: "Trần Thị B",
-      rating: 4,
-      date: "1 ngày trước",
-      content: "Chất lượng đúng như mô tả, sẽ ủng hộ shop dài dài."
-    }
+    // {
+    //   id: "1",
+    //   author: "Nguyễn Văn A",
+    //   rating: 5,
+    //   date: "2 giờ trước",
+    //   content: "Sản phẩm rất tốt, giao hàng nhanh chóng!"
+    // },
+    // {
+    //   id: "2",
+    //   author: "Trần Thị B",
+    //   rating: 4,
+    //   date: "1 ngày trước",
+    //   content: "Chất lượng đúng như mô tả, sẽ ủng hộ shop dài dài."
+    // }
   ]
 
   return <ReviewsTab reviews={reviews.length > 0 ? reviews : sampleReviews} />

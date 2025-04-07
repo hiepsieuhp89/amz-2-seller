@@ -1,12 +1,12 @@
 "use client";
 import { Header } from "@/components/Common/Header";
 import ShopContent from '@/components/Shop/ShopContent';
-import ShopFooter from '@/components/Shop/ShopFooter';
 import ShopHeader from '@/components/Shop/ShopHeader';
 import ShopNavigation from '@/components/Shop/ShopNavigation';
 import { useGetAllShopProducts } from "@/hooks/shop-products";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
+import { Footer } from "../Common/Footer";
 
 function ShopContentWrapper() {
   const router = useRouter();
@@ -72,7 +72,7 @@ function ShopContentWrapper() {
       handleSortChange={handleSortChange}
       handlePageChange={handlePageChange}
     />
-    <ShopFooter />
+    <Footer />
   </div>;
 }
 
