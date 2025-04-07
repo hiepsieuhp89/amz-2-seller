@@ -57,7 +57,7 @@ export function FeaturedCategories() {
   }, [emblaApi, onSelect])
 
   return (
-    <div className="relative p-4 bg-[#E3E6E6]">
+    <div className="relative bg-[#E3E6E6]">
       <div className="bg-white p-4">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold md:text-2xl">Danh mục nổi bật</h2>

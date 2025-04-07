@@ -99,6 +99,7 @@ export default function PurchasedSpreadPackages() {
           pagination={false}
           bordered
           loading={isLoading || isFetching}
+          scroll={{x: 1000}}
         />
       </div>
     </div>

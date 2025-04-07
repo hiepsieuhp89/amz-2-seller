@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 
 export default function Categories2() {
   return (
-    <div className="w-full py-4 px-4 bg-[#E3E6E6]">
+    <div className="w-full py-4 bg-[#E3E6E6] mt-2">
       <div className="mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {categories2.map((category) => (

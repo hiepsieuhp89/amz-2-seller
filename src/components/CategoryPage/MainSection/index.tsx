@@ -3,7 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { Icon } from "@mdi/react"
-import { mdiStar, mdiStarOutline, mdiHeartOutline, mdiSyncAlert, mdiCartOutline, mdiMenu } from "@mdi/js"
+import { mdiStar, mdiStarOutline, mdiHeartOutline, mdiSyncAlert, mdiCartOutline, mdiMenu, mdiChevronLeft, mdiChevronRight } from "@mdi/js"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useSidebar } from "../SidebarContext"
 import { useProducts } from "@/hooks/products"
@@ -246,7 +246,8 @@ export default function MainSection({ brands, sortOptions }: MainSectionProps) {
                 className={`px-3 py-1 mx-1 rounded ${data.data.meta.page === 1 ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:bg-gray-200"}`}
                 aria-disabled={data.data.meta.page === 1}
               >
-                Trước
+               <span className="hidden md:block">Trước</span>
+               <Icon path={mdiChevronLeft} size={1.5} className="text-gray-600 block md:hidden" />
               </Link>
 
               {Array.from({ length: Math.min(5, data.data.meta.pageCount) }, (_, i) => {
@@ -257,7 +258,7 @@ export default function MainSection({ brands, sortOptions }: MainSectionProps) {
                     <Link
                       key={pageNumber}
                       href={`?page=${pageNumber}${categoryId ? `&id=${categoryId}` : ""}&name=${name}`}
-                      className={`h-9 w-9 flex items-center justify-center mx-1 rounded-full ${pageNumber === data.data.meta.page ? "bg-main-charcoal-blue !text-white/80" : "text-gray-700 hover:bg-main-charcoal-blue bg-white hover:!text-white/80"}`}
+                      className={`h-9 w-9 flex-shrink-0 flex items-center justify-center mx-1 rounded-full ${pageNumber === data.data.meta.page ? "bg-main-charcoal-blue !text-white/80" : "text-gray-700 hover:bg-main-charcoal-blue bg-white hover:!text-white/80"}`}
                     >
                       {pageNumber}
                     </Link>
@@ -278,7 +279,8 @@ export default function MainSection({ brands, sortOptions }: MainSectionProps) {
                 className={`px-3 py-1 mx-1 rounded ${data.data.meta.page === data.data.meta.pageCount ? "text-gray-400 cursor-not-allowed" : "text-gray-700 hover:bg-gray-200"}`}
                 aria-disabled={data.data.meta.page === data.data.meta.pageCount}
               >
-                Kế tiếp
+               <span className="hidden md:block">Kế tiếp</span>
+               <Icon path={mdiChevronRight} size={1.5} className="text-gray-600 block md:hidden" />
               </Link>
             </nav>
           )}

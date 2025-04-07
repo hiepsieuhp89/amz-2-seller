@@ -157,7 +157,7 @@ export function BestSellers() {
   }, [emblaApi3, onSelect3])
 
   return (
-    <div className="relative p-4 bg-[#E3E6E6] flex flex-col gap-4">
+    <div className="relative bg-[#E3E6E6] flex flex-col gap-4 mt-6">
       {/* Section 1 */}
       <div className="bg-white p-4">
         <div className="flex items-center justify-between mb-6">
@@ -269,7 +269,7 @@ export function BestSellers() {
       </div>
 
       {/* Section 2 */}
-      <div className="bg-white p-4 mt-4">
+      <div className="bg-white p-4 mt-2">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold md:text-2xl">Sản phẩm bán chạy nhất dành cho thể thao và giải trí ngoài trời</h2>
           <div className="flex gap-2">
@@ -374,7 +374,7 @@ export function BestSellers() {
       </div>
 
       {/* Section 3 */}
-      <div className="bg-white p-4 mt-4">
+      <div className="bg-white p-4 mt-2">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold md:text-2xl">Đồ chơi & Trò chơi bán chạy nhất</h2>
           <div className="flex gap-2">
