@@ -51,7 +51,7 @@ export default function HomePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
-         <motion.div
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -60,15 +60,13 @@ export default function HomePage() {
           <HeroBanner />
         </motion.div>
         {/* Category Grid */}
-        <div className="flex flex-col transform translate-y-[-200px]">
-        <div className="px-4 max-w-[1440px] mx-auto">
-          <Categories />
-        </div>
-        <div className="px-4 max-w-[1440px] mx-auto">
-        <FeaturedCategories />
-        <BestSellers />
-        <Categories2 />
-        </div>
+        <div className="max-w-[1440px] mx-auto relative flex flex-col transform translate-y-[-200px]">
+          <div className="px-4 w-full">
+            <Categories />
+            <FeaturedCategories />
+            <BestSellers />
+            <Categories2 />
+          </div>
         </div>
         <Footer />
       </motion.div>
