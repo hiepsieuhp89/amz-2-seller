@@ -17,7 +17,7 @@ import {
 } from "../ui/breadcrumb";
 import { Check } from "lucide-react";
 import Icon from "@mdi/react";
-import { mdiPackageVariantPlus } from "@mdi/js";
+import { mdiEmoticonSadOutline, mdiPackageVariantPlus } from "@mdi/js";
 import {
   Dialog,
   DialogContent,
@@ -69,17 +69,19 @@ const SellerSpreadPackages = () => {
   if (isLoading)
     return (
       <div className="flex justify-center items-center h-[60vh]">
-        <Spin size="large" />
+        <Spin size="small" />
       </div>
     );
 
   if (isError)
     return (
-      <div className="text-center p-8 bg-red-50 rounded-lg border border-red-200 shadow-sm">
-        <h4 className="text-lg font-semibold text-red-600">
-          Có lỗi xảy ra khi tải dữ liệu
-        </h4>
-        <p className="text-red-500">Vui lòng thử lại sau</p>
+      <div className="p-4">
+        <div className="flex flex-col items-center justify-center text-center p-8 bg-white rounded-lg shadow-sm gap-4">
+        <Icon path={mdiEmoticonSadOutline} size={3} className="text-gray-400"/>
+        <p className="text-gray-400 font-semibold text-lg">
+          Tài khoản của bạn chưa được kích hoạt!
+        </p>
+      </div>
       </div>
     );
   const packages =
