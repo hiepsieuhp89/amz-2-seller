@@ -89,9 +89,7 @@ const SellerSpreadPackages = () => {
       image: pkg.image,
       features: [
         `${pkg.description}`,
-        `Nạp vào $${formatNumber(
-          pkg.price
-        )} hệ thống sẽ quảng bá cửa hàng của bạn, tăng cao doanh thu`,
+        `Khi sử dụng hệ thống sẽ quảng bá cửa hàng của bạn, tăng cao doanh thu`,
       ],
       price: Number(pkg.price),
       duration: pkg.duration,
