@@ -257,7 +257,10 @@ const ProductsTable = ({
             border: "none",
           }}
         >
-          $ {price ? price : 0}
+          $ {price ? price.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }) : '0.00'}
         </Button>
       ),
       responsive: ["md" as Breakpoint],
@@ -286,7 +289,10 @@ const ProductsTable = ({
             border: "none",
           }}
         >
-          $ {profit ? Math.abs(profit).toLocaleString("vi-VN") : 0}
+          $ {profit ? Math.abs(profit).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }) : '0.00'}
         </Button>
       ),
       align: "right" as const,
