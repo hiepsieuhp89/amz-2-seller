@@ -89,11 +89,11 @@ const SellerMoneyWithdrawRequests = () => {
       render: (text) => {
         switch (text) {
           case "fedex_payment":
-            return "Thanh toán vận chuyển Fedex";
+            return "Thanh toán";
           case "package_purchase":
-            return "Mua gói bán hàng";
+            return "Mua gói";
           case "manual_fedex_amount":
-            return "Nạp tiền vận chuyển Fedex";
+            return "Quy đổi";
           default:
             return text;
         }
