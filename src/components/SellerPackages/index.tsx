@@ -110,20 +110,21 @@ const SellerPackages = () => {
 
       const features = [
         `${pkg.description}`,
+        `Lợi nhuận thấp nhât ${pkg.percentProfit}%`
       ];
+      
 
       if (pkg.price > 0) {
-        // features.push(
-        //   `Nạp vào $${formatNumber(
-        //     pkg.price
-        //   )} hệ thống sẽ quảng bá cửa hàng của bạn, tăng cao doanh thu. Dự tính: $${formatNumber(
-        //     pkg.price * pkg.percentProfit
-        //   )}`
-        // );
         features.push(
           `Khi sử dụng hệ thống sẽ quảng bá cửa hàng của bạn, tăng cao doanh thu. Dự tính: $${formatNumber(
             pkg.price * pkg.percentProfit
           )}`
+        );
+      }
+
+      if (pkg.price === 0) {
+        features.push(
+          `Khi sử dụng hệ thống sẽ quảng bá cửa hàng của bạn, tăng cao doanh thu. Dự tính: $3.690`
         );
       }
 
