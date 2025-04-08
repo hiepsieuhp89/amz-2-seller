@@ -119,7 +119,7 @@ const SignUpForm = () => {
         </Form.Item>
 
         <Form.Item
-          label={<strong>mật khẩu</strong>}
+          label={<strong>Mật khẩu</strong>}
           className='!mb-4'
           name="password"
           rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
