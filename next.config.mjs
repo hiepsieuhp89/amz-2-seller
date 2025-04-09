@@ -46,6 +46,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'img.yeshen.cc',
+      },
+      {
+        protocol: 'https',
         hostname: 'shop.shop-worldwide-amz.top',
       },
     ],

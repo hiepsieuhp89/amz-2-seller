@@ -3,8 +3,7 @@ import {
   useGetSellerPackages,
   usePurchaseSellerPackage,
 } from "@/hooks/seller-packages";
-import { CrownOutlined, RocketOutlined, StarOutlined } from "@ant-design/icons";
-import { Button, Divider, Modal, Spin, Typography } from "antd";
+import { Button, Modal, Spin, Typography } from "antd";
 import Image from "next/image";
 import React, { useState } from "react";
 import {
@@ -16,7 +15,7 @@ import {
 } from "../ui/breadcrumb";
 import { Check } from "lucide-react";
 import Icon from "@mdi/react";
-import { mdiPackageVariantPlus } from "@mdi/js";
+import { mdiPackageVariantPlus, mdiEmoticonSadOutline } from "@mdi/js";
 import {
   Dialog,
   DialogContent,
@@ -30,7 +29,7 @@ import { formatNumber } from "@/utils";
 const { Title, Text } = Typography;
 
 const SellerPackages = () => {
-  const { data: packagesData, isLoading, isError } = useGetSellerPackages();
+  const { data: packagesData, isLoading, isError, error } = useGetSellerPackages();
   const [selectedPackage, setSelectedPackage] = useState<ISellerPackage | null>(
     null
   );
@@ -72,9 +71,23 @@ const SellerPackages = () => {
   if (isLoading)
     return (
       <div className="flex justify-center items-center h-[60vh]">
-        <Spin size="large" />
+        <Spin size="small" />
       </div>
     );
+
+  if (isError) {
+    return (
+      <div className="p-4">
+        <div className="flex flex-col items-center justify-center text-center p-8 bg-white rounded-lg shadow-sm gap-4">
+          <Icon path={mdiEmoticonSadOutline} size={3} className="text-gray-400" />
+          <p className="text-gray-400 font-semibold text-lg">
+            Tài khoản của bạn chưa được kích hoạt!
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (isError)
     return (
       <div className="text-center p-8 bg-red-50 rounded-lg border border-red-200 shadow-sm">
@@ -112,7 +125,7 @@ const SellerPackages = () => {
         `${pkg.description}`,
         `Lợi nhuận thấp nhât ${pkg.percentProfit}%`
       ];
-      
+
 
       if (pkg.price > 0) {
         features.push(

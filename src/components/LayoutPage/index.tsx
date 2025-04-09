@@ -570,7 +570,7 @@ function LayoutPage() {
                   </div>
 
                   {/* Rating Stars */}
-                  <RatingStars rating={profile?.data?.stars || 0} />
+                  <RatingStars rating={(profile?.data as any)?.stars > 0 ? (profile?.data as any)?.stars : 5} />
 
                   {/* Trust Score */}
                   <div className="mb-4">
