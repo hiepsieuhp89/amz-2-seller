@@ -49,6 +49,7 @@ const nextConfig = {
         hostname: 'shop.shop-worldwide-amz.top',
       },
     ],
+    unoptimized: true,
   },
   async rewrites() {
     const domain =
