@@ -105,7 +105,7 @@ const ProductsTable = ({
           message.success("Xóa sản phẩm thành công");
         },
         onError: (error) => {
-          message.error("Xóa sản phẩm thất bại: " + error.message);
+          message.error("Xóa sản phẩm thất bại");
         },
       }
     );

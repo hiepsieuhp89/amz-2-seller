@@ -69,6 +69,7 @@ export default function ChatPage() {
         lastMessage: msg.message,
         lastMessageDate: msg.createdAt,
         unreadCount: msg.isRead ? 0 : 1,
+        latestMessageId: msg.id, // Store the latest message ID
       }
 
       if (existingChat) {
@@ -76,6 +77,7 @@ export default function ChatPage() {
           existingChat.lastMessage = chatItem.lastMessage
           existingChat.lastMessageDate = chatItem.lastMessageDate
           existingChat.unreadCount += chatItem.unreadCount // Accumulate unread count correctly
+          existingChat.latestMessageId = chatItem.latestMessageId // Update latest message ID
         } else {
           // If older message, still potentially increment unread count
           existingChat.unreadCount += chatItem.unreadCount
@@ -95,10 +97,10 @@ export default function ChatPage() {
     // refetchMessages() is handled by react-query's enabled flag
 
     const selectedChat = transformedChatList.find((chat: any) => chat.userId === userId)
-    if (selectedChat?.unreadCount > 0) {
+    if (selectedChat?.unreadCount > 0 && selectedChat?.latestMessageId) {
       try {
-        // Call markAsRead with only userId
-        await markAsRead(userId);
+        // Call markAsRead with the latest message ID instead of userId
+        await markAsRead(selectedChat.latestMessageId);
         // Refetch chat list on success
         refetchChatList();
       } catch (error) {

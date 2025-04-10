@@ -79,6 +79,8 @@ const PendingOrders = () => {
     
     // For other statuses, just return the original or a default translation
     switch (delayStatus) {
+      case "NORMAL":
+        return "";
       case "PROCESSING":
         return "Đang xử lý";
       case "URGENT":
@@ -128,8 +130,8 @@ const PendingOrders = () => {
           </div>
           <div className="flex flex-col">
             <div className="font-medium text-gray-800">{text}</div>
-            <div className="text-gray-500 text-xs">{record?.user?.email}</div>
-            {record?.user?.phone && <div className="text-gray-500 text-xs">{record?.user?.phone}</div>}
+            {/* <div className="text-gray-500 text-xs">{record?.user?.email}</div>
+            {record?.user?.phone && <div className="text-gray-500 text-xs">{record?.user?.phone}</div>} */}
           </div>
         </div>
       ),
@@ -185,14 +187,14 @@ const PendingOrders = () => {
             )}
             {getStatusText(record?.status)}
           </div>
-          <div className={`px-2 py-1 rounded-full text-xs font-medium inline-flex items-center justify-center ${getStatusColor(record?.paymentStatus)}`}>
+          {/* <div className={`px-2 py-1 rounded-full text-xs font-medium inline-flex items-center justify-center ${getStatusColor(record?.paymentStatus)}`}>
             {record?.paymentStatus === "PENDING" ? (
               <Clock className="h-3 w-3 mr-1" />
             ) : (
               <CheckCircleOutlined className="mr-1 text-xs" />
             )}
             {getStatusText(record?.paymentStatus)}
-          </div>
+          </div> */}
         </div>
       ),
     },

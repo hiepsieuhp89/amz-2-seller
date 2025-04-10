@@ -109,7 +109,6 @@ export default function LayoutHeaderCommon() {
           width={100}
           height={100}
           className="h-full w-full object-contain"
-          style={{ width: 'auto', height: 'auto' }}
         />
       </Link>
       <div className="flex items-center">

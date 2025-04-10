@@ -17,10 +17,10 @@ export default function SupportPolicyPage() {
         <div className="min-h-screen bg-background flex flex-col">
             <Header />
             <MenuHeader />
-            <section className="w-full py-8 px-[104px] bg-[#E3E6E6]">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Trang chính sách hoàn trả</h1>
-                    <Breadcrumb>
+            <section className="w-full py-4 px-4 md:px-[104px] bg-[#E3E6E6]">
+                <div className="flex flex-col md:flex-row items-center justify-between">
+                    <h1 className="text-xl md:text-2xl font-bold text-center md:text-left">Trang chính sách hoàn trả</h1>
+                    <Breadcrumb className="mt-2 md:mt-0">
                         <BreadcrumbList>
                             <BreadcrumbItem>
                                 <BreadcrumbLink href="/">
@@ -37,8 +37,8 @@ export default function SupportPolicyPage() {
                     </Breadcrumb>
                 </div>
             </section>
-            <section className="w-full pb-4 px-[104px] bg-[#E3E6E6]">
-                <div className="bg-white p-6 text-sm text-gray-600">
+            <section className="w-full pb-4 px-4 md:px-[104px] bg-[#E3E6E6]">
+                <div className="bg-white p-4 md:p-6 text-sm text-gray-600">
                     <span>
                         <strong>Refunds and Return Policy</strong>
                     </span>

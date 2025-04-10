@@ -20,7 +20,7 @@ const RevenueChart = () => {
   const chartData =
     revenueData?.data.dailyStats.map((item: DailyStats) => ({
       date: item.date,
-      value: item.revenue,
+      revenue: item.revenue,
       profit: item.profit,
       orders: item.orders,
     })) || []

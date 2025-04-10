@@ -113,22 +113,22 @@ export function Footer() {
                 </li>
               )}
               <li>
-                <Link href="/orders" className="text-gray-400 hover:!text-white/80">
+                <Link href="/#" className="text-gray-400 hover:!text-white/80">
                   Đơn hàng
                 </Link>
               </li>
               <li>
-                <Link href="/wishlist" className="text-gray-400 hover:!text-white/80">
+                <Link href="/#" className="text-gray-400 hover:!text-white/80">
                   Danh sách yêu thích
                 </Link>
               </li>
               <li>
-                <Link href="/returns" className="text-gray-400 hover:!text-white/80">
+                <Link href="/#" className="text-gray-400 hover:!text-white/80">
                   Theo dõi thứ tự
                 </Link>
               </li>
               <li>
-                <Link href="/notifications" className="text-gray-400 hover:!text-white/80">
+                <Link href="/#" className="text-gray-400 hover:!text-white/80">
                   Thông báo
                 </Link>
               </li>

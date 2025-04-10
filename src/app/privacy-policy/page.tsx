@@ -17,10 +17,10 @@ export default function PrivacyPolicyPage() {
         <div className="min-h-screen bg-background flex flex-col">
             <Header />
             <MenuHeader />
-            <section className="w-full py-8 px-[104px] bg-[#E3E6E6]">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold">Trang chính sách bảo mật</h1>
-                    <Breadcrumb>
+            <section className="w-full py-4 px-4 md:px-[104px] bg-[#E3E6E6]">
+                <div className="flex flex-col md:flex-row items-center justify-between">
+                    <h1 className="text-xl md:text-2xl font-bold text-center md:text-left">Trang chính sách bảo mật</h1>
+                    <Breadcrumb className="mt-2 md:mt-0">
                         <BreadcrumbList>
                             <BreadcrumbItem>
                                 <BreadcrumbLink href="/">
@@ -37,7 +37,7 @@ export default function PrivacyPolicyPage() {
                     </Breadcrumb>
                 </div>
             </section>
-            <section className="w-full pb-4 px-[104px] bg-[#E3E6E6]">
+            <section className="w-full pb-4 px-4 md:px-[104px] bg-[#E3E6E6]">
                 <div className="bg-white p-6 text-sm text-gray-600">
                     <span>
                         <strong>1. INTRODUCTION</strong>
@@ -450,7 +450,7 @@ export default function PrivacyPolicyPage() {
                     </span>
                     <br />
                     <span>
-                        to deal with and/or facilitate a business asset transaction or a potential business asset transaction, where such transaction involves  as a participant or involves only a related corporation or affiliate of  as a participant or involves  and/or any one or more of  related corporations or affiliates as participant(s), and there may be other third party organisations who are participants in such transaction. A “business asset transaction refers to the purchase, sale, lease, merger, amalgamation or any other acquisition, disposal or financing of an organisation or a portion of an organisation or of any of the business or assets of an organisation; and/or any other purposes which we notify you of at the time of obtaining your consent.(collectively, the “Purposes
+                        to deal with and/or facilitate a business asset transaction or a potential business asset transaction, where such transaction involves  as a participant or involves only a related corporation or affiliate of  as a participant or involves  and/or any one or more of  related corporations or affiliates as participant(s), and there may be other third party organisations who are participants in such transaction. A “business asset transaction refers to the purchase, sale, lease, merger, amalgamation or any other acquisition, disposal or financing of an organisation or a portion of an organisation or of any of the business or assets of an organisation; and/or any other purposes which we notify you of at the time of obtaining your consent.(collectively, the "Purposes
                     </span>
                     <br />
                     <span>
@@ -524,7 +524,7 @@ export default function PrivacyPolicyPage() {
                     </span>
                     <br />
                     <span>
-                        8.6 As set forth in ’s Terms of Service, Users (including any employees, agents, representatives, or any other person acting for such User or on such User’s behalf) in possession of another User’s personal data through the use of the Services (the “Receiving Party hereby agree that, they will (i) comply with all applicable Privacy Laws with respect to any such data, including any collection, processing, storage or transfer of such data; (ii) allow  or the User whose personal data the Receiving Party has collected (the “Disclosing Party to remove his or her data so collected from the Receiving Party’s database; and (iii) allow Tiktok-shop or the Disclosing Party to review what information has been collected about them by the Receiving Party, in each case of (ii) and (iii) above, in compliance with and where required by applicable laws.
+                        8.6 As set forth in ’s Terms of Service, Users (including any employees, agents, representatives, or any other person acting for such User or on such User’s behalf) in possession of another User’s personal data through the use of the Services (the "Receiving Party hereby agree that, they will (i) comply with all applicable Privacy Laws with respect to any such data, including any collection, processing, storage or transfer of such data; (ii) allow  or the User whose personal data the Receiving Party has collected (the "Disclosing Party to remove his or her data so collected from the Receiving Party’s database; and (iii) allow Tiktok-shop or the Disclosing Party to review what information has been collected about them by the Receiving Party, in each case of (ii) and (iii) above, in compliance with and where required by applicable laws.
                     </span>
                     <br />
                     <span>

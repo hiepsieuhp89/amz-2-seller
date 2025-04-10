@@ -17,8 +17,8 @@ export default function SellerPolicyPage() {
         <div className="min-h-screen bg-background flex flex-col">
             <Header />
             <MenuHeader />
-            <section className="w-full py-8 px-[104px] bg-[#E3E6E6]">
-                <div className="flex items-center justify-between">
+            <section className="w-full py-4 px-4 md:px-[104px] bg-[#E3E6E6]">
+                <div className="flex flex-col md:flex-row items-center justify-between">
                     <h1 className="text-2xl font-bold">Trang chính sách bán hàng</h1>
                     <Breadcrumb>
                         <BreadcrumbList>
@@ -37,7 +37,7 @@ export default function SellerPolicyPage() {
                     </Breadcrumb>
                 </div>
             </section>
-            <section className="w-full pb-4 px-[104px] bg-[#E3E6E6]">
+            <section className="w-full pb-4 px-4 md:px-[104px] bg-[#E3E6E6]">
                 <div className="bg-white p-6 text-sm text-gray-600">
                     <span>
                         <strong>Refunds and Return Policy</strong>

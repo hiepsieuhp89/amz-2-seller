@@ -122,8 +122,8 @@ const SellerPackages = () => {
       }
 
       const features = [
-        `${pkg.description}`,
-        `Lợi nhuận thấp nhât ${pkg.percentProfit}%`
+        // `${pkg.description}`,
+        `Lợi nhuận thấp nhất ${pkg.percentProfit}%`
       ];
 
 

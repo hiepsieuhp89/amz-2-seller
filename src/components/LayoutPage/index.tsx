@@ -372,7 +372,7 @@ function LayoutPage() {
                   <div className="text-sm text-gray-300 flex-shrink-0 mt-1">{profile?.data?.email}</div>
                 )}
                 
-                <RatingStars rating={profile?.data?.stars || 0} />
+                <RatingStars rating={profile?.data?.stars ?? 0} />
                 
                 <div className="mt-2">
                   <span className="text-white/80 font-medium text-sm">Điểm uy tín: </span>
@@ -570,7 +570,7 @@ function LayoutPage() {
                   </div>
 
                   {/* Rating Stars */}
-                  <RatingStars rating={(profile?.data as any)?.stars > 0 ? (profile?.data as any)?.stars : 5} />
+                  <RatingStars rating={profile?.data?.stars ?? 0} />
 
                   {/* Trust Score */}
                   <div className="mb-4">
