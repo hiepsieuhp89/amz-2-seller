@@ -89,7 +89,9 @@ const SellerMoneyWithdrawRequests = () => {
       dataIndex: "type",
       render: (text) => {
         switch (text) {
-          case "withdrawal":
+          case "completed_order":
+            return "Hoàn thành đơn hàng";
+          case "withdraw":
             return "Rút tiền";
           case "fedex_payment":
             return "Thanh toán";
