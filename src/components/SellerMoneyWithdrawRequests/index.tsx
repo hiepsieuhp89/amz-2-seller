@@ -89,6 +89,8 @@ const SellerMoneyWithdrawRequests = () => {
       dataIndex: "type",
       render: (text) => {
         switch (text) {
+          case "withdrawal":
+            return "Rút tiền";
           case "fedex_payment":
             return "Thanh toán";
           case "package_purchase":
@@ -171,20 +173,20 @@ const SellerMoneyWithdrawRequests = () => {
       dataIndex: "adminNote",
       render: (text) => text || "N/A"
     },
-    {
-      title: "Lý do từ chối",
-      dataIndex: "rejectionReason",
-      render: (text) => text || "N/A"
-    },
-    {
-      title: "Ngày xử lý",
-      dataIndex: "completedAt",
-      render: (text, record) => {
-        if (record.completedAt) return new Date(record.completedAt).toLocaleDateString();
-        if (record.rejectedAt) return new Date(record.rejectedAt).toLocaleDateString();
-        return "Chưa xử lý";
-      }
-    },
+    // {
+    //   title: "Lý do từ chối",
+    //   dataIndex: "rejectionReason",
+    //   render: (text) => text || "N/A"
+    // },
+    // {
+    //   title: "Ngày xử lý",
+    //   dataIndex: "completedAt",
+    //   render: (text, record) => {
+    //     if (record.completedAt) return new Date(record.completedAt).toLocaleDateString();
+    //     if (record.rejectedAt) return new Date(record.rejectedAt).toLocaleDateString();
+    //     return "Chưa xử lý";
+    //   }
+    // },
   ];
 
   const handleTransactionPaginationChange = (page: number, pageSize?: number) => {
