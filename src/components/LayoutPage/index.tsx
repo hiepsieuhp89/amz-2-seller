@@ -169,7 +169,7 @@ function LayoutPage() {
 
     return path.startsWith(menuPath) && path.charAt(menuPath.length) === "/"
   }
-  
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
   }
@@ -206,7 +206,7 @@ function LayoutPage() {
           <span className="font-medium">{item.name}</span>
         </Link>
       )
-      
+
       if (item.badge) {
         label = (
           <Link href={item.path} onClick={() => setPath(item.path)}>
@@ -352,34 +352,36 @@ function LayoutPage() {
                   </Link>
                   <span className="ml-1 flex-shrink-0 text-base">→</span>
                 </div>
-                
+
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <span className="text-lg font-medium text-white flex-shrink-0">{profile?.data?.shopName || "Cửa hàng chưa có tên"}</span>
-                  <div className="h-6 w-6 relative flex-shrink-0">
-                    <Image
-                      draggable={false}
-                      quality={100}
-                      height={100}
-                      width={100}
-                      className="object-cover"
-                      src={"/images/tick-icon.png"}
-                      alt="logo"
-                    />
-                  </div>
+                  {profile?.data?.isVerified && (
+                    <div className="h-6 w-6 relative flex-shrink-0">
+                      <Image
+                        draggable={false}
+                        quality={100}
+                        height={100}
+                        width={100}
+                        className="object-cover"
+                        src={"/images/tick-icon.png"}
+                        alt="logo"
+                      />
+                    </div>
+                  )}
                 </div>
-                
+
                 {isClient && (
                   <div className="text-sm text-gray-300 flex-shrink-0 mt-1">{profile?.data?.email}</div>
                 )}
-                
+
                 <RatingStars rating={profile?.data?.stars ?? 0} />
-                
+
                 <div className="mt-2">
                   <span className="text-white/80 font-medium text-sm">Điểm uy tín: </span>
                   <span className="text-green-400 text-sm">{profile?.data?.reputationPoints || 0}</span>
                 </div>
               </div>
-              
+
               <Input
                 placeholder="Tìm kiếm trong menu"
                 style={{
@@ -394,15 +396,15 @@ function LayoutPage() {
                 onChange={handleSearchChange}
               />
             </div>
-            
+
             {/* Menu Items */}
             <div className="flex-1 overflow-y-auto py-2">
               <AnimatePresence>
                 {menu
                   .filter(item => !searchTerm || item.name.toLowerCase().includes(searchTerm.toLowerCase()))
                   .map((item) => (
-                    <motion.div 
-                      key={item.key} 
+                    <motion.div
+                      key={item.key}
                       className="w-full px-2 mb-1"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -411,28 +413,27 @@ function LayoutPage() {
                     >
                       {item.children ? (
                         <>
-                          <div 
-                            className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                              expandedItems[item.key] 
-                                ? 'bg-[#232f3e] text-[#FCAF17]' 
+                          <div
+                            className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 ${expandedItems[item.key]
+                                ? 'bg-[#232f3e] text-[#FCAF17]'
                                 : 'text-white hover:bg-[#232f3e] hover:text-[#FCAF17]'
-                            }`}
+                              }`}
                             onClick={() => toggleExpand(item.key)}
                           >
                             <div className="flex items-center space-x-3">
                               {expandedItems[item.key] ? item.activeIcon : item.icon}
                               <span className="font-medium">{item.name}</span>
                             </div>
-                            <Icon 
-                              path={expandedItems[item.key] ? mdiChevronDown : mdiChevronRight} 
+                            <Icon
+                              path={expandedItems[item.key] ? mdiChevronDown : mdiChevronRight}
                               size={0.8}
                               color={expandedItems[item.key] ? "#FCAF17" : "white"}
                             />
                           </div>
-                          
+
                           <AnimatePresence>
                             {expandedItems[item.key] && (
-                              <motion.div 
+                              <motion.div
                                 className="ml-8 mt-1 border-l border-gray-700 pl-3"
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: "auto" }}
@@ -456,18 +457,17 @@ function LayoutPage() {
                       ) : (
                         <Link
                           href={item.path || ""}
-                          className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
-                            isActive(item.path) 
-                              ? 'bg-[#232f3e] text-[#FCAF17]' 
+                          className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${isActive(item.path)
+                              ? 'bg-[#232f3e] text-[#FCAF17]'
                               : 'text-white hover:bg-[#232f3e] hover:text-[#FCAF17]'
-                          }`}
+                            }`}
                           onClick={toggleMobileSidebar}
                         >
                           <div className="flex items-center space-x-3">
                             {isActive(item.path) ? item.activeIcon : item.icon}
                             <span className="font-medium">{item.name}</span>
                           </div>
-                          
+
                           {item.badge && (item.badge.text || item.badge.count > 0) && (
                             <Badge
                               count={item.badge.text || item.badge.count}
@@ -485,7 +485,7 @@ function LayoutPage() {
                   ))}
               </AnimatePresence>
             </div>
-            
+
             {/* Footer */}
             <div className="p-4 border-t border-gray-800 bg-[#232f3e]">
               <div className="text-white/60 text-xs text-center">
@@ -500,18 +500,18 @@ function LayoutPage() {
 
   return (
     <motion.div
-    className="!hidden md:!flex"
-    initial={isSidebarOpen ? "open" : "closed"}
-    animate={isSidebarOpen ? "open" : "closed"}
-    variants={sidebarVariants}
-    style={{
-      backgroundColor: "#131921 !important",
-      height: "100%",
-      overflow: "hidden",
-      display: "flex",
-      flexDirection: "column",
-    }}
-  >
+      className="!hidden md:!flex"
+      initial={isSidebarOpen ? "open" : "closed"}
+      animate={isSidebarOpen ? "open" : "closed"}
+      variants={sidebarVariants}
+      style={{
+        backgroundColor: "#131921 !important",
+        height: "100%",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <div className="
       hidden md:flex
       fixed top-0 left-0 h-full flex-col pt-[68px] overflow-y-auto w-fit">
@@ -550,17 +550,19 @@ function LayoutPage() {
                     {/* Shop Info */}
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <span className="text-lg font-medium flex-shrink-0">{profile?.data?.shopName || "Cửa hàng chưa có tên"}</span>
-                      <div className="h-7 w-7 relative flex-shrink-0">
-                        <Image
-                          draggable={false}
-                          quality={100}
-                          height={100}
-                          width={100}
-                          className="object-cover"
+                      {profile?.data?.isVerified && (
+                        <div className="h-7 w-7 relative flex-shrink-0">
+                          <Image
+                            draggable={false}
+                            quality={100}
+                            height={100}
+                            width={100}
+                            className="object-cover"
                           src={"/images/tick-icon.png"}
                           alt="logo"
                         />
                       </div>
+                      )}
                     </div>
 
                     {/* Email */}
