@@ -36,7 +36,8 @@ const SellerMoneyWithdrawRequests = () => {
     refetch: refetchWithdrawals
   } = useUserWithdrawals({
     page: currentWithdrawalPage,
-    take: pageSize
+    take: pageSize,
+    status: "PENDING"
   });
 
   useEffect(() => {
@@ -166,7 +167,7 @@ const SellerMoneyWithdrawRequests = () => {
       },
     },
     {
-      title: "Ghi chú Admin",
+      title: "Ghi chú",
       dataIndex: "adminNote",
       render: (text) => text || "N/A"
     },
@@ -255,7 +256,7 @@ const SellerMoneyWithdrawRequests = () => {
       </div>
 
       <div className="mb-4 border p-4 bg-white">
-        <h2 className="text-xl font-semibold mb-4">Lịch sử nạp/rút tiền</h2>
+        <h2 className="text-xl font-semibold mb-4">Lịch sử rút tiền</h2>
         <Table
           columns={withdrawalColumns}
           dataSource={withdrawalData}

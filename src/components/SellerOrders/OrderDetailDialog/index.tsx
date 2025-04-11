@@ -175,17 +175,17 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
         switch (type) {
             case 'name':
                 // Giữ lại 3 ký tự đầu, còn lại thay bằng *
-                return info.substring(0, 3) + '*'.repeat(info.length - 3);
+                return info.substring(0, 3) + '*'.repeat(Math.max(0, info.length - 3));
             case 'email':
                 // Giữ lại phần đầu trước @ và thay phần còn lại bằng *
                 const atIndex = info.indexOf('@');
-                if (atIndex === -1) return info.substring(0, 3) + '*'.repeat(info.length - 3);
+                if (atIndex === -1) return info.substring(0, 3) + '*'.repeat(Math.max(0, info.length - 3));
                 const domain = info.substring(atIndex);
                 const username = info.substring(0, atIndex);
-                return username.substring(0, 3) + '*'.repeat(username.length - 3) + domain;
+                return username.substring(0, 3) + '*'.repeat(Math.max(0, username.length - 3)) + domain;
             case 'phone':
                 // Giữ lại 3 số đầu và 2 số cuối
-                return info.substring(0, 3) + '*'.repeat(info.length - 5) + info.slice(-2);
+                return info.substring(0, 3) + '*'.repeat(Math.max(0, info.length - 5)) + info.slice(-2);
             case 'address':
                 // Thay toàn bộ bằng *
                 return '*'.repeat(Math.min(40, info.length));

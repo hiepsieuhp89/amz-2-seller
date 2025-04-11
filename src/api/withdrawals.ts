@@ -14,7 +14,7 @@ export const createWithdrawal = async (payload: ICreateWithdrawal): Promise<IWit
   return data
 }
 
-export const getUserWithdrawals = async (params?: { page: number; take: number, search?: string }): Promise<IWithdrawalListResponse> => {
+export const getUserWithdrawals = async (params?: { page: number; take: number, search?: string, status?: string }): Promise<IWithdrawalListResponse> => {
   const res = await sendGet("/withdrawals/user", params)
   const data: IWithdrawalListResponse = res
   return data

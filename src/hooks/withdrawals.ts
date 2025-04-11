@@ -19,7 +19,7 @@ export const useCreateWithdrawal = (): UseMutationResult<IWithdrawalResponse, Er
   })
 }
 
-export const useUserWithdrawals = (params?: { page: number; take: number }) => {
+export const useUserWithdrawals = (params?: { page: number; take: number, status?: string }) => {
   const {
     data: withdrawals,
     isLoading,
