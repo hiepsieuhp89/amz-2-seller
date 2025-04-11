@@ -39,7 +39,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const products = shopProductsData?.data?.data || []
   const totalItems = shopProductsData?.data?.meta?.itemCount || 0
-  const productImages = products.map((product: any) => product.product.imageUrl).filter(Boolean)
+  const productImages = products.map((product: any) => product.product.imageUrls[0]).filter(Boolean)
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
   const [selectedProductReviews, setSelectedProductReviews] = useState<any[]>([])
   const { setSelectedProduct } = useSelectedProduct()

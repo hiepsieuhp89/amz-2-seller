@@ -67,7 +67,7 @@ const ProductsTable = ({
   const products = shopProductsData?.data?.data || [];
   const totalItems = shopProductsData?.data?.meta?.itemCount || 0;
   const productImages = products
-    .map((product: any) => product.product.imageUrl)
+    .map((product: any) => product.product.imageUrls[0])
     .filter(Boolean);
   const [expandedDescriptions, setExpandedDescriptions] = useState<
     Record<string, boolean>
