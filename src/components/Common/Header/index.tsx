@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { Input } from "antd"
 import Icon from "@mdi/react"
 import { mdiMagnify, mdiChevronDown, mdiCart, mdiMenu, mdiCog } from "@mdi/js"
@@ -9,6 +9,7 @@ import Image from "next/image"
 import { useUser } from "@/context/useUserContext"
 import { logout } from "@/api/axios"
 import { useRouter } from "next/navigation"
+import { useProducts } from "@/hooks/products"
 import { 
     DropdownMenu,
     DropdownMenuContent,
@@ -54,9 +55,31 @@ export function Header() {
     const router = useRouter()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [searchExpanded, setSearchExpanded] = useState(false)
+    const [searchQuery, setSearchQuery] = useState("")
+    const [showResults, setShowResults] = useState(false)
+    const searchResultsRef = useRef<HTMLDivElement>(null)
+    
+    // Use the useProducts hook with search parameters
+    const { data: productsData, isLoading } = useProducts({
+        search: searchQuery,
+        take: 100,
+        page: 1
+    })
 
     useEffect(() => {
         setIsMounted(true)
+        
+        // Add click event listener to detect clicks outside search results
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchResultsRef.current && !searchResultsRef.current.contains(event.target as Node)) {
+                setShowResults(false)
+            }
+        }
+        
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
     }, [])
 
     const handleLanguageChange = (language: LanguageOption) => {
@@ -79,6 +102,27 @@ export function Header() {
         if (mobileMenuOpen) setMobileMenuOpen(false)
     }
 
+    // Handle search input change
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value
+        setSearchQuery(value)
+        setShowResults(value.length > 0)
+    }
+
+    // Handle search submit
+    const handleSearchSubmit = () => {
+        if (searchQuery.trim()) {
+            setShowResults(false)
+            router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
+        }
+    }
+    
+    // Handle product selection from search results
+    const handleSelectProduct = (productId: string) => {
+        setShowResults(false)
+        router.push(`/product/${productId}`)
+    }
+
     return (
         <>
             <header className="bg-[#232F3E] text-gray-400 px-4 py-2">
@@ -97,11 +141,69 @@ export function Header() {
                     </Link>
 
                     {/* Search Bar */}
-                    <div className="relative flex-1 max-w-[550px]">
-                        <Input placeholder="Tôi đang tìm mua..." className="py-2 pr-10 h-[38px] rounded-sm w-full" />
-                        <div className="absolute right-0 top-0 h-full flex items-center justify-center bg-[#febd69] w-[45px] rounded-r-sm cursor-pointer">
+                    <div className="relative flex-1 max-w-[550px]" ref={searchResultsRef}>
+                        <Input 
+                            placeholder="Tôi đang tìm mua..." 
+                            className="py-2 pr-10 h-[38px] rounded-sm w-full"
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            onPressEnter={handleSearchSubmit}
+                            onFocus={() => searchQuery && setShowResults(true)}
+                        />
+                        <div 
+                            className="absolute right-0 top-0 h-full flex items-center justify-center bg-[#febd69] w-[45px] rounded-r-sm cursor-pointer"
+                            onClick={handleSearchSubmit}
+                        >
                             <Icon path={mdiMagnify} size={0.8} color="#E3E6E6" />
                         </div>
+                        
+                        {/* Search Results Dropdown */}
+                        {showResults && searchQuery && (
+                            <div className="absolute left-0 right-0 top-[38px] bg-white shadow-lg z-50 max-h-[400px] overflow-y-auto">
+                                {isLoading ? (
+                                    <div className="p-4 text-center text-gray-600">Đang tìm kiếm...</div>
+                                ) : productsData?.data?.data && productsData.data.data.length > 0 ? (
+                                    <div>
+                                        {productsData.data.data.map((product: any) => (
+                                            <div 
+                                                key={product.id} 
+                                                className="flex items-center gap-3 p-3 hover:bg-gray-100 cursor-pointer border-b"
+                                                onClick={() => handleSelectProduct(product.id)}
+                                            >
+                                                <div className="w-12 h-12 flex-shrink-0 bg-gray-100 relative">
+                                                    {product.imageUrls && product.imageUrls.length > 0 ? (
+                                                        <Image
+                                                            src={product.imageUrls[0]}
+                                                            alt={product.name}
+                                                            fill
+                                                            className="object-contain"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+                                                            No image
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm text-gray-900 font-medium truncate">{product.name}</p>
+                                                    <p className="text-sm text-red-600 font-bold">{currentCurrency.symbol}{product.price}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <div className="p-2 text-center">
+                                            <button 
+                                                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                                onClick={handleSearchSubmit}
+                                            >
+                                                Xem tất cả kết quả
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="p-4 text-center text-gray-600">Không tìm thấy sản phẩm nào</div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Navigation */}
@@ -232,15 +334,70 @@ export function Header() {
 
                 {/* Mobile Search - Expandable */}
                 {searchExpanded && (
-                    <div className="md:hidden mt-2 relative">
+                    <div className="md:hidden mt-2 relative" ref={searchResultsRef}>
                         <Input
                             placeholder="Tôi đang tìm mua..."
                             className="py-1 pr-10 h-[34px] rounded-sm w-full"
                             autoFocus
+                            value={searchQuery}
+                            onChange={handleSearchChange}
+                            onPressEnter={handleSearchSubmit}
+                            onFocus={() => searchQuery && setShowResults(true)}
                         />
-                        <div className="absolute right-0 top-0 h-full flex items-center justify-center bg-[#febd69] w-[40px] rounded-r-sm cursor-pointer">
+                        <div 
+                            className="absolute right-0 top-0 h-full flex items-center justify-center bg-[#febd69] w-[40px] rounded-r-sm cursor-pointer"
+                            onClick={handleSearchSubmit}
+                        >
                             <Icon path={mdiMagnify} size={0.7} color="#E3E6E6" />
                         </div>
+                        
+                        {/* Mobile Search Results Dropdown */}
+                        {showResults && searchQuery && (
+                            <div className="absolute left-0 right-0 top-[34px] bg-white shadow-lg z-50 max-h-[350px] overflow-y-auto">
+                                {isLoading ? (
+                                    <div className="p-3 text-center text-gray-600">Đang tìm kiếm...</div>
+                                ) : productsData?.data?.data && productsData.data.data.length > 0 ? (
+                                    <div>
+                                        {productsData.data.data.map((product: any) => (
+                                            <div 
+                                                key={product.id} 
+                                                className="flex items-center gap-2 p-2 hover:bg-gray-100 cursor-pointer border-b"
+                                                onClick={() => handleSelectProduct(product.id)}
+                                            >
+                                                <div className="w-10 h-10 flex-shrink-0 bg-gray-100 relative">
+                                                    {product.imageUrls && product.imageUrls.length > 0 ? (
+                                                        <Image
+                                                            src={product.imageUrls[0]}
+                                                            alt={product.name}
+                                                            fill
+                                                            className="object-contain"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+                                                            No image
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs text-gray-900 font-medium truncate">{product.name}</p>
+                                                    <p className="text-xs text-red-600 font-bold">{currentCurrency.symbol}{product.price}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <div className="p-2 text-center">
+                                            <button 
+                                                className="text-blue-600 hover:text-blue-800 text-xs font-medium"
+                                                onClick={handleSearchSubmit}
+                                            >
+                                                Xem tất cả kết quả
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="p-3 text-center text-gray-600">Không tìm thấy sản phẩm nào</div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 )}
             </header>
