@@ -27,7 +27,8 @@ const SellerMoneyWithdrawRequests = () => {
     refetch: refetchTransactions
   } = useTransactionHistory({
     page: currentTransactionPage,
-    take: pageSize
+    take: pageSize,
+    ignoreTypes: ['fedex_payment', 'manual_fedex_amount']
   });
 
   const {
