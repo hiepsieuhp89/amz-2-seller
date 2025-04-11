@@ -16,6 +16,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { useSelectedProduct } from "@/stores/useSelectedProduct"
+import { IProduct } from "@/interface/response/products"
 
 interface LanguageOption {
     code: string
@@ -57,7 +59,9 @@ export function Header() {
     const [searchExpanded, setSearchExpanded] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
     const [showResults, setShowResults] = useState(false)
-    const searchResultsRef = useRef<HTMLDivElement>(null)
+    const desktopSearchRef = useRef<HTMLDivElement>(null)
+    const mobileSearchRef = useRef<HTMLDivElement>(null)
+    const {setSelectedProduct} = useSelectedProduct()
     
     // Use the useProducts hook with search parameters
     const { data: productsData, isLoading } = useProducts({
@@ -71,7 +75,10 @@ export function Header() {
         
         // Add click event listener to detect clicks outside search results
         const handleClickOutside = (event: MouseEvent) => {
-            if (searchResultsRef.current && !searchResultsRef.current.contains(event.target as Node)) {
+            if (
+                (desktopSearchRef.current && !desktopSearchRef.current.contains(event.target as Node)) &&
+                (mobileSearchRef.current && !mobileSearchRef.current.contains(event.target as Node))
+            ) {
                 setShowResults(false)
             }
         }
@@ -120,12 +127,13 @@ export function Header() {
     // Handle product selection from search results
     const handleSelectProduct = (productId: string) => {
         setShowResults(false)
-        router.push(`/product/${productId}`)
+        router.push(`/product?id=${productId}`)
+        setSelectedProduct(productsData?.data?.data?.find((product: any) => product.id === productId) as IProduct)
     }
 
     return (
         <>
-            <header className="bg-[#232F3E] text-gray-400 px-4 py-2">
+            <header className="bg-[#232F3E] text-gray-400 px-4 py-2 relative z-30">
                 {/* Desktop Header */}
                 <div className="hidden md:flex items-center justify-between gap-2">
                     <Link href="/" className="flex-shrink-0">
@@ -141,7 +149,7 @@ export function Header() {
                     </Link>
 
                     {/* Search Bar */}
-                    <div className="relative flex-1 max-w-[550px]" ref={searchResultsRef}>
+                    <div className="relative flex-1 max-w-[550px] min-w-[250px]" ref={desktopSearchRef}>
                         <Input 
                             placeholder="Tôi đang tìm mua..." 
                             className="py-2 pr-10 h-[38px] rounded-sm w-full"
@@ -154,7 +162,7 @@ export function Header() {
                             className="absolute right-0 top-0 h-full flex items-center justify-center bg-[#febd69] w-[45px] rounded-r-sm cursor-pointer"
                             onClick={handleSearchSubmit}
                         >
-                            <Icon path={mdiMagnify} size={0.8} color="#E3E6E6" />
+                            <Icon path={mdiMagnify} size={0.8} color="#232F3E" />
                         </div>
                         
                         {/* Search Results Dropdown */}
@@ -164,7 +172,7 @@ export function Header() {
                                     <div className="p-4 text-center text-gray-600">Đang tìm kiếm...</div>
                                 ) : productsData?.data?.data && productsData.data.data.length > 0 ? (
                                     <div>
-                                        {productsData.data.data.map((product: any) => (
+                                        {productsData.data.data?.map((product: any) => (
                                             <div 
                                                 key={product.id} 
                                                 className="flex items-center gap-3 p-3 hover:bg-gray-100 cursor-pointer border-b"
@@ -207,7 +215,7 @@ export function Header() {
                     </div>
 
                     {/* Navigation */}
-                    <nav className="flex items-center gap-2">
+                    <nav className="flex items-center gap-2 flex-shrink-0">
                         {/* Language Selector */}
                         <DropdownMenu>
                             <DropdownMenuTrigger className="flex items-center cursor-pointer px-2 focus:outline-none">
@@ -291,6 +299,13 @@ export function Header() {
                 {/* Mobile Header */}
                 <div className="flex md:hidden items-center justify-between">
                     <div className="flex items-center">
+                        <button
+                            onClick={toggleMobileMenu}
+                            className="text-gray-300 hover:text-white p-1 mr-2"
+                            aria-label="Menu"
+                        >
+                            <Icon path={mdiMenu} size={0.9} />
+                        </button>
                         <Link href="/" className="flex-shrink-0">
                             <Image 
                                 src="/images/logo.png" 
@@ -323,9 +338,9 @@ export function Header() {
                             </div>
                         </Link>
                         <button
-                            onClick={toggleMobileMenu}
-                            className="mr-2 text-gray-300 hover:text-white"
-                            aria-label="Menu"
+                            onClick={() => router.push(user ? "/account" : "/sign-in")}
+                            className="text-gray-300 hover:text-white p-1"
+                            aria-label="Account"
                         >
                             <Icon path={mdiCog} size={0.9} />
                         </button>
@@ -334,10 +349,10 @@ export function Header() {
 
                 {/* Mobile Search - Expandable */}
                 {searchExpanded && (
-                    <div className="md:hidden mt-2 relative" ref={searchResultsRef}>
+                    <div className="md:hidden mt-2 relative w-full" ref={mobileSearchRef}>
                         <Input
                             placeholder="Tôi đang tìm mua..."
-                            className="py-1 pr-10 h-[34px] rounded-sm w-full"
+                            className="py-1 pr-10 h-[34px] rounded-sm w-full min-w-[200px]"
                             autoFocus
                             value={searchQuery}
                             onChange={handleSearchChange}
@@ -348,23 +363,23 @@ export function Header() {
                             className="absolute right-0 top-0 h-full flex items-center justify-center bg-[#febd69] w-[40px] rounded-r-sm cursor-pointer"
                             onClick={handleSearchSubmit}
                         >
-                            <Icon path={mdiMagnify} size={0.7} color="#E3E6E6" />
+                            <Icon path={mdiMagnify} size={0.7} color="#232F3E" />
                         </div>
                         
                         {/* Mobile Search Results Dropdown */}
                         {showResults && searchQuery && (
-                            <div className="absolute left-0 right-0 top-[34px] bg-white shadow-lg z-50 max-h-[350px] overflow-y-auto">
+                            <div className="fixed left-0 right-0 top-[87px] bg-white shadow-lg z-50 max-h-[60vh] overflow-y-auto">
                                 {isLoading ? (
                                     <div className="p-3 text-center text-gray-600">Đang tìm kiếm...</div>
                                 ) : productsData?.data?.data && productsData.data.data.length > 0 ? (
                                     <div>
-                                        {productsData.data.data.map((product: any) => (
+                                        {productsData.data.data.slice(0, 5).map((product: any) => (
                                             <div 
                                                 key={product.id} 
-                                                className="flex items-center gap-2 p-2 hover:bg-gray-100 cursor-pointer border-b"
+                                                className="flex items-center gap-2 p-3 hover:bg-gray-100 cursor-pointer border-b"
                                                 onClick={() => handleSelectProduct(product.id)}
                                             >
-                                                <div className="w-10 h-10 flex-shrink-0 bg-gray-100 relative">
+                                                <div className="w-12 h-12 flex-shrink-0 bg-gray-100 relative">
                                                     {product.imageUrls && product.imageUrls.length > 0 ? (
                                                         <Image
                                                             src={product.imageUrls[0]}
@@ -379,14 +394,14 @@ export function Header() {
                                                     )}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-xs text-gray-900 font-medium truncate">{product.name}</p>
-                                                    <p className="text-xs text-red-600 font-bold">{currentCurrency.symbol}{product.price}</p>
+                                                    <p className="text-sm text-gray-900 font-medium truncate">{product.name}</p>
+                                                    <p className="text-sm text-red-600 font-bold">{currentCurrency.symbol}{product.price}</p>
                                                 </div>
                                             </div>
                                         ))}
                                         <div className="p-2 text-center">
                                             <button 
-                                                className="text-blue-600 hover:text-blue-800 text-xs font-medium"
+                                                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                                                 onClick={handleSearchSubmit}
                                             >
                                                 Xem tất cả kết quả
@@ -400,11 +415,33 @@ export function Header() {
                         )}
                     </div>
                 )}
+                
+                {/* Tablet Navigation - Shows on medium screens */}
+                <div className="hidden md:flex lg:hidden mt-2 justify-between items-center">
+                    <div className="flex items-center space-x-4">
+                        <button
+                            onClick={toggleMobileMenu}
+                            className="text-gray-300 hover:text-white p-1"
+                            aria-label="Menu"
+                        >
+                            <Icon path={mdiMenu} size={0.8} />
+                            <span className="ml-1 text-xs">Danh mục</span>
+                        </button>
+                        <span className="text-xs text-gray-300">Khuyến mãi</span>
+                        <span className="text-xs text-gray-300">Bán chạy</span>
+                    </div>
+                    <Link href="/cart" className="text-gray-300 hover:text-white p-1">
+                        <div className="flex items-center">
+                            <Icon path={mdiCart} size={0.8} />
+                            <span className="ml-1 text-xs">Giỏ hàng ({cartItemCount})</span>
+                        </div>
+                    </Link>
+                </div>
             </header>
 
             {/* Mobile Menu Overlay */}
             {mobileMenuOpen && (
-                <div className="md:hidden fixed inset-0 z-50 bg-black bg-opacity-50" onClick={toggleMobileMenu}>
+                <div className="fixed inset-0 z-50 bg-black bg-opacity-50" onClick={toggleMobileMenu}>
                     <div className="bg-[#232F3E] h-full w-[80%] max-w-[300px] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         {/* User Account Section */}
                         <div className="bg-[#37475A] p-4 text-white">
@@ -438,6 +475,17 @@ export function Header() {
                                     )}
                                 </>
                             )}
+                        </div>
+
+                        {/* Menu Categories */}
+                        <div className="p-4 border-b border-gray-700">
+                            <h3 className="text-white font-bold mb-2">Danh mục sản phẩm</h3>
+                            <ul className="space-y-2">
+                                <li className="py-1 cursor-pointer text-gray-400 hover:text-white">Tất cả sản phẩm</li>
+                                <li className="py-1 cursor-pointer text-gray-400 hover:text-white">Khuyến mãi</li>
+                                <li className="py-1 cursor-pointer text-gray-400 hover:text-white">Sản phẩm bán chạy</li>
+                                <li className="py-1 cursor-pointer text-gray-400 hover:text-white">Sản phẩm mới</li>
+                            </ul>
                         </div>
 
                         {/* Language Selector */}
