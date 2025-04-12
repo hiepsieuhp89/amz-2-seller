@@ -13,6 +13,8 @@ import {
   mdiMessageText,
   mdiStar,
   mdiMenu,
+  mdiAccountOutline,
+  mdiBullhornOutline,
 } from "@mdi/js"
 import Icon from "@mdi/react"
 import type { MenuProps } from "antd"
@@ -87,8 +89,8 @@ function LayoutPage() {
     {
       key: "/seller/account-packages",
       name: "Gói tài khoản",
-      icon: <Icon path={mdiCartOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiCartOutline} size={0.8} color={"#FCAF17"} />,
+      icon: <Icon path={mdiAccountOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiAccountOutline} size={0.8} color={"#FCAF17"} />,
       children: [
         {
           key: "seller-packages",
@@ -105,8 +107,8 @@ function LayoutPage() {
     {
       key: "/seller/marketing-packages",
       name: "Gói tiếp thị",
-      icon: <Icon path={mdiCartOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiCartOutline} size={0.8} color={"#FCAF17"} />,
+      icon: <Icon path={mdiBullhornOutline} size={0.8} />,
+      activeIcon: <Icon path={mdiBullhornOutline} size={0.8} color={"#FCAF17"} />,
       children: [
         {
           key: "spread-packages",

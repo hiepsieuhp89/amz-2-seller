@@ -25,8 +25,8 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
     const [barcodeSvg, setBarcodeSvg] = React.useState<string>("")
     const [isPrinting, setIsPrinting] = React.useState<boolean>(false)
     useEffect(() => {
-        if (open) {
-            const barcodeValue = `086af6e4641abb18caafc151b9aa95c8`
+        if (open && orderDetailData?.data?.id) {
+            const barcodeValue = orderDetailData.data.id
             const canvas = document.createElement('canvas')
             JSBarcode(canvas, barcodeValue, {
                 format: "CODE128",
@@ -37,7 +37,7 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
             })
             setBarcodeSvg(canvas.toDataURL("image/png"))
         }
-    }, [open])
+    }, [open, orderDetailData?.data?.id])
 
     const handlePrintInvoice = async () => {
         try {
@@ -228,9 +228,9 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                         </div>
                                     ) : (
                                         <div className="flex gap-4">
-                                            <div className={`py-2 px-4 font-medium ${order?.paymentStatus === 'PAID' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}>
+                                            {/* <div className={`py-2 px-4 font-medium ${order?.paymentStatus === 'PAID' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}>
                                                 Đã nhận
-                                            </div>
+                                            </div> */}
                                             <div className={`py-2 px-4 font-medium ${order?.paymentStatus === 'PAID' ? 'bg-gray-100' : 'bg-blue-500 text-white'}`}>
                                                 Đã thanh toán
                                             </div>
@@ -257,12 +257,12 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                     </div>
                                     <div>
                                         <p className="text-gray-600">Phương thức thanh toán</p>
-                                        <p>WALLET</p>
+                                        <p>Logistics Wallet</p>
                                     </div>
                                     <div>
                                         <p className="text-gray-600">Thông tin bổ sung</p>
                                         <p>-</p>
-                                    </div>
+                                     </div>
                                 </div>
                             </div>
                         </div>
@@ -295,9 +295,9 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                                     width={100} height={100} />
                                             </td>
                                             <td className="py-4 px-4">
-                                                30 Pack Lapel Headset Microphone Windscreen, Microphone Sponge Foam Cover Mini Size Lavalier Microphone Windscreen Pink
+                                                {item?.shopProduct?.product?.name || item?.shopProduct?.name || 'Sản phẩm'}
                                             </td>
-                                            <td className="py-4 px-4 text-center">-</td>
+                                            <td className="py-4 px-4 text-center">{item?.deliveryType || '-'}</td>
                                             <td className="py-4 px-4 text-center">{item.quantity}</td>
                                             <td className="py-4 px-4 text-right">${item.price}</td>
                                             <td className="py-4 px-4 text-right">${item.totalAmount}</td>
@@ -313,24 +313,23 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
 
                                 <div className="mb-4">
                                     {barcodeSvg && <img src={barcodeSvg} alt="Barcode" className="w-full h-auto" />}
-                                    <p className="text-center mt-1 text-sm">086af6e4641abb18caafc151b9aa95c8</p>
+                                    <p className="text-center mt-1 text-sm">{order?.id || ''}</p>
                                 </div>
                                 <div className="flex justify-between items-center mt-6">
                                     <div>
-                                        <p>r******************m</p>
-                                        <p>p******************g</p>
-                                        <p>+2******************43</p>
+                                        <p>{maskUserInfo(userInfo.name, 'name')}</p>
+                                        <p>{maskUserInfo(userInfo.email, 'email')}</p>
+                                        <p>{maskUserInfo(userInfo.phone, 'phone')}</p>
                                     </div>
                                     <div className="flex flex-col items-end">
-                                        <p>Colombia</p>
-                                        <QRCodeCanvas value="https://amazon-cms.vercel.app" size={80} />
+                                        <p>{order?.user?.countryId || '-'}</p>
+                                        <QRCodeCanvas value={`${window.location.origin}/orders?id=${order?.id}`} size={80} />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Thông tin giá */}
                             <div className="border p-4 relative">
-
                                 <div className="space-y-3">
                                     <div className="flex justify-between py-1">
                                         <span className="text-gray-600">Giá nhà kho:</span>
@@ -364,11 +363,9 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                 </div>
                             </div>
                         </div>
-
-
-
                     </div>
                 </div>
+
                 {/* Thông tin hậu cần */}
                 <div className="px-6">
                     <div className="border p-4">
@@ -400,4 +397,4 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
     )
 }
 
-export default OrderDetailDialog 
+export default OrderDetailDialog
