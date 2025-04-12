@@ -273,7 +273,7 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                     <div>
                                         <p className="text-gray-600">Thông tin bổ sung</p>
                                         <p>-</p>
-                                     </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -321,20 +321,25 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                             {/* Mã vạch và QR code */}
                             <div className="border p-4 relative">
-
-                                <div className="mb-4">
-                                    {barcodeSvg && <img src={barcodeSvg} alt="Barcode" className="w-full h-auto" />}
-                                    <p className="text-center mt-1 text-sm">{order?.id || ''}</p>
-                                </div>
-                                <div className="flex justify-between items-center mt-6">
-                                    <div>
-                                        <p>{maskUserInfo(userInfo.name, 'name')}</p>
-                                        <p>{maskUserInfo(userInfo.email, 'email')}</p>
-                                        <p>{maskUserInfo(userInfo.phone, 'phone')}</p>
+                                <h3 className="font-bold mb-3">Thông tin mã hóa</h3>
+                                <div className="flex flex-col gap-4">
+                                    <div className="mb-3">
+                                        {barcodeSvg && <img src={barcodeSvg} alt="Barcode" className="w-full h-auto max-w-full" />}
+                                        <p className="text-center mt-1 text-sm">{order?.id || ''}</p>
                                     </div>
-                                    <div className="flex flex-col items-end">
-                                        <p>{order?.user?.countryId || '-'}</p>
-                                        <QRCodeCanvas value={`${window.location.origin}/orders?id=${order?.id}`} size={80} />
+                                    <div className="flex items-center justify-center">
+                                        <div className="flex-1">
+                                            <div className="mt-4">
+                                                <p className="font-medium">Thông tin khách hàng:</p>
+                                                <p>{maskUserInfo(userInfo.name, 'name')}</p>
+                                                <p>{maskUserInfo(userInfo.email, 'email')}</p>
+                                                <p>{maskUserInfo(userInfo.phone, 'phone')}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col items-center justify-center">
+                                            <QRCodeCanvas value={`${window.location.origin}/orders?id=${order?.id}`} size={100} />
+                                            <p className="text-center mt-1 text-xs text-gray-500">Mã QR đơn hàng</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -381,17 +386,41 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                 <div className="px-6">
                     <div className="border p-4">
                         <h3 className="font-bold mb-4">Thông tin hậu cần</h3>
-                        <div className="space-y-4">
-                            {order?.statusHistory && order.statusHistory.map((history: any) => (
-                                <div key={history.id} className="bg-green-50 p-3">
-                                    <p>{formatDate(history.time)} {history.description}</p>
-                                </div>
-                            ))}
-                            {order?.status === 'DELIVERED' && (
-                                <div className="bg-green-50 p-3">
-                                    <p>{formatDate(new Date().toISOString())} Người dùng đã ký tên và việc giao hàng đã được hoàn thành. Cảm ơn bạn đã chờ đợi.</p>
-                                </div>
-                            )}
+                        <div className="relative">
+                            {/* Vertical timeline line */}
+                            <div className="absolute left-[7px] top-0 bottom-0 w-[2px] bg-gray-200"></div>
+
+                            <div className="space-y-6">
+                                {order?.statusHistory && order.statusHistory.map((history: any, index: number) => (
+                                    <div key={history.id} className="flex items-start gap-4">
+                                        {/* Timeline dot */}
+                                        <div className="relative z-10 mt-1">
+                                            <div className={`w-4 h-4 rounded-full ${index === 0 ? 'bg-blue-500' : 'bg-green-500'} border-2 border-white`}></div>
+                                        </div>
+
+                                        {/* Content */}
+                                        <div className="flex-1 bg-gray-50 p-3 rounded-md border border-gray-100 shadow-sm">
+                                            <p className="text-sm text-gray-500 mb-1">{formatDate(history.time)}</p>
+                                            <p className="font-medium">{history.description}</p>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {order?.status === 'DELIVERED' && (
+                                    <div className="flex items-start gap-4">
+                                        {/* Timeline dot */}
+                                        <div className="relative z-10 mt-1">
+                                            <div className="w-4 h-4 rounded-full bg-green-600 border-2 border-white"></div>
+                                        </div>
+
+                                        {/* Content */}
+                                        <div className="flex-1 bg-green-50 p-3 rounded-md border border-green-100 shadow-sm">
+                                            <p className="text-sm text-gray-500 mb-1">{formatDate(new Date().toISOString())}</p>
+                                            <p className="font-medium">Người dùng đã ký tên và việc giao hàng đã được hoàn thành. Cảm ơn bạn đã chờ đợi.</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
