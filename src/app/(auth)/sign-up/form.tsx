@@ -9,7 +9,7 @@ import { Button, Divider, Form, Input, message, Checkbox, Modal } from 'antd';
 import { FormProps } from 'antd/lib';
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import emailjs from '@emailjs/browser';
+import axios from 'axios';
 
 type FieldType = {
   username: string;
@@ -100,52 +100,26 @@ const SignUpForm = () => {
         });
       }, 1000);
       
-      // Format time as "HH:MM"
-      const currentTime = new Date();
-      const formattedTime = `${currentTime.getHours().toString().padStart(2, '0')}:${currentTime.getMinutes().toString().padStart(2, '0')}`;
-      
-      // Calculate expiry time string
+      // Format expiry time as "HH:MM"
       const expiryTimeStr = `${expiryTime.getHours().toString().padStart(2, '0')}:${expiryTime.getMinutes().toString().padStart(2, '0')}`;
       
-      // Send email using emailjs
-      const templateParams = {
-        recipient: emailAddress,
+      // Send OTP via our API route
+      const response = await axios.post('/api/send-otp', {
         email: emailAddress,
-        user_email: emailAddress,
-        to_email: emailAddress,
-        to_name: emailAddress.split('@')[0],
-        passcode: newOTP,
-        time: `${formattedTime}`,
-        company_name: 'Amazon',
-        from_email: 'ds-verification@amazon-global-selling.com',
-        from_name: 'Amazon Verification',
-        // Additional parameters that might be needed
-        subject: 'OTP for your Amazon authentication',
         otp: newOTP,
-        expiry_time: expiryTimeStr,
-        message: `This OTP will be valid for 15 minutes till ${expiryTimeStr}.`
-      };
+        expiryTime: expiryTimeStr
+      });
       
-      console.log(templateParams);
-      try {
-        await emailjs.send(
-          'service_05yt11a',
-          'template_8coe69v',
-          templateParams,
-          'pzeaU2JjVDQw0B6tU'
-        ).then(result => {
-          console.log('EmailJS success:', result);
-        }).catch(error => {
-          console.error('EmailJS detailed error:', error);
-        });
-        
+      if (response.data.success) {
         // Update the state with the email so it can be displayed in the UI
         setUserEmail(emailAddress);
         setShowOTPForm(true);
-      } catch (error) {
-        console.error('Error sending OTP:', error);
-        messageApi.error('Failed to send OTP. Please try again.');
+      } else {
+        throw new Error(response.data.error || 'Failed to send OTP');
       }
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      messageApi.error('Failed to send OTP. Please try again.');
     } finally {
       setSendingOTP(false);
     }
