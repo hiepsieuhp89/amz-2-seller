@@ -141,16 +141,16 @@ export function Footer() {
               <li className="flex items-center gap-2">
                 <Icon path={mdiMapMarkerOutline} size={0.8} className="flex-shrink-0 text-gray-400" />
                 <span className="text-gray-400">
-                  Amazon Web Services Singapore 23 Church St, #10-01, Singapore 049481
+                  Tầng 36, Tòa nhà Bitexco Financial Tower, Số 2 đường Hải Triều, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh
                 </span>
               </li>
               <li className="flex items-center gap-2">
                 <Icon path={mdiPhoneOutline} size={0.8} className="flex-shrink-0 text-gray-400" />
-                <span className="text-gray-400">+84 333273472</span>
+                <span className="text-gray-400">+84 348163658</span>
               </li>
               <li className="flex items-center gap-2">
                 <Icon path={mdiEmailOutline} size={0.8} className="flex-shrink-0 text-gray-400" />
-                <span className="text-gray-400 text-wrap max-w-[150px] break-words">sellercentralamazon.index@gmail.com</span>
+                <span className="text-gray-400 text-wrap max-w-[150px] break-words">ds-reply@amazon-global-selling.com</span>
               </li>
             </ul>
           </div>
