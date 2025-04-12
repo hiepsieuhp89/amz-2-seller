@@ -61,58 +61,69 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
             processingMsg.textContent = 'Đang tạo PDF...'
             document.body.appendChild(processingMsg)
 
-            const input = document.getElementById("preview");
-            if (!input) throw new Error("Preview element not found");
+            try {
+                const input = document.getElementById("preview");
+                if (!input) throw new Error("Preview element not found");
 
-            // Sử dụng html2canvas để chuyển đổi DOM thành canvas
-            const canvas = await html2canvas(input, {
-                scale: 1.5,
-                logging: false,
-                useCORS: true,
-                allowTaint: true,
-                scrollY: -window.scrollY
-            })
+                // Sử dụng html2canvas để chuyển đổi DOM thành canvas
+                const canvas = await html2canvas(input, {
+                    scale: 1.5,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                    scrollY: -window.scrollY
+                })
 
-            // Tạo PDF từ canvas
-            const imgData = canvas.toDataURL('image/png')
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            })
+                // Tạo PDF từ canvas
+                const imgData = canvas.toDataURL('image/png')
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                })
 
-            const pageWidth = pdf.internal.pageSize.getWidth()
-            const pageHeight = pdf.internal.pageSize.getHeight()
-            const imgWidth = pageWidth
-            const imgHeight = (canvas.height * imgWidth) / canvas.width
+                const pageWidth = pdf.internal.pageSize.getWidth()
+                const pageHeight = pdf.internal.pageSize.getHeight()
+                const imgWidth = pageWidth
+                const imgHeight = (canvas.height * imgWidth) / canvas.width
 
-            // Thêm ảnh vào PDF
-            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
+                // Thêm ảnh vào PDF
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight)
 
-            // Xử lý nếu nội dung vượt quá một trang
-            if (imgHeight > pageHeight) {
-                let heightLeft = imgHeight - pageHeight
-                let position = -pageHeight
+                // Xử lý nếu nội dung vượt quá một trang
+                if (imgHeight > pageHeight) {
+                    let heightLeft = imgHeight - pageHeight
+                    let position = -pageHeight
 
-                while (heightLeft > 0) {
-                    pdf.addPage()
-                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
-                    heightLeft -= pageHeight
-                    position -= pageHeight
+                    while (heightLeft > 0) {
+                        pdf.addPage()
+                        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+                        heightLeft -= pageHeight
+                        position -= pageHeight
+                    }
                 }
-            }
 
-            // Lưu file PDF
-            pdf.save(`don-hang-${orderId.substring(0, 8)}.pdf`)
+                // Lưu file PDF
+                pdf.save(`don-hang-${orderId.substring(0, 8)}.pdf`)
+            } catch (err) {
+                console.error("Lỗi khi tạo PDF:", err)
+                alert("Đã xảy ra lỗi khi tạo PDF. Vui lòng thử lại sau.")
+            } finally {
+                // Xóa thông báo đang xử lý
+                if (processingMsg && processingMsg.parentNode) {
+                    processingMsg.parentNode.removeChild(processingMsg)
+                }
+                // Đặt trạng thái in thành false
+                setIsPrinting(false)
+            }
         } catch (err) {
-            console.error(err)
-        } finally {
-            // Xóa thông báo đang xử lý
+            console.error("Lỗi:", err)
+            alert("Đã xảy ra lỗi. Vui lòng thử lại sau.")
+            // Đảm bảo xóa thông báo đang xử lý nếu có lỗi
             const processingMsg = document.querySelector('div[style*="position: fixed"][style*="z-index: 9999"]')
             if (processingMsg && processingMsg.parentNode) {
                 processingMsg.parentNode.removeChild(processingMsg)
             }
-            // Đặt trạng thái in thành false
             setIsPrinting(false)
         }
     }

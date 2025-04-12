@@ -1,7 +1,7 @@
 "use client"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useGetRevenueStatistics } from "@/hooks/shop-products"
-import { Line } from "@ant-design/charts"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 import { DollarSign, ShoppingBag, TrendingUp } from "lucide-react"
 import { useState } from "react"
 import "./styles.css"
@@ -37,117 +37,38 @@ const RevenueChart = () => {
     { revenue: 0, profit: 0, orders: 0 }
   )
 
-  const config = {
-    data: chartData,
-    xField: "date",
-    yField: "revenue",
-    smooth: true,
-    smoothConstraint: true,
-    geometryOptions: [
-      {
-        geometry: 'line',
-        smooth: true,
-        tension: 0.8,
-      },
-    ],
-    point: {
-      size: 5,
-      shape: "circle",
-      style: {
-        fill: "white",
-        stroke: "#FFA940",
-        lineWidth: 2,
-      },
-    },
-    line: {
-      color: "#FFA940",
-    },
-    xAxis: {
-      type: "time",
-      label: {
-        formatter: (date: string) => {
-          const d = new Date(date)
-          return `${d.getDate().toString().padStart(2, "0")}-${(d.getMonth() + 1).toString().padStart(2, "0")}-${d.getFullYear()}`
-        },
-      },
-      grid: {
-        line: {
-          style: {
-            stroke: "transparent",
-          },
-        },
-      },
-      tickLine: {
-        alignWithLabel: true,
-      },
-      dateFormatter: (date: string) => {
-        return date.split("T")[0] // Remove the time part before formatting
-      },
-    },
-    yAxis: {
-      min: 0,
-      title: {
-        text: "",
-      },
-      grid: {
-        line: {
-          style: {
-            stroke: "#eee",
-            lineDash: [4, 4],
-          },
-        },
-      },
-      label: {
-        formatter: (value: number) => `$${value.toLocaleString("vi-VN")}`,
-      },
-    },
-    tooltip: {
-      showMarkers: true,
-      fields: ["date", "revenue", "profit", "orders"],
-      customContent: (title: string, items: any[]) => {
-        // Extract just the date part by splitting at 'T'
-        const datePart = title.split("T")[0]
-        const [year, month, day] = datePart.split("-")
-        const formattedDate = `${day}-${month}-${year}`
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr)
+    return `${date.getDate().toString().padStart(2, "0")}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getFullYear()}`
+  }
 
-        const data = items[0]?.data
-        if (!data) return null
-
-        return (
-          <div className="p-3 bg-white rounded-lg shadow-lg border border-gray-100">
-            <div className="text-sm font-medium mb-2 text-gray-700">{formattedDate}</div>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#FFA940]" />
-                <span className="font-medium">Doanh thu: <span className="text-[#FFA940]">${data.revenue?.toLocaleString("vi-VN") || 0}</span></span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#52C41A]" />
-                <span className="font-medium">Lợi nhuận: <span className="text-[#52C41A]">${data.profit?.toLocaleString("vi-VN") || 0}</span></span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#1890FF]" />
-                <span className="font-medium">Đơn hàng: <span className="text-[#1890FF]">{data.orders || 0}</span></span>
-              </div>
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload
+      const formattedDate = formatDate(data.date)
+      
+      return (
+        <div className="p-3 bg-white rounded-lg shadow-lg border border-gray-100">
+          <div className="text-sm font-medium mb-2 text-gray-700">{formattedDate}</div>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-[#FFA940]" />
+              <span className="font-medium">Doanh thu: <span className="text-[#FFA940]">${data.revenue?.toLocaleString("vi-VN") || 0}</span></span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-[#52C41A]" />
+              <span className="font-medium">Lợi nhuận: <span className="text-[#52C41A]">${data.profit?.toLocaleString("vi-VN") || 0}</span></span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-[#1890FF]" />
+              <span className="font-medium">Đơn hàng: <span className="text-[#1890FF]">{data.orders || 0}</span></span>
             </div>
           </div>
-        )
-      },
-    },
-    state: {
-      active: {
-        style: {
-          shadowBlur: 4,
-          stroke: "#000",
-          fill: "red",
-        },
-      },
-    },
-    interactions: [
-      {
-        type: "marker-active",
-      },
-    ],
+        </div>
+      )
+    }
+    
+    return null
   }
 
   return (
@@ -212,7 +133,34 @@ const RevenueChart = () => {
       </div>
 
       <div style={{ height: "350px" }} className="mobile:max-h-[300px]">
-        <Line {...config} />
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={chartData}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis 
+              dataKey="date" 
+              tickFormatter={formatDate}
+              axisLine={{ stroke: "#eee" }}
+              tickLine={false}
+            />
+            <YAxis 
+              tickFormatter={(value) => `$${value.toLocaleString("vi-VN")}`}
+              axisLine={{ stroke: "#eee" }}
+              tickLine={false}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Line 
+              type="monotone" 
+              dataKey="revenue" 
+              stroke="#FFA940" 
+              strokeWidth={2}
+              dot={{ fill: "white", stroke: "#FFA940", strokeWidth: 2, r: 5 }}
+              activeDot={{ r: 7, stroke: "#FFA940", strokeWidth: 2 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     </div>
   )
