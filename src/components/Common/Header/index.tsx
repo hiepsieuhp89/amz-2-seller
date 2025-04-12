@@ -338,7 +338,7 @@ export function Header() {
                             </div>
                         </Link>
                         <button
-                            onClick={() => router.push(user ? "/account" : "/sign-in")}
+                            onClick={() => router.push(user ? "/seller/dashboard" : "/sign-in")}
                             className="text-gray-300 hover:text-white p-1"
                             aria-label="Account"
                         >
