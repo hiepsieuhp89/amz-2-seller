@@ -1,5 +1,4 @@
 import { useGetMaintenanceMode } from '@/hooks/maintenance';
-import Image from 'next/image';
 import { ReactNode } from 'react';
 
 interface MaintenanceGuardProps {
@@ -8,21 +7,37 @@ interface MaintenanceGuardProps {
 
 const MaintenanceGuard = ({ children }: MaintenanceGuardProps) => {
     const { data: maintenanceMode } = useGetMaintenanceMode();
-    if (maintenanceMode?.isMaintenance === true) {
+    if (!maintenanceMode?.isMaintenance === true) {
         return (
-            <div className='h-screen w-screen flex items-center justify-center relative'>
-                <Image
-                    src={"/images/maintenance.jpeg"}
-                    alt="maintenance"
-                    width={2500}
-                    height={2500}
-                    quality={100}
-                    draggable={false}
-                    className='w-full h-full object-cover'
-                    loading="lazy"
-                    placeholder="blur"
-                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRoaHSQtJSEkLUEwLi0tLTAtQFBGPzpQRT4tLS9gVkVOU0hHSF9nXnNkU05CSlD/2wBDARUXFyAeIBohHiAgQi0tLUJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkL/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                ></Image>
+            <div className="h-screen w-screen flex flex-col items-center justify-center bg-white p-6">
+                <div className="max-w-3xl w-full text-center">
+                    <div className="mb-6 flex justify-center">
+                       <img src="/images/default-avatar.jpg" alt="maintenance" className="w-20 h-20 rounded-full" />
+                    </div>
+
+                    <h1 className="text-3xl font-bold mb-4">We'll be back soon!</h1>
+                    <div className="mb-6 text-gray-600">
+                        <p className="mb-4">
+                            We're currently making some improvements to our website to serve you better.
+                        </p>
+                        <p>
+                            Please check back soon. We apologize for any inconvenience this may cause.
+                        </p>
+                    </div>
+
+                    <div className="p-4 bg-gray-100 border border-gray-300 rounded-md text-sm text-gray-700 mb-6">
+                        <p className="mb-2 font-semibold">While you wait, you might:</p>
+                        <ul className="text-left list-disc pl-6">
+                            <li>Clear your browser cache and cookies</li>
+                            <li>Try refreshing the page</li>
+                            <li>Check back in a few minutes</li>
+                        </ul>
+                    </div>
+
+                    <div className="text-xs text-gray-500">
+                        © 1996-{new Date().getFullYear()}, Amazon.com, Inc. or its affiliates
+                    </div>
+                </div>
             </div>
         );
     }
