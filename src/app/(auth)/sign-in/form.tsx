@@ -43,6 +43,20 @@ const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+// Function to mask email for privacy
+const maskEmail = (email: string) => {
+  if (!email) return '';
+  const [username, domain] = email.split('@');
+  
+  if (username.length <= 3) {
+    // For very short usernames, show only the first character
+    return `${username.substring(0, 1)}${'*'.repeat(username.length - 1)}@${domain}`;
+  } else {
+    // For longer usernames, show first 3 characters and mask the rest
+    return `${username.substring(0, 3)}${'*'.repeat(username.length - 3)}@${domain}`;
+  }
+};
+
 const SignInForm = () => {
   const router = useRouter();
   const { mutateAsync, isPending } = useSignIn();
@@ -322,7 +336,7 @@ const SignInForm = () => {
         <div className="otp-verification">
           <h1 className='text-[28px] font-medium'>Verify OTP</h1>
           <p className="mb-4">
-            OTP has been sent to your email: <strong>{userEmail}</strong>
+            OTP has been sent to your email: <strong>{maskEmail(userEmail)}</strong>
           </p>
           <p className="mb-4 text-sm">
             This OTP will be valid for {formatTimeLeft()}
