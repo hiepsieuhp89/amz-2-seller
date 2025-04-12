@@ -12,6 +12,7 @@
     "@ant-design/charts": "^2.2.7",
     "@ant-design/icons": "^5.6.1",
     "@ant-design/nextjs-registry": "^1.0.2",
+    "@emailjs/browser": "^4.4.1",
     "@hookform/resolvers": "^5.0.1",
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
