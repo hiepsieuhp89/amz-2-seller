@@ -40,7 +40,7 @@ const RevenueChart = () => {
   const config = {
     data: chartData,
     xField: "date",
-    yField: "value",
+    yField: "revenue",
     smooth: true,
     smoothConstraint: true,
     geometryOptions: [
@@ -103,7 +103,7 @@ const RevenueChart = () => {
     },
     tooltip: {
       showMarkers: true,
-      fields: ["date", "value", "profit", "orders"],
+      fields: ["date", "revenue", "profit", "orders"],
       customContent: (title: string, items: any[]) => {
         // Extract just the date part by splitting at 'T'
         const datePart = title.split("T")[0]
@@ -111,6 +111,7 @@ const RevenueChart = () => {
         const formattedDate = `${day}-${month}-${year}`
 
         const data = items[0]?.data
+        if (!data) return null
 
         return (
           <div className="p-3 bg-white rounded-lg shadow-lg border border-gray-100">
@@ -118,15 +119,15 @@ const RevenueChart = () => {
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-[#FFA940]" />
-                <span className="font-medium">Doanh thu: <span className="text-[#FFA940]">${data?.value.toLocaleString("vi-VN")}</span></span>
+                <span className="font-medium">Doanh thu: <span className="text-[#FFA940]">${data.revenue?.toLocaleString("vi-VN") || 0}</span></span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-[#52C41A]" />
-                <span className="font-medium">Lợi nhuận: <span className="text-[#52C41A]">${data?.profit.toLocaleString("vi-VN")}</span></span>
+                <span className="font-medium">Lợi nhuận: <span className="text-[#52C41A]">${data.profit?.toLocaleString("vi-VN") || 0}</span></span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-[#1890FF]" />
-                <span className="font-medium">Đơn hàng: <span className="text-[#1890FF]">{data?.orders}</span></span>
+                <span className="font-medium">Đơn hàng: <span className="text-[#1890FF]">{data.orders || 0}</span></span>
               </div>
             </div>
           </div>
