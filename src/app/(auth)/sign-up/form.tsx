@@ -342,8 +342,9 @@ const SignUpForm = () => {
             <h4 className="text-lg font-semibold text-[#232f3e] mb-2">10. Thông tin liên hệ</h4>
             <p className="mb-2">Nếu bạn có bất kỳ câu hỏi nào về các điều khoản này, vui lòng liên hệ với chúng tôi qua:</p>
             <ul className="list-disc pl-6 mb-2">
-              <li>Email: seller-support@amazon.vn</li>
-              <li>Điện thoại: 1800-88-88-20</li>
+              <li>Email: ds-reply@amazon-global-selling.com</li>
+              <li>Điện thoại: +84 348163658</li>
+              <li>Địa chỉ: Tầng 36, Tòa nhà Bitexco Financial Tower, Số 2 đường Hải Triều, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh.</li>
               <li>Trung tâm Hỗ trợ Người bán trên trang web Amazon Seller</li>
             </ul>
           </div>
