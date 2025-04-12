@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import React from "react"
+import React, { Suspense } from "react"
 
 export const metadata: Metadata = {
   title: "Amazon CMS - Orders",
@@ -12,8 +12,8 @@ export default function OrdersLayout({
   children: React.ReactNode
 }>) {
   return (
-    <div className="h-full">
+    <Suspense fallback={<div>Loading...</div>}>
       {children}
-    </div>
+    </Suspense>
   )
 } 
