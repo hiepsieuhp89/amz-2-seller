@@ -6,7 +6,7 @@ import { mdiContentSaveEdit, mdiEye, mdiTrashCan } from "@mdi/js"
 import Icon from "@mdi/react"
 import { Badge, Card, Col, Divider, Empty, Input, Row, Space, Spin, Table, Tooltip, Typography, Pagination } from "antd"
 import type { ColumnsType } from "antd/es/table"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import OrderDetailDialog from "../OrderDetailDialog"
 import {
     Select,
@@ -36,11 +36,17 @@ const OrdersTable = () => {
     const [pageSize, setPageSize] = useState(10)
     const [statusFilter, setStatusFilter] = useState<string | undefined>()
     const [searchText, setSearchText] = useState<string>("")
+    const [excludeFutureOrders, setExcludeFutureOrders] = useState(true)
+    
+    // Memoize the current date to prevent it from changing on every render
+    const currentDateISO = useMemo(() => new Date().toISOString(), []);
+    
     const { data: ordersData, isLoading } = useGetMyOrders({
         order: "DESC",
         page: currentPage,
         status: statusFilter,
-        search: searchText
+        search: searchText,
+        orderTimeLte: currentDateISO
     })
     const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
@@ -58,6 +64,11 @@ const OrdersTable = () => {
 
     const handleStatusChange = (value: string) => {
         setStatusFilter(value);
+        setCurrentPage(1);
+    };
+
+    const handleExcludeFutureOrders = (checked: boolean) => {
+        setExcludeFutureOrders(checked);
         setCurrentPage(1);
     };
 
@@ -191,6 +202,19 @@ const OrdersTable = () => {
                                 <SelectItem value="CANCELLED">Đã huỷ</SelectItem>
                             </SelectContent>
                         </Select>
+                        {/* <Tooltip title="Loại bỏ các đơn đặt hẹn giờ trong tương lai">
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    checked={excludeFutureOrders}
+                                    onChange={(e) => handleExcludeFutureOrders(e.target.checked)}
+                                    id="exclude-future-orders"
+                                />
+                                <label htmlFor="exclude-future-orders" className="cursor-pointer text-sm">
+                                    Chỉ hiện đơn từ hiện tại trở về trước
+                                </label>
+                            </div>
+                        </Tooltip> */}
                     </Space>
                 </Col>
             </Row>

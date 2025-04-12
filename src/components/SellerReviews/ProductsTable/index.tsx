@@ -129,26 +129,43 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       key: "name",
       sorter: (a: IShopProduct, b: IShopProduct) => a.product.name.localeCompare(b.product.name),
       render: (text: string, record: IShopProduct) => (
-        <Space direction="vertical" size={0}>
+        <Space direction="vertical" size={0} className="max-w-[400px]">
           <Link
             href={`/product?id=${record?.product?.id}`}
             target="_blank"
             onClick={() => setSelectedProduct(record.product)}
           >
-            <Text strong style={{ fontSize: "14px", wordWrap: "break-word", whiteSpace: "normal" }}>
+            <Text
+              strong
+              style={{
+                fontSize: "14px",
+                wordWrap: "break-word",
+                display: "-webkit-box",
+                WebkitLineClamp: 4,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden"
+              }}
+              ellipsis={{ tooltip: record.product?.name }}
+            >
               {text}
             </Text>
           </Link>
-          <Text
-            type="secondary"
-            style={{ fontSize: "12px", wordWrap: "break-word", whiteSpace: "normal" }}
-            ellipsis={{ tooltip: record.product?.description }}
-          >
-            {record.product?.description}
-          </Text>
+          <div
+            style={{
+              fontSize: "12px",
+              color: "rgba(0, 0, 0, 0.45)",
+              wordWrap: "break-word",
+              display: "-webkit-box",
+              WebkitLineClamp: 4,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden"
+            }}
+            dangerouslySetInnerHTML={{ __html: record.product?.description || "" }}
+          />
         </Space>
       ),
-      width: 300,
+      width: 400,
+      maxWidth: 600,
     },
     {
       title: "Số lượng đánh giá",
@@ -181,12 +198,12 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
   return (
     <>
       <div className="products-table-container">
-      <div className="border p-4 bg-white rounded-md">
+        <div className="border p-4 bg-white rounded-md">
           <Row justify="space-between" align="middle" gutter={[12, 12]} style={{ marginBottom: 16 }}>
             <Col>
               <Space size="middle">
                 <Title level={5} style={{ margin: 0 }}>
-                   Đánh giá sản phẩm
+                  Đánh giá sản phẩm
                 </Title>
                 <Badge size="default" count={totalItems} showZero style={{ backgroundColor: "#1890ff" }} />
               </Space>

@@ -40,6 +40,8 @@ export const getMyOrders = async (params: {
   search?: string
   status?: string
   delayStatus?: string
+  orderTimeGte?: string
+  orderTimeLte?: string
 }): Promise<IShopProductsResponse> => {
   const res = await sendGet("/shop-products/my-orders", params)
   const data: IShopProductsResponse = res

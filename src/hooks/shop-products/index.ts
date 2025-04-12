@@ -74,6 +74,8 @@ export const useGetMyOrders = (params: {
   search?: string
   status?: string
   delayStatus?: string
+  orderTimeGte?: string
+  orderTimeLte?: string
 }) => {
   return useQuery({
     queryKey: ['myOrders', params],
