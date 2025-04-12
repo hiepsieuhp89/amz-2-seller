@@ -7,7 +7,7 @@ interface MaintenanceGuardProps {
 
 const MaintenanceGuard = ({ children }: MaintenanceGuardProps) => {
     const { data: maintenanceMode } = useGetMaintenanceMode();
-    if (!maintenanceMode?.isMaintenance === true) {
+    if (maintenanceMode?.isMaintenance === true) {
         return (
             <div className="h-screen w-screen flex flex-col items-center justify-center bg-white p-6">
                 <div className="max-w-3xl w-full text-center">
