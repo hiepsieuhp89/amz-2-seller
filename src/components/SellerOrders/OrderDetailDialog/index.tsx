@@ -187,8 +187,8 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                 // Giữ lại 3 số đầu và 2 số cuối
                 return info.substring(0, 3) + '*'.repeat(Math.max(0, info.length - 5)) + info.slice(-2);
             case 'address':
-                // Thay toàn bộ bằng *
-                return '*'.repeat(Math.min(40, info.length));
+                // Thay lại 3 số đầu và 2 số cuối
+                return info.substring(0, 3) + '**********' + info.slice(-2);
             default:
                 return info;
         }
@@ -209,7 +209,7 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                     <p className="font-bold">{maskUserInfo(userInfo.name, 'name')}</p>
                                     <p>{maskUserInfo(userInfo.email, 'email')}</p>
                                     <p>{maskUserInfo(userInfo.phone, 'phone')}</p>
-                                    <p className="text-gray-600">{userInfo.address}</p>
+                                    <p className="text-gray-600">{maskUserInfo(userInfo.address, 'address')}</p>
                                 </div>
                             </div>
 
@@ -219,9 +219,9 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                     <p className="text-gray-600 mb-1">Tình trạng thanh toán</p>
                                     {isPrinting ? (
                                         <div className="flex gap-4">
-                                            <p className="py-2 px-4 font-medium">
+                                            {/* <p className="py-2 px-4 font-medium">
                                                 {order?.paymentStatus === 'PAID' ? '✓ Đã nhận' : '○ Đã nhận'}
-                                            </p>
+                                            </p> */}
                                             <p className="py-2 px-4 font-medium">
                                                 {order?.paymentStatus === 'PAID' ? '○ Đã thanh toán' : '✓ Đã thanh toán'}
                                             </p>
