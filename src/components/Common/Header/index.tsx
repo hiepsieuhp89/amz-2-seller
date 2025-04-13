@@ -10,7 +10,7 @@ import { useUser } from "@/context/useUserContext"
 import { logout } from "@/api/axios"
 import { useRouter } from "next/navigation"
 import { useProducts } from "@/hooks/products"
-import { 
+import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -61,8 +61,8 @@ export function Header() {
     const [showResults, setShowResults] = useState(false)
     const desktopSearchRef = useRef<HTMLDivElement>(null)
     const mobileSearchRef = useRef<HTMLDivElement>(null)
-    const {setSelectedProduct} = useSelectedProduct()
-    
+    const { setSelectedProduct } = useSelectedProduct()
+
     // Use the useProducts hook with search parameters
     const { data: productsData, isLoading } = useProducts({
         search: searchQuery,
@@ -72,7 +72,7 @@ export function Header() {
 
     useEffect(() => {
         setIsMounted(true)
-        
+
         // Add click event listener to detect clicks outside search results
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -82,7 +82,7 @@ export function Header() {
                 setShowResults(false)
             }
         }
-        
+
         document.addEventListener('mousedown', handleClickOutside)
         return () => {
             document.removeEventListener('mousedown', handleClickOutside)
@@ -123,7 +123,7 @@ export function Header() {
             router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
         }
     }
-    
+
     // Handle product selection from search results
     const handleSelectProduct = (productId: string) => {
         setShowResults(false)
@@ -137,34 +137,34 @@ export function Header() {
                 {/* Desktop Header */}
                 <div className="hidden md:flex items-center justify-between gap-2">
                     <Link href="/" className="flex-shrink-0">
-                        <Image 
-                            src="/images/logo.png" 
-                            alt="Amazon" 
-                            width={80} 
-                            height={34} 
-                            className="cursor-pointer" 
+                        <Image
+                            src="/images/logo.png"
+                            alt="Amazon"
+                            width={80}
+                            height={34}
+                            className="cursor-pointer"
                             quality={100}
-                            priority 
+                            priority
                         />
                     </Link>
 
                     {/* Search Bar */}
                     <div className="relative flex-1 max-w-[550px] min-w-[250px]" ref={desktopSearchRef}>
-                        <Input 
-                            placeholder="Tôi đang tìm mua..." 
+                        <Input
+                            placeholder="Tôi đang tìm mua..."
                             className="py-2 pr-10 h-[38px] rounded-sm w-full"
                             value={searchQuery}
                             onChange={handleSearchChange}
                             onPressEnter={handleSearchSubmit}
                             onFocus={() => searchQuery && setShowResults(true)}
                         />
-                        <div 
+                        <div
                             className="absolute right-0 top-0 h-full flex items-center justify-center bg-[#febd69] w-[45px] rounded-r-sm cursor-pointer"
                             onClick={handleSearchSubmit}
                         >
                             <Icon path={mdiMagnify} size={0.8} color="#232F3E" />
                         </div>
-                        
+
                         {/* Search Results Dropdown */}
                         {showResults && searchQuery && (
                             <div className="absolute left-0 right-0 top-[38px] bg-white shadow-lg z-50 max-h-[400px] overflow-y-auto">
@@ -173,8 +173,8 @@ export function Header() {
                                 ) : productsData?.data?.data && productsData.data.data.length > 0 ? (
                                     <div>
                                         {productsData.data.data?.map((product: any) => (
-                                            <div 
-                                                key={product.id} 
+                                            <div
+                                                key={product.id}
                                                 className="flex items-center gap-3 p-3 hover:bg-gray-100 cursor-pointer border-b"
                                                 onClick={() => handleSelectProduct(product.id)}
                                             >
@@ -199,7 +199,7 @@ export function Header() {
                                             </div>
                                         ))}
                                         <div className="p-2 text-center">
-                                            <button 
+                                            <button
                                                 className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                                                 onClick={handleSearchSubmit}
                                             >
@@ -225,12 +225,11 @@ export function Header() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="bg-white rounded-none shadow-md z-50">
                                 {languages.map((language) => (
-                                    <DropdownMenuItem 
+                                    <DropdownMenuItem
                                         key={language.code}
                                         onClick={() => handleLanguageChange(language)}
-                                        className={`rounded-none flex items-center px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-                                            language.code === currentLanguage.code ? "bg-gray-100" : ""
-                                        }`}
+                                        className={`rounded-none flex items-center px-4 py-2 cursor-pointer hover:bg-gray-100 ${language.code === currentLanguage.code ? "bg-gray-100" : ""
+                                            }`}
                                     >
                                         <span className={`fi fi-${language.flag} mr-2`}></span>
                                         <span>{language.name}</span>
@@ -245,10 +244,17 @@ export function Header() {
                                 {!isMounted ? null : (
                                     <>
                                         {!user && <span
-                                            onClick={() => router.push("/sign-in")}
+                                            onClick={() => {
+                                                console.log("sign-in")
+                                                router.push("/sign-in")
+                                            }}
                                             className="text-xs text-gray-400 transition-all duration-300 cursor-pointer">Xin chào. Đăng nhập</span>}
                                         {user && <span
-                                            onClick={() => router.push("/seller/products/storehouse")}
+                                            onClick={() => {
+                                                const shopUrl = process.env.NEXT_PUBLIC_SHOP_URL
+                                                console.log(shopUrl)
+                                                window.location.href = `${shopUrl}/seller/products/storehouse`
+                                            }}
                                             className="font-bold text-sm text-gray-400 hover:!text-white/80 transition-all duration-300">Bảng điều khiển của tôi</span>}
                                         {!user && <span className="font-bold text-sm text-gray-400 hover:!text-white/80 transition-all duration-300">Tài khoản và danh sách mong muốn</span>}
                                     </>
@@ -271,12 +277,11 @@ export function Header() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="bg-white rounded-none shadow-md z-50">
                                 {currencies.map((currency) => (
-                                    <DropdownMenuItem 
+                                    <DropdownMenuItem
                                         key={currency.code}
                                         onClick={() => handleCurrencyChange(currency)}
-                                        className={`rounded-none px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-                                            currency.code === currentCurrency.code ? "bg-gray-100" : ""
-                                        }`}
+                                        className={`rounded-none px-4 py-2 cursor-pointer hover:bg-gray-100 ${currency.code === currentCurrency.code ? "bg-gray-100" : ""
+                                            }`}
                                     >
                                         <span>
                                             {currency.name} {currency.symbol}
@@ -307,14 +312,14 @@ export function Header() {
                             <Icon path={mdiMenu} size={0.9} />
                         </button>
                         <Link href="/" className="flex-shrink-0">
-                            <Image 
-                                src="/images/logo.png" 
-                                alt="Amazon" 
-                                width={60} 
-                                height={25} 
-                                className="cursor-pointer" 
+                            <Image
+                                src="/images/logo.png"
+                                alt="Amazon"
+                                width={60}
+                                height={25}
+                                className="cursor-pointer"
                                 quality={100}
-                                priority 
+                                priority
                             />
                         </Link>
                     </div>
@@ -359,13 +364,13 @@ export function Header() {
                             onPressEnter={handleSearchSubmit}
                             onFocus={() => searchQuery && setShowResults(true)}
                         />
-                        <div 
+                        <div
                             className="absolute right-0 top-0 h-full flex items-center justify-center bg-[#febd69] w-[40px] rounded-r-sm cursor-pointer"
                             onClick={handleSearchSubmit}
                         >
                             <Icon path={mdiMagnify} size={0.7} color="#232F3E" />
                         </div>
-                        
+
                         {/* Mobile Search Results Dropdown */}
                         {showResults && searchQuery && (
                             <div className="fixed left-0 right-0 top-[87px] bg-white shadow-lg z-50 max-h-[60vh] overflow-y-auto">
@@ -374,8 +379,8 @@ export function Header() {
                                 ) : productsData?.data?.data && productsData.data.data.length > 0 ? (
                                     <div>
                                         {productsData.data.data.slice(0, 5).map((product: any) => (
-                                            <div 
-                                                key={product.id} 
+                                            <div
+                                                key={product.id}
                                                 className="flex items-center gap-2 p-3 hover:bg-gray-100 cursor-pointer border-b"
                                                 onClick={() => handleSelectProduct(product.id)}
                                             >
@@ -400,7 +405,7 @@ export function Header() {
                                             </div>
                                         ))}
                                         <div className="p-2 text-center">
-                                            <button 
+                                            <button
                                                 className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                                                 onClick={handleSearchSubmit}
                                             >
@@ -415,7 +420,7 @@ export function Header() {
                         )}
                     </div>
                 )}
-                
+
                 {/* Tablet Navigation - Shows on medium screens */}
                 <div className="hidden md:flex lg:hidden mt-2 justify-between items-center">
                     <div className="flex items-center space-x-4">
@@ -449,6 +454,7 @@ export function Header() {
                                 <>
                                     {!user ? (
                                         <div onClick={() => {
+                                            console.log("sign-in")
                                             router.push("/sign-in")
                                             setMobileMenuOpen(false)
                                         }} className="cursor-pointer">
@@ -458,7 +464,9 @@ export function Header() {
                                     ) : (
                                         <div className="space-y-2">
                                             <div onClick={() => {
-                                                router.push("/seller/products/storehouse")
+                                                const shopUrl = process.env.NEXT_PUBLIC_SHOP_URL
+                                                console.log(shopUrl)
+                                                window.location.href = `${shopUrl}/seller/products/storehouse`
                                                 setMobileMenuOpen(false)
                                             }} className="cursor-pointer">
                                                 <h3 className="font-bold text-lg">Xin chào, {user.username || 'Người dùng'}</h3>
