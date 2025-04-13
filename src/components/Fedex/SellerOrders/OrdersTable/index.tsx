@@ -239,9 +239,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
         dataIndex: "totalProfit",
         key: "totalProfit",
         width: isMobile ? "20%" : "10%",
-        render: (text, record) => {
+        render: (text) => {
           return (
-            <span className="text-green-500 whitespace-nowrap text-xs sm:text-sm">${text.toFixed(2)}</span>
+            <span className="text-green-500 whitespace-nowrap text-xs sm:text-sm">${text}</span>
           );
         },
       },
