@@ -319,7 +319,7 @@ export default function ProductDetail() {
               <div className="text-sm">
                 <span className="text-muted-foreground">Được bán bởi </span>
                 <Link href="#" className="font-medium text-[#007185] hover:text-[#C7511F] hover:underline">
-                  {'Ẩn danh'}
+                  {'Amazon'}
                 </Link>
               </div>
               <Button
