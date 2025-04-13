@@ -28,7 +28,7 @@ export function Footer() {
 
   return (
     <footer className="bg-main-dark-blue text-sm">
-      <div className="mx-auto pt-8 px-4">
+      <div className="mx-auto pt-8 px-4 max-w-[1500px] w-fulls">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <Link href="/">
