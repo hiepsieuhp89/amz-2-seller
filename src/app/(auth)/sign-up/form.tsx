@@ -193,7 +193,7 @@ const SignUpForm = () => {
           loginUser(response?.data?.user, response?.data?.accessToken);
           messageApi.success('Đăng ký tài khoản thành công!');
           setCookies(response?.data?.accessToken);
-          router.push('/seller/dashboard');
+          router.push('');
         } catch (error: any) {
           messageApi.error(error?.response?.data?.message || 'Có lỗi xảy ra khi đăng ký');
         }

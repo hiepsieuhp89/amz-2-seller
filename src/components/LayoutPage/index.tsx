@@ -47,11 +47,11 @@ function LayoutPage() {
   const { profile } = useUser()
   const menu = [
     {
-      key: "/seller/dashboard",
+      key: "",
       name: "Bảng điều khiển",
       icon: <Icon path={mdiHomeOutline} size={0.8} />,
       activeIcon: <Icon path={mdiHomeOutline} size={0.8} color={"#FCAF17"} />,
-      path: `/seller/dashboard`,
+      path: ``,
     },
     {
       key: "/seller/products/storehouse",

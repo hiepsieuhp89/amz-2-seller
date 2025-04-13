@@ -124,7 +124,7 @@ const SignInForm = () => {
           // Login user immediately
           setCookies(response.data.accessToken);
           loginUser(response.data.user, response.data.accessToken);
-          router.push('/seller/dashboard');
+          router.push('');
         }
       } catch (error: any) {
         handleErrorMessage(error?.response?.data?.message || 'Login failed');

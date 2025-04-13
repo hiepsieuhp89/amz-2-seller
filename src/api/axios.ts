@@ -48,10 +48,10 @@ instance.interceptors.response.use(
   async (err) => {
 
     if (err.response) {
-      if (err.response.status === 401 && !window.location.pathname.includes("sign-in") && !window.location.pathname.includes("sign-up")) {
-        logout();
+      // if (err.response.status === 401 && !window.location.pathname.includes("sign-in") && !window.location.pathname.includes("sign-up")) {
+      //   logout();
         return
-      }
+      // }
 
     }
     return Promise.reject(err);
