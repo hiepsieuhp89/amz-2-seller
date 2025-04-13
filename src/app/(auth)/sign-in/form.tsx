@@ -10,11 +10,22 @@ import { Button, Form, Input } from 'antd';
 import { FormProps } from 'antd/lib';
 import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
+import Image from 'next/image';
 
 type FieldType = {
   username: string;
   password: string;
 };
+
+// Updated with lower resolution images
+const captchaImages = [
+  { id: 1, src: 'https://source.unsplash.com/100x100/?cat', type: 'cat' },
+  { id: 2, src: 'https://source.unsplash.com/100x100/?dog', type: 'dog' },
+  { id: 3, src: 'https://source.unsplash.com/100x100/?koala', type: 'koala' },
+  { id: 4, src: 'https://source.unsplash.com/100x100/?bird', type: 'bird' },
+  { id: 5, src: 'https://source.unsplash.com/100x100/?fish', type: 'fish' },
+  { id: 6, src: 'https://source.unsplash.com/100x100/?rabbit', type: 'rabbit' },
+];
 
 // Add new captcha types
 type CaptchaType = 'image' | 'audio' | 'text';
@@ -110,21 +121,18 @@ const SignInForm = () => {
 
   const handleCaptchaSuccess = async () => {
     setShowCaptcha(false);
-    
-    // Login after captcha verification
     if (formValues) {
       try {
         const payload: ISignIn = {
           username: formValues.username,
           password: formValues.password,
+          // gate: "website"
         };
-        const response = await mutateAsync(payload);
-        
-        if (response?.data?.accessToken) {
-          // Login user immediately
-          setCookies(response.data.accessToken);
-          loginUser(response.data.user, response.data.accessToken);
-          router.push('/seller/dashboard');
+        const { data } = await mutateAsync(payload);
+        if (data?.accessToken) {
+          setCookies(data.accessToken);
+          loginUser(data?.user, data?.accessToken);
+          router.push('/');
         }
       } catch (error: any) {
         handleErrorMessage(error?.response?.data?.message || 'Login failed');
@@ -138,53 +146,78 @@ const SignInForm = () => {
   };
 
   return (
-    <>
-      {!showCaptcha ? (
-        <>
-          <h1 className='text-[28px] font-medium'>Sign In</h1>
-          <Form
-            name="normal_login"
-            onFinish={onFinish}
-            layout='vertical'
-          >
-            <Form.Item
-              label={<strong>Email</strong>}
-              name="username"
-              rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
-            >
-              <Input placeholder="Tên đăng nhập" />
-            </Form.Item>
-            <Form.Item
-              label={<strong>Mật khẩu</strong>}
-              name="password"
-              rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
-            >
-              <Input.Password
-                type="password"
-                placeholder="Mật khẩu"
-              />
-            </Form.Item>
-
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="login-form-button w-full !font-medium !h-[32px] !rounded-sm !px-2 !py-1"
-                loading={isPending}
-              >
+    <div>
+      <div style={{ 
+        width: '100%',
+        padding: '24px',
+        backgroundColor: 'white', 
+        borderRadius: '8px',
+      }}>
+        {!showCaptcha ? (
+          <>
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <h1 style={{ 
+                color: '#4D148C', 
+                fontSize: '24px', 
+                fontWeight: '600', 
+                marginBottom: '16px'
+              }}>
                 Đăng nhập
-              </Button>
-            </Form.Item>
-          </Form>
-        </>
-      ) : (
-        <Captcha 
-          onSuccess={handleCaptchaSuccess}
-          onError={handleErrorMessage}
-          onBack={() => setShowCaptcha(false)}
-        />
-      )}
-    </>
+              </h1>
+            </div>
+            <Form
+              name="normal_login"
+              onFinish={onFinish}
+              layout='vertical'
+            >
+              <Form.Item
+                label={<span style={{ fontWeight: '500' }}>Email</span>}
+                name="username"
+                rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
+              >
+                <Input 
+                  placeholder="Nhập email của bạn" 
+                  style={{ height: '40px', borderRadius: '4px' }}
+                />
+              </Form.Item>
+              <Form.Item
+                label={<span style={{ fontWeight: '500' }}>Mật khẩu</span>}
+                name="password"
+                rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
+              >
+                <Input.Password
+                  placeholder="Nhập mật khẩu"
+                  style={{ height: '40px', borderRadius: '4px' }}
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{
+                    width: '100%',
+                    height: '40px',
+                    backgroundColor: '#4D148C',
+                    borderColor: '#4D148C',
+                    fontWeight: '500',
+                    borderRadius: '4px'
+                  }}
+                  loading={isPending}
+                >
+                  Đăng nhập
+                </Button>
+              </Form.Item>
+            </Form>
+          </>
+        ) : (
+          <Captcha 
+            onSuccess={handleCaptchaSuccess}
+            onError={handleErrorMessage}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 

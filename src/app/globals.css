@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  color: #373737;
-}
-
 html,
 
 .ant-table-body {
@@ -15,10 +11,31 @@ html,
 .ant-picker-outlined {
   border-radius: unset !important;
 }
+.transaction-history-table .ant-table-thead > tr > th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+}
 
+.transaction-history-table .ant-table-tbody > tr > td {
+  padding: 12px 16px;
+}
+
+.custom-pagination .ant-pagination-item-active {
+  border-color: #1890ff;
+  background-color: #1890ff;
+}
+
+.custom-pagination .ant-pagination-item-active a {
+  color: white;
+}
+
+/* Thay đổi kích thước thanh cuộn cho các trình duyệt Webkit (Chrome, Safari, Edge,...) */
 ::-webkit-scrollbar {
   width: 8px;
+  /* Đặt chiều rộng của thanh cuộn ngang */
   height: 8px;
+  /* Đặt chiều cao của thanh cuộn dọc */
 }
 
 ::-webkit-scrollbar-thumb {
@@ -59,6 +76,7 @@ html,
   }
 }
 
+
 .ant-empty-description,
 .ant-select-item-empty {
   font-weight: 700 !important;
@@ -76,6 +94,11 @@ html,
   ;
 }
 
+.ant-input,
+.ant-input-outlined {
+  border-radius: 4px !important;
+}
+
 .ant-input-outlined:focus,
 .ant-input-affix-wrapper:focus,
 .ant-input-affix-wrapper-focused {
@@ -84,8 +107,7 @@ html,
   outline: 0 !important;
 }
 
-.ant-input-affix-wrapper, .ant-select-selector, .ant-input,
-.ant-input-outlined, .ant-modal-content {
+.ant-input-affix-wrapper {
   border-radius: 4px !important;
 }
 
@@ -93,7 +115,7 @@ html,
   background: linear-gradient(#f6dd9e, #f0c24d) !important;
   border: 0.075em solid #878787 !important;
   border-radius: 0.1em !important;
-  color: #373737 !important;
+  color: #000000 !important;
 }
 
 .ant-menu-item-selected {
@@ -101,170 +123,10 @@ html,
   border-radius: 6px !important;
 }
 
+.ant-input {
+  border-radius: 4px !important;
+}
+
 ul.ant-menu.ant-menu-sub.ant-menu-inline {
   list-style: disc !important;
-}
-
-/* Ant Design Pagination Custom Styles */
-.ant-pagination-item {
-  /* Base styles for all pagination items */
-  border-radius: 4px !important;
-  font-weight: 500 !important;
-  transition: all 0.3s ease !important;
-}
-
-.ant-pagination-item:hover {
-  border-color: #1890ff !important;
-  color: #1890ff !important;
-  background-color: #ffffff !important;
-}
-
-.ant-pagination-item-active {
-  background-color: #1890ff !important;
-  border-color: #1890ff !important;
-}
-.ant-pagination-item-active:hover {
-  background-color: #1890ff !important;
-  border-color: #1890ff !important;
-}
-
-.ant-pagination-item-active a {
-  color: white !important;
-}
-
-.ant-pagination-item-active:hover a {
-  color: white !important;
-}
-
-.ant-menu-root {
-  background-color: #131921 !important;
-}
-
-.ant-menu-item-selected {
-  background-color: #131921 !important;
-}
-
-.ant-menu-root {
-  background-color: #131921 !important;
-}
-
-.ant-menu-item-selected {
-  background-color: #131921 !important;
-}
-
-.ant-typography, 
-.ant-table-column-title,
-.ant-table-cell,
-.ant-badge-status-text {
-  color: #373737 !important;
-}
-
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 10% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-}
-
-
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-/* Ẩn spinner loader của NextTopLoader */
-.nextjs-toploader-spinner {
-  display: none !important;
-}
-
-.ant-btn:focus {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-button[type="button"].absolute:focus {
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-:global(.ant-pagination-options .ant-select-selector) {
-  display: none !important;
-}
-
-.paginationContainer :global(.ant-select-selector) {
-  display: none !important;
-}
-
-.ant-pagination-options {
-  display: none !important;
 }

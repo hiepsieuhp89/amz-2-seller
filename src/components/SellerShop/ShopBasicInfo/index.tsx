@@ -1,72 +1,56 @@
 "use client"
 
-import { useUser } from "@/context/useUserContext"
-import { useUploadFile } from '@/hooks/upload'
-import { UploadOutlined } from "@ant-design/icons"
-import { Button, Form, Input, Upload, message } from "antd"
 import React from "react"
+import { Form, Input, Button, Card, Upload, message } from "antd"
+import { UploadOutlined } from "@ant-design/icons"
 import { ShopData } from "../types"
+
+interface ShopBasicInfoProps {
+  shopData: ShopData
+  onSave: (data: Partial<ShopData>) => void
+}
 
 interface FileType {
   uid: string;
   name: string;
   status: 'done' | 'uploading' | 'error';
   url?: string;
-  thumbUrl?: string;
 }
 
-const ShopBasicInfo = ({ profileData }: { profileData: any }) => {
+const ShopBasicInfo: React.FC<ShopBasicInfoProps> = ({ shopData, onSave }) => {
   const [form] = Form.useForm()
   const [fileList, setFileList] = React.useState<FileType[]>([])
-  const uploadMutation = useUploadFile()
-  const { profile } = useUser()
 
   React.useEffect(() => {
     form.setFieldsValue({
-      shopName: profile?.data?.shopName,
-      phone: profile?.data?.phone,
-      shopAddress: profile?.data?.shopAddress,
-      metaTitle: profile?.data?.metaTitle,
-      metaDescription: profile?.data?.metaDescription,
-      logoUrl: profile?.data?.logoUrl
+      name: shopData.name,
+      phone: shopData.phone,
+      address: shopData.address,
+      metaTitle: shopData.metaTitle,
+      metaDescription: shopData.metaDescription,
     })
 
-    if (profile?.data?.logoUrl) {
+    if (shopData.logo) {
       setFileList([{
         uid: '-1',
         name: 'logo',
         status: 'done',
-        url: profile?.data?.logoUrl
+        url: shopData.logo
       }])
     }
-  }, [profile, form])
+  }, [shopData, form])
 
   const handleSubmit = (values: any) => {
     const submitData = {
       ...values,
-      logoUrl: fileList[0]?.url || null
+      logo: fileList[0]?.url || null
     }
+    onSave(submitData)
     message.success("Thông tin cơ bản đã được lưu")
   }
 
-  const handleChange = async ({ fileList: newFileList }: any) => {
+  const handleChange = ({ fileList: newFileList }: any) => {
     setFileList(newFileList)
-
-    if (newFileList.length > 0 && newFileList[0].originFileObj) {
-      try {
-        const uploadedFile = await uploadMutation.mutateAsync(newFileList[0].originFileObj)
-        setFileList([{
-          uid: '-1',
-          name: 'logo',
-          status: 'done',
-          url: uploadedFile.data.url,
-          thumbUrl: URL.createObjectURL(newFileList[0].originFileObj)
-        }])
-      } catch (error) {
-        message.error('Upload failed')
-        setFileList([])
-      }
-    }
   }
 
   return (
@@ -82,11 +66,11 @@ const ShopBasicInfo = ({ profileData }: { profileData: any }) => {
         layout="vertical"
         onFinish={handleSubmit}
         initialValues={{
-          shopName: profile?.data?.shopName,
-          phone: profile?.data?.phone,
-          shopAddress: profile?.data?.shopAddress,
-          metaTitle: profile?.data?.metaTitle,
-          metaDescription: profile?.data?.metaDescription,
+          name: shopData.name,
+          phone: shopData.phone,
+          address: shopData.address,
+          metaTitle: shopData.metaTitle,
+          metaDescription: shopData.metaDescription,
         }}
       >
         <div className="flex flex-col md:flex-row mb-3">
@@ -96,7 +80,7 @@ const ShopBasicInfo = ({ profileData }: { profileData: any }) => {
             </label>
           </div>
           <div className="md:w-5/6">
-            <Form.Item name="shopName" rules={[{ required: true, message: "Vui lòng nhập tên cửa hàng" }]}>
+            <Form.Item name="name" rules={[{ required: true, message: "Vui lòng nhập tên cửa hàng" }]}>
               <Input placeholder="Tên cửa hàng" className="w-full" />
             </Form.Item>
           </div>
@@ -145,7 +129,7 @@ const ShopBasicInfo = ({ profileData }: { profileData: any }) => {
             </label>
           </div>
           <div className="md:w-5/6">
-            <Form.Item name="shopAddress" rules={[{ required: true, message: "Vui lòng nhập địa chỉ cửa hàng" }]}>
+            <Form.Item name="address" rules={[{ required: true, message: "Vui lòng nhập địa chỉ cửa hàng" }]}>
               <Input placeholder="Địa chỉ" className="w-full" />
             </Form.Item>
           </div>

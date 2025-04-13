@@ -2,7 +2,7 @@
 
 import { ReloadOutlined } from '@ant-design/icons';
 import { Button, Input, Spin } from 'antd';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type CaptchaType = 'image' | 'audio' | 'text';
 
@@ -35,16 +35,21 @@ const generateAudioCaptcha = () => {
 interface CaptchaProps {
   onSuccess: () => void;
   onError: (message: string) => void;
-  onBack: () => void;
 }
 
-const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
+const Captcha = ({ onSuccess, onError }: CaptchaProps) => {
   const [captchaType, setCaptchaType] = useState<CaptchaType>('image');
   const [captchaLoading, setCaptchaLoading] = useState(false);
   const [captchaTarget, setCaptchaTarget] = useState('');
   const [images, setImages] = useState<Array<{ id: number, src: string, type: string }>>([]);
   const [textCaptcha, setTextCaptcha] = useState({ question: '', answer: '' });
   const [audioCaptcha, setAudioCaptcha] = useState({ audioText: '', answer: '' });
+
+  useEffect(() => {
+    if (captchaType === 'image') {
+      generateCaptcha();
+    }
+  }, [captchaType]);
 
   const generateCaptcha = () => {
     setCaptchaLoading(true);
@@ -82,11 +87,6 @@ const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
       setCaptchaLoading(false);
     }, 500);
   };
-  useEffect(() => {
-    if (captchaType === 'image') {
-      generateCaptcha();
-    }
-  }, [captchaType]);
 
   const generateRandomCaptcha = () => {
     const types: CaptchaType[] = ['image', 'audio', 'text'];
@@ -146,7 +146,7 @@ const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
 
       {captchaType === 'image' && captchaLoading ? (
         <div className="flex justify-center py-8">
-          <Spin size="small" />
+          <Spin size="large" />
         </div>
       ) : (
         captchaType === 'image' && (
@@ -224,19 +224,13 @@ const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
         </div>
       )}
 
-      <div className="mt-4 text-center flex justify-center gap-2">
+      <div className="mt-4 text-center">
         <Button
           icon={<ReloadOutlined />}
           onClick={generateRandomCaptcha}
           className="!rounded-sm !px-2 !py-1"
         >
           Try another type
-        </Button>
-        <Button
-          onClick={onBack}
-          className="!rounded-sm !px-2 !py-1"
-        >
-          Back to Form
         </Button>
       </div>
     </div>

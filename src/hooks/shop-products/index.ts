@@ -1,6 +1,6 @@
-import { addShopProducts, getAllShopProducts, getMyOrders, getMyShopProducts, getShopStatistics, removeShopProducts, getRevenueStatistics, getShopDetailStatistics, getTopSellingProducts, getShopProductDetail, getOrderDetail, getShopProductReviews } from "@/api/shop-products"
-import type { IAddShopProductsRequest, IGetShopProductsRequest, IRemoveShopProductsRequest } from "@/interface/request/shop-products"
-import type { IShopProductsResponse } from "@/interface/response/shop-products"
+import { addShopProducts, removeShopProducts, getMyOrders, getShopStatistics, payOrders } from "@/api/shop-products"
+import type { IAddShopProductsRequest, IRemoveShopProductsRequest } from "@/interface/request/shop-products"
+import type { IShopProductsResponse, IShopStatisticsResponse } from "@/interface/response/shop-products"
 import { type UseMutationResult, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export const useAddShopProducts = (): UseMutationResult<IShopProductsResponse, Error, IAddShopProductsRequest> => {
@@ -12,14 +12,25 @@ export const useAddShopProducts = (): UseMutationResult<IShopProductsResponse, E
       queryClient.invalidateQueries({
         queryKey: ["shopProducts"],
       })
-      queryClient.invalidateQueries({
-        queryKey: ["myShopProducts"],
-      })
       return result
     },
     onError: (result) => {
       return result
     },
+  })
+}
+export const useGetMyOrders = (params: {
+  order?: string
+  page?: number
+  take?: number
+  search?: string
+  status?: string
+  delayStatus?: string
+  orderTimeLte?: string
+}) => {
+  return useQuery({
+    queryKey: ['myOrders', params],
+    queryFn: () => getMyOrders(params),
   })
 }
 
@@ -36,8 +47,44 @@ export const useRemoveShopProducts = (): UseMutationResult<
       queryClient.invalidateQueries({
         queryKey: ["shopProducts"],
       })
+      return result
+    },
+    onError: (result) => {
+      return result
+    },
+  })
+}
+
+export const useShopStatistics = () => {
+  const {
+    data: shopStatisticsData,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ["shopStatistics"],
+    queryFn: () => getShopStatistics(),
+  })
+
+  return {
+    shopStatisticsData,
+    isLoading,
+    isFetching,
+    refetch,
+  }
+}
+
+export const usePayOrders = (): UseMutationResult<any, Error, any> => {
+  const queryClient = useQueryClient()
+
+  return useMutation<any, Error, any>({
+    mutationFn: (params: any) => payOrders(params),
+    onSuccess: (result: any) => {
       queryClient.invalidateQueries({
-        queryKey: ["myShopProducts"],
+        queryKey: ["myOrders"],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ["shopStatistics"],
       })
       return result
     },
@@ -47,103 +94,3 @@ export const useRemoveShopProducts = (): UseMutationResult<
   })
 }
 
-export const useGetMyShopProducts = (params: {
-  order?: string
-  page?: number
-  take?: number
-  search?: string
-  status?: string
-  name?: string
-  code?: string
-  minPrice?: number
-  maxPrice?: number
-  inStock?: boolean
-  active?: boolean
-  onlyHaveReview?: boolean
-}) => {
-  return useQuery({
-    queryKey: ['myShopProducts', params],
-    queryFn: () => getMyShopProducts(params),
-  })
-}
-
-export const useGetMyOrders = (params: {
-  order?: string
-  page?: number
-  take?: number
-  search?: string
-  status?: string
-  delayStatus?: string
-  orderTimeGte?: string
-  orderTimeLte?: string
-}) => {
-  return useQuery({
-    queryKey: ['myOrders', params],
-    queryFn: () => getMyOrders(params),
-  })
-}
-
-// Get all shop products
-export const useGetAllShopProducts = (params?: IGetShopProductsRequest) => {
-  return useQuery<IShopProductsResponse, Error>({
-    queryKey: ['shop-products', params],
-    queryFn: () => getAllShopProducts(params),
-  })
-}
-
-export const useGetShopStatistics = () => {
-  return useQuery({
-    queryKey: ['shopStatistics'],
-    queryFn: () => getShopStatistics(),
-  })
-}
-
-export const useGetRevenueStatistics = (params: { days: number }) => {
-  return useQuery({
-    queryKey: ['revenueStatistics', params],
-    queryFn: () => getRevenueStatistics(params),
-  })
-}
-
-export const useGetShopDetailStatistics = () => {
-  return useQuery({
-    queryKey: ['shopDetailStatistics'],
-    queryFn: () => getShopDetailStatistics(),
-  })
-}
-
-export const useGetTopSellingProducts = (params: { limit: number }) => {
-  return useQuery({
-    queryKey: ['topSellingProducts', params],
-    queryFn: () => getTopSellingProducts(params),
-  })
-}
-
-export const useGetShopProductDetail = (id: string) => {
-  return useQuery({
-    queryKey: ['shopProductDetail', id],
-    queryFn: () => getShopProductDetail(id),
-  })
-}
-
-export const useGetOrderDetail = (id: string) => {
-  return useQuery({
-    queryKey: ['orderDetail', id],
-    queryFn: () => getOrderDetail(id),
-  })
-}
-
-export const useGetShopProductReviews = (
-  id: string,
-  params?: {
-    order?: string
-    page?: number
-    take?: number
-    search?: string
-  }
-) => {
-  return useQuery({
-    queryKey: ['shopProductReviews', id, params],
-    queryFn: () => getShopProductReviews(id, params),
-  })
-}

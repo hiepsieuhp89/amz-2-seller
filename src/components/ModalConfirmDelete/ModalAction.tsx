@@ -16,6 +16,7 @@ import {
     InputNumber,
 } from "antd";
 import Image from "next/image";
+import { svgs } from "@/const/svgs";
 interface ActionProps {
     isModalOpen: boolean;
     setIsModalOpen: (isOpen: boolean) => void;
@@ -28,7 +29,7 @@ interface ActionProps {
     nameButtonClose?: string;
 }
 
-const ModalAction   = ({
+const ModalAction: React.FC<ActionProps> = ({
     isModalOpen,
     setIsModalOpen,
     title,
@@ -38,7 +39,7 @@ const ModalAction   = ({
     contentQuestion,
     nameButtonSubmit,
     nameButtonClose,
-}: ActionProps) => {
+}) => {
     return (
         <BaseModal
             title={title}
@@ -47,6 +48,7 @@ const ModalAction   = ({
         >
             <Form.Item labelCol={{ span: 6 }} wrapperCol={{ span: "full" }}>
                 <div className="flex gap-2">
+                    <Image src={svgs.warning} width={20} height={20} alt="delete" />
                     <p className="font-medium text-base">{nameTitle}</p>
                 </div>
                 <div className="px-6 pt-2 pb-6">{contentQuestion}</div>

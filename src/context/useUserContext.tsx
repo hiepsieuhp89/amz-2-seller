@@ -1,12 +1,12 @@
 "use client"
+import { createContext, useContext, useState, useEffect } from "react"
 import type React from "react"
-import { createContext, useContext, useEffect, useState } from "react"
 
-import { clearToken, setTokenToLocalStorage } from "@/helper/tokenStorage"
-import { useProfile } from "@/hooks/authentication"
-import { IProfileResponse } from "@/interface/response/authentication"
-import { QueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
+import { QueryClient } from "@tanstack/react-query"
+import { clearToken, setTokenToLocalStorage } from "@/helper/tokenStorage"
+import { getProfile } from "@/api/authentication"
+import { IProfileResponse } from "@/interface/response/authentication"
 
 const queryClient = new QueryClient()
 
@@ -17,7 +17,6 @@ type UserContextType = {
   logoutUser: () => void
   fetchUserProfile: () => Promise<void>
   isLoadingProfile: boolean
-  logoUrl: string | undefined
 }
 
 const UserContext = createContext<UserContextType | null>(null)
@@ -34,7 +33,6 @@ const deleteCookie = (name: string) => {
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const { profileData, refetch: refetchProfile, isLoading: isProfileLoading } = useProfile()
   const [user, setUser] = useState<null | Record<string, any>>(() => {
     if (typeof window !== "undefined") {
       const storedUser = localStorage.getItem("user")
@@ -56,8 +54,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const fetchUserProfile = async () => {
     try {
       setIsLoadingProfile(true)
-      await refetchProfile()
-      if (typeof window !== "undefined" && profileData) {
+      const profileData = await getProfile()
+      setProfile(profileData)
+      // Store profile in localStorage for persistence
+      if (typeof window !== "undefined") {
         localStorage.setItem("userProfile", JSON.stringify(profileData))
       }
     } catch (error) {
@@ -71,18 +71,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedProfile = localStorage.getItem("userProfile")
-      if (storedProfile) {
+      if (storedProfile && storedProfile !== "undefined") {
         setProfile(JSON.parse(storedProfile))
       }
     }
   }, [])
 
-  // Update profile state when profileData changes
+  // Fetch profile when user is available but profile isn't
   useEffect(() => {
-    if (profileData) {
-      setProfile(profileData)
+    if (user && !profile) {
+      fetchUserProfile()
     }
-  }, [profileData])
+  }, [user, profile])
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -116,8 +116,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         loginUser,
         logoutUser,
         fetchUserProfile,
-        logoUrl: profileData?.data?.logoUrl || "",
-        isLoadingProfile: isProfileLoading || isLoadingProfile
+        isLoadingProfile
       }}
     >
       {children}

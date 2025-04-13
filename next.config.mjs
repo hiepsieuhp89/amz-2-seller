@@ -7,14 +7,8 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /flag-icons.*\.css$/,
-      type: "asset/resource",
-    });
-    return config;
-  },
   experimental: {
+    esmExternals: false,
     outputFileTracingRoot: process.cwd(),
     outputFileTracingExcludes: {
       '*': [
@@ -32,38 +26,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'picsum.photos',
       },
-      {
-        protocol: 'https',
-        hostname: 'm.media-amazon.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'axm-vn.shop',
-      },
-      {
-        protocol: 'https',
-        hostname: 'img6.yeshen.cc',
-      },
-      {
-        protocol: 'https',
-        hostname: 'img.yeshen.cc',
-      },
-      {
-        protocol: 'https',
-        hostname: 'shop.shop-worldwide-amz.top',
-      },
     ],
-    unoptimized: true,
-  },
-  async rewrites() {
-    const domain =
-      process.env.NEXT_PUBLIC_API_URL || "amz.dunghaysai.site";
-    return [
-      {
-        source: "/api/:path*",
-        destination: `https://${domain}/:path*`,
-      },
-    ];
   },
 };
 

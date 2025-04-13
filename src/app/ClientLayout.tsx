@@ -1,23 +1,10 @@
 "use client"
-import LayoutProvider from '@/components/LayoutProvider';
 import WrapMessage from '@/components/WrapMessage';
 import { UserProvider } from '@/context/useUserContext';
-import { useGetMaintenanceMode } from '@/hooks/maintenance';
 import { ReactQueryClientProvider } from '@/provider/ReactQueryClientProvider';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { ConfigProvider, ThemeConfig } from 'antd';
-import { usePathname } from 'next/navigation';
-import MaintenanceGuard from '@/components/MaintenanceGuard';
-
-function PathChecker({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isDisplayMenu = pathname?.includes('/seller') && !pathname?.includes('seller-policy');
-
-  if (isDisplayMenu) {
-    return <LayoutProvider>{children}</LayoutProvider>;
-  }
-  return <>{children}</>;
-}
+import FedexLayout from './FedexLayout';
 
 export default function ClientLayout({
   children,
@@ -27,11 +14,10 @@ export default function ClientLayout({
   const theme: ThemeConfig = {
     token: {
       fontSize: 14,
-      colorPrimary: '#0F172A',
+      colorPrimary: '#232F3E',
       borderRadius: 12,
       controlHeight: 40,
       colorTextPlaceholder: '#636364',
-      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
     },
     components: {
       Steps: {
@@ -43,20 +29,16 @@ export default function ClientLayout({
       },
     },
   };
- 
+
   return (
     <ReactQueryClientProvider>
-      <html suppressHydrationWarning>
-        <body suppressHydrationWarning>
-          <AntdRegistry>
+      <html>
+        <body>
+          <AntdRegistry >
             <ConfigProvider theme={theme}>
               <UserProvider>
                 <WrapMessage>
-                  <MaintenanceGuard>
-                    <PathChecker>
-                      {children}
-                    </PathChecker>
-                  </MaintenanceGuard>
+                  <FedexLayout>{children}</FedexLayout>
                 </WrapMessage>
               </UserProvider>
             </ConfigProvider>

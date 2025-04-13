@@ -36,6 +36,10 @@
   color: white;
 }
 
+.ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .ant-menu-inline-collapsed .ant-badge {
   display: none;
 }

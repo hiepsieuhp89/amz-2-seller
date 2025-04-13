@@ -1,10 +1,10 @@
-import HomePage from '@/components/HomePage'
+import SellerOrders from '@/components/Fedex/SellerOrders'
 import React from 'react'
 
-function MainPage() {
+function HomePage() {
     return (
-        <HomePage />
+        <SellerOrders />
     )
 }
 
-export default MainPage
+export default HomePage

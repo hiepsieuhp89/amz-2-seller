@@ -1,147 +1,68 @@
 "use client"
-import React from "react"
+
+import type React from "react"
 import { useState, useEffect } from "react"
-import { Input, Button, Badge, Empty, Spin, message, Pagination, Row, Col, Drawer } from "antd"
-import { PlusOutlined, SearchOutlined, DeleteOutlined, ShoppingCartOutlined, LeftOutlined, RightOutlined, CheckOutlined } from "@ant-design/icons"
+import { Input, Button, Card, Badge, Empty, Spin, message } from "antd"
+import { PlusOutlined, SearchOutlined, DeleteOutlined } from "@ant-design/icons"
 import styles from "./storehouse.module.scss"
-import { useGetAllShopProducts } from "@/hooks/shop-products"
+import { useProducts } from "@/hooks/products"
 import { useAddShopProducts } from "@/hooks/shop-products"
+import { IProduct } from "@/interface/response/products"
 import Image from "next/image"
-import { useUser } from "@/context/useUserContext"
-import { DollarSign, Coins, Import } from "lucide-react"
-import { checkImageUrl } from "@/lib/utils"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { useSelectedProduct } from "@/stores/useSelectedProduct"
-import { formatNumber } from "@/utils"
-import useSidebar from "@/stores/useSidebar"
-import Icon from "@mdi/react"
-import { mdiChevronDoubleLeft, mdiChevronDoubleRight } from "@mdi/js"
 
 const Storehouse = () => {
-  const { user } = useUser()
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(50)
+  const { productsData, isLoading, refetch } = useProducts({
+    page: 1,
+  })
   const { mutate: addShopProducts, isPending: isAddingProducts } = useAddShopProducts()
-  const [allProducts, setAllProducts] = useState<any[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<any[]>([])
-  const [selectedProducts, setSelectedProducts] = useState<any[]>([])
+  console.log(productsData)
+  const [products, setProducts] = useState<IProduct[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<IProduct[]>(productsData?.data?.data || [])
+  const [selectedProducts, setSelectedProducts] = useState<IProduct[]>([])
   const [keyword, setKeyword] = useState("")
   const [minPrice, setMinPrice] = useState<number | undefined>()
   const [maxPrice, setMaxPrice] = useState<number | undefined>()
+  const [quantity, setQuantity] = useState<number | undefined>()
   const [totalSelectedProducts, setTotalSelectedProducts] = useState(0)
-  const [isClient, setIsClient] = useState(false)
-  const { setSelectedProduct } = useSelectedProduct()
-  const [drawerVisible, setDrawerVisible] = useState(false)
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const [isLastPage, setIsLastPage] = useState(false)
-  const [loadedPages, setLoadedPages] = useState<number[]>([])
-  const { isSidebarOpen } = useSidebar()
-  const { data: productsData, isLoading, refetch } = useGetAllShopProducts({
-    page: currentPage,
-    take: pageSize,
-    shopId: user?.id,
-    search: keyword
-  })
-  useEffect(() => {
-    setIsClient(true)
-    
-    // Cleanup function to free memory when component unmounts
-    return () => {
-      setAllProducts([]);
-      setFilteredProducts([]);
-      setSelectedProducts([]);
-      setLoadedPages([]);
-    };
-  }, [])
-
-  // Update allProducts when new data is loaded
-  useEffect(() => {
-    if (productsData?.data?.data && (productsData.data.data as any[]).length > 0) {
-      if (!loadedPages.includes(currentPage)) {
-        setLoadedPages(prev => [...prev, currentPage]);
-        
-        setAllProducts(prev => {
-          const newProductsData = productsData.data.data as any[];
-          const uniqueNewProducts = newProductsData.filter(
-            newProduct => !prev.some(existingProduct => existingProduct.id === newProduct.id)
-          );
-          
-          // Limit the number of products in memory to prevent performance issues
-          // This helps with navigation to other pages
-          const combinedProducts = [...prev, ...uniqueNewProducts];
-          const maxProductsToKeep = 500; // Adjust based on your app's performance
-          
-          return combinedProducts.length > maxProductsToKeep 
-            ? combinedProducts.slice(-maxProductsToKeep) 
-            : combinedProducts;
-        });
-      }
-    }
-    
-    // Check if this is the last page
-    if (productsData?.data?.meta) {
-      const { page, pageCount } = productsData.data.meta;
-      setIsLastPage(page >= pageCount);
-    }
-  }, [productsData, currentPage, loadedPages]);
-  
-  // Filter products when search criteria or all products change
-  useEffect(() => {
-    filterProducts();
-  }, [keyword, minPrice, maxPrice, allProducts]);
 
   const filterProducts = () => {
     if (keyword || minPrice !== undefined || maxPrice !== undefined) {
-      let filtered = [...allProducts];
+      let filtered = [...productsData?.data?.data || []]
 
       if (keyword) {
-        filtered = filtered.filter((product: any) =>
-          product.name.toLowerCase().includes(keyword.toLowerCase())
-        );
+        filtered = filtered.filter((product) => product.name.toLowerCase().includes(keyword.toLowerCase()))
       }
 
       if (minPrice !== undefined) {
-        filtered = filtered.filter((product: any) =>
-          Number(product.salePrice) >= minPrice
-        );
+        filtered = filtered.filter((product) => Number(product.salePrice) >= minPrice)
       }
 
       if (maxPrice !== undefined) {
-        filtered = filtered.filter((product: any) =>
-          Number(product.salePrice) <= maxPrice
-        );
+        filtered = filtered.filter((product) => Number(product.salePrice) <= maxPrice)
       }
 
-      // Limit the number of filtered products to prevent memory issues
-      const maxFilteredProducts = 300;
-      const limitedFiltered = filtered.length > maxFilteredProducts 
-        ? filtered.slice(0, maxFilteredProducts) 
-        : filtered;
-        
-      setFilteredProducts(limitedFiltered);
+      setFilteredProducts(filtered)
     } else {
-      // Limit the number of displayed products to prevent memory issues
-      const maxDisplayProducts = 300;
-      const displayProducts = allProducts.length > maxDisplayProducts 
-        ? allProducts.slice(0, maxDisplayProducts) 
-        : allProducts;
-        
-      setFilteredProducts(displayProducts);
+      setFilteredProducts(productsData?.data?.data || [])
     }
-  };
+  }
 
-  const addProduct = (product: any) => {
+  useEffect(() => {
+    if ((productsData?.data?.data as any)?.length > 0) {
+      filterProducts()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyword, minPrice, maxPrice, productsData?.data?.data])
+
+  const addProduct = (product: IProduct) => {
+    // Kiểm tra xem sản phẩm đã tồn tại trong danh sách đã chọn chưa
     const productExists = selectedProducts.some(item => item.id === product.id);
+
     if (productExists) {
       message.warning("Sản phẩm đã tồn tại trong danh sách");
       return;
     }
+
     setSelectedProducts([...selectedProducts, product])
     setTotalSelectedProducts(totalSelectedProducts + 1)
   }
@@ -151,6 +72,16 @@ const Storehouse = () => {
     newSelectedProducts.splice(index, 1)
     setSelectedProducts(newSelectedProducts)
     setTotalSelectedProducts(totalSelectedProducts - 1)
+  }
+
+  const selectRandomProducts = () => {
+    if (!quantity || quantity <= 0 || quantity > products.length) return
+
+    const shuffled = [...products].sort(() => 0.5 - Math.random())
+    const randomProducts = shuffled.slice(0, quantity)
+
+    setSelectedProducts(randomProducts)
+    setTotalSelectedProducts(randomProducts.length)
   }
 
   const addAllSelectedProducts = () => {
@@ -163,208 +94,35 @@ const Storehouse = () => {
           message.success("Thêm sản phẩm vào cửa hàng thành công")
           setSelectedProducts([])
           setTotalSelectedProducts(0)
-          setDrawerVisible(false)
         },
-        onError: (error: any) => {
-          message.error(`Lỗi khi thêm sản phẩm: ${error.response?.data?.message || 'Có lỗi xảy ra'}`)
+        onError: (error) => {
+          message.error(`Lỗi khi thêm sản phẩm: ${error.message}`)
         }
       }
     )
   }
 
-  const handleLoadMore = () => {
-    if (isLoading || isLastPage) return;
-    
-    const nextPage = currentPage + 1;
-    setCurrentPage(nextPage);
-    
-    // Explicitly trigger refetch after state update
-    setTimeout(() => {
-      refetch();
-    }, 0);
-  }
+  const checkImageUrl = (imageUrl: string): string => {
+    if (!imageUrl) return "https://picsum.photos/800/600";
 
-  const isProductSelected = (product: any) => {
-    return selectedProducts.some(item => item.id === product.id)
-  }
+    if (imageUrl.includes("example.com")) {
+      return "https://picsum.photos/800/600";
+    }
 
-  if (!isClient) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Spin size="small" tip="Đang tải..." />
-      </div>
-    )
-  }
-
-  const renderProductCart = () => (
-    <div className={styles.productCartContainer}>
-      {totalSelectedProducts > 0 && (
-        <div className={styles.cartHeader}>
-          <h3 className="text-sm font-medium">Tổng sản phẩm đã chọn</h3>
-          <Badge color="blue" count={totalSelectedProducts} className={styles.cartBadge} />
-        </div>
-      )}
-
-      <div className={styles.cartListContainer}>
-        <div>
-          {selectedProducts.length > 0 ? (
-            <ul className={styles.cartList}>
-              {selectedProducts.map((product, index) => (
-                <li key={`${product.id}-${index}`} className={styles.cartItem}>
-                  <div className={styles.cartItemContent}>
-                    <div className={styles.cartItemImageContainer}>
-                      <Image
-                        src={checkImageUrl(product.imageUrls?.[0])}
-                        alt={product.name}
-                        className={styles.cartItemImage}
-                        width={64}
-                        height={64}
-                        draggable={false}
-                        loading="lazy"
-                        placeholder="blur"
-                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx0fHRsdHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/2wBDAR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                      />
-                    </div>
-                    <div className={styles.cartItemDetails}>
-                      <div className={styles.cartItemName}>
-                        {product.name.length > 30 ? `${product.name.substring(0, 30)}...` : product.name}
-                      </div>
-                      <div className={styles.cartItemDescription} dangerouslySetInnerHTML={{ __html: product.description?.substring(0, 70) + "..." }}></div>
-                      <div className={styles.cartItemPricing}>
-                        <div className={styles.priceRow}>
-                          <span className={styles.priceLabel}>Giá bán:</span>
-                          <span className={styles.priceValue}>${formatNumber(Number(product.salePrice))}</span>
-                        </div>
-                        <div className={styles.priceRow}>
-                          <span className={styles.priceLabel}>Giá nhập:</span>
-                          <span className={styles.priceValue}>${formatNumber(Number(product.price))}</span>
-                        </div>
-                        <div className={styles.priceRow}>
-                          <span className={styles.priceLabel}>Lợi nhuận:</span>
-                          <span className={`${styles.priceValue} ${styles.profitValue}`}>${formatNumber(Number(product.profit))}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeProduct(index)}
-                      className={styles.removeButton}
-                      aria-label="Remove product"
-                    >
-                      <DeleteOutlined />
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className={styles.emptyCartContainer}>
-              <Empty
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description="Chưa có sản phẩm nào được chọn"
-              />
-            </div>
-          )}
-        </div>
-      </div>
-      
-      <div className={styles.cartFooter}>
-        <Button
-          type="primary"
-          block
-          size="large"
-          onClick={addAllSelectedProducts}
-          disabled={selectedProducts.length === 0 || isAddingProducts}
-          loading={isAddingProducts}
-          className={styles.addButton}
-        >
-          {isAddingProducts ? "Đang thêm sản phẩm..." : "Thêm sản phẩm"}
-        </Button>
-      </div>
-    </div>
-  )
-
-  const renderMiniCart = () => (
-    <div className={`${styles.miniCart} bg-white p-2 h-full rounded-l-lg border-l border-t border-b flex flex-col`}>
-      <button 
-        onClick={() => setIsCollapsed(false)}
-        className={styles.expandButton}
-      >
-        <Icon path={mdiChevronDoubleLeft} size={1} className="!text-gray-500"/>
-      </button>
-      
-      <div className={styles.miniCartList}>
-        {selectedProducts.length > 0 ? (
-          <div className={styles.miniCartItems}>
-            {selectedProducts.map((product, index) => (
-              <div key={`mini-${product.id}-${index}`} className={styles.miniCartItem}>
-                <div className={styles.miniCartItemContent}>
-                  <Image
-                    src={checkImageUrl(product.imageUrls?.[0])}
-                    alt={product.name}
-                    className={styles.miniCartItemImage}
-                    width={32}
-                    height={32}
-                    draggable={false}
-                    loading="lazy"
-                    placeholder="blur"
-                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx0fHRsdHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/2wBDAR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                  />
-                  <div className={styles.miniCartItemName}>{product.name}</div>
-                </div>
-                <div className={styles.miniCartItemPrice}>${formatNumber(Number(product.salePrice))}</div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className={styles.miniCartEmpty}>Không có sản phẩm</div>
-        )}
-      </div>
-      
-      {selectedProducts.length > 0 && (
-        <Button
-          type="primary"
-          block
-          size="small"
-          onClick={addAllSelectedProducts}
-          disabled={isAddingProducts}
-          loading={isAddingProducts}
-          className={styles.miniAddButton}
-        >
-          Thêm
-        </Button>
-      )}
-      <Badge count={totalSelectedProducts} className={styles.miniCartBadge} />
-    </div>
-  )
+    return imageUrl;
+  };
 
   return (
-    <div className="p-4 bg-[#E3E6E6]">
-      <Breadcrumb className="!mb-4">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/" className="text-main-dark-blue/80 hover:text-main-dark-blue uppercase">
-              Trang chủ
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator className="text-main-dark-blue/80" />
-          <BreadcrumbItem>
-            <BreadcrumbLink className="text-main-dark-blue/80 font-semibold uppercase">
-              Kho hàng
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      {user ? (
+    <section className={styles.storehouse}>
+      <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row gap-4">
-          <div className={`md:flex-1 flex flex-col h-full ${isCollapsed ? 'lg:pr-[70px]' : 'lg:pr-0'}`}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
+          <div className="md:flex-1 flex flex-col h-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
               <Input
                 placeholder="Tìm kiếm sản phẩm"
                 className="h-10"
                 value={keyword}
-                onChange={(e: any) => setKeyword(e.target.value)}
+                onChange={(e) => setKeyword(e.target.value)}
                 prefix={<SearchOutlined />}
               />
               <Input
@@ -372,180 +130,188 @@ const Storehouse = () => {
                 placeholder="Giá bắt đầu"
                 className="h-10"
                 value={minPrice}
-                onChange={(e: any) => setMinPrice(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) => setMinPrice(e.target.value ? Number(e.target.value) : undefined)}
               />
               <Input
                 type="number"
                 placeholder="Giá kết thúc"
                 className="h-10"
                 value={maxPrice}
-                onChange={(e: any) => setMaxPrice(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : undefined)}
               />
             </div>
 
-            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${!isSidebarOpen ? 'xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6' : 'xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5'} gap-4 h-[calc(100vh-210px)] flex-1 flex-grow overflow-y-auto`}>
-              {isLoading && currentPage === 1 ? (
-                <div className="col-span-full flex justify-center items-center h-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[calc(100vh-210px)] flex-1 flex-grow overflow-y-auto">
+              {isLoading ? (
+                <div className="col-span-2 flex justify-center items-center h-full">
                   <Spin size="small" />
                 </div>
               ) : filteredProducts.length > 0 ? (
-                filteredProducts.map((product: any) => (
-                  <div key={product.id} className={styles.productWrapper}>
-                    <div
-                      className={`${styles.card} !rounded-[8px] overflow-hidden bg-white h-full`}
-                      style={{ padding: "12px" }}
-                    >
-                      <Badge.Ribbon
-                        text={`Trong kho: ${product.stock || 0}`}
-                        color="green"
-                        className={styles.stockBadge}
-                        placement="start"
-                      >
+                filteredProducts.map((product) => (
+                  <div key={product.id} className={styles.productCard}>
+                    <Card
+                      className={`${styles.card} !rounded-[8px] overflow-hidden`}
+                      bodyStyle={{
+                        padding: "12px",
+                        display: 'flex',
+                        flexDirection: 'column',
+                        height: '100%'
+                      }}
+                      cover={
                         <div className={styles.imageContainer}>
-                          <Image
-                            src={checkImageUrl(product.imageUrls?.[0])}
-                            alt={product.name || "Product Image"}
-                            className={`${styles.productImage} object-cover`}
-                            width={500}
-                            height={500}
-                            draggable={false}
-                            quality={100}
-                            loading="lazy"
-                            placeholder="blur"
-                            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx0fHRsdHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/2wBDAR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR3/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                          />
+                          <Badge.Ribbon
+                            text={`Trong kho: ${product.stock}`}
+                            color="green"
+                            className={styles.stockBadge}
+                            placement="start"
+                          >
+                            <Image
+                              src={checkImageUrl(product.image || "")}
+                              alt={product.name}
+                              className={`${styles.productImage}`}
+                              width={140}
+                              height={140}
+                              draggable={false}
+                            />
+                          </Badge.Ribbon>
                         </div>
-                      </Badge.Ribbon>
-                      <div className="mt-2">
-                        <h3 className="text-sm font-medium mb-2 line-clamp-2">
-                          {product.name}
-                        </h3>
-                        <div className="space-y-1">
-                          <div className="flex justify-between items-center">
-                            <span className="flex items-center gap-1 text-xs text-gray-600">
-                              <DollarSign className="w-3.5 h-3.5 text-green-500" />
-                              Giá bán:
-                            </span>
-                            <span className="text-green-600 font-semibold text-sm">${formatNumber(Number(product.salePrice))}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="flex items-center gap-1 text-xs text-gray-600">
-                              <Import className="w-3.5 h-3.5 text-amber-500" />
-                              Giá nhập:
-                            </span>
-                            <span className="text-amber-600 font-semibold text-sm">${formatNumber(Number(product.price))}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="flex items-center gap-1 text-xs text-gray-600">
-                              <Coins className="w-3.5 h-3.5 text-red-500" />
-                              Lợi nhuận:
-                            </span>
-                            <span className="text-red-600 font-bold text-sm">${formatNumber(Number(product.profit))}</span>
-                          </div>
-                        </div>
+                      }
+                    >
+                      <div className={styles.productName}>
+                        Tên sản phẩm:{" "}
+                        {product.name}
                       </div>
-                      <div 
-                        className={`${styles.hoverOverlay} ${isProductSelected(product) ? styles.selectedOverlay : ''}`} 
+                      <div className={styles.productDescription}>
+                        <strong>Mô tả:{" "}</strong>
+                        {product.description}
+                      </div>
+                      <div className={styles.priceInfo}>
+                        <span>Giá bán:</span>
+                        <span className="!text-green-500">{Number(product.salePrice).toFixed(2)}</span>
+                      </div>
+                      <div className={styles.priceInfo}>
+                        <span>Giá nhập:</span>
+                        <span className="!text-amber-500">{Number(product.price).toFixed(2)}</span>
+                      </div>
+                      <div className={styles.priceInfo}>
+                        <span>Lợi nhuận:</span>
+                        <span className="!text-red-500 font-bold">${(Number(product.salePrice) - Number(product.price)).toFixed(2)}</span>
+                      </div>
+                      <div
+                        className={styles.addButton}
                         onClick={() => addProduct(product)}
                       >
-                        {isProductSelected(product) ? (
-                          <CheckOutlined className={styles.selectedIcon} />
-                        ) : (
-                          <PlusOutlined className={styles.plusIcon} />
-                        )}
+                        <div className={styles.overlay}></div>
+                        <PlusOutlined className={styles.plusIcon} />
                       </div>
-                      
-                      {isProductSelected(product) && (
-                        <div className={styles.selectedBadge}>
-                          <CheckOutlined />
-                        </div>
-                      )}
-                    </div>
+                    </Card>
+
                   </div>
                 ))
               ) : (
-                <div className="col-span-full">
-                  <Empty description="Không tìm thấy sản phẩm" />
-                </div>
+                <Empty description="Không tìm thấy sản phẩm" />
               )}
             </div>
 
-            {filteredProducts.length > 0 && !isLastPage && (
-              <div className="w-full mt-6">
+            {filteredProducts.length > 12 && (
+              <div className="text-center mt-4">
                 <Button
                   type="primary"
-                  onClick={handleLoadMore}
-                  loading={isLoading}
-                  disabled={isLastPage}
-                  className="w-full !rounded-sm text-center bg-white hover:bg-blue-50 !border-gray-500 !text-gray-500 !font-semibold"
                   ghost
                 >
-                  Xem thêm
+                  Tải thêm
                 </Button>
               </div>
             )}
-            
-            <div className="md:hidden fixed bottom-4 right-4 z-10">
-              <Button
-                type="primary"
-                shape="circle"
-                size="large"
-                icon={<ShoppingCartOutlined />}
-                onClick={() => setDrawerVisible(true)}
-                className="flex items-center justify-center !h-14 !w-14 shadow-lg"
-              >
-                {totalSelectedProducts > 0 && (
-                  <Badge 
-                    count={totalSelectedProducts} 
-                    style={{ position: 'absolute', top: 0, right: 0 }}
-                  />
-                )}
-              </Button>
-            </div>
           </div>
 
-          <div className={`hidden lg:block ${styles.sidebarContainer} ${isCollapsed ? styles.collapsed : styles.expanded}`}>
-            {isCollapsed ? (
-              renderMiniCart()
-            ) : (
-              <div className="relative">
-                <div className={styles.expandedSidebar}>
-                  <button 
-                    onClick={() => setIsCollapsed(true)}
-                    className="absolute -left-3 top-1/2 transform -translate-y-1/2 bg-white p-1 rounded-full border shadow-sm z-10 hover:bg-gray-100 !flex-shrink-0 !h-8 !w-8 "
-                  >
-                    <Icon path={mdiChevronDoubleRight} size={1} className="!text-gray-500"/>
-                  </button>
-                  {renderProductCart()}
-                </div>
+          <div className="md:w-[400px]">
+            <div className="flex gap-3 mb-3">
+              <Input
+                type="number"
+                placeholder="Số lượng"
+                className="h-10"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value ? Number(e.target.value) : undefined)}
+                maxLength={2}
+                onKeyDown={(e) => e.key === "Enter" && selectRandomProducts()}
+              />
+              <Button type="primary" className="h-10 flex-1 !rounded-[4px]" onClick={selectRandomProducts}>
+                Chọn sản phẩm ngẫu nhiên
+              </Button>
+            </div>
+
+            {totalSelectedProducts > 0 && (
+              <div className="text-center my-3">
+                <h5>
+                  Tổng sản phẩm đã chọn: <strong>{totalSelectedProducts}</strong>
+                </h5>
               </div>
             )}
+
+            <Card
+              className="mb-3 !rounded-[8px] overflow-hidden shadow-md"
+              headStyle={{ backgroundColor: '#f7f7f7', borderBottom: '1px solid #eee' }}
+            >
+              <div className={styles.selectedProducts}>
+                {selectedProducts.length > 0 ? (
+                  <ul className="list-group list-group-flush">
+                    {selectedProducts.map((product, index) => (
+                      <li key={`${product.id}-${index}`} className={`${styles.selectedItem} hover:bg-gray-50 p-3 border-b`}>
+                        <div className="flex items-center">
+                          <Image
+                            src={checkImageUrl(product.image || "")}
+                            alt={product.name}
+                            className="w-16 h-16 object-cover rounded-[4px] mr-3"
+                            width={64}
+                            height={64}
+                            draggable={false}
+                          />
+                          <div className="flex-1">
+                            <div className="text-sm font-medium mb-1">{product.name}</div>
+                            <div className="text-xs text-gray-500 mb-1 line-clamp-2">{product.description}</div>
+                            <div className="flex flex-wrap gap-x-3 text-xs">
+                              <span className="text-green-600 font-medium">Giá bán: ${Number(product.salePrice).toFixed(2)}</span>
+                              <span className="text-amber-600 font-medium">Giá nhập: ${Number(product.price).toFixed(2)}</span>
+                              <span className="text-red-600 font-medium">Lợi nhuận: ${(Number(product.salePrice) - Number(product.price)).toFixed(2)}</span>
+                            </div>
+                          </div>
+                          <Button
+                            type="text"
+                            size="small"
+                            danger
+                            shape="circle"
+                            icon={<DeleteOutlined />}
+                            onClick={() => removeProduct(index)}
+                            className="flex items-center justify-center !bg-red-100"
+                          />
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <Empty description="Chưa có sản phẩm nào được chọn" />
+                )}
+              </div>
+            </Card>
+
+            <Button
+              className="!rounded-[4px] !h-11 mt-4"
+              type="primary"
+              block
+              size="large"
+              onClick={addAllSelectedProducts}
+              disabled={selectedProducts.length === 0 || isAddingProducts}
+              loading={isAddingProducts}
+            >
+              {isAddingProducts ? "Đang thêm sản phẩm..." : "Thêm sản phẩm"}
+            </Button>
           </div>
-          
-          <div className="hidden md:block lg:hidden md:w-[400px]">
-            {renderProductCart()}
-          </div>
-          
-          <Drawer
-            title="Giỏ hàng đã chọn"
-            placement="right"
-            onClose={() => setDrawerVisible(false)}
-            open={drawerVisible}
-            width={320}
-          >
-            {renderProductCart()}
-          </Drawer>
         </div>
-      ) : (
-        <div className="flex justify-center items-center h-screen">
-          <Spin size="small" tip="Đang tải dữ liệu người dùng..." />
-        </div>
-      )}
-    </div>
+      </div>
+    </section>
   )
 }
 
 export default Storehouse
-
-
 

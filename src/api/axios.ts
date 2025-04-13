@@ -48,7 +48,7 @@ instance.interceptors.response.use(
   async (err) => {
 
     if (err.response) {
-      if (err.response.status === 401 && !window.location.pathname.includes("sign-in") && !window.location.pathname.includes("sign-up")) {
+      if (err.response.status === 403 || err.response.status === 401) {
         logout();
         return
       }

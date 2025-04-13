@@ -1,407 +1,586 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { Table, Badge, Button, Tooltip, Input, Select, Card, Row, Col, Typography, Modal, Form, Checkbox } from "antd"
-import type { ColumnsType } from "antd/es/table"
-import Icon from '@mdi/react';
-import { mdiCashClock } from '@mdi/js';
-import { Option } from "antd/lib/mentions"
+import { useGetMyOrders, usePayOrders } from "@/hooks/shop-products";
+import { useWindowSize } from "@/hooks/useWindowSize";
+import { IOrder } from "@/interface/response/shop-products";
+import {
+  Badge,
+  Button,
+  Card,
+  ConfigProvider,
+  Empty,
+  Input,
+  Modal,
+  Select,
+  Spin,
+  Table,
+  message
+} from "antd";
+import type { ColumnsType } from "antd/es/table";
+import type React from "react";
+import type { Key } from 'react';
+import { useMemo, useState } from "react";
+
+const { Option } = Select;
+
 interface OrderData {
-    key: string
-    time: string
-    orderCode: string
-    amount: string
-    profit: string
-    deliveryStatus: string
-    isDelayed: boolean
-    delayTime: string
-    paymentStatus: string
-    
+  key: string;
+  time: string;
+  orderCode: string;
+  totalAmount: string;
+  status: string;
+  delayStatus: string;
+  email: string;
+  address: string;
+  items: {
+    id: string;
+    shopProduct: {
+      profit: string;
+      // Add other shopProduct fields as needed
+    };
+    quantity: number;
+    price: string;
+    // Add other item fields as needed
+  }[];
+  totalProfit: string;
+  paymentStatus: string;
+  userId: string;
+  quantity: number;
+  isDelayed?: boolean;
+  delayTime?: string;
+  user?: {
+    fullName: string;
+    // Add other user fields as needed
+  };
 }
 
 interface OrdersTableProps {
-    data: OrderData[]
-    onFilterChange: (value: string) => void
-    onSearch: (value: string) => void
+  data?: OrderData[];
+  onFilterChange?: (value: string) => void;
+  onSearch?: (value: string) => void;
 }
 
-const OrdersTable: React.FC<OrdersTableProps> = ({ data, onFilterChange, onSearch }) => {
-    const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
-    const [isModalVisible, setIsModalVisible] = useState(false)
-    const [isBulkModalVisible, setIsBulkModalVisible] = useState(false)
-    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
+const generateOrderCode = (orderTime: string) => {
+  // Convert order time to timestamp
+  const timestamp = new Date(orderTime).getTime()
+  // Convert timestamp to base64 string
+  const base64String = btoa(timestamp.toString())
+  // Take first 8 characters and convert to uppercase
+  return base64String.substring(0, 16).toUpperCase()
+}
 
-    const toggleExpand = (key: string) => {
-        if (expandedRowKeys.includes(key)) {
-            setExpandedRowKeys(expandedRowKeys.filter((k) => k !== key))
-        } else {
-            setExpandedRowKeys([...expandedRowKeys, key])
-        }
+const OrdersTable: React.FC<OrdersTableProps> = ({
+  data,
+  onFilterChange,
+  onSearch,
+}) => {
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [statusFilter, setStatusFilter] = useState<string>("PENDING");
+  const { width } = useWindowSize();
+  const isMobile = width ? width < 768 : false;
+  const isTablet = width ? width >= 768 && width < 1024 : false;
+  
+  const currentDateISO = useMemo(() => new Date().toISOString(), []);
+  const { data: ordersData, isLoading } = useGetMyOrders({
+    order: "DESC",
+    page: currentPage,
+    take: pageSize,
+    status: statusFilter,
+    orderTimeLte: currentDateISO
+  });
+  const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
+  const [withdrawPassword, setWithdrawPassword] = useState('');
+
+  const payOrdersMutation = usePayOrders();
+
+  const handleFilterChange = (value: string) => {
+    setStatusFilter(value);
+    console.log("Selected filter:", value);
+    setCurrentPage(1);
+    if (onFilterChange) {
+      onFilterChange(value);
     }
+  };
 
-    const showModal = () => {
-        setIsModalVisible(true)
+  const handleSearch = (value: string) => {
+    // Implement your search logic here
+    console.log("Search value:", value);
+    // You might want to update the API call with the search term
+  };
+
+  const handlePayOrders = async () => {
+    try {
+      await payOrdersMutation.mutateAsync({
+        orderIds: selectedRowKeys,
+        withdrawPassword,
+      });
+      message.success('Thanh toán đơn hàng thành công!');
+      setIsPaymentModalVisible(false);
+      setSelectedRowKeys([]);
+      setWithdrawPassword('');
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        const errorMessage = error.response.data.message || 'Thanh toán thất bại. Vui lòng thử lại!';
+        message.error(errorMessage);
+      } else {
+        message.error('Thanh toán thất bại. Vui lòng thử lại!');
+      }
+      console.error('Payment error:', error);
     }
+  };
 
-    const handleCancel = () => {
-        setIsModalVisible(false)
+  const handlePayButtonClick = (isAll: boolean) => {
+    if (isAll) {
+      // Select all orders
+      const allOrderKeys = ordersData?.data.data?.map((order: IOrder) => order.id) || [];
+      setSelectedRowKeys(allOrderKeys);
+    } else if (selectedRowKeys.length === 0) {
+      message.warning('Vui lòng chọn ít nhất một đơn hàng để thanh toán!');
+      return;
     }
+    setIsPaymentModalVisible(true);
+  };
 
-    const showBulkModal = () => {
-        setIsBulkModalVisible(true)
-    }
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
 
-    const handleBulkCancel = () => {
-        setIsBulkModalVisible(false)
-    }
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+    selections: [
+      Table.SELECTION_ALL,
+      Table.SELECTION_NONE,
+    ],
+  };
 
-    const onSelectAllChange = (e: any) => {
-        if (e.target.checked) {
-            setSelectedRowKeys(data.map(item => item.key))
-        } else {
-            setSelectedRowKeys([])
-        }
-    }
+  const handlePaginationChange = (page: number, pageSize?: number) => {
+    setCurrentPage(page);
+    if (pageSize) setPageSize(pageSize);
+  };
 
-    const onSelectChange = (key: string, checked: boolean) => {
-        if (checked) {
-            setSelectedRowKeys([...selectedRowKeys, key])
-        } else {
-            setSelectedRowKeys(selectedRowKeys.filter(k => k !== key))
-        }
-    }
-
-    const columns: ColumnsType<OrderData> = [
-        {
-            title: (
-                <Checkbox
-                    onChange={onSelectAllChange}
-                    checked={selectedRowKeys.length === data.length}
-                />
-            ),
-            key: 'selection',
-            width: '5%',
-            render: (_, record) => (
-                <Checkbox
-                    checked={selectedRowKeys.includes(record.key)}
-                    onChange={(e: any) => onSelectChange(record.key, e.target.checked)}
-                />
-            ),
-        },
-        {
-            title: "Thời gian",
-            dataIndex: "time",
-            key: "time",
-            width: '20%',
-            sorter: (a, b) => a.time.localeCompare(b.time),
-        },
-        {
-            title: "Mã đặt hàng",
-            dataIndex: "orderCode",
-            key: "orderCode",
-            width: '20%',
-            sorter: (a, b) => a.orderCode.localeCompare(b.orderCode),
-        },
-        {
-            title: "Số tiền",
-            dataIndex: "amount",
-            key: "amount",
-            width: '10%',
-            sorter: (a, b) => parseFloat(a.amount.replace('$', '')) - parseFloat(b.amount.replace('$', '')),
-        },
-        {
-            title: "Lợi nhuận",
-            dataIndex: "profit",
-            key: "profit",
-            width: '10%',
-            render: (text) => <span className="text-red-500">{text}</span>,
-            sorter: (a, b) => parseFloat(a.profit.replace('$', '')) - parseFloat(b.profit.replace('$', '')),
-        },
-        {
-            title: "Tình trạng giao hàng",
-            dataIndex: "deliveryStatus",
-            key: "deliveryStatus",
-            width: '30%',
-            render: (_, record) => (
-                <div className="flex flex-col gap-2">
-                    <Badge
-                        className="mb-2 self-start"
-                        count={
-                            <div className="animate-gradient bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 text-gray-600 px-2 py-1 rounded font-medium text-sm">
-                                🕙 Đang chờ xử lý
-                            </div>
-                        }
-                    />
-                    {record.isDelayed && (
-                        <Badge
-                            className="self-start"
-                            count={
-                                <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded font-medium text-sm">
-                                    ⚠ Đơn hàng chậm: <strong className="mx-1">{record.delayTime}</strong>
-                                </div>
-                            }
-                        />
-                    )}
-                </div>
-            ),
-            sorter: (a, b) => a.deliveryStatus.localeCompare(b.deliveryStatus),
-        },
-        {
-            title: "Tùy chọn",
-            key: "action",
-            width: '10%',
-            render: () => (
-                <div className="flex items-center justify-center">
-                    <Button
-                        size="middle"
-                        type="primary"
-                        shape="circle"
-                        icon={<Icon path={mdiCashClock} size={0.8} />}
-                        className="text-blue-500 flex items-center justify-center"
-                        onClick={showModal} />
-                </div>
-            ),
-        },
-    ];
-
+  if (isLoading) {
     return (
-        <div className="bg-white rounded-[4px] border">
-            <div className="px-6 py-3 flex justify-between items-center">
-                <div className="font-medium text-base">Đơn hàng</div>
-                <div className="flex gap-2">
-                    <Select
-                        placeholder="Lọc theo trạng thái phân phối"
-                        style={{ width: 250, borderRadius: 0 }}
-                        onChange={onFilterChange}
-                    >
-                        <Option value="">Lọc theo trạng thái phân phối</Option>
-                        <Option value="pending">Đang chờ xử lý</Option>
-                        <Option value="confirmed">Đã xác nhận</Option>
-                        <Option value="on_the_way">Đang trên đường đi</Option>
-                        <Option value="delivered">Đã giao hàng</Option>
-                        <Option value="cancelled">Đã huỷ</Option>
-                    </Select>
-                    <Input
-                        className="placeholder-gray-400"
-                        placeholder="Nhập mã đơn hàng"
-                        style={{ width: 250 }}
-                        onPressEnter={(e: any) => onSearch((e.target as HTMLInputElement).value)}
-                    />
-                    <Button
-                        className="!rounded-[4px]"
-                        type="primary"
-                        htmlType="submit"
-                        onClick={showBulkModal}
-                    >
-                        Thanh toán tất cả
-                    </Button>
-                    <Button
-                        className="!rounded-[4px]"
-                        type="primary"
-                        htmlType="submit"
-                        onClick={showBulkModal}
-                    >
-                        Thanh toán những đơn đã chọn
-                    </Button>
+      <div className="flex justify-center items-center h-[50vh]">
+        <Spin size="small" />
+      </div>
+    );
+  }
+
+  if (
+    !ordersData ||
+    !ordersData.data ||
+    !ordersData.data.data ||
+    ordersData.data.data.length === 0
+  ) {
+    return (
+      <Empty
+        description="Không có đơn hàng nào"
+        className="flex justify-center items-center h-96"
+      />
+    );
+  }
+
+  const toggleExpand = (key: string) => {
+    if (expandedRowKeys.includes(key)) {
+      setExpandedRowKeys(expandedRowKeys.filter((k) => k !== key));
+    } else {
+      setExpandedRowKeys([...expandedRowKeys, key]);
+    }
+  };
+
+  // Define responsive columns
+  const getColumns = (): ColumnsType<any> => {
+    const baseColumns: ColumnsType<any> = [
+      {
+        title: "Thời gian",
+        dataIndex: "orderTime",
+        key: "orderTime",  
+        width: isMobile ? "30%" : "15%",
+        render: (text) => (
+          <span className="whitespace-nowrap text-xs sm:text-sm">
+            {new Date(text).toLocaleDateString('vi-VN', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: isMobile ? undefined : '2-digit',
+              minute: isMobile ? undefined : '2-digit'
+            })}
+          </span>
+        ),
+      },
+      {
+        title: "Mã đặt hàng",
+        dataIndex: "orderTime",
+        key: "orderTime",
+        width: isMobile ? "30%" : "15%",
+        render: (text,) => (
+          <span className="text-xs sm:text-sm font-mono truncate block max-w-[120px] sm:max-w-full">
+            {generateOrderCode(text)}
+          </span>
+        ),
+      },
+      {
+        title: "Số tiền",
+        dataIndex: "totalAmount",
+        key: "totalAmount",
+        width: isMobile ? "20%" : "10%",
+        render: (text) => (
+          <span className="whitespace-nowrap text-xs sm:text-sm">
+            ${text}
+          </span>
+        ),
+      },
+      {
+        title: "Lợi nhuận",
+        dataIndex: "totalProfit",
+        key: "totalProfit",
+        width: isMobile ? "20%" : "10%",
+        render: (text, record) => {
+          return (
+            <span className="text-green-500 whitespace-nowrap text-xs sm:text-sm">${text.toFixed(2)}</span>
+          );
+        },
+      },
+      {
+        title: "Tình trạng giao hàng",
+        dataIndex: "status",
+        key: "status",
+        width: isMobile ? "100%" : "15%",
+        responsive: ['sm'],
+        render: (status) => {
+          switch (status) {
+            case 'PENDING':
+              return (
+                <Badge
+                  className="self-start"
+                  count={
+                    <div className="animate-gradient bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 text-gray-600 px-2 py-1 rounded font-medium text-sm">
+                      🕙 Đang chờ xử lý
+                    </div>
+                  }
+                />
+              );
+            case 'CONFIRMED':
+              return (
+                <Badge
+                  className="self-start"
+                  count={
+                    <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded font-medium text-sm">
+                      ✓ Đã xác nhận
+                    </div>
+                  }
+                />
+              );
+            case 'SHIPPING':
+              return (
+                <Badge
+                  className="self-start"
+                  count={
+                    <div className="bg-purple-100 text-purple-600 px-2 py-1 rounded font-medium text-sm">
+                      🚚 Đang trên đường đi
+                    </div>
+                  }
+                />
+              );
+            case 'DELIVERED':
+              return (
+                <Badge
+                  className="self-start"
+                  count={
+                    <div className="bg-green-100 text-green-600 px-2 py-1 rounded font-medium text-sm">
+                      ✓ Đã giao hàng
+                    </div>
+                  }
+                />
+              );
+            case 'CANCELED':
+              return (
+                <Badge
+                  className="self-start"
+                  count={
+                    <div className="bg-red-100 text-red-600 px-2 py-1 rounded font-medium text-sm">
+                      ✕ Đã hủy
+                    </div>
+                  }
+                />
+              );
+            case 'REJECTED':
+              return (
+                <Badge
+                  className="self-start"
+                  count={
+                    <div className="bg-red-100 text-red-600 px-2 py-1 rounded font-medium text-sm">
+                      ✕ Đã từ chối
+                    </div>
+                  }
+                />
+              );
+            default:
+              return (
+                <Badge
+                  className="self-start"
+                  count={
+                    <div className="bg-gray-100 text-gray-600 px-2 py-1 rounded font-medium text-sm">
+                      Không xác định
+                    </div>
+                  }
+                />
+              );
+          }
+        },
+      },
+      {
+        title: "Trạng thái thanh toán",
+        dataIndex: "paymentStatus",
+        key: "paymentStatus",
+        width: isMobile ? "100%" : "15%",
+        responsive: ['md'],
+        render: (paymentStatus) => {
+          if (paymentStatus === 'PAID') {
+            return (
+              <Badge
+                className="self-start"
+                count={
+                  <div className="bg-green-100 text-green-600 px-2 py-1 rounded font-medium text-sm">
+                    ✓ Đã thanh toán
+                  </div>
+                }
+              />
+            );
+          }
+          return (
+            <Badge
+              className="self-start"
+              count={
+                <div className="bg-yellow-100 text-yellow-600 px-2 py-1 rounded font-medium text-sm">
+                  ⚠️ Chưa thanh toán
                 </div>
-            </div>
-
-            <Table
-                columns={columns}
-                dataSource={Array.isArray(data) ? data : []}
-                pagination={false}
-                rowKey="key"
-                className="border-t"
-                style={{
-                    border: '1px solid #f0f0f0',
-                    borderRadius: '4px'
-                }}
-                expandable={{
-                    expandedRowKeys,
-                    onExpand: (expanded: any, record: any) => {
-                        toggleExpand(record.key)
-                    },
-                    expandedRowRender: (record: any) => (
-                        <div className="p-4 bg-gray-50" style={{ borderTop: '1px solid #f0f0f0' }}>
-                            <p>
-                                <strong>Khách hàng:</strong> Ryan Nash
-                            </p>
-                            <p>
-                                <strong>Số sản phẩm:</strong> 2
-                            </p>
-                            <p>
-                                <strong>Tình trạng thanh toán:</strong>{" "}
-                                <span className="bg-green-100 text-green-600 px-2 py-1 rounded">Đã thanh toán</span>
-                            </p>
-                        </div>
-                    ),
-                }}
+              }
             />
+          );
+        },
+      },
+      {
+        title: "Khách hàng",
+        dataIndex: "user",
+        key: "user",
+        width: "15%",
+        responsive: ['lg'],
+        render: (user) => (
+          <div className="flex flex-col">
+            <span className="font-medium text-sm">{user?.fullName || "—"}</span>
+            {/* <span className="text-xs text-gray-500">{user?.email || "—"}</span> */}
+          </div>
+        ),
+      },
+    ];
+    
+    // For mobile, create a special expandable row for more details
+    if (isMobile) {
+      // For smaller screens, we'll add an expandable row to show the delivery status
+      baseColumns.push({
+        title: '',
+        key: 'expand',
+        width: '10%',
+        render: (_, record) => (
+          <Button 
+            type="text" 
+            size="small"
+            onClick={() => toggleExpand(record.id)}
+            className="text-blue-500"
+          >
+            {expandedRowKeys.includes(record.id) ? 'Thu gọn' : 'Chi tiết'}
+          </Button>
+        ),
+      });
+    }
+    
+    return baseColumns;
+  };
 
-            <Modal
-                title="Thanh toán đơn hàng"
-                visible={isModalVisible}
-                onCancel={handleCancel}
-                footer={null}
-                className="!rounded-[4px]"
-            >
-                <Form
-                    action="https://logistic.shop-worldwide-amz.top/seller/order/pay_bulk_orders"
-                    method="POST"
-                >
-                    <div className="modal-body">
-                        <Table
-                            className="border mt-4"
-                            style={{
-                                border: '1px solid #f0f0f0',
-                                borderRadius: '4px'
-                            }}
-                            dataSource={[
-                                {
-                                    key: '1',
-                                    label: 'Mã đặt hàng',
-                                    value: '20250318-06264665'
-                                },
-                                {
-                                    key: '2',
-                                    label: 'Số Tiền Cần Thanh Toán',
-                                    value: '$11.00'
-                                }
-                            ]}
-                            pagination={false}
-                            showHeader={false}
-                            columns={[
-                                {
-                                    dataIndex: 'label',
-                                    key: 'label',
-                                    className: 'border-r'
-                                },
-                                {
-                                    dataIndex: 'value',
-                                    key: 'value',
-                                }
-                            ]}
-                        />
+  // Handle expanded rows change in a way that's compatible with Table's expandable API
+  const handleExpandedRowsChange = (newExpandedRows: readonly Key[]) => {
+    setExpandedRowKeys(newExpandedRows.map(key => key.toString()));
+  };
 
-                        <Table
-                            className="border mt-4"
-                            dataSource={[
-                                {
-                                    key: '1',
-                                    label: 'Số dư hiện tại',
-                                    value: '$0.00'
-                                }
-                            ]}
-                            pagination={false}
-                            showHeader={false}
-                            columns={[
-                                {
-                                    dataIndex: 'label',
-                                    key: 'label',
-                                    className: 'border-r'
-                                },
-                                {
-                                    dataIndex: 'value',
-                                    key: 'value',
-                                    render: (text: any) => <span className="text-danger">{text}</span>
-                                }
-                            ]}
-                        />
-
-                        <div className="form-group text-right mt-4">
-                            <Button
-                                className="!rounded-[4px]"
-                                type="primary"
-                                htmlType="submit"
-                            >
-                                Thanh toán
-                            </Button>
-                        </div>
-                    </div>
-                </Form>
-            </Modal>
-
-            <Modal
-                title="Thanh toán nhiều đơn hàng"
-                visible={isBulkModalVisible}
-                onCancel={handleBulkCancel}
-                footer={null}
-                className="!rounded-[4px]"
-            >
-                <Form
-                    action="https://logistic.shop-worldwide-amz.top/seller/order/pay_bulk_orders"
-                    method="POST"
-                >
-                    <div className="modal-body">
-                        <Table
-                            className="border mt-4"
-                            style={{
-                                border: '1px solid #f0f0f0',
-                                borderRadius: '4px'
-                            }}
-                            dataSource={[
-                                {
-                                    key: '1',
-                                    label: 'Số Tiền Cần Thanh Toán',
-                                    value: '$10.16'
-                                }
-                            ]}
-                            pagination={false}
-                            showHeader={false}
-                            columns={[
-                                {
-                                    dataIndex: 'label',
-                                    key: 'label',
-                                    className: 'border-r'
-                                },
-                                {
-                                    dataIndex: 'value',
-                                    key: 'value',
-                                }
-                            ]}
-                        />
-
-                        <Table
-                            className="border mt-4"
-                            dataSource={[
-                                {
-                                    key: '1',
-                                    label: 'Số dư hiện tại',
-                                    value: '$0.00'
-                                }
-                            ]}
-                            pagination={false}
-                            showHeader={false}
-                            columns={[
-                                {
-                                    dataIndex: 'label',
-                                    key: 'label',
-                                    className: 'border-r'
-                                },
-                                {
-                                    dataIndex: 'value',
-                                    key: 'value',
-                                    render: (text: any) => <span className="text-danger">{text}</span>
-                                }
-                            ]}
-                        />
-
-                        <div className="form-group text-right mt-4">
-                            <Button
-                                className="!rounded-[4px]"
-                                type="primary"
-                                htmlType="submit"
-                            >
-                                Thanh toán
-                            </Button>
-                        </div>
-                    </div>
-                </Form>
-            </Modal>
+  // Setup expandable configuration for responsive design
+  const expandableConfig = isMobile ? {
+    expandedRowKeys,
+    expandIcon: () => null, // Hide default expand icon
+    onExpandedRowsChange: handleExpandedRowsChange,
+    expandedRowRender: (record: any) => {
+      return (
+        <div className="py-2 px-1 bg-gray-50 rounded">
+          <div className="grid grid-cols-1 gap-y-3">
+            <div>
+              <div className="text-xs text-gray-500 mb-1">Tình trạng giao hàng:</div>
+              {(() => {
+                switch (record.status) {
+                  case 'PENDING':
+                    return (
+                      <div className="animate-gradient bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 text-gray-600 px-2 py-1 rounded text-xs inline-block">
+                        🕙 Đang chờ xử lý
+                      </div>
+                    );
+                  case 'CONFIRMED':
+                    return (
+                      <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs inline-block">
+                        ✓ Đã xác nhận
+                      </div>
+                    );
+                  case 'SHIPPING':
+                    return (
+                      <div className="bg-purple-100 text-purple-600 px-2 py-1 rounded text-xs inline-block">
+                        🚚 Đang trên đường đi
+                      </div>
+                    );
+                  case 'DELIVERED':
+                    return (
+                      <div className="bg-green-100 text-green-600 px-2 py-1 rounded text-xs inline-block">
+                        ✓ Đã giao hàng
+                      </div>
+                    );
+                  case 'CANCELED':
+                    return (
+                      <div className="bg-red-100 text-red-600 px-2 py-1 rounded text-xs inline-block">
+                        ✕ Đã hủy
+                      </div>
+                    );
+                  case 'REJECTED':
+                    return (
+                      <div className="bg-red-100 text-red-600 px-2 py-1 rounded text-xs inline-block">
+                        ✕ Đã từ chối
+                      </div>
+                    );
+                  default:
+                    return (
+                      <div className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs inline-block">
+                        Không xác định
+                      </div>
+                    );
+                }
+              })()}
+            </div>
+            <div>
+              <div className="text-xs text-gray-500 mb-1">Trạng thái thanh toán:</div>
+              {record.paymentStatus === 'PAID' ? (
+                <div className="bg-green-100 text-green-600 px-2 py-1 rounded text-xs inline-block">
+                  ✓ Đã thanh toán
+                </div>
+              ) : (
+                <div className="bg-yellow-100 text-yellow-600 px-2 py-1 rounded text-xs inline-block">
+                  ⚠️ Chưa thanh toán
+                </div>
+              )}
+            </div>
+            {record.user && (
+              <div>
+                <div className="text-xs text-gray-500 mb-1">Khách hàng:</div>
+                <div className="text-xs">{record.user.fullName || "—"}</div>
+                <div className="text-xs text-gray-500">{record.user.email || "—"}</div>
+              </div>
+            )}
+          </div>
         </div>
-    )
-}
+      );
+    },
+  } : undefined;
 
-export default OrdersTable
+  return (
+    <Card className="shadow-sm border rounded-lg">
+      <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          
+          <Input.Search
+            placeholder="Tìm kiếm theo mã đơn hàng"
+            onSearch={handleSearch}
+            style={{ width: isMobile ? '100%' : 250 }}
+          />
+        </div>
+        
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
+          <Button
+            type="primary"
+            onClick={() => handlePayButtonClick(false)}
+            disabled={selectedRowKeys.length === 0}
+            className="bg-blue-500 w-full sm:w-auto"
+          >
+            Thanh toán đơn đã chọn ({selectedRowKeys.length})
+          </Button>
+          
+          <Button
+            onClick={() => handlePayButtonClick(true)}
+            className="w-full sm:w-auto"
+          >
+            Thanh toán tất cả
+          </Button>
+        </div>
+      </div>
 
+      <ConfigProvider 
+        theme={{
+          components: {
+            Table: {
+              fontSize: isMobile ? 12 : 14,
+              padding: isMobile ? 8 : 16,
+              paddingContentVertical: isMobile ? 8 : 16,
+              paddingContentHorizontal: isMobile ? 8 : 16,
+            }
+          }
+        }}
+      >
+        <Table
+          rowSelection={rowSelection}
+          columns={getColumns()}
+          dataSource={ordersData?.data?.data || []}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: ordersData?.data?.meta?.itemCount || 0,
+            onChange: handlePaginationChange,
+            showSizeChanger: !isMobile,
+            pageSizeOptions: isMobile ? ['10'] : ['10', '20', '50', '100'],
+            size: isMobile ? 'small' : 'default',
+            responsive: true,
+            showTotal: (total) => 
+              isMobile ? 
+                `${total} đơn` : 
+                `Tổng ${total} đơn hàng`,
+            simple: isMobile,
+          }}
+          scroll={{ x: 'max-content' }}
+          size={isMobile ? "small" : "middle"}
+          expandable={expandableConfig}
+          rowKey="id"
+        />
+      </ConfigProvider>
+
+      <Modal
+        title="Nhập mật khẩu rút tiền"
+        open={isPaymentModalVisible}
+        onOk={handlePayOrders}
+        onCancel={() => setIsPaymentModalVisible(false)}
+        okText="Xác nhận"
+        cancelText="Hủy"
+        okButtonProps={{ 
+          className: 'bg-blue-500',
+          loading: payOrdersMutation.isPending
+        }}
+      >
+        <p className="mb-4">Vui lòng nhập mật khẩu rút tiền để xác nhận thanh toán.</p>
+        <Input.Password
+          placeholder="Nhập mật khẩu rút tiền"
+          value={withdrawPassword}
+          onChange={(e) => setWithdrawPassword(e.target.value)}
+          className="w-full"
+        />
+      </Modal>
+    </Card>
+  );
+};
+
+export default OrdersTable;

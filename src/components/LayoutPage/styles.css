@@ -16,7 +16,6 @@
   background: linear-gradient(to right, transparent 0%, #252C35 100%) !important;
   border-right: 4px solid #FCAF17;
   border-radius: 4px;
-  color: #FCAF17;
 }
 
 .ant-menu-dark .ant-menu-submenu-title:hover,
@@ -37,6 +36,10 @@
   color: white;
 }
 
+.ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .ant-menu-inline-collapsed .ant-badge {
   display: none;
 }
@@ -50,27 +53,8 @@
   border-radius: 4px !important;
 }
 
-.ant-menu-submenu-title svg:last-child{
+.ant-menu-submenu-title .anticon.anticon-right,
+.ant-menu-submenu-title .anticon.anticon-down{
   position: absolute !important;
   right: 24px !important;
-}
-
-::-webkit-scrollbar {
-  width: 0;  /* Ẩn thanh scrollbar trên Chrome/Safari/Edge */
-  background: transparent;  /* Làm nền trong suốt */
-}
-
-* {
-  scrollbar-width: none;  /* Ẩn thanh scrollbar trên Firefox */
-  -ms-overflow-style: none;  /* Ẩn thanh scrollbar trên IE/Edge */
-}
-
-.hidden-on-mobile {
-  display: block;
-}
-
-@media (max-width: 767.98px) {
-  .hidden-on-mobile {
-    display: none;
-  }
 }

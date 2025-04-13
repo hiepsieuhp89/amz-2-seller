@@ -14,7 +14,7 @@ export default function NotFound() {
           Nội dung bạn tìm kiếm không có. Vui lòng quay lại!
         </p>
         <button
-          className="bg-primary hover:bg-opacity-90 !text-white/80 px-6 py-2 rounded-lg"
+          className="bg-primary hover:bg-opacity-90 text-white px-6 py-2 rounded-lg"
           onClick={() => router.back}
         >
           Quay lại

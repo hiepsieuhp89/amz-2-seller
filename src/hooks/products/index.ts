@@ -30,8 +30,9 @@ export const useProducts = (params?: IProductSearchParams) => {
         page: 1,
         ...params,
     }
+
     const {
-        data,
+        data: productsData,
         isLoading,
         isFetching,
         refetch,
@@ -39,8 +40,9 @@ export const useProducts = (params?: IProductSearchParams) => {
         queryKey: ["products", queryParams],
         queryFn: () => getProducts(queryParams),
     })
+
     return {
-        data,
+        productsData,
         isLoading,
         isFetching,
         refetch,

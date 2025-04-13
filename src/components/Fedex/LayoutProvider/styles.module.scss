@@ -1,44 +1,176 @@
-.root {
+.layoutWrapper {
   display: flex;
+  height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
   position: relative;
-  min-height: 100vh;
-  background-color: #E3E6E6; 
-
+  
   .sidebarOpen {
-    width: 250px; 
-    transition: width 0.3s ease;
-    background: #ffffff;
+    width: 230px; // Regular width for desktop
+    min-width: 230px;
+    background: white;
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    padding-top: 60px;
+    overflow-y: auto;
   }
+  
   .sidebarClosed {
-    width: 0; 
-    transition: width 0.3s ease;
+    width: 0;
+    min-width: 0;
+    background: white;
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    padding-top: 60px;
+    overflow: hidden;
   }
-
-  .outlet {
+  
+  .contentContainer {
     flex-grow: 1;
-    transition: margin-left 0.3s ease;
-    margin-top: 30px;
-    background-color: #E3E6E6; 
-
-    overflow: auto;
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
   }
-
-  .sidebarClosed + .outlet {
-    margin-left: 0; 
-  }
-
+  
+  // Toggle Button - only visible on desktop
   .toggleButton {
-    position: absolute;
-    top: 14px;
-    left: 10px;
-    z-index: 1000;
-    color: #fff;
-    border: none;
-    padding: 10px;
+    position: fixed;
+    left: 235px;
+    top: 70px;
+    z-index: 5;
+    background: #4D148C;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: left 0.3s ease;
+    
+    &.closed {
+      left: 5px;
+    }
+    
+    // Hide toggle button on mobile
+    @media (max-width: 767px) {
+      display: none;
+    }
+  }
+  
+  // Overlay for mobile sidebar
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 8;
+    display: none;
+    
+    @media (max-width: 767px) {
+      &.visible {
+        display: block;
+      }
+    }
   }
 }
 
+// Fix: Convert :global block to scoped class with :global selectors
+.globalStyles {
+  :global {
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    
+    .searchValue {
+      font-size: 14px;
+      margin-left: 4px;
+      color: #4D148C;
+      font-weight: bold;
+    }
+    
+    .schedule {
+      font-size: 12px;
+      line-height: 1.2;
+      color: #a1a1a1;
+      margin-bottom: 5px;
+      display: flex;
+      flex-wrap: wrap;
+
+      .scheduleIcon {
+        color: #4D148C;
+        font-size: 18px;
+        margin-right: 5px;
+      }
+    }
+    
+    .soliderNo {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 1.2;
+      max-width: 100%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      color: #333;
+    }
+    
+    .selectHistory {
+      .ant-select-selector {
+        border-radius: 99px !important;
+      }
+    }
+    
+    .weekPlan {
+      height: 9px;
+      width: 9px;
+      border-radius: 50%;
+      margin-left: 5px;
+      display: inline-block;
+
+      &.weekPlanAttendance {
+        background-color: #fde047;
+      }
+      
+      &.weekPlanTrain {
+        background-color: #2dd4bf;
+      }
+      
+      &.weekPlanWork {
+        background-color: #818cf8;
+      }
+      
+      &.weekPlanLeave {
+        background-color: #db2777;
+      }
+      
+      &.weekPlanRemote {
+        background-color: #a1a1a1;
+      }
+    }
+    
+    // Mobile specific styles
+    @media (max-width: 767px) {
+      .ant-table-wrapper {
+        overflow-x: auto;
+      }
+      
+      .ant-table {
+        min-width: 600px;
+      }
+      
+      .ant-form-item {
+        margin-bottom: 12px;
+      }
+    }
+  }
+}
 
 .selectWeek {
   :global {

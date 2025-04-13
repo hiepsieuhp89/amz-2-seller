@@ -122,22 +122,23 @@ export const filterSort=(optionA:any,optionB:any)=>{
   return labelA.localeCompare(labelB);
 }
 
-export const formatNumber = (number: number | undefined | null): string => {
-  if (number === undefined || number === null) {
-    return '0';
+export const formatNumber = (value: number | string): string => {
+  if (value === null || value === undefined || value === '') return '';
+  
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  
+  // Check if it's a whole number or has decimal places
+  if (Number.isInteger(num)) {
+    // For whole numbers, add thousands separators with no decimal places
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  } else {
+    // For decimal numbers, format with up to 2 decimal places
+    const formatted = num.toFixed(2);
+    
+    // Remove trailing zeros after decimal point
+    const trimmed = formatted.replace(/\.?0+$/, '');
+    
+    // Add thousands separators
+    return trimmed.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
-  
-  // Kiểm tra xem number có phải là một số hợp lệ không
-  const numValue = Number(number);
-  if (isNaN(numValue)) {
-    return '0';
-  }
-  
-  // Format with 1 decimal place only if needed
-  const formatted = Number.isInteger(numValue) 
-    ? numValue.toString() 
-    : numValue.toFixed(1);
-  
-  // Add thousand separators
-  return formatted.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };

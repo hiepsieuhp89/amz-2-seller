@@ -4,170 +4,114 @@ import React from "react"
 import { Form, Button, Card, Upload, message } from "antd"
 import { UploadOutlined } from "@ant-design/icons"
 import type { ShopData } from "../types"
-import { useUploadFile } from '@/hooks/upload'
-import { useUser } from "@/context/useUserContext"
-import { useEffect } from "react"
 
 interface ShopBannerSettingsProps {
+  shopData: ShopData
   onSave: (data: Partial<ShopData>) => void
 }
 
-interface FileType {
-  uid: string;
-  name: string;
-  status: 'done' | 'uploading' | 'error';
-  url?: string;
-  thumbUrl?: string;
-}
-
-const ShopBannerSettings = ({ profileData }: { profileData: any }) => {
+const ShopBannerSettings: React.FC<ShopBannerSettingsProps> = ({ shopData, onSave }) => {
   const [form] = Form.useForm()
-  const uploadMutation = useUploadFile()
-  const { profile } = useUser()
-  
-  // Create separate fileList states for each upload field
-  const [bannerImageList, setBannerImageList] = React.useState<FileType[]>([])
-  const [mobileBannerImageList, setMobileBannerImageList] = React.useState<FileType[]>([])
-  const [fullBannerImageList, setFullBannerImageList] = React.useState<FileType[]>([])
-  const [halfBannerImageList, setHalfBannerImageList] = React.useState<FileType[]>([])
-  const [bannerImage2List, setBannerImage2List] = React.useState<FileType[]>([])
 
   const defaultValues = {
-    bannerImage: profile?.data?.bannerImage,
-    mobileBannerImage: profile?.data?.mobileBannerImage,
-    fullBannerImage: profile?.data?.fullBannerImage,
-    halfBannerImage: profile?.data?.halfBannerImage,
-    bannerImage2: profile?.data?.bannerImage2,
+    topBanner: [],
+    sliders: [],
+    bannerFullWidth1: [],
+    bannersHalfWidth: [],
+    bannerFullWidth2: [],
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
+    // Chuyển đổi dữ liệu thành định dạng fileList cho Antd Upload
+    const formatFileList = (data: any) => {
+      if (!data) return [];
+      if (Array.isArray(data)) {
+        return data.map((item, index) => ({
+          uid: `-${index}`,
+          name: `image-${index}`,
+          status: 'done',
+          url: item
+        }));
+      }
+      return [{
+        uid: '-1',
+        name: 'image',
+        status: 'done',
+        url: data
+      }];
+    };
+
     form.setFieldsValue({
-      bannerImage: profile?.data?.bannerImage || '',
-      mobileBannerImage: profile?.data?.mobileBannerImage || '',
-      fullBannerImage: profile?.data?.fullBannerImage || '',
-      halfBannerImage: profile?.data?.halfBannerImage || '',
-      bannerImage2: profile?.data?.bannerImage2 || '',
+      topBanner: shopData?.topBanner || defaultValues.topBanner,
+      sliders: shopData?.sliders || defaultValues.sliders,
+      bannerFullWidth1: shopData?.bannerFullWidth1 || defaultValues.bannerFullWidth1,
+      bannersHalfWidth: shopData?.bannersHalfWidth || defaultValues.bannersHalfWidth,
+      bannerFullWidth2: shopData?.bannerFullWidth2 || defaultValues.bannerFullWidth2,
     });
-    
-    // Initialize fileList states with existing images
-    if (profile?.data?.bannerImage) {
-      setBannerImageList([{
-        uid: '-1',
-        name: 'bannerImage',
-        status: 'done',
-        url: profile?.data?.bannerImage
-      }]);
-    }
-    
-    if (profile?.data?.mobileBannerImage) {
-      setMobileBannerImageList([{
-        uid: '-1',
-        name: 'mobileBannerImage',
-        status: 'done',
-        url: profile?.data?.mobileBannerImage
-      }]);
-    }
-    
-    if (profile?.data?.fullBannerImage) {
-      setFullBannerImageList([{
-        uid: '-1',
-        name: 'fullBannerImage',
-        status: 'done',
-        url: profile?.data?.fullBannerImage
-      }]);
-    }
-    
-    if (profile?.data?.halfBannerImage) {
-      setHalfBannerImageList([{
-        uid: '-1',
-        name: 'halfBannerImage',
-        status: 'done',
-        url: profile?.data?.halfBannerImage
-      }]);
-    }
-    
-    if (profile?.data?.bannerImage2) {
-      setBannerImage2List([{
-        uid: '-1',
-        name: 'bannerImage2',
-        status: 'done',
-        url: profile?.data?.bannerImage2
-      }]);
-    }
-  }, [profile, form]);
+  }, [shopData, form])
 
   const handleSubmit = (values: any) => {
-    // Get the URLs from the fileList states
-    const submitData = {
+    // Đảm bảo các giá trị là mảng trước khi lưu
+    const sanitizedValues = {
       ...values,
-      bannerImage: bannerImageList[0]?.url || '',
-      mobileBannerImage: mobileBannerImageList[0]?.url || '',
-      fullBannerImage: fullBannerImageList[0]?.url || '',
-      halfBannerImage: halfBannerImageList[0]?.url || '',
-      bannerImage2: bannerImage2List[0]?.url || '',
+      topBanner: values.topBanner || [],
+      sliders: values.sliders || [],
+      bannerFullWidth1: values.bannerFullWidth1 || [],
+      bannersHalfWidth: values.bannersHalfWidth || [],
+      bannerFullWidth2: values.bannerFullWidth2 || [],
     };
-    message.success("Cài đặt biểu ngữ đã được lưu");
+    onSave(sanitizedValues)
+    message.success("Cài đặt biểu ngữ đã được lưu")
   }
 
-  const handleChange = (fieldName: string, setFileList: React.Dispatch<React.SetStateAction<FileType[]>>) => 
-    async ({ fileList: newFileList }: any) => {
-      setFileList(newFileList)
-      
-      if (newFileList.length > 0 && newFileList[0].originFileObj) {
-        try {
-          const uploadedFile = await uploadMutation.mutateAsync(newFileList[0].originFileObj)
-          setFileList([{
-            uid: '-1',
-            name: fieldName,
-            status: 'done',
-            url: uploadedFile.data.url,
-            thumbUrl: URL.createObjectURL(newFileList[0].originFileObj)
-          }])
-          form.setFieldsValue({ [fieldName]: uploadedFile.data.url })
-        } catch (error) {
-          message.error('Upload failed')
-          setFileList([])
-        }
-      }
+  const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+      return e;
     }
+    return e?.fileList || [];  // Thêm mặc định array rỗng
+  }
 
-  const renderUploadField = (
-    label: string, 
-    name: string, 
-    dimensions: string, 
-    fileList: FileType[],
-    setFileList: React.Dispatch<React.SetStateAction<FileType[]>>,
-    helpText?: string
-  ) => {
-    return (
-      <div className="flex flex-col md:flex-row mb-3">
-        <div className="md:w-1/6">
-          <label className="block text-sm font-medium">
-            {label} {dimensions && `(${dimensions})`}
-          </label>
-        </div>
-        <div className="md:w-5/6">
+  const renderUploadField = (label: string, name: string, dimensions: string, multiple = false, helpText?: string) => (
+    <div className="flex flex-col md:flex-row mb-3">
+      <div className="md:w-1/6">
+        <label className="block text-sm font-medium">
+          {label} {dimensions && `(${dimensions})`}
+        </label>
+      </div>
+      <div className="md:w-5/6">
+        <Form.Item name={name} valuePropName="fileList" getValueFromEvent={normFile}>
           <Upload
             name={name}
-            listType="picture-card"
-            fileList={fileList}
-            onChange={handleChange(name, setFileList)}
-            maxCount={1}
-            beforeUpload={() => false}
+            listType="picture"
+            multiple={multiple}
+            maxCount={multiple ? undefined : 1}
             accept="image/*"
+            fileList={form.getFieldValue(name) || []}
+            beforeUpload={(file) => {
+              try {
+                return true;
+              } catch (error) {
+                console.error('Before upload error:', error);
+                return false;
+              }
+            }}
           >
-            {fileList.length < 1 && (
-              <div>
-                <UploadOutlined />
-                <div style={{ marginTop: 8 }}>Tải lên</div>
+            <div className="flex">
+              <Button icon={<UploadOutlined />} className="
+              !rounded-[4px]
+              bg-gray-100 border-gray-300">
+                Duyệt qua
+              </Button>
+              <div className="ml-2 border border-gray-300 flex items-center px-3 rounded-[4px] bg-white flex-grow">
+                Chọn tập tin
               </div>
-            )}
+            </div>
           </Upload>
-          {helpText && <small className="text-gray-500">{helpText}</small>}
-        </div>
+        </Form.Item>
+        {helpText && <small className="text-gray-500">{helpText}</small>}
       </div>
-    );
-  };
+    </div>
+  )
 
   const heightLimitHelpText =
     "Chúng tôi đã phải giới hạn chiều cao để duy trì nhất quán. Trong một số thiết bị, cả hai mặt của biểu ngữ có thể bị cắt để giới hạn chiều cao."
@@ -185,18 +129,18 @@ const ShopBannerSettings = ({ profileData }: { profileData: any }) => {
         layout="vertical"
         onFinish={handleSubmit}
         initialValues={{
-          bannerImage: profile?.data?.bannerImage,
-          mobileBannerImage: profile?.data?.mobileBannerImage,
-          fullBannerImage: profile?.data?.fullBannerImage,
-          halfBannerImage: profile?.data?.halfBannerImage,
-          bannerImage2: profile?.data?.bannerImage2,
+          topBanner: shopData.topBanner,
+          sliders: shopData.sliders,
+          bannerFullWidth1: shopData.bannerFullWidth1,
+          bannersHalfWidth: shopData.bannersHalfWidth,
+          bannerFullWidth2: shopData.bannerFullWidth2,
         }}
       >
-        {renderUploadField("Ảnh bìa", "bannerImage", "1920x360", bannerImageList, setBannerImageList, heightLimitHelpText)}
-        {renderUploadField("Ảnh bìa di động", "mobileBannerImage", "1500x450", mobileBannerImageList, setMobileBannerImageList, heightLimitHelpText)}
-        {renderUploadField("Ảnh bìa tràn viền 1", "fullBannerImage", "", fullBannerImageList, setFullBannerImageList)}
-        {renderUploadField("Ảnh bìa nửa tràn viền", "halfBannerImage", "(Ảnh bìa chia đôi)", halfBannerImageList, setHalfBannerImageList)}
-        {renderUploadField("Ảnh bìa tràn viền 2", "bannerImage2", "", bannerImage2List, setBannerImage2List)}
+        {renderUploadField("Ảnh bìa Đỉnh", "topBanner", "1920x360", false, heightLimitHelpText)}
+        {renderUploadField("Ảnh bìa chuyển động", "sliders", "1500x450", true, heightLimitHelpText)}
+        {renderUploadField("Ảnh bìa tràn viền 1", "bannerFullWidth1", "", true)}
+        {renderUploadField("Ảnh bìa nửa tràn viền", "bannersHalfWidth", "(Ảnh bìa chia đôi)", true)}
+        {renderUploadField("Ảnh bìa tràn viền 2", "bannerFullWidth2", "", true)}
 
         <div className="flex justify-end">
           <Button type="primary" htmlType="submit" size="small" className="bg-blue-500 !rounded-[4px] w-[90px] !h-9">

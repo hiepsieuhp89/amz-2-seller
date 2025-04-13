@@ -9,11 +9,11 @@ interface TransactionTablesProps {
   orderHistory: OrderHistory[]
 }
 
-const TransactionTables = ({
+const TransactionTables: React.FC<TransactionTablesProps> = ({
   withdrawRequests,
   walletHistory,
   orderHistory,
-}: TransactionTablesProps) => {
+}) => {
   const withdrawColumns: ColumnsType<WithdrawRequest> = [
     { title: "Ngày", dataIndex: "date" },
     { title: "ID", dataIndex: "id" },
@@ -61,34 +61,16 @@ const TransactionTables = ({
 
   return (
     <>
-      {/* <div title="Lịch sử yêu cầu rút tiền" className="!mb-4 rounded-[4px]">
-        <Table 
-          columns={withdrawColumns} 
-          dataSource={withdrawRequests} 
-          pagination={false}
-          scroll={{ x: true }}
-          bordered={true}
-        />
-      </div> */}
+      <div title="Lịch sử yêu cầu rút tiền" className="!mb-4 rounded-[4px]">
+        <Table columns={withdrawColumns} dataSource={withdrawRequests} pagination={false} />
+      </div>
 
       <div title="Biến Động Số Dư Ví" className="!mb-4 rounded-[4px]">
-        <Table 
-          columns={walletColumns} 
-          dataSource={walletHistory} 
-          pagination={false}
-          scroll={{ x: true }}
-          bordered={true}
-        />
+        <Table columns={walletColumns} dataSource={[]} pagination={false} />
       </div>
 
       <div title="Lịch sử giao dịch đơn hàng" className="!mb-4 rounded-[4px]">
-        <Table 
-          columns={orderColumns} 
-          dataSource={orderHistory} 
-          pagination={false}
-          scroll={{ x: true }}
-          bordered={true}
-        />
+        <Table columns={orderColumns} dataSource={orderHistory} pagination={false} />
       </div>
     </>
   )
