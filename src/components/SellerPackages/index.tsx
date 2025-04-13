@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { ISellerPackage } from "@/interface/response/seller-packages";
 import { formatNumber } from "@/utils";
+import { useUser } from "@/context/useUserContext";
 
 const { Title, Text } = Typography;
 
@@ -35,6 +36,8 @@ const SellerPackages = () => {
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
   const purchaseMutation = usePurchaseSellerPackage();
+  const { profile } = useUser();
+  console.log("profile", profile);
 
   const handlePurchase = async () => {
     if (!selectedPackage) return;
@@ -285,7 +288,7 @@ const SellerPackages = () => {
 
                   {/* Button */}
                   <div className="px-6 pb-6">
-                    {pkg.price === 0 ? (
+                    {profile?.data?.sellerPackage?.id === pkg.id ? (
                       <Button
                         className="w-full h-12 !font-medium !rounded-lg !border-0 !bg-gradient-to-r from-green-500 to-emerald-600 !text-white opacity-80 cursor-not-allowed"
                         icon={<Check className="mr-1 h-4 w-4" />}

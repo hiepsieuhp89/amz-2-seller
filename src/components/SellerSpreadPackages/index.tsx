@@ -222,25 +222,35 @@ const SellerSpreadPackages = () => {
 
                   {/* Button */}
                   <div className="px-6 pb-6">
-                    <Button
-                      onClick={() =>
-                        openConfirmationDialog(pkg.id, pkg.title, pkg.price)
-                      }
-                      type="default"
-                      className={`w-full h-12 !font-medium !rounded-lg !border-0 !bg-gradient-to-r ${getPriceGradient(
-                        pkg.price,
-                        index
-                      )} !text-white hover:!opacity-90`}
-                      icon={
-                        <Icon
-                          path={mdiPackageVariantPlus}
-                          size={0.8}
-                          className="mr-1"
-                        />
-                      }
-                    >
-                      Mua Gói Ngay
-                    </Button>
+                    {profile?.data?.spreadPackage && String(pkg.id) === profile.data.spreadPackage.id ? (
+                      <Button
+                        className="w-full h-12 !font-medium !rounded-lg !border-0 !bg-gradient-to-r from-green-500 to-emerald-600 !text-white opacity-80 cursor-not-allowed"
+                        icon={<Check className="mr-1 h-4 w-4" />}
+                        disabled={true}
+                      >
+                        Đang sử dụng
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() =>
+                          openConfirmationDialog(pkg.id, pkg.title, pkg.price)
+                        }
+                        type="default"
+                        className={`w-full h-12 !font-medium !rounded-lg !border-0 !bg-gradient-to-r ${getPriceGradient(
+                          pkg.price,
+                          index
+                        )} !text-white hover:!opacity-90`}
+                        icon={
+                          <Icon
+                            path={mdiPackageVariantPlus}
+                            size={0.8}
+                            className="mr-1"
+                          />
+                        }
+                      >
+                        Mua Gói Ngay
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}

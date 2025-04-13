@@ -99,7 +99,18 @@ export interface IProfileResponse {
       percentProfit: number
       maxProducts: number
     }
-    spreadPackage: null
+    spreadPackage: {
+      id: string
+      createdAt: string
+      updatedAt: string
+      deletedAt: string | null
+      name: string
+      price: number
+      description: string
+      image: string
+      isActive: boolean
+      duration: number
+    }
     idCardType: string
     idCardNumber: string
     idCardFrontImage: string
