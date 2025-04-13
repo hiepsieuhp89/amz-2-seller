@@ -47,7 +47,7 @@ const SellerSpreadPackages = () => {
       });
       Modal.success({
         title: "Mua gói thành công",
-        content: `Bạn đã mua thành công gói ${selectedPackage.title}`,
+        content: `Bạn đã mua thành công gói`,
       });
     } catch (error) {
       Modal.error({

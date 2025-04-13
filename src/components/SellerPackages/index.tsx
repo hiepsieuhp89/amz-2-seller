@@ -42,7 +42,7 @@ const SellerPackages = () => {
       await purchaseMutation.mutateAsync({ packageId: selectedPackage?.id });
       Modal.success({
         title: "Mua gói thành công",
-        content: `Bạn đã mua thành công gói ${selectedPackage?.name}`,
+        content: `Bạn đã mua thành công gói`,
       });
     } catch (error: any) {
       if (error?.response?.data?.message === "Insufficient balance") {
