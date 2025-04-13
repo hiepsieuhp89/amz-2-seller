@@ -273,7 +273,7 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                     <div>
                                         <p className="text-gray-600">Thông tin bổ sung</p>
                                         <p>-</p>
-                                    </div>
+                                     </div>
                                 </div>
                             </div>
                         </div>
@@ -322,24 +322,23 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                             {/* Mã vạch và QR code */}
                             <div className="border p-4 relative">
                                 <h3 className="font-bold mb-3">Thông tin mã hóa</h3>
-                                <div className="flex flex-col gap-4">
-                                    <div className="mb-3">
-                                        {barcodeSvg && <img src={barcodeSvg} alt="Barcode" className="w-full h-auto max-w-full" />}
-                                        <p className="text-center mt-1 text-sm">{order?.id || ''}</p>
+                                <div className="flex flex-col md:flex-row gap-4">
+                                    <div className="flex-1">
+                                        <div className="mb-3">
+                                            {barcodeSvg && <img src={barcodeSvg} alt="Barcode" className="w-full h-auto max-w-full" />}
+                                            <p className="text-center mt-1 text-sm">{order?.id || ''}</p>
+                                        </div>
+                                        <div className="mt-4">
+                                            <p className="font-medium">Thông tin khách hàng:</p>
+                                            <p>{maskUserInfo(userInfo.name, 'name')}</p>
+                                            <p>{maskUserInfo(userInfo.email, 'email')}</p>
+                                            <p>{maskUserInfo(userInfo.phone, 'phone')}</p>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center justify-center">
-                                        <div className="flex-1">
-                                            <div className="mt-4">
-                                                <p className="font-medium">Thông tin khách hàng:</p>
-                                                <p>{maskUserInfo(userInfo.name, 'name')}</p>
-                                                <p>{maskUserInfo(userInfo.email, 'email')}</p>
-                                                <p>{maskUserInfo(userInfo.phone, 'phone')}</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-col items-center justify-center">
-                                            <QRCodeCanvas value={`${window.location.origin}/orders?id=${order?.id}`} size={100} />
-                                            <p className="text-center mt-1 text-xs text-gray-500">Mã QR đơn hàng</p>
-                                        </div>
+                                    <div className="flex flex-col items-center justify-center">
+                                        <p className="mb-2 text-center">{order?.user?.countryId || '-'}</p>
+                                        <QRCodeCanvas value={`${window.location.origin}/orders?id=${order?.id}`} size={100} />
+                                        <p className="text-center mt-1 text-xs text-gray-500">Mã QR đơn hàng</p>
                                     </div>
                                 </div>
                             </div>
@@ -389,7 +388,7 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                         <div className="relative">
                             {/* Vertical timeline line */}
                             <div className="absolute left-[7px] top-0 bottom-0 w-[2px] bg-gray-200"></div>
-
+                            
                             <div className="space-y-6">
                                 {order?.statusHistory && order.statusHistory.map((history: any, index: number) => (
                                     <div key={history.id} className="flex items-start gap-4">
@@ -397,7 +396,7 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                         <div className="relative z-10 mt-1">
                                             <div className={`w-4 h-4 rounded-full ${index === 0 ? 'bg-blue-500' : 'bg-green-500'} border-2 border-white`}></div>
                                         </div>
-
+                                        
                                         {/* Content */}
                                         <div className="flex-1 bg-gray-50 p-3 rounded-md border border-gray-100 shadow-sm">
                                             <p className="text-sm text-gray-500 mb-1">{formatDate(history.time)}</p>
@@ -405,14 +404,14 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                         </div>
                                     </div>
                                 ))}
-
+                                
                                 {order?.status === 'DELIVERED' && (
                                     <div className="flex items-start gap-4">
                                         {/* Timeline dot */}
                                         <div className="relative z-10 mt-1">
                                             <div className="w-4 h-4 rounded-full bg-green-600 border-2 border-white"></div>
                                         </div>
-
+                                        
                                         {/* Content */}
                                         <div className="flex-1 bg-green-50 p-3 rounded-md border border-green-100 shadow-sm">
                                             <p className="text-sm text-gray-500 mb-1">{formatDate(new Date().toISOString())}</p>

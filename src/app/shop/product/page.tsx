@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Footer } from "@/components/Common/Footer";
 import { Header } from "@/components/Common/Header";
 import ProductDetail from "@/components/ProductDetail";
@@ -8,33 +8,29 @@ import { Button, Divider, Rate, Typography } from "antd";
 import Title from "antd/es/typography/Title";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-const descriptionImages = [
-  'https://example.com/image1.png',
-  'https://example.com/image2.png'
-]
-const { Text } = Typography;
+
 
 function ProductDetailContent() {
-  const searchParams = useSearchParams();
-  const productId = searchParams.get("id");
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <div className="flex flex-col">
         <ProductDetail />
-        <div className="w-full hidden md:flex flex-row py-6 px-4 md:px-6 lg:px-[104px] gap-4 bg-[#E3E6E6]">
-          <div className="w-full lg:w-1/4">
-            <LeftSideSection />
-          </div>
-          <div className="w-full lg:w-3/4">
-            <ProductTabs/>
+        <div className="w-full hidden md:flex flex-row py-6 px-4 md:px-6 lg:px-[104px] gap-4 bg-[#E3E6E6] justify-center">
+          <div className="max-w-[1500px] w-full flex flex-row gap-4">
+            <div className="w-full lg:w-1/4">
+              <LeftSideSection />
+            </div>
+            <div className="w-full lg:w-3/4">
+              <ProductTabs />
+            </div>
           </div>
         </div>
       </div>
       <Footer />
     </div>
-  )
+  );
 }
 
 export default function ProductDetailPage() {
@@ -42,6 +38,5 @@ export default function ProductDetailPage() {
     <Suspense fallback={<div>Loading...</div>}>
       <ProductDetailContent />
     </Suspense>
-  )
+  );
 }
-

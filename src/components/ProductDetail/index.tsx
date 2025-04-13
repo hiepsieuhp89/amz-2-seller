@@ -131,14 +131,15 @@ export default function ProductDetail() {
   };
 
   return (
-    <div className="w-full p-0 md:py-6 md:px-4 lg:px-[104px] bg-[#E3E6E6] flex justify-center">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 max-w-[1440px] bg-white p-4 md:p-4">
-        <div className="relative md:sticky md:top-20">
+    <div className="w-full p-0 md:py-4 bg-[#EAEDED] flex justify-center">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 max-w-[1500px] bg-white p-0 md:p-4">
+        {/* Left Column - Product Gallery */}
+        <div className="md:col-span-5 lg:col-span-4 relative md:sticky md:top-20 px-4 md:px-0">
           <div className="product-gallery flex flex-col gap-2 md:gap-4">
             {/* Main Image */}
             <div
               ref={imgContainerRef}
-              className="relative w-full h-[300px] md:h-[500px] overflow-hidden rounded-md cursor-zoom-in border border-gray-200"
+              className="relative w-full h-[300px] md:h-[450px] overflow-hidden rounded-sm cursor-zoom-in border border-gray-200"
               onMouseEnter={handleMouseEnter}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
@@ -176,7 +177,7 @@ export default function ProductDetail() {
             </div>
 
             {/* Thumbnail Carousel */}
-            <div className="relative w-full">
+            <div className="relative w-full pb-4">
               <div className="overflow-hidden" ref={emblaRef}>
                 <div className="flex -ml-2">
                   {selectedProduct?.imageUrls &&
@@ -184,16 +185,16 @@ export default function ProductDetail() {
                       <div
                         key={index}
                         className="pl-2 flex-shrink-0 flex-grow-0"
-                        style={{ flexBasis: "25%" }} // Show 4 items
+                        style={{ flexBasis: "20%" }} // Show 5 items
                       >
                         <motion.div
                           whileHover={{ scale: 1 }}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => handleThumbnailClick(index)}
                           className={cn(
-                            "relative w-full h-16 md:h-20 cursor-pointer overflow-hidden rounded-md border bg-white",
+                            "relative w-full h-16 md:h-20 cursor-pointer overflow-hidden rounded-sm border bg-white",
                             currentImage === index
-                              ? "ring-0.5 ring-main-golden-orange border-main-golden-orange"
+                              ? "ring-2 ring-[#e77600] border-[#e77600]"
                               : "border-gray-200 hover:border-gray-300"
                           )}
                         >
@@ -211,13 +212,13 @@ export default function ProductDetail() {
               {/* Carousel Controls */}
               {emblaApi &&
                 selectedProduct?.imageUrls &&
-                selectedProduct?.imageUrls.length > 4 && (
+                selectedProduct?.imageUrls.length > 5 && (
                   <>
                     <Button
                       variant="outline"
                       size="icon"
                       className={cn(
-                        "absolute left-2 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 h-6 w-6 md:h-8 md:w-8 !text-white bg-black/80 hover:bg-black border-none rounded-none shadow",
+                        "absolute left-2 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 h-6 w-6 md:h-8 md:w-8 !text-black bg-white hover:bg-white border-gray-300 rounded-full shadow",
                         !prevBtnEnabled && "opacity-50 cursor-not-allowed"
                       )}
                       onClick={scrollPrev}
@@ -229,7 +230,7 @@ export default function ProductDetail() {
                       variant="outline"
                       size="icon"
                       className={cn(
-                        "absolute right-2 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 h-6 w-6 md:h-8 md:w-8 bg-black/80 hover:bg-black shadow !text-white rounded-none border-none",
+                        "absolute right-2 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 h-6 w-6 md:h-8 md:w-8 bg-white hover:bg-white shadow !text-black rounded-full border-gray-300",
                         !nextBtnEnabled && "opacity-50 cursor-not-allowed"
                       )}
                       onClick={scrollNext}
@@ -243,187 +244,206 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* Product Details */}
-        <div className="product-info space-y-4 md:space-y-6 mt-4 md:mt-0">
-          <div>
-            <h1 className="text-lg md:text-xl font-semibold">{selectedProduct?.name}</h1>
-            <div className="mt-1 md:mt-2 flex items-center gap-2">
+        {/* Middle Column - Product Details */}
+        <div className="md:col-span-7 lg:col-span-5 product-info space-y-3 px-4 md:px-0 mt-2 md:mt-0">
+          <div className="border-b border-gray-200 pb-2">
+            <h1 className="text-xl md:text-2xl font-medium">{selectedProduct?.name}</h1>
+            <Link 
+              href="#" 
+              className="text-sm text-[#007185] hover:text-[#C7511F] hover:underline"
+            >
+              Thương hiệu: {'Generic'}
+            </Link>
+            
+            <div className="mt-1 flex items-center gap-2">
               <div className="flex">
                 <RatingStars
                   rating={Number(selectedProduct?.averageRating || 0)}
                 />
               </div>
-              <span className="text-xs md:text-sm text-muted-foreground">
-                (2 Nhận xét)
+              <Link 
+                href="#reviews" 
+                className="text-sm text-[#007185] hover:text-[#C7511F] hover:underline"
+              >
+                2 Nhận xét
+              </Link>
+            </div>
+          </div>
+
+          {/* Price Section */}
+          <div className="pt-2">
+            <div className="flex items-baseline gap-2">
+              <span className="text-sm">Giá bán:</span>
+              <span className="text-xl md:text-3xl font-medium text-[#B12704]">
+                ${formatNumber(price)}
               </span>
+            </div>
+            
+            {/* Shipping Estimate */}
+            <div className="flex items-center mt-1">
+              <p className="text-sm">
+                <span className="text-muted-foreground">Ước tính thời gian vận chuyển:</span>{" "}
+                <span className="font-medium text-[#007600]">
+                  5 ngày
+                </span>
+              </p>
             </div>
 
-            <p className="mt-1 md:mt-2 text-xs md:text-sm text-muted-foreground">
-              Ước tính thời gian vận chuyển:{" "}
-              <span className="font-medium text-main-golden-orange">
-                5 ngày
+            {/* Availability */}
+            <div className="mt-3 text-sm">
+              <span className={`font-medium ${availableQuantity > 10 ? 'text-[#007600]' : availableQuantity > 0 ? 'text-[#B12704]' : 'text-[#B12704]'}`}>
+                {availableQuantity > 10 
+                  ? 'Còn hàng' 
+                  : availableQuantity > 0 
+                    ? `Chỉ còn ${availableQuantity} sản phẩm` 
+                    : 'Hết hàng'}
               </span>
-            </p>
-          </div>
-          <div className="border-t border-gray-200 my-3 md:my-6"></div>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
-            <div className="text-xs md:text-sm text-muted-foreground flex flex-col">
-              <span>Được bán bởi</span>
-              <span className="font-medium">Ẩn danh</span>
             </div>
-            <Button
-              onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
-              variant="outline"
-              className="w-full sm:w-auto sm:ml-4 text-xs md:text-sm px-2 py-1 md:px-3 md:py-1 font-semibold border-main-golden-orange !text-main-golden-orange hover:bg-main-golden-orange/30"
-            >
-              Nhắn tin với người bán
-            </Button>
           </div>
-          <div className="border-t border-gray-200 my-3 md:my-6"></div>
-          <div className="grid grid-cols-3 gap-2 md:gap-4 items-center">
-            <div className="text-xs md:text-sm text-muted-foreground col-span-1">Giá bán:</div>
-            <p className="text-xl md:text-2xl font-bold text-green-500 col-span-2">
-              ${formatNumber(price)}<span className="ml-1 text-xs md:text-sm text-muted-foreground">/pc</span>
-            </p>
+
+          {/* About this item */}
+          <div className="border-t border-gray-200 pt-3 mt-3">
+            <h3 className="text-base font-medium">Về sản phẩm này</h3>
+            <ul className="list-disc list-inside text-sm space-y-1 mt-2 ml-2">
+              <li>Thương hiệu: {'Generic'}</li>
+              <li>Xuất xứ: {'Imported'}</li>
+              <li>Bảo hành: 12 tháng</li>
+              <li>Dành cho: Unisex</li>
+              <li>Hình thức thanh toán: COD, thẻ tín dụng, ví điện tử</li>
+            </ul>
           </div>
-          <div className="grid grid-cols-3 gap-2 md:gap-4">
-            <div className="text-xs md:text-sm text-muted-foreground col-span-1">Định lượng:</div>
-            <div className="col-span-2 flex flex-col sm:flex-row sm:items-center gap-2 md:gap-4">
-              <div className="flex items-center">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 md:h-9 md:w-9 rounded-r-none"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  disabled={quantity <= 1}
-                >
-                  <Icon path={mdiMinus} size={0.8} />
-                </Button>
-                <Input
-                  type="number"
-                  min={1}
-                  max={availableQuantity}
-                  value={quantity}
-                  onChange={(e) => setQuantity(Number(e.target.value))}
-                  className="h-8 md:h-9 w-10 md:w-12 rounded-none border-x-0 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 md:h-9 md:w-9 rounded-l-none"
-                  onClick={() =>
-                    setQuantity(Math.min(availableQuantity, quantity + 1))
-                  }
-                >
-                  <Icon path={mdiPlus} size={0.8} />
-                </Button>
+
+          {/* Seller Information */}
+          <div className="border-t border-gray-200 pt-3 mt-3 m">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="text-sm">
+                <span className="text-muted-foreground">Được bán bởi </span>
+                <Link href="#" className="font-medium text-[#007185] hover:text-[#C7511F] hover:underline">
+                  {'Ẩn danh'}
+                </Link>
               </div>
-              <span className="text-xs md:text-sm text-muted-foreground">
-                ({availableQuantity} có sẵn)
-              </span>
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-2 md:gap-4">
-            <div className="text-xs md:text-sm text-muted-foreground col-span-1">Tổng giá:</div>
-            <div className="col-span-2">
-              <span className="text-xl md:text-2xl font-bold text-green-500">
-                ${formatNumber(totalPrice)}
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row flex-wrap gap-2 md:gap-4">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
               <Button
                 onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
                 variant="outline"
-                className="w-full sm:w-auto h-10 md:h-11 gap-2 bg-muted hover:bg-muted/80 text-xs md:text-sm"
+                className="text-xs md:text-sm px-3 py-1 font-medium border-[#007185] text-[#007185] hover:bg-[#007185]/10"
               >
-                <Icon path={mdiCartOutline} size={0.8} />
-                Thêm vào giỏ hàng
+                Nhắn tin với người bán
               </Button>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column - Buy Box */}
+        <div className="md:col-span-12 lg:col-span-3 px-4 md:px-0">
+          <div className="border border-gray-200 rounded-md p-4">
+            <p className="text-2xl font-medium text-[#B12704]">
+              ${formatNumber(price)}
+            </p>
+            
+            <p className="text-sm mt-1">
+              <span className="text-[#007600] font-medium">Miễn phí giao hàng </span> 
+              <Link href="#" className="text-[#007185] hover:text-[#C7511F] hover:underline">Chi tiết</Link>
+            </p>
+            
+            <p className="text-sm mt-2">
+              Giao đến: <span className="font-medium">Việt Nam</span>{" "}
+              <Link href="#" className="text-[#007185] hover:text-[#C7511F] hover:underline">Cập nhật vị trí</Link>
+            </p>
+            
+            <div className="mt-3">
+              <div className={`text-lg ${availableQuantity > 0 ? 'text-[#007600]' : 'text-[#B12704]'} font-medium`}>
+                {availableQuantity > 0 ? 'Còn hàng' : 'Hết hàng'}
+              </div>
+            </div>
+            
+            {/* Quantity Selector */}
+            <div className="mt-3">
+              <div className="flex items-center">
+                <label htmlFor="quantity" className="text-sm mr-2">Số lượng:</label>
+                <select 
+                  id="quantity"
+                  className="border border-gray-300 rounded text-sm py-1 px-2 bg-[#F0F2F2] hover:bg-[#e3e6e6]"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                >
+                  {Array.from({ length: Math.min(10, availableQuantity) }, (_, i) => i + 1).map(num => (
+                    <option key={num} value={num}>{num}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            
+            {/* Buy Buttons */}
+            <div className="mt-4 space-y-2">
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                  className="w-full h-[30px] rounded-full bg-[#FFD814] hover:bg-[#F7CA00] text-black border-0 shadow-sm"
+                >
+                  Thêm vào giỏ hàng
+                </Button>
+              </motion.div>
+              
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                  className="w-full h-[30px] rounded-full bg-[#FFA41C] hover:bg-[#FA8900] text-black border-0 shadow-sm"
+                >
+                  Mua ngay
+                </Button>
+              </motion.div>
+            </div>
+            
+            {/* Secure Transaction */}
+            <div className="mt-3 text-xs text-right">
+              <Link href="#" className="text-[#007185] hover:text-[#C7511F] hover:underline">Giao dịch bảo mật</Link>
+            </div>
+            
+            {/* Add to List Buttons */}
+            <div className="mt-3 pt-3 border-t border-gray-200">
               <Button
                 onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
-                className="w-full sm:w-auto h-10 md:h-11 gap-2 bg-primary text-xs md:text-sm">
-                <Icon path={mdiCreditCardOutline} size={0.8} />
-                Mua ngay
+                variant="link"
+                className="h-auto p-0 text-xs text-[#007185] hover:text-[#C7511F] hover:underline justify-start"
+              >
+                <Icon path={mdiHeart} size={0.7} className="mr-1" />
+                Thêm vào danh sách yêu thích
               </Button>
-            </motion.div>
+            </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 md:gap-4">
-            <Button
-              onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
-              variant="link"
-              className="h-auto p-0 text-xs md:text-sm text-muted-foreground text-wrap break-words justify-start"
-            >
-              <Icon path={mdiHeart} size={0.8} className="mr-2" />
-              Thêm vào danh sách yêu thích
-            </Button>
-            <Button
-              onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
-              variant="link"
-              className="h-auto p-0 text-xs md:text-sm text-muted-foreground text-wrap break-words justify-start"
-            >
-              <Icon path={mdiShareVariant} size={0.8} className="mr-2" />
-              Thêm vào để so sánh
-            </Button>
-          </div>
-          <div className="border-t border-gray-200 my-3 md:my-6"></div>
-          <div className="flex flex-col">
-            <div className="text-xs md:text-sm text-muted-foreground">Hoàn tiền:</div>
-            <div className="mt-3 md:mt-6 bg-green-50 p-3 md:p-4 rounded-md">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-green-100">
-                  <Icon
-                    path={mdiCheckCircle}
-                    size={0.8}
-                    className="text-green-600 md:size-1"
-                  />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm md:text-base font-medium">Hoàn tiền đảm bảo</p>
-                  <p className="text-xs md:text-sm text-muted-foreground">
-                    30 Days Cash Back Guarantee
-                  </p>
-                </div>
-                <Link href="/return-policy">
-                  <Button variant="link" className="h-auto p-0 text-xs md:text-sm">
-                    Xem Chính sách
-                  </Button></Link>
+          
+          {/* Returns Section */}
+          <div className="border border-gray-200 rounded-md p-4 mt-4">
+            <div className="flex items-start gap-2">
+              <div>
+                <Icon
+                  path={mdiCheckCircle}
+                  size={0.8}
+                  className="text-[#007600]"
+                />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Hoàn tiền đảm bảo</p>
+                <p className="text-xs text-muted-foreground">
+                  30 ngày hoàn tiền
+                </p>
+                <Link href="/return-policy" className="text-xs text-[#007185] hover:text-[#C7511F] hover:underline">
+                  Xem chi tiết
+                </Link>
               </div>
             </div>
           </div>
-          <div className="border-t border-gray-200 my-3 md:my-6"></div>
-          <div className="grid grid-cols-3 gap-2 md:gap-4">
-            <div className="text-xs md:text-sm text-muted-foreground">Chia sẻ:</div>
-            <div className="col-span-2 flex flex-wrap gap-2">
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button
-                  onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
-                  variant="outline" 
-                  size="icon" 
-                  className="h-8 w-8 md:h-9 md:w-9 rounded-full"
-                >
-                  <Icon path={mdiEmailOutline} size={0.8} />
-                </Button>
-              </motion.div>
+          
+          {/* Share Section */}
+          <div className="border border-gray-200 rounded-md p-4 mt-4">
+            <p className="text-sm font-medium mb-2">Chia sẻ</p>
+            <div className="flex gap-2">
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                 <Button
                   onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8 md:h-9 md:w-9 rounded-full text-[#1DA1F2]"
-                >
-                  <Icon path={mdiTwitter} size={0.8} />
-                </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button
-                  onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 md:h-9 md:w-9 rounded-full text-[#4267B2]"
+                  className="h-8 w-8 rounded-full text-[#4267B2] border-gray-300"
                 >
                   <Icon path={mdiFacebook} size={0.8} />
                 </Button>
@@ -433,9 +453,9 @@ export default function ProductDetail() {
                   onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8 md:h-9 md:w-9 rounded-full text-[#0077B5]"
+                  className="h-8 w-8 rounded-full text-[#1DA1F2] border-gray-300"
                 >
-                  <Icon path={mdiLinkedin} size={0.8} />
+                  <Icon path={mdiTwitter} size={0.8} />
                 </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -443,9 +463,19 @@ export default function ProductDetail() {
                   onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8 md:h-9 md:w-9 rounded-full text-[#25D366]"
+                  className="h-8 w-8 rounded-full text-[#25D366] border-gray-300"
                 >
                   <Icon path={mdiWhatsapp} size={0.8} />
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Button
+                  onClick={() => message.warning("Vui lòng đăng nhập với tư cách là người mua để tiếp tục")}
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-full text-[#0077B5] border-gray-300"
+                >
+                  <Icon path={mdiLinkedin} size={0.8} />
                 </Button>
               </motion.div>
             </div>
