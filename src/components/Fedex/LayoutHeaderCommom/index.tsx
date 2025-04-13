@@ -12,6 +12,12 @@ import { useLayout } from '../LayoutProvider';
 import { useUser } from '@/context/useUserContext';
 import { useUpdateUser } from '@/hooks/authentication';
 
+declare global {
+  interface Window {
+    openChat?: () => void
+  }
+}
+
 export default function LayoutHeaderCommon() {
   const router = useRouter();
   const [language, setLanguage] = useState('vi'); // Default language: Vietnamese
@@ -41,8 +47,11 @@ export default function LayoutHeaderCommon() {
 
   const openCustomerSupport = () => {
     // Implement customer support functionality, e.g., open chat or show contact info
-    alert('Liên hệ CSKH: 1800-1234');
-    setMobileMenuOpen(false);
+    if (window.openChat) {
+      window.openChat();
+    } else {
+      console.error('Chat function not available');
+    }
   };
 
   const handleClickLogout = () => {

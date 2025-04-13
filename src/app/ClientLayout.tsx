@@ -35,6 +35,16 @@ function SmartsuppChat() {
                 c.type='text/javascript';c.charset='utf-8';c.async=true;
                 c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
               })(document);
+              
+              // Create global openChat function
+              window.openChat = function() {
+                if (window.smartsupp) {
+                  window.smartsupp('chat:open');
+                  console.log('Opening Smartsupp chat');
+                } else {
+                  console.error('Smartsupp not initialized yet');
+                }
+              };
             `;
             
             // Append to document

@@ -24,8 +24,7 @@ const generateOrderCode = (orderTime: string) => {
 
 declare global {
   interface Window {
-    Tawk_API: any
-    Tawk_LoadStart?: Date
+    openChat?: () => void
   }
 }
 
@@ -82,17 +81,14 @@ const SellerOrders = () => {
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined" && !window.Tawk_API) {
-      window.Tawk_API = {}
-    }
     refetchTransactions()
   }, [currentTransactionPage, transactionPageSize, refetchTransactions])
 
   const openChat = () => {
-    if (window.Tawk_API && window.Tawk_API.maximize) {
-      window.Tawk_API.maximize() // Opens the chat widget
+    if (window.openChat) {
+      window.openChat();
     } else {
-      console.log("Tawk.to is not loaded yet.")
+      console.error('Chat function not available');
     }
   }
 
