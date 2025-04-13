@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
-import './globals.css';
-import ClientLayout from './ClientLayout';
 import NextTopLoader from 'nextjs-toploader';
-import Script from "next/script";
+import ClientLayout from './ClientLayout';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'FedEx Global Home',
