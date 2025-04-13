@@ -41,39 +41,78 @@ function SmartsuppChat() {
       const cskhConfig = configsData.data.find((config: any) => config.key === 'CSKH' && config.isActive);
       
       if (cskhConfig && typeof window !== 'undefined') {
-        // Use Function constructor to safely execute script content
-        try {
-          // Create a container div
-          const container = document.createElement('div');
-          container.innerHTML = cskhConfig.value;
-          
-          // Extract and execute all scripts
-          const scripts = container.querySelectorAll('script');
-          scripts.forEach(script => {
-            const newScript = document.createElement('script');
+        console.log('cskhConfig', cskhConfig);
+        
+        // For Smartsupp chat, we'll use a safer direct insertion approach
+        if (cskhConfig.key === 'CSKH') {
+          try {
+            // Create a script element
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
             
-            // Copy all attributes
-            Array.from(script.attributes).forEach(attr => {
-              newScript.setAttribute(attr.name, attr.value);
-            });
-            
-            // Set the script content
-            newScript.innerHTML = script.innerHTML;
+            // Set the correct content for Smartsupp
+            script.innerHTML = `
+              var _smartsupp = _smartsupp || {};
+              _smartsupp.key = '${cskhConfig.value}';
+              window.smartsupp||(function(d) {
+                var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+                s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+                c.type='text/javascript';c.charset='utf-8';c.async=true;
+                c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+              })(document);
+            `;
             
             // Append to document
-            document.body.appendChild(newScript);
-          });
-          
-          // Add any HTML content that's not a script
-          const htmlContent = document.createElement('div');
-          htmlContent.innerHTML = cskhConfig.value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-          
-          // Only append if there's actual content (not just whitespace)
-          if (htmlContent.innerHTML.trim()) {
-            document.body.appendChild(htmlContent);
+            document.head.appendChild(script);
+            
+            // Add noscript element if it exists in the config
+            if (cskhConfig.value.includes('<noscript>')) {
+              const noscriptContent = document.createElement('div');
+              noscriptContent.innerHTML = cskhConfig.value.match(/<noscript>([\s\S]*?)<\/noscript>/)?.[1] || '';
+              if (noscriptContent.innerHTML.trim()) {
+                const noscript = document.createElement('noscript');
+                noscript.innerHTML = noscriptContent.innerHTML;
+                document.body.appendChild(noscript);
+              }
+            }
+          } catch (error) {
+            console.error('Error initializing Smartsupp chat:', error);
           }
-        } catch (error) {
-          console.error('Error initializing chat:', error);
+        } else {
+          // Handle other types of chat widgets or content
+          try {
+            // Create a container div
+            const container = document.createElement('div');
+            container.innerHTML = cskhConfig.value;
+            
+            // Extract and execute all scripts
+            const scripts = container.querySelectorAll('script');
+            scripts.forEach(script => {
+              const newScript = document.createElement('script');
+              
+              // Copy all attributes
+              Array.from(script.attributes).forEach(attr => {
+                newScript.setAttribute(attr.name, attr.value);
+              });
+              
+              // Set the script content
+              newScript.innerHTML = script.innerHTML;
+              
+              // Append to document
+              document.body.appendChild(newScript);
+            });
+            
+            // Add any HTML content that's not a script
+            const htmlContent = document.createElement('div');
+            htmlContent.innerHTML = cskhConfig.value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+            
+            // Only append if there's actual content (not just whitespace)
+            if (htmlContent.innerHTML.trim()) {
+              document.body.appendChild(htmlContent);
+            }
+          } catch (error) {
+            console.error('Error initializing chat:', error);
+          }
         }
       }
     }
