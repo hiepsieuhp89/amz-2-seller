@@ -268,7 +268,7 @@ export default function ProductDetail() {
           <div className="pt-2">
             <div className="flex items-baseline gap-2">
               <span className="text-sm">Giá bán:</span>
-              <span className="text-xl md:text-3xl font-medium text-[#B12704]">
+              <span className="text-xl md:text-3xl font-medium text-[#232F3E]">
                 ${formatNumber(price)}
               </span>
             </div>
