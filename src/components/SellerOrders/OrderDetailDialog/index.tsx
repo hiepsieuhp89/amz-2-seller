@@ -405,21 +405,6 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                         </div>
                                     </div>
                                 ))}
-
-                                {order?.status === 'DELIVERED' && (
-                                    <div className="flex items-start gap-4">
-                                        {/* Timeline dot */}
-                                        <div className="relative z-10 mt-1">
-                                            <div className="w-4 h-4 rounded-full bg-green-600 border-2 border-white"></div>
-                                        </div>
-
-                                        {/* Content */}
-                                        <div className="flex-1 bg-green-50 p-3 rounded-md border border-green-100 shadow-sm">
-                                            <p className="text-sm text-gray-500 mb-1">{formatDate(new Date().toISOString())}</p>
-                                            <p className="font-medium">Người dùng đã ký tên và việc giao hàng đã được hoàn thành. Cảm ơn bạn đã chờ đợi.</p>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
                         </div>
                     </div>
