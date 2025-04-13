@@ -225,7 +225,7 @@ const OrdersTable = () => {
                 columns={columns}
                 dataSource={Array.isArray(ordersData?.data?.data) ? ordersData.data.data.map((order: any) => ({
                     key: order.id,
-                    time: new Date(order.createdAt).toLocaleString(),
+                    time: new Date(order.orderTime).toLocaleString(),
                     orderCode: order.id,
                     totalAmount: order.totalAmount,
                     status: order.status,
