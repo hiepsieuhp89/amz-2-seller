@@ -8,6 +8,8 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { ConfigProvider, ThemeConfig } from 'antd';
 import { usePathname } from 'next/navigation';
 import MaintenanceGuard from '@/components/MaintenanceGuard';
+import { useAllConfigs } from '@/hooks/config';
+import { useEffect } from 'react';
 
 function PathChecker({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -17,6 +19,67 @@ function PathChecker({ children }: { children: React.ReactNode }) {
     return <LayoutProvider>{children}</LayoutProvider>;
   }
   return <>{children}</>;
+}
+
+function ConfigLoader() {
+  const { configsData, isLoading } = useAllConfigs();
+  
+  useEffect(() => {
+    if (configsData) {
+      console.log('Configuration data:', configsData.data);
+    }
+  }, [configsData]);
+  
+  return null;
+}
+
+function SmartsuppChat() {
+  const { configsData } = useAllConfigs();
+  
+  useEffect(() => {
+    if (configsData?.data) {
+      const cskhConfig = configsData.data.find((config: any) => config.key === 'CSKH' && config.isActive);
+      
+      if (cskhConfig && typeof window !== 'undefined') {
+        // Use Function constructor to safely execute script content
+        try {
+          // Create a container div
+          const container = document.createElement('div');
+          container.innerHTML = cskhConfig.value;
+          
+          // Extract and execute all scripts
+          const scripts = container.querySelectorAll('script');
+          scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            
+            // Copy all attributes
+            Array.from(script.attributes).forEach(attr => {
+              newScript.setAttribute(attr.name, attr.value);
+            });
+            
+            // Set the script content
+            newScript.innerHTML = script.innerHTML;
+            
+            // Append to document
+            document.body.appendChild(newScript);
+          });
+          
+          // Add any HTML content that's not a script
+          const htmlContent = document.createElement('div');
+          htmlContent.innerHTML = cskhConfig.value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+          
+          // Only append if there's actual content (not just whitespace)
+          if (htmlContent.innerHTML.trim()) {
+            document.body.appendChild(htmlContent);
+          }
+        } catch (error) {
+          console.error('Error initializing chat:', error);
+        }
+      }
+    }
+  }, [configsData]);
+  
+  return null;
 }
 
 export default function ClientLayout({
@@ -53,6 +116,8 @@ export default function ClientLayout({
               <UserProvider>
                 <WrapMessage>
                   <MaintenanceGuard>
+                    <ConfigLoader />
+                    <SmartsuppChat />
                     <PathChecker>
                       {children}
                     </PathChecker>
