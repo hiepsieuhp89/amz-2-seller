@@ -88,7 +88,7 @@ const LeftSideSection = () => {
                       <Image
                         draggable={false}
                         src={profileData?.data?.logoUrl || "/images/default-avatar.jpg"}
-                        alt={profileData?.data?.shopName || "Shop ẩn danh"}
+                        alt={profileData?.data?.shopName || "Amazon"}
                         height={56}
                         width={56}
                         quality={100}
@@ -100,7 +100,7 @@ const LeftSideSection = () => {
                   {/* Shop Name & Location */}
                   <div>
                     <Link href={"/shop?id=" + profileData?.data?.id} className="text-sm flex items-center font-semibold">
-                      {profileData?.data?.shopName || "Shop ẩn danh"}
+                      ss{profileData?.data?.shopName || "Amazon"}
                       <motion.span
                         className="ml-2 text-blue-500"
                       >
