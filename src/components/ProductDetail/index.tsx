@@ -248,12 +248,6 @@ export default function ProductDetail() {
         <div className="md:col-span-7 lg:col-span-5 product-info space-y-3 px-4 md:px-0 mt-2 md:mt-0">
           <div className="border-b border-gray-200 pb-2">
             <h1 className="text-xl md:text-2xl font-medium">{selectedProduct?.name}</h1>
-            <Link 
-              href="#" 
-              className="text-sm text-[#007185] hover:text-[#C7511F] hover:underline"
-            >
-              Thương hiệu: {'Generic'}
-            </Link>
             
             <div className="mt-1 flex items-center gap-2">
               <div className="flex">
@@ -305,7 +299,6 @@ export default function ProductDetail() {
           <div className="border-t border-gray-200 pt-3 mt-3">
             <h3 className="text-base font-medium">Về sản phẩm này</h3>
             <ul className="list-disc list-inside text-sm space-y-1 mt-2 ml-2">
-              <li>Thương hiệu: {'Generic'}</li>
               <li>Xuất xứ: {'Imported'}</li>
               <li>Bảo hành: 12 tháng</li>
               <li>Dành cho: Unisex</li>
