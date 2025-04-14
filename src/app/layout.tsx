@@ -5,7 +5,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'FedEx Global Home',
-  description: 'Welcome to FedEx.com - Select your location to find services for shipping your package, package tracking, shipping rates, and tools to support shippers and small businesses',
+  description: 'Welcome to Fedex-wallets.store - Select your location to find services for shipping your package, package tracking, shipping rates, and tools to support shippers and small businesses',
   icons: {
     icon: '/images/fx-favicon.ico',
   },
