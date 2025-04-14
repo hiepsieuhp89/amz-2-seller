@@ -131,7 +131,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       render: (text: string, record: IShopProduct) => (
         <Space direction="vertical" size={0} className="max-w-[400px]">
           <Link
-            href={`/product?id=${record?.product?.id}`}
+            href={`${process.env.NEXT_PUBLIC_HOME_URL}/product?id=${record?.product?.id}`}
             target="_blank"
             onClick={() => setSelectedProduct(record.product)}
           >

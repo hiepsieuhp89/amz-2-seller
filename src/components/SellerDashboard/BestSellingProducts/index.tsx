@@ -35,7 +35,7 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
       ellipsis: true,
       render: (text, record) => (
         <Link
-          href={`/product?id=${(record as any)?.product?.id}`}
+          href={`${process.env.NEXT_PUBLIC_HOME_URL}/product?id=${(record as any)?.product?.id}`}
           target="_blank"
           onClick={() => setSelectedProduct((record as any)?.product)}
           className="flex items-center gap-3 hover:text-blue-600 transition-colors"

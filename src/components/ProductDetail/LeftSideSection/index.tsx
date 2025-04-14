@@ -172,7 +172,7 @@ const LeftSideSection = () => {
                 >
                   <Link 
                   onClick={()=> setSelectedProduct(product?.product)}
-                  href={"/product?id=" + product?.product.id} className="block">
+                  href={`${process.env.NEXT_PUBLIC_HOME_URL}/product?id=${product?.product.id}`} className="block">
                     <div className="flex items-center">
                       {/* Product Image */}
                       <div className="w-1/4 xl:w-1/3 overflow-hidden">

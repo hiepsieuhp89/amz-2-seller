@@ -218,7 +218,7 @@ export function BestSellers() {
                   className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
                 >
                   <Link 
-                    href={`/product?id=${product.id}`} 
+                    href={`${process.env.NEXT_PUBLIC_HOME_URL}/product?id=${product.id}`} 
                     className="block h-full"
                     onClick={() => setSelectedProduct(product as unknown as IProduct)}
                   >
@@ -328,7 +328,7 @@ export function BestSellers() {
                   className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
                 >
                   <Link 
-                    href={`/product?id=${product.id}`} 
+                    href={`${process.env.NEXT_PUBLIC_HOME_URL}/product?id=${product.id}`} 
                     className="block h-full"
                     onClick={() => setSelectedProduct(product as unknown as IProduct)}
                   >
@@ -410,7 +410,7 @@ export function BestSellers() {
                 className="pl-4 min-w-[50%] sm:min-w-[33.333%] md:min-w-[25%] lg:min-w-[16.666%] flex-grow-0 flex-shrink-0"
               >
                 <Link 
-                  href={`/product?id=${product.id}`} 
+                  href={`${process.env.NEXT_PUBLIC_HOME_URL}/product?id=${product.id}`} 
                   className="block h-full"
                   onClick={() => setSelectedProduct(product as unknown as IProduct)}
                 >

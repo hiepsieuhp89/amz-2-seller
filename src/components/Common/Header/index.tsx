@@ -127,7 +127,7 @@ export function Header() {
     // Handle product selection from search results
     const handleSelectProduct = (productId: string) => {
         setShowResults(false)
-        router.push(`/product?id=${productId}`)
+        router.push(`${process.env.NEXT_PUBLIC_HOME_URL}/product?id=${productId}`)
         setSelectedProduct(productsData?.data?.data?.find((product: any) => product.id === productId) as IProduct)
     }
 

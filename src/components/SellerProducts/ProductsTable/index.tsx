@@ -352,7 +352,7 @@ const ProductsTable = ({
           <Link
             onClick={() => setSelectedProduct(record.product)}
             target="_blank"
-            href={`/product?id=${record?.product?.id}`}
+            href={`${process.env.NEXT_PUBLIC_HOME_URL}/product?id=${record?.product?.id}`}
           >
             <Button
               icon={
