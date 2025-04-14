@@ -1,12 +1,12 @@
 "use client"
 
 import { useGetMyOrders } from "@/hooks/shop-products"
-import { SearchOutlined } from "@ant-design/icons"
+import { SearchOutlined, DownOutlined } from "@ant-design/icons"
 import { mdiContentSaveEdit, mdiEye, mdiTrashCan } from "@mdi/js"
 import Icon from "@mdi/react"
-import { Badge, Card, Col, Divider, Empty, Input, Row, Space, Spin, Table, Tooltip, Typography, Pagination } from "antd"
+import { Badge, Card, Col, Divider, Empty, Input, Row, Space, Spin, Table, Tooltip, Typography, Pagination, Button } from "antd"
 import type { ColumnsType } from "antd/es/table"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import OrderDetailDialog from "../OrderDetailDialog"
 import {
     Select,
@@ -16,6 +16,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { formatNumber } from "@/utils"
+import { useMediaQuery } from "@/hooks/use-media-query"
 
 const { Title } = Typography
 
@@ -53,6 +54,9 @@ const OrdersTable = () => {
     const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([])
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
     const [isDetailOpen, setIsDetailOpen] = useState(false)
+    
+    // Check if screen is mobile
+    const isMobile = useMediaQuery('(max-width: 768px)')
 
     const handlePaginationChange = (page: number, pageSize?: number) => {
         setCurrentPage(page)
@@ -74,6 +78,10 @@ const OrdersTable = () => {
         setCurrentPage(1);
     };
 
+    const handleExpandRow = (expanded: boolean, record: OrderData) => {
+        setExpandedRowKeys(expanded ? [record.key] : []);
+    };
+
     const columns: ColumnsType<OrderData> = [
         {
             title: "Thời gian",
@@ -81,6 +89,7 @@ const OrdersTable = () => {
             key: "time",
             width: '15%',
             sorter: (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+            responsive: ['md']
         },
         {
             title: "Mã đặt hàng",
@@ -88,6 +97,24 @@ const OrdersTable = () => {
             key: "orderCode",
             width: '15%',
             sorter: (a, b) => a.orderCode.localeCompare(b.orderCode),
+            render: (text, record) => (
+                <div className="flex items-center">
+                    {isMobile && (
+                        <Button
+                            type="text"
+                            icon={<DownOutlined />}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                const isExpanded = expandedRowKeys.includes(record.key);
+                                handleExpandRow(!isExpanded, record);
+                            }}
+                            className={expandedRowKeys.includes(record.key) ? 'rotate-180 mr-2' : 'mr-2'}
+                            style={{ transition: 'transform 0.3s' }}
+                        />
+                    )}
+                    <span>{text}</span>
+                </div>
+            )
         },
         {
             title: "Tổng tiền",
@@ -103,15 +130,18 @@ const OrdersTable = () => {
             key: "status",
             width: 110,
             render: (status) => {
-                const statusMap: Record<string, { text: string, status: 'default' | 'success' | 'warning' | 'error' }> = {
-                    'PENDING': { text: 'Đang chờ xử lý', status: 'warning' },
-                    'CONFIRMED': { text: 'Đã xác nhận', status: 'default' },
-                    'SHIPPING': { text: 'Đang giao hàng', status: 'default' },
-                    'DELIVERED': { text: 'Đã giao hàng', status: 'success' },
-                    'CANCELLED': { text: 'Đã hủy', status: 'error' }
+                const statusMap: Record<string, { text: string, shortText: string, status: 'default' | 'success' | 'warning' | 'error' }> = {
+                    'PENDING': { text: 'Đang chờ xử lý', shortText: 'Chờ xử lý', status: 'warning' },
+                    'CONFIRMED': { text: 'Đã xác nhận', shortText: 'Xác nhận', status: 'default' },
+                    'SHIPPING': { text: 'Đang giao hàng', shortText: 'Đang giao', status: 'default' },
+                    'DELIVERED': { text: 'Đã giao hàng', shortText: 'Đã giao', status: 'success' },
+                    'CANCELLED': { text: 'Đã hủy', shortText: 'Hủy', status: 'error' }
                 }
-                const statusInfo = statusMap[status] || { text: status, status: 'default' }
-                return <Badge status={statusInfo.status} text={statusInfo.text} />
+                const statusInfo = statusMap[status] || { text: status, shortText: status, status: 'default' }
+                return <Badge 
+                    status={statusInfo.status} 
+                    text={isMobile ? statusInfo.shortText : statusInfo.text} 
+                />
             },
             sorter: (a, b) => a.status.localeCompare(b.status),
         },
@@ -123,10 +153,11 @@ const OrdersTable = () => {
             render: (paymentStatus) => {
                 return <Badge 
                     status={paymentStatus === 'PAID' ? 'success' : 'warning'} 
-                    text={paymentStatus === 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán'} 
+                    text={paymentStatus === 'PAID' ? (isMobile ? 'Đã TT' : 'Đã thanh toán') : (isMobile ? 'Chưa TT' : 'Chưa thanh toán')} 
                 />
             },
             sorter: (a, b) => a.paymentStatus.localeCompare(b.paymentStatus),
+            responsive: ['lg']
         },
         {
             title: "Ngày thanh toán",
@@ -138,7 +169,8 @@ const OrdersTable = () => {
                 if (!a.confirmedAt) return 1;
                 if (!b.confirmedAt) return -1;
                 return new Date(a.confirmedAt).getTime() - new Date(b.confirmedAt).getTime();
-            }
+            },
+            responsive: ['lg']
         },
         {
             title: "Số sản phẩm",
@@ -146,6 +178,7 @@ const OrdersTable = () => {
             key: "itemsCount",
             width: 80,
             sorter: (a, b) => a.itemsCount - b.itemsCount,
+            responsive: ['md']
         },
         {
             title: "Hành động",
@@ -176,6 +209,17 @@ const OrdersTable = () => {
             ),
         },
     ];
+
+    // Display visible columns based on screen size
+    const getVisibleColumns = () => {
+        if (isMobile) {
+            // For mobile, only show these essential columns
+            return columns.filter(col => 
+                ['orderCode', 'totalAmount', 'status', 'action'].includes(col.key as string)
+            );
+        }
+        return columns;
+    };
 
     const totalItems = ordersData?.data?.meta?.itemCount || 0
     return (
@@ -216,19 +260,6 @@ const OrdersTable = () => {
                                 <SelectItem value="CANCELLED">Đã huỷ</SelectItem>
                             </SelectContent>
                         </Select>
-                        {/* <Tooltip title="Loại bỏ các đơn đặt hẹn giờ trong tương lai">
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="checkbox"
-                                    checked={excludeFutureOrders}
-                                    onChange={(e) => handleExcludeFutureOrders(e.target.checked)}
-                                    id="exclude-future-orders"
-                                />
-                                <label htmlFor="exclude-future-orders" className="cursor-pointer text-sm">
-                                    Chỉ hiện đơn từ hiện tại trở về trước
-                                </label>
-                            </div>
-                        </Tooltip> */}
                     </Space>
                 </Col>
             </Row>
@@ -236,7 +267,7 @@ const OrdersTable = () => {
             <Divider style={{ margin: "0 0 16px 0" }} />
 
             <Table
-                columns={columns}
+                columns={getVisibleColumns()}
                 dataSource={Array.isArray(ordersData?.data?.data) ? ordersData.data.data.map((order: any) => ({
                     key: order.id,
                     time: new Date(order.orderTime).toLocaleString(),
@@ -252,8 +283,8 @@ const OrdersTable = () => {
                 })) : []}
                 pagination={false}
                 rowKey="key"
-                scroll={{ x: true }}
-                size="middle"
+                scroll={{ x: 'max-content' }}
+                size={isMobile ? "small" : "middle"}
                 rowClassName={() => "order-table-row"}
                 style={{
                     overflowX: 'auto',
@@ -267,22 +298,30 @@ const OrdersTable = () => {
                 loading={isLoading}
                 expandable={{
                     expandedRowKeys,
-                    expandIcon: () => null,
+                    onExpand: handleExpandRow,
+                    expandIcon: () => null, // We control expansion with our custom button
                     expandIconColumnIndex: -1,
                     expandedRowRender: (record: any) => (
                         <div className="p-4 bg-gray-50">
-                            <p>
-                                <strong>Khách hàng:</strong> {record.userId}
-                            </p>
-                            <p>
-                                <strong>Số sản phẩm:</strong> {record.quantity}
-                            </p>
-                            <p>
-                                <strong>Tình trạng thanh toán:</strong>{" "}
-                                <span className={`${record.paymentStatus === 'PAID' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'} px-2 py-1 rounded`}>
-                                    {record.paymentStatus === 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán'}
-                                </span>
-                            </p>
+                            {isMobile && (
+                                <>
+                                    <p><strong>Thời gian:</strong> {record.time}</p>
+                                    <p><strong>Số sản phẩm:</strong> {record.itemsCount}</p>
+                                </>
+                            )}
+                            <p><strong>Khách hàng:</strong> {record.userId}</p>
+                            <p><strong>Số lượng:</strong> {record.quantity}</p>
+                            {isMobile && (
+                                <>
+                                    <p>
+                                        <strong>Thanh toán:</strong>{" "}
+                                        <span className={`${record.paymentStatus === 'PAID' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'} px-2 py-1 rounded`}>
+                                            {record.paymentStatus === 'PAID' ? 'Đã TT' : 'Chưa TT'}
+                                        </span>
+                                    </p>
+                                    {record.confirmedAt && <p><strong>Ngày TT:</strong> {new Date(record.confirmedAt).toLocaleString()}</p>}
+                                </>
+                            )}
                         </div>
                     ),
                 }}
@@ -296,11 +335,13 @@ const OrdersTable = () => {
                         pageSize={pageSize}
                         total={totalItems}
                         showSizeChanger
-                        showQuickJumper
+                        showQuickJumper={!isMobile}
                         onChange={handlePaginationChange}
                         onShowSizeChange={handlePaginationChange}
                         style={{ marginTop: "16px" }}
                         className="custom-pagination"
+                        size={isMobile ? "small" : "default"}
+                        simple={isMobile}
                     />
                 </Col>
             </Row>
