@@ -355,7 +355,7 @@ const SellerOrders = () => {
                     <div className="w-[30px] h-[30px] rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
                       <span className="text-xl">$</span>
                     </div>
-                    <div className="text-xl font-bold">${shopStatisticsData?.data?.totalPendingOrderAmount || "0.00"}</div>
+                    <div className="text-xl font-bold">${formatNumber(shopStatisticsData?.data?.totalPendingOrderAmount || 0)}</div>
                     <div className="text-sm opacity-80 text-center">Tổng Tiền Cần Thanh Toán</div>
                   </div>
                 </Card>
