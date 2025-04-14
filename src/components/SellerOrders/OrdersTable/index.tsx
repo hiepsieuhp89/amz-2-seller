@@ -15,6 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { formatNumber } from "@/utils"
 
 const { Title } = Typography
 
@@ -92,7 +93,7 @@ const OrdersTable = () => {
             dataIndex: "totalAmount",
             key: "totalAmount",
             width: 80,
-            render: (text) => `$${text}`,
+            render: (text) => `$${formatNumber(parseFloat(text))}`,
             sorter: (a, b) => parseFloat(a.totalAmount) - parseFloat(b.totalAmount),
         },
         {
