@@ -22,6 +22,7 @@ import {
   mdiChevronRight,
 } from "@mdi/js";
 import useEmblaCarousel from "embla-carousel-react";
+import { useSearchParams } from 'next/navigation';
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ import { Star } from "lucide-react";
 import { formatNumber } from "@/utils";
 import { message } from "antd";
 import Link from "next/link";
+import { useProductById } from "@/hooks/products";
 
 const RatingStars = ({ rating }: { rating: number }) => {
   return (
@@ -50,15 +52,32 @@ const RatingStars = ({ rating }: { rating: number }) => {
   );
 };
 export default function ProductDetail() {
-  const { selectedProduct } = useSelectedProduct();
+  const searchParams = useSearchParams();
+  const productId = searchParams.get('id');
+  const { product, isLoading, error } = useProductById(productId);
+  const { selectedProduct, setSelectedProduct } = useSelectedProduct();
   const [quantity, setQuantity] = useState<number>(1);
   const [currentImage, setCurrentImage] = useState<number>(0);
   const price = parseFloat(selectedProduct?.price || "0");
-  const totalPrice = price * quantity;
   const availableQuantity = selectedProduct?.stock || 0;
   const imgContainerRef = useRef<HTMLDivElement>(null);
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+
+  // Update selected product when data is fetched
+  useEffect(() => {
+    if (product) {
+      setSelectedProduct(product.data);
+    }
+  }, [product, setSelectedProduct]);
+
+  // Show error message if fetch fails
+  useEffect(() => {
+    if (error) {
+      message.error('Could not load product details');
+      console.error('Error fetching product details:', error);
+    }
+  }, [error]);
 
   // Embla Carousel setup for thumbnails
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -129,6 +148,18 @@ export default function ProductDetail() {
   const handleMouseLeave = () => {
     setIsZoomed(false);
   };
+
+  // Show loading state while fetching product data
+  if (isLoading) {
+    return (
+      <div className="w-full p-4 flex justify-center items-center min-h-[50vh]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4">Loading product details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full p-0 md:py-4 bg-[#EAEDED] flex justify-center">
