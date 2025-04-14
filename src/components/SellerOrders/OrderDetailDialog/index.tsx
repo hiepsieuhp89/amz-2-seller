@@ -8,11 +8,13 @@ import JSBarcode from "jsbarcode"
 import { QRCodeCanvas } from "qrcode.react"
 import Image from "next/image"
 import Icon from "@mdi/react"
-import { mdiPrinter } from "@mdi/js"
+import { mdiPrinter, mdiPlus, mdiMinus, mdiChevronRight } from "@mdi/js"
 import { Button } from "@/components/ui/button"
 import html2canvas from "html2canvas"
 import jsPDF from "jspdf"
 import { useEffect } from "react"
+import { useMediaQuery } from "@/hooks/use-media-query"
+import Link from "next/link"
 
 interface OrderDetailDialogProps {
     orderId: string
@@ -24,6 +26,9 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
     const { data: orderDetailData, isLoading } = useGetOrderDetail(orderId)
     const [barcodeSvg, setBarcodeSvg] = React.useState<string>("")
     const [isPrinting, setIsPrinting] = React.useState<boolean>(false)
+    const isMobile = useMediaQuery("(max-width: 640px)")
+    const [expandedItems, setExpandedItems] = React.useState<Record<string, boolean>>({})
+    
     useEffect(() => {
         if (open && orderDetailData?.data?.id) {
             const barcodeValue = orderDetailData.data.id
@@ -128,6 +133,24 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
         }
     }
 
+    const toggleItemExpand = (itemId: string) => {
+        setExpandedItems(prev => ({
+            ...prev,
+            [itemId]: !prev[itemId]
+        }))
+    }
+
+    // Function to truncate text to 4 lines max
+    const truncateProductName = (name: string) => {
+        // Average characters per line based on mobile view width
+        const avgCharsPerLine = 25
+        const maxChars = avgCharsPerLine * 4
+        
+        if (name.length <= maxChars) return name
+        
+        return name.substring(0, maxChars) + '...'
+    }
+
     if (isLoading) {
         return (
             <Dialog open={open} onOpenChange={onOpenChange}>
@@ -207,15 +230,15 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[1000px] p-0 bg-white rounded-md max-h-[90vh] overflow-y-auto">
+            <DialogContent className={`sm:max-w-[1000px] p-0 bg-white rounded-md max-h-[90vh] overflow-y-auto ${isMobile ? 'max-w-full mx-2' : ''}`}>
                 <div id="preview">
-                    <div className="px-6 py-4 border-b border-b-gray-200 flex justify-between items-center">
-                        <h2 className="text-xl font-bold">Chi tiết đơn hàng</h2>
+                    <div className="px-4 sm:px-6 py-4 border-b border-b-gray-200 flex justify-between items-center">
+                        <h2 className="text-lg sm:text-xl font-bold">Chi tiết đơn hàng</h2>
                     </div>
 
-                    <div className="px-6 mt-6">
-                        <div className="grid grid-cols-12 gap-4">
-                            <div className="col-span-12 lg:col-span-5 border p-4 relative">
+                    <div className="px-4 sm:px-6 mt-4 sm:mt-6">
+                        <div className="grid grid-cols-12 gap-3 sm:gap-4">
+                            <div className="col-span-12 lg:col-span-5 border p-3 sm:p-4 relative">
                                 <div>
                                     <p className="font-bold">{maskUserInfo(userInfo.name, 'name')}</p>
                                     <p>{maskUserInfo(userInfo.email, 'email')}</p>
@@ -225,31 +248,25 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                             </div>
 
                             {/* Trạng thái thanh toán */}
-                            <div className="col-span-12 lg:col-span-7 border p-4 relative">
+                            <div className="col-span-12 lg:col-span-7 border p-3 sm:p-4 relative">
                                 <div className="mb-2">
                                     <p className="text-gray-600 mb-1">Tình trạng thanh toán</p>
                                     {isPrinting ? (
                                         <div className="flex gap-4">
-                                            {/* <p className="py-2 px-4 font-medium">
-                                                {order?.paymentStatus === 'PAID' ? '✓ Đã nhận' : '○ Đã nhận'}
-                                            </p> */}
                                             <p className="py-2 px-4 font-medium">
                                                 {order?.paymentStatus === 'PAID' ? '○ Đã thanh toán' : '✓ Đã thanh toán'}
                                             </p>
                                         </div>
                                     ) : (
                                         <div className="flex gap-4">
-                                            {/* <div className={`py-2 px-4 font-medium ${order?.paymentStatus === 'PAID' ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}>
-                                                Đã nhận
-                                            </div> */}
-                                            <div className={`py-2 px-4 font-medium ${order?.paymentStatus === 'PAID' ? 'bg-gray-100' : 'bg-blue-500 text-white'}`}>
+                                            <div className={`py-1 px-2 sm:py-2 sm:px-4 text-sm sm:text-base font-medium ${order?.paymentStatus === 'PAID' ? 'bg-gray-100' : 'bg-blue-500 text-white'}`}>
                                                 Đã thanh toán
                                             </div>
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div className="grid grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm">
                                     <div>
                                         <p className="text-gray-600">Đặt hàng #</p>
                                         <p>{order?.id.substring(0, 8)}-{order?.id.substring(24, 32)}</p>
@@ -260,7 +277,7 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                     </div>
                                     <div>
                                         <p className="text-gray-600">Ngày đặt hàng</p>
-                                        <p>{formatDate(order?.orderTime || order?.createdAt || '')}</p>
+                                        <p className="break-words">{formatDate(order?.orderTime || order?.createdAt || '')}</p>
                                     </div>
                                     <div>
                                         <p className="text-gray-600">Tổng cộng</p>
@@ -279,65 +296,135 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                         </div>
 
                         {/* Thông tin sản phẩm */}
-                        <div className="my-6 border relative overflow-hidden">
-
-                            <table className="w-full text-sm">
-                                <thead className="bg-gray-50 text-gray-600">
-                                    <tr>
-                                        <th className="py-3 px-4 text-left">#</th>
-                                        <th className="py-3 px-4 text-left">Hình ảnh</th>
-                                        <th className="py-3 px-4 text-left">SỰ MIÊU TẢ</th>
-                                        <th className="py-3 px-4 text-center">LOẠI GIAO HÀNG</th>
-                                        <th className="py-3 px-4 text-center">QTY</th>
-                                        <th className="py-3 px-4 text-right">GIÁ BÁN</th>
-                                        <th className="py-3 px-4 text-right">TOÀN BỘ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                        <div className="my-4 sm:my-6 border relative overflow-x-auto">
+                            {isMobile ? (
+                                <div className="p-2">
                                     {order?.items && order.items.map((item: any, index: number) => (
-                                        <tr key={item.id} className="border-t">
-                                            <td className="py-4 px-4">{index + 1}</td>
-                                            <td className="py-4 px-4">
-                                                <Image
-                                                    quality={100}
-                                                    draggable={false}
-                                                    src={item?.shopProduct?.product?.imageUrls[0] || "/images/white-image.png"}
-                                                    alt="white-image"
-                                                    width={100} height={100} />
-                                            </td>
-                                            <td className="py-4 px-4">
-                                                {item?.shopProduct?.product?.name || item?.shopProduct?.name || 'Sản phẩm'}
-                                            </td>
-                                            <td className="py-4 px-4 text-center">{item?.deliveryType || '-'}</td>
-                                            <td className="py-4 px-4 text-center">{item.quantity}</td>
-                                            <td className="py-4 px-4 text-right">${item.price}</td>
-                                            <td className="py-4 px-4 text-right">${item.totalAmount}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                            {/* Mã vạch và QR code */}
-                            <div className="border p-4 relative">
-                                <h3 className="font-bold mb-3">Thông tin mã hóa</h3>
-                                <div className="flex flex-col gap-4">
-                                    <div className="mb-3">
-                                        {barcodeSvg && <img src={barcodeSvg} alt="Barcode" className="w-full h-auto max-w-full" />}
-                                        <p className="text-center mt-1 text-sm">{order?.id || ''}</p>
-                                    </div>
-                                    <div className="flex items-center justify-center">
-                                        <div className="flex-1">
-                                            <div className="mt-4">
-                                                <p className="font-medium">Thông tin khách hàng:</p>
-                                                <p>{maskUserInfo(userInfo.name, 'name')}</p>
-                                                <p>{maskUserInfo(userInfo.email, 'email')}</p>
-                                                <p>{maskUserInfo(userInfo.phone, 'phone')}</p>
+                                        <div key={item.id} className="border-b py-3">
+                                            <div className="flex items-center mb-2">
+                                                <span className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs mr-2">{index + 1}</span>
+                                                <div className="flex-1">
+                                                    <Link 
+                                                        href={`${process.env.NEXT_PUBLIC_HOME_URL}/product?id=${item?.shopProduct?.product?.id || item?.shopProduct?.id}`}
+                                                        className="font-medium text-sm line-clamp-4 text-blue-600"
+                                                    >
+                                                        {truncateProductName(item?.shopProduct?.product?.name || item?.shopProduct?.name || 'Sản phẩm')}
+                                                    </Link>
+                                                </div>
+                                                <button 
+                                                    onClick={() => toggleItemExpand(item.id)}
+                                                    className="w-6 h-6 flex items-center justify-center bg-gray-100 rounded-full"
+                                                >
+                                                    <Icon path={expandedItems[item.id] ? mdiMinus : mdiPlus} size={0.7} />
+                                                </button>
+                                            </div>
+                                            <div className="flex">
+                                                <div className="w-20 h-20 relative mr-3">
+                                                    <Image
+                                                        quality={80}
+                                                        draggable={false}
+                                                        src={item?.shopProduct?.product?.imageUrls[0] || "/images/white-image.png"}
+                                                        alt="product-image"
+                                                        fill
+                                                        style={{ objectFit: "contain" }}
+                                                    />
+                                                </div>
+                                                {expandedItems[item.id] && (
+                                                    <div className="flex-1">
+                                                        <div className="flex justify-between text-xs mb-1">
+                                                            <span className="text-gray-600">Loại giao hàng:</span>
+                                                            <span>{item?.deliveryType || '-'}</span>
+                                                        </div>
+                                                        <div className="flex justify-between text-xs mb-1">
+                                                            <span className="text-gray-600">Số lượng:</span>
+                                                            <span>{item.quantity}</span>
+                                                        </div>
+                                                        <div className="flex justify-between text-xs mb-1">
+                                                            <span className="text-gray-600">Giá bán:</span>
+                                                            <span>${item.price}</span>
+                                                        </div>
+                                                        <div className="flex justify-between text-xs font-medium">
+                                                            <span className="text-gray-600">Tổng:</span>
+                                                            <span>${item.totalAmount}</span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {!expandedItems[item.id] && (
+                                                    <div className="flex-1 flex items-center">
+                                                        <div className="ml-2 text-sm text-gray-500">
+                                                            SL: {item.quantity} | ${item.totalAmount}
+                                                        </div>
+                                                        <Icon path={mdiChevronRight} size={0.7} className="ml-auto text-gray-400" />
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
-                                        <div className="flex flex-col items-center justify-center">
-                                            <QRCodeCanvas value={`${window.location.origin}/orders?id=${order?.id}`} size={100} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <table className="w-full text-sm">
+                                    <thead className="bg-gray-50 text-gray-600">
+                                        <tr>
+                                            <th className="py-3 px-4 text-left">#</th>
+                                            <th className="py-3 px-4 text-left">Hình ảnh</th>
+                                            <th className="py-3 px-4 text-left">SỰ MIÊU TẢ</th>
+                                            <th className="py-3 px-4 text-center">LOẠI GIAO HÀNG</th>
+                                            <th className="py-3 px-4 text-center">QTY</th>
+                                            <th className="py-3 px-4 text-right">GIÁ BÁN</th>
+                                            <th className="py-3 px-4 text-right">TOÀN BỘ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {order?.items && order.items.map((item: any, index: number) => (
+                                            <tr key={item.id} className="border-t">
+                                                <td className="py-4 px-4">{index + 1}</td>
+                                                <td className="py-4 px-4">
+                                                    <Image
+                                                        quality={100}
+                                                        draggable={false}
+                                                        src={item?.shopProduct?.product?.imageUrls[0] || "/images/white-image.png"}
+                                                        alt="white-image"
+                                                        width={100} height={100} />
+                                                </td>
+                                                <td className="py-4 px-4">
+                                                    <Link 
+                                                        href={`/products/${item?.shopProduct?.product?.id || item?.shopProduct?.id}`}
+                                                        className="text-blue-600 hover:underline"
+                                                    >
+                                                        {item?.shopProduct?.product?.name || item?.shopProduct?.name || 'Sản phẩm'}
+                                                    </Link>
+                                                </td>
+                                                <td className="py-4 px-4 text-center">{item?.deliveryType || '-'}</td>
+                                                <td className="py-4 px-4 text-center">{item.quantity}</td>
+                                                <td className="py-4 px-4 text-right">${item.price}</td>
+                                                <td className="py-4 px-4 text-right">${item.totalAmount}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                            {/* Mã vạch và QR code */}
+                            <div className="border p-3 sm:p-4 relative">
+                                <h3 className="font-bold mb-2 sm:mb-3 text-sm sm:text-base">Thông tin mã hóa</h3>
+                                <div className="flex flex-col gap-3 sm:gap-4">
+                                    <div className="mb-2 sm:mb-3">
+                                        {barcodeSvg && <img src={barcodeSvg} alt="Barcode" className="w-full h-auto max-w-full" />}
+                                        <p className="text-center mt-1 text-xs sm:text-sm">{order?.id || ''}</p>
+                                    </div>
+                                    <div className="flex items-center justify-center flex-wrap sm:flex-nowrap">
+                                        <div className="flex-1 mb-3 sm:mb-0">
+                                            <div className="mt-2 sm:mt-4">
+                                                <p className="font-medium text-sm">Thông tin khách hàng:</p>
+                                                <p className="text-xs sm:text-sm">{maskUserInfo(userInfo.name, 'name')}</p>
+                                                <p className="text-xs sm:text-sm">{maskUserInfo(userInfo.email, 'email')}</p>
+                                                <p className="text-xs sm:text-sm">{maskUserInfo(userInfo.phone, 'phone')}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col items-center justify-center w-full sm:w-auto">
+                                            <QRCodeCanvas value={`${window.location.origin}/orders?id=${order?.id}`} size={isMobile ? 80 : 100} />
                                             <p className="text-center mt-1 text-xs text-gray-500">Mã QR đơn hàng</p>
                                         </div>
                                     </div>
@@ -345,8 +432,8 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                             </div>
 
                             {/* Thông tin giá */}
-                            <div className="border p-4 relative">
-                                <div className="space-y-3">
+                            <div className="border p-3 sm:p-4 relative">
+                                <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                                     <div className="flex justify-between py-1">
                                         <span className="text-gray-600">Giá nhà kho:</span>
                                         <span>${(parseFloat(order?.totalAmount || '0') * 0.8).toFixed(2)}</span>
@@ -371,7 +458,7 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                                         <span className="text-gray-600">Phiếu mua hàng:</span>
                                         <span>$0.00</span>
                                     </div>
-                                    <Divider className="my-2" />
+                                    <Divider className="my-1 sm:my-2" />
                                     <div className="flex justify-between py-1 font-bold">
                                         <span className="text-gray-600">TOÀN BỘ:</span>
                                         <span>${order?.totalAmount}</span>
@@ -383,25 +470,25 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                 </div>
 
                 {/* Thông tin hậu cần */}
-                <div className="px-6">
-                    <div className="border p-4">
-                        <h3 className="font-bold mb-4">Thông tin hậu cần</h3>
+                <div className="px-4 sm:px-6">
+                    <div className="border p-3 sm:p-4">
+                        <h3 className="font-bold mb-3 sm:mb-4 text-sm sm:text-base">Thông tin hậu cần</h3>
                         <div className="relative">
                             {/* Vertical timeline line */}
                             <div className="absolute left-[7px] top-0 bottom-0 w-[2px] bg-gray-200"></div>
 
-                            <div className="space-y-6">
+                            <div className="space-y-4 sm:space-y-6">
                                 {order?.statusHistory && order.statusHistory.map((history: any, index: number) => (
-                                    <div key={history.id} className="flex items-start gap-4">
+                                    <div key={history.id} className="flex items-start gap-3 sm:gap-4">
                                         {/* Timeline dot */}
                                         <div className="relative z-10 mt-1">
                                             <div className={`w-4 h-4 rounded-full ${index === 0 ? 'bg-blue-500' : 'bg-green-500'} border-2 border-white`}></div>
                                         </div>
 
                                         {/* Content */}
-                                        <div className="flex-1 bg-gray-50 p-3 rounded-md border border-gray-100 shadow-sm">
-                                            <p className="text-sm text-gray-500 mb-1">{formatDate(history.time)}</p>
-                                            <p className="font-medium">{history.description}</p>
+                                        <div className="flex-1 bg-gray-50 p-2 sm:p-3 rounded-md border border-gray-100 shadow-sm">
+                                            <p className="text-xs sm:text-sm text-gray-500 mb-1">{formatDate(history.time)}</p>
+                                            <p className="font-medium text-xs sm:text-sm">{history.description}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -409,12 +496,12 @@ const OrderDetailDialog = ({ orderId, open, onOpenChange }: OrderDetailDialogPro
                         </div>
                     </div>
                 </div>
-                <div className="flex justify-end w-full my-6 px-6">
+                <div className="flex justify-end w-full my-4 sm:my-6 px-4 sm:px-6">
                     <Button
                         onClick={handlePrintInvoice}
-                        className="flex items-center h-10 w-10 rounded-sm bg-[#3B82F6] hover:bg-[#3B82F6]/80"
+                        className="flex items-center h-8 w-8 sm:h-10 sm:w-10 rounded-sm bg-[#3B82F6] hover:bg-[#3B82F6]/80"
                     >
-                        <Icon path={mdiPrinter} size={1} />
+                        <Icon path={mdiPrinter} size={isMobile ? 0.8 : 1} />
                     </Button>
                 </div>
             </DialogContent>

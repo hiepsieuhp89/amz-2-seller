@@ -491,7 +491,7 @@ function LayoutPage() {
             {/* Footer */}
             <div className="p-4 border-t border-gray-800 bg-[#232f3e]">
               <div className="text-white/60 text-xs text-center">
-                © {new Date().getFullYear()} Amazon CMS
+                © {new Date().getFullYear()} Amazon Global Selling
               </div>
             </div>
           </div>
