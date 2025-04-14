@@ -1,12 +1,19 @@
-import type React from "react"
-import { Row, Col } from "antd"
-import { useShopDetailStatistics } from "@/hooks/dashboard"
-import { BoxSeamIcon, StarsIcon, ReceiptIcon, PersonHeartsIcon, EyeIcon } from "../mockData"
-import { Package, DollarSign, ShoppingCart, Heart, Eye } from "lucide-react"
-import { useGetMyShopProducts } from "@/hooks/shop-products"
+import type React from "react";
+import { Row, Col } from "antd";
+import { useShopDetailStatistics } from "@/hooks/dashboard";
+import {
+  BoxSeamIcon,
+  StarsIcon,
+  ReceiptIcon,
+  PersonHeartsIcon,
+  EyeIcon,
+} from "../mockData";
+import { Package, DollarSign, ShoppingCart, Heart, Eye } from "lucide-react";
+import { useGetMyShopProducts } from "@/hooks/shop-products";
+import { formatNumber } from "@/utils";
 
 const ShopInfo = () => {
-  const { detailStatistics } = useShopDetailStatistics()
+  const { detailStatistics } = useShopDetailStatistics();
   const { data: shopProductsData } = useGetMyShopProducts({
     page: 1,
   });
@@ -14,7 +21,7 @@ const ShopInfo = () => {
   const infoItems = [
     {
       icon: <Package className="h-5 w-5" />,
-      value: totalItems || 0,
+      value: formatNumber(parseFloat(totalItems.toString())),
       label: "Sản phẩm",
       bgColor: "bg-purple-100",
       textColor: "text-purple-700",
@@ -22,7 +29,7 @@ const ShopInfo = () => {
     },
     {
       icon: <DollarSign className="h-5 w-5" />,
-      value: `$${(detailStatistics?.totalProfit || 0).toLocaleString('vi-VN')}`,
+      value: `$${formatNumber(parseFloat(detailStatistics?.totalProfit || 0))}`,
       label: "Lợi nhuận",
       bgColor: "bg-amber-100",
       textColor: "text-amber-700",
@@ -30,7 +37,7 @@ const ShopInfo = () => {
     },
     {
       icon: <ShoppingCart className="h-5 w-5" />,
-      value: detailStatistics?.totalOrders || 0,
+      value: formatNumber(parseFloat(detailStatistics?.totalOrders || 0)),
       label: "Đơn hàng",
       bgColor: "bg-cyan-100",
       textColor: "text-cyan-700",
@@ -38,7 +45,7 @@ const ShopInfo = () => {
     },
     {
       icon: <Heart className="h-5 w-5" />,
-      value: detailStatistics?.totalSales || 0,
+      value: formatNumber(parseFloat(detailStatistics?.totalSales || 0)),
       label: "Lượt bán",
       bgColor: "bg-rose-100",
       textColor: "text-rose-700",
@@ -46,39 +53,48 @@ const ShopInfo = () => {
     },
     {
       icon: <Eye className="h-5 w-5" />,
-      value: detailStatistics?.totalViews || 0,
+      value: formatNumber(parseFloat(detailStatistics?.totalViews || 0)),
       label: "Lượt xem",
       bgColor: "bg-green-100",
       textColor: "text-green-700",
       iconColor: "text-green-500",
     },
-  ]
+  ];
 
   return (
     <div className="rounded-xl bg-white p-5 h-full border border-gray-100 shadow-sm">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">Thông tin cửa hàng</h3>
-        <p className="text-sm text-gray-500 mt-1">Tổng quan hoạt động cửa hàng</p>
+        <h3 className="text-lg font-semibold text-gray-800">
+          Thông tin cửa hàng
+        </h3>
+        <p className="text-sm text-gray-500 mt-1">
+          Tổng quan hoạt động cửa hàng
+        </p>
       </div>
 
       <Row gutter={[16, 16]} className="mt-3">
         {infoItems.map((item, index) => (
           <Col xs={24} sm={12} key={index}>
             <div className="flex items-center p-3 rounded-lg transition-all duration-200 hover:bg-gray-50">
-              <div className={`w-10 h-10 flex-shrink-0 rounded-lg mr-3 flex justify-center items-center ${item.bgColor}`}>
+              <div
+                className={`w-10 h-10 flex-shrink-0 rounded-lg mr-3 flex justify-center items-center ${item.bgColor}`}
+              >
                 <span className={item.iconColor}>{item.icon}</span>
               </div>
               <div>
-                <h5 className={`text-lg font-bold ${item.textColor} m-0`}>{item.value}</h5>
-                <span className="text-xs font-medium text-gray-500">{item.label}</span>
+                <h5 className={`text-lg font-bold ${item.textColor} m-0`}>
+                  {item.value}
+                </h5>
+                <span className="text-xs font-medium text-gray-500">
+                  {item.label}
+                </span>
               </div>
             </div>
           </Col>
         ))}
       </Row>
     </div>
-  )
-}
+  );
+};
 
-export default ShopInfo
-
+export default ShopInfo;
