@@ -100,7 +100,7 @@ const LeftSideSection = () => {
                   {/* Shop Name & Location */}
                   <div>
                     <Link href={"/shop?id=" + profileData?.data?.id} className="text-sm flex items-center font-semibold">
-                      ss{profileData?.data?.shopName || "Amazon"}
+                      {profileData?.data?.shopName || "Amazon"}
                       <motion.span
                         className="ml-2 text-blue-500"
                       >
