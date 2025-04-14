@@ -485,7 +485,7 @@ const Storehouse = () => {
               </div>
             )}
             
-            <div className="md:hidden fixed bottom-4 right-4 z-10">
+            <div className="md:hidden fixed bottom-24 right-3 z-10">
               <Button
                 type="primary"
                 shape="circle"
