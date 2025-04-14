@@ -30,6 +30,7 @@ interface OrderData {
     itemsCount: number
     userId: string
     quantity: number
+    confirmedAt: string | null
 }
 
 const OrdersTable = () => {
@@ -126,6 +127,18 @@ const OrdersTable = () => {
                 />
             },
             sorter: (a, b) => a.paymentStatus.localeCompare(b.paymentStatus),
+        },
+        {
+            title: "Ngày thanh toán",
+            dataIndex: "confirmedAt",
+            key: "confirmedAt",
+            width: 120,
+            render: (confirmedAt) => confirmedAt ? new Date(confirmedAt).toLocaleString() : "-",
+            sorter: (a, b) => {
+                if (!a.confirmedAt) return 1;
+                if (!b.confirmedAt) return -1;
+                return new Date(a.confirmedAt).getTime() - new Date(b.confirmedAt).getTime();
+            }
         },
         {
             title: "Số sản phẩm",
@@ -234,7 +247,8 @@ const OrdersTable = () => {
                     paymentStatus: order.paymentStatus || 'UNPAID',
                     itemsCount: order.items.length,
                     userId: order.userId,
-                    quantity: order.items.reduce((acc: number, item: any) => acc + item.quantity, 0)
+                    quantity: order.items.reduce((acc: number, item: any) => acc + item.quantity, 0),
+                    confirmedAt: order.confirmedAt
                 })) : []}
                 pagination={false}
                 rowKey="key"
