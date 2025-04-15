@@ -559,7 +559,7 @@ const SignUpForm = () => {
           </div>
           
           <div className="mt-6 pt-4 border-t border-gray-200 text-sm text-gray-500">
-            <p>© 1996-2023, Amazon.com, Inc. hoặc các công ty liên kết. Đã đăng ký Bản quyền.</p>
+            <p>© 1996-2023, Amz-sellpanels.store, Inc. hoặc các công ty liên kết. Đã đăng ký Bản quyền.</p>
           </div>
         </div>
       </Modal>

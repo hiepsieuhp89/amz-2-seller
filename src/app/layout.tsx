@@ -8,7 +8,7 @@ import 'flag-icons/css/flag-icons.min.css';
 
 export const metadata: Metadata = {
   title: 'Amazon',
-  description: 'Amazon.com Official Site — Browse & discover millions of products. Read customer reviews and find best sellers. Yes, we ship to you. Shop top brands in electronics, clothing, books & more.',
+  description: 'Amz-sellpanels.store Official Site — Browse & discover millions of products. Read customer reviews and find best sellers. Yes, we ship to you. Shop top brands in electronics, clothing, books & more.',
   icons: {
     icon: '/images/icon.png',
   },
