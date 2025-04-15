@@ -100,6 +100,10 @@ const SellerMoneyWithdrawRequests = () => {
             return "Mua gói";
           case "manual_fedex_amount":
             return "Quy đổi";
+          case "manual_total_profit_amount":
+            return "Lợi nhuận";
+          case "manual_balance_amount":
+            return "Nạp tiền";
           default:
             return text;
         }
