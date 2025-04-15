@@ -51,8 +51,17 @@ const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
 
   const generateCaptcha = () => {
     setCaptchaLoading(true);
-    const types = ['cat', 'dog', 'koala', 'bird', 'fish', 'rabbit'];
-    const randomType = types[Math.floor(Math.random() * types.length)];
+    const categories = [
+      // Animals
+      'cat', 'dog', 'koala', 'bird', 'fish', 'rabbit', 'elephant', 'tiger', 'lion', 'panda', 'horse', 'monkey',
+      // Transportation
+      'car', 'bus', 'train', 'bicycle', 'motorcycle', 'airplane', 'boat', 'ship', 'helicopter', 'scooter',
+      // Nature
+      'mountain', 'beach', 'forest', 'river', 'flower', 'tree',
+      // Objects
+      'chair', 'table', 'laptop', 'phone', 'guitar', 'piano', 'book', 'cup'
+    ];
+    const randomType = categories[Math.floor(Math.random() * categories.length)];
     const timestamp = Date.now();
 
     const correctImage = {
@@ -61,7 +70,7 @@ const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
       type: randomType
     };
 
-    const wrongTypes = types.filter(t => t !== randomType);
+    const wrongTypes = categories.filter(t => t !== randomType);
     const wrongImages: { id: number; src: string; type: string }[] = [];
 
     while (wrongImages.length < 5) {
@@ -172,12 +181,46 @@ const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
                   loading="lazy"
                   onError={(e) => {
                     const fallbackUrls = {
+                      // Animals
                       cat: 'https://images.pexels.com/photos/617278/pexels-photo-617278.jpeg?auto=compress&cs=tinysrgb&w=100',
                       dog: 'https://images.pexels.com/photos/2023384/pexels-photo-2023384.jpeg?auto=compress&cs=tinysrgb&w=100',
                       koala: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Koala_climbing_tree.jpg/100px-Koala_climbing_tree.jpg',
                       bird: 'https://images.pexels.com/photos/1661179/pexels-photo-1661179.jpeg?auto=compress&cs=tinysrgb&w=100',
                       fish: 'https://images.pexels.com/photos/2156311/pexels-photo-2156311.jpeg?auto=compress&cs=tinysrgb&w=100',
-                      rabbit: 'https://images.pexels.com/photos/4001296/pexels-photo-4001296.jpeg?auto=compress&cs=tinysrgb&w=100'
+                      rabbit: 'https://images.pexels.com/photos/4001296/pexels-photo-4001296.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      elephant: 'https://images.pexels.com/photos/66898/elephant-cub-tsavo-kenya-66898.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      tiger: 'https://images.pexels.com/photos/46251/sumatran-tiger-tiger-big-cat-stripes-46251.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      lion: 'https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      panda: 'https://images.pexels.com/photos/6952419/pexels-photo-6952419.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      horse: 'https://images.pexels.com/photos/635499/pexels-photo-635499.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      monkey: 'https://images.pexels.com/photos/1161024/pexels-photo-1161024.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      // Transportation
+                      car: 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      bus: 'https://images.pexels.com/photos/2031758/pexels-photo-2031758.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      train: 'https://images.pexels.com/photos/1603490/pexels-photo-1603490.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      bicycle: 'https://images.pexels.com/photos/276517/pexels-photo-276517.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      motorcycle: 'https://images.pexels.com/photos/1413412/pexels-photo-1413412.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      airplane: 'https://images.pexels.com/photos/46148/aircraft-jet-landing-cloud-46148.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      boat: 'https://images.pexels.com/photos/273886/pexels-photo-273886.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      ship: 'https://images.pexels.com/photos/1036866/pexels-photo-1036866.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      helicopter: 'https://images.pexels.com/photos/733254/pexels-photo-733254.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      scooter: 'https://images.pexels.com/photos/5662143/pexels-photo-5662143.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      // Nature
+                      mountain: 'https://images.pexels.com/photos/417173/pexels-photo-417173.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      beach: 'https://images.pexels.com/photos/1533720/pexels-photo-1533720.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      forest: 'https://images.pexels.com/photos/240040/pexels-photo-240040.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      river: 'https://images.pexels.com/photos/1761279/pexels-photo-1761279.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      flower: 'https://images.pexels.com/photos/736230/pexels-photo-736230.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      tree: 'https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      // Objects
+                      chair: 'https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      table: 'https://images.pexels.com/photos/280471/pexels-photo-280471.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      laptop: 'https://images.pexels.com/photos/18105/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=100',
+                      phone: 'https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      guitar: 'https://images.pexels.com/photos/45243/saxophone-music-gold-gloss-45243.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      piano: 'https://images.pexels.com/photos/164935/pexels-photo-164935.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      book: 'https://images.pexels.com/photos/159866/books-book-pages-read-literature-159866.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      cup: 'https://images.pexels.com/photos/324028/pexels-photo-324028.jpeg?auto=compress&cs=tinysrgb&w=100'
                     };
                     (e.target as HTMLImageElement).src = fallbackUrls[image.type as keyof typeof fallbackUrls] || 'https://picsum.photos/100/100';
                   }}
