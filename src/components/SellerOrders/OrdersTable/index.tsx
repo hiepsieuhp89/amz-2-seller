@@ -32,7 +32,7 @@ interface OrderData {
     userId: string
     quantity: number
     confirmedAt: string | null
-    profit: string | null
+    totalProfit: string | null
 }
 
 const OrdersTable = () => {
@@ -141,13 +141,13 @@ const OrdersTable = () => {
         },
         {
             title: "Lợi nhuận",
-            dataIndex: "profit",
-            key: "profit",
+            dataIndex: "totalProfit",
+            key: "totalProfit",
             width: 80,
             render: (text) => text ? `$${formatNumber(parseFloat(text))}` : "-",
             sorter: (a, b) => {
-                const profitA = a.profit ? parseFloat(a.profit) : 0;
-                const profitB = b.profit ? parseFloat(b.profit) : 0;
+                const profitA = a.totalProfit ? parseFloat(a.totalProfit) : 0;
+                const profitB = b.totalProfit ? parseFloat(b.totalProfit) : 0;
                 return profitA - profitB;
             },
         },
@@ -232,7 +232,7 @@ const OrdersTable = () => {
         if (isMobile) {
             // For mobile, only show these essential columns
             return columns.filter(col => 
-                ['orderCode', 'totalAmount', 'status', 'action'].includes(col.key as string)
+                ['orderCode', 'status', 'action'].includes(col.key as string)
             );
         }
         return columns;
@@ -297,7 +297,7 @@ const OrdersTable = () => {
                     userId: order.userId,
                     quantity: order.items.reduce((acc: number, item: any) => acc + item.quantity, 0),
                     confirmedAt: order.confirmedAt,
-                    profit: order.profit || null
+                    totalProfit: order.totalProfit || null
                 })) : []}
                 pagination={false}
                 rowKey="key"
@@ -321,25 +321,18 @@ const OrdersTable = () => {
                     expandIconColumnIndex: -1,
                     expandedRowRender: (record: any) => (
                         <div className="p-4 bg-gray-50">
-                            {isMobile && (
-                                <>
-                                    <p><strong>Thời gian:</strong> {record.time}</p>
-                                    <p><strong>Số sản phẩm:</strong> {record.itemsCount}</p>
-                                </>
-                            )}
+                            <p><strong>Ngày đặt hàng:</strong> {record.time}</p>
+                            <p><strong>Số sản phẩm:</strong> {record.itemsCount}</p>
                             <p><strong>Khách hàng:</strong> {record.userId}</p>
-                            <p><strong>Số lượng:</strong> {record.quantity}</p>
-                            {isMobile && (
-                                <>
-                                    <p>
-                                        <strong>Thanh toán:</strong>{" "}
-                                        <span className={`${record.paymentStatus === 'PAID' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'} px-2 py-1 rounded`}>
-                                            {record.paymentStatus === 'PAID' ? 'Đã TT' : 'Chưa TT'}
-                                        </span>
-                                    </p>
-                                    {record.confirmedAt && <p><strong>Ngày TT:</strong> {new Date(record.confirmedAt).toLocaleString()}</p>}
-                                </>
-                            )}
+                            <p><strong>Tổng tiền:</strong> ${formatNumber(parseFloat(record.totalAmount))}</p>
+                            <p><strong>Lợi nhuận:</strong> {record.totalProfit ? `$${formatNumber(parseFloat(record.totalProfit))}` : "-"}</p>
+                            <p>
+                                <strong>Thanh toán:</strong>{" "}
+                                <span className={`${record.paymentStatus === 'PAID' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'} px-2 py-1 rounded`}>
+                                    {record.paymentStatus === 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                                </span>
+                            </p>
+                            {record.confirmedAt && <p><strong>Ngày thanh toán:</strong> {new Date(record.confirmedAt).toLocaleString()}</p>}
                         </div>
                     ),
                 }}

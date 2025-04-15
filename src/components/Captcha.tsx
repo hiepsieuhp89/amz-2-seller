@@ -39,7 +39,10 @@ interface CaptchaProps {
 }
 
 const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
-  const [captchaType, setCaptchaType] = useState<CaptchaType>('image');
+  const [captchaType, setCaptchaType] = useState<CaptchaType>(() => {
+    const types: CaptchaType[] = ['image', 'audio', 'text'];
+    return types[Math.floor(Math.random() * types.length)];
+  });
   const [captchaLoading, setCaptchaLoading] = useState(false);
   const [captchaTarget, setCaptchaTarget] = useState('');
   const [images, setImages] = useState<Array<{ id: number, src: string, type: string }>>([]);
@@ -82,11 +85,6 @@ const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
       setCaptchaLoading(false);
     }, 500);
   };
-  useEffect(() => {
-    if (captchaType === 'image') {
-      generateCaptcha();
-    }
-  }, [captchaType]);
 
   const generateRandomCaptcha = () => {
     const types: CaptchaType[] = ['image', 'audio', 'text'];
@@ -101,6 +99,16 @@ const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
       setAudioCaptcha(generateAudioCaptcha());
     }
   };
+
+  useEffect(() => {
+    if (captchaType === 'image') {
+      generateCaptcha();
+    } else if (captchaType === 'text') {
+      setTextCaptcha(generateTextCaptcha());
+    } else if (captchaType === 'audio') {
+      setAudioCaptcha(generateAudioCaptcha());
+    }
+  }, [captchaType]);
 
   const handleCaptchaSubmit = (userInput: string) => {
     let isValid = false;
