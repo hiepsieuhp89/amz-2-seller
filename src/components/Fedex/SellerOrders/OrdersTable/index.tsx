@@ -251,86 +251,95 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
         key: "status",
         width: isMobile ? "100%" : "15%",
         responsive: ['sm'],
-        render: (status) => {
+        render: (status, record) => {
+          let statusElement;
           switch (status) {
             case 'PENDING':
-              return (
-                <Badge
-                  className="self-start"
-                  count={
-                    <div className="animate-gradient bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 text-gray-600 px-2 py-1 rounded font-medium text-sm">
-                      🕙 Đang chờ xử lý
-                    </div>
-                  }
-                />
+              statusElement = (
+                <div className="animate-gradient bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 text-gray-600 px-2 py-1 rounded font-medium text-sm">
+                  🕙 Đang chờ xử lý
+                </div>
               );
+              break;
             case 'CONFIRMED':
-              return (
-                <Badge
-                  className="self-start"
-                  count={
-                    <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded font-medium text-sm">
-                      ✓ Đã xác nhận
-                    </div>
-                  }
-                />
+              statusElement = (
+                <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded font-medium text-sm">
+                  ✓ Đã xác nhận
+                </div>
               );
+              break;
             case 'SHIPPING':
-              return (
-                <Badge
-                  className="self-start"
-                  count={
-                    <div className="bg-purple-100 text-purple-600 px-2 py-1 rounded font-medium text-sm">
-                      🚚 Đang trên đường đi
-                    </div>
-                  }
-                />
+              statusElement = (
+                <div className="bg-purple-100 text-purple-600 px-2 py-1 rounded font-medium text-sm">
+                  🚚 Đang trên đường đi
+                </div>
               );
+              break;
             case 'DELIVERED':
-              return (
-                <Badge
-                  className="self-start"
-                  count={
-                    <div className="bg-green-100 text-green-600 px-2 py-1 rounded font-medium text-sm">
-                      ✓ Đã giao hàng
-                    </div>
-                  }
-                />
+              statusElement = (
+                <div className="bg-green-100 text-green-600 px-2 py-1 rounded font-medium text-sm">
+                  ✓ Đã giao hàng
+                </div>
               );
+              break;
             case 'CANCELED':
-              return (
-                <Badge
-                  className="self-start"
-                  count={
-                    <div className="bg-red-100 text-red-600 px-2 py-1 rounded font-medium text-sm">
-                      ✕ Đã hủy
-                    </div>
-                  }
-                />
+              statusElement = (
+                <div className="bg-red-100 text-red-600 px-2 py-1 rounded font-medium text-sm">
+                  ✕ Đã hủy
+                </div>
               );
+              break;
             case 'REJECTED':
-              return (
-                <Badge
-                  className="self-start"
-                  count={
-                    <div className="bg-red-100 text-red-600 px-2 py-1 rounded font-medium text-sm">
-                      ✕ Đã từ chối
-                    </div>
-                  }
-                />
+              statusElement = (
+                <div className="bg-red-100 text-red-600 px-2 py-1 rounded font-medium text-sm">
+                  ✕ Đã từ chối
+                </div>
               );
+              break;
             default:
-              return (
-                <Badge
-                  className="self-start"
-                  count={
-                    <div className="bg-gray-100 text-gray-600 px-2 py-1 rounded font-medium text-sm">
-                      Không xác định
-                    </div>
-                  }
-                />
+              statusElement = (
+                <div className="bg-gray-100 text-gray-600 px-2 py-1 rounded font-medium text-sm">
+                  Không xác định
+                </div>
               );
           }
+
+          const delayStatus = record.delayStatus;
+          let delayElement = null;
+
+          if (delayStatus && delayStatus !== 'NORMAL') {
+            let delayText;
+            switch (delayStatus) {
+              case 'DELAY_24H':
+                delayText = '24h';
+                break;
+              case 'DELAY_36H':
+                delayText = '36h';
+                break;
+              case 'DELAY_72H':
+                delayText = '72h';
+                break;
+              default:
+                if (delayStatus.startsWith('DELAY_')) {
+                  delayText = delayStatus.replace('DELAY_', '');
+                } else {
+                  delayText = delayStatus;
+                }
+            }
+            
+            delayElement = (
+              <div className="bg-orange-100 text-orange-600 px-2 py-1 rounded font-medium text-sm mt-1">
+                ⚠️ Trễ {delayText}
+              </div>
+            );
+          }
+
+          return (
+            <div className="flex flex-col">
+              {statusElement}
+              {delayElement}
+            </div>
+          );
         },
       },
       {
@@ -419,50 +428,94 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
             <div>
               <div className="text-xs text-gray-500 mb-1">Tình trạng giao hàng:</div>
               {(() => {
+                let statusElement;
                 switch (record.status) {
                   case 'PENDING':
-                    return (
+                    statusElement = (
                       <div className="animate-gradient bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 text-gray-600 px-2 py-1 rounded text-xs inline-block">
                         🕙 Đang chờ xử lý
                       </div>
                     );
+                    break;
                   case 'CONFIRMED':
-                    return (
+                    statusElement = (
                       <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs inline-block">
                         ✓ Đã xác nhận
                       </div>
                     );
+                    break;
                   case 'SHIPPING':
-                    return (
+                    statusElement = (
                       <div className="bg-purple-100 text-purple-600 px-2 py-1 rounded text-xs inline-block">
                         🚚 Đang trên đường đi
                       </div>
                     );
+                    break;
                   case 'DELIVERED':
-                    return (
+                    statusElement = (
                       <div className="bg-green-100 text-green-600 px-2 py-1 rounded text-xs inline-block">
                         ✓ Đã giao hàng
                       </div>
                     );
+                    break;
                   case 'CANCELED':
-                    return (
+                    statusElement = (
                       <div className="bg-red-100 text-red-600 px-2 py-1 rounded text-xs inline-block">
                         ✕ Đã hủy
                       </div>
                     );
+                    break;
                   case 'REJECTED':
-                    return (
+                    statusElement = (
                       <div className="bg-red-100 text-red-600 px-2 py-1 rounded text-xs inline-block">
                         ✕ Đã từ chối
                       </div>
                     );
+                    break;
                   default:
-                    return (
+                    statusElement = (
                       <div className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs inline-block">
                         Không xác định
                       </div>
                     );
                 }
+
+                const delayStatus = record.delayStatus;
+                let delayElement = null;
+
+                if (delayStatus && delayStatus !== 'NORMAL') {
+                  let delayText;
+                  switch (delayStatus) {
+                    case 'DELAY_24H':
+                      delayText = '24h';
+                      break;
+                    case 'DELAY_36H':
+                      delayText = '36h';
+                      break;
+                    case 'DELAY_72H':
+                      delayText = '72h';
+                      break;
+                    default:
+                      if (delayStatus.startsWith('DELAY_')) {
+                        delayText = delayStatus.replace('DELAY_', '');
+                      } else {
+                        delayText = delayStatus;
+                      }
+                  }
+                  
+                  delayElement = (
+                    <div className="bg-orange-100 text-orange-600 px-2 py-1 rounded text-xs inline-block mt-1">
+                      ⚠️ Trễ {delayText}
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="flex flex-col">
+                    {statusElement}
+                    {delayElement}
+                  </div>
+                );
               })()}
             </div>
             <div>
