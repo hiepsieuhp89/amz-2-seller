@@ -32,6 +32,7 @@ interface OrderData {
     userId: string
     quantity: number
     confirmedAt: string | null
+    profit: string | null
 }
 
 const OrdersTable = () => {
@@ -84,7 +85,7 @@ const OrdersTable = () => {
 
     const columns: ColumnsType<OrderData> = [
         {
-            title: "Thời gian",
+            title: "Ngày đặt hàng",
             dataIndex: "time",
             key: "time",
             width: '15%',
@@ -117,12 +118,38 @@ const OrdersTable = () => {
             )
         },
         {
+            title: "Số sản phẩm",
+            dataIndex: "itemsCount",
+            key: "itemsCount",
+            width: 80,
+            sorter: (a, b) => a.itemsCount - b.itemsCount,
+        },
+        {
+            title: "Khách hàng",
+            dataIndex: "userId",
+            key: "userId",
+            width: 120,
+            sorter: (a, b) => a.userId.localeCompare(b.userId),
+        },
+        {
             title: "Tổng tiền",
             dataIndex: "totalAmount",
             key: "totalAmount",
             width: 80,
             render: (text) => `$${formatNumber(parseFloat(text))}`,
             sorter: (a, b) => parseFloat(a.totalAmount) - parseFloat(b.totalAmount),
+        },
+        {
+            title: "Lợi nhuận",
+            dataIndex: "profit",
+            key: "profit",
+            width: 80,
+            render: (text) => text ? `$${formatNumber(parseFloat(text))}` : "-",
+            sorter: (a, b) => {
+                const profitA = a.profit ? parseFloat(a.profit) : 0;
+                const profitB = b.profit ? parseFloat(b.profit) : 0;
+                return profitA - profitB;
+            },
         },
         {
             title: "Trạng thái",
@@ -157,7 +184,6 @@ const OrdersTable = () => {
                 />
             },
             sorter: (a, b) => a.paymentStatus.localeCompare(b.paymentStatus),
-            responsive: ['lg']
         },
         {
             title: "Ngày thanh toán",
@@ -170,15 +196,6 @@ const OrdersTable = () => {
                 if (!b.confirmedAt) return -1;
                 return new Date(a.confirmedAt).getTime() - new Date(b.confirmedAt).getTime();
             },
-            responsive: ['lg']
-        },
-        {
-            title: "Số sản phẩm",
-            dataIndex: "itemsCount",
-            key: "itemsCount",
-            width: 80,
-            sorter: (a, b) => a.itemsCount - b.itemsCount,
-            responsive: ['md']
         },
         {
             title: "Hành động",
@@ -279,7 +296,8 @@ const OrdersTable = () => {
                     itemsCount: order.items.length,
                     userId: order.userId,
                     quantity: order.items.reduce((acc: number, item: any) => acc + item.quantity, 0),
-                    confirmedAt: order.confirmedAt
+                    confirmedAt: order.confirmedAt,
+                    profit: order.profit || null
                 })) : []}
                 pagination={false}
                 rowKey="key"
