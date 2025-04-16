@@ -116,14 +116,17 @@ export const getOrderDetail = async (id: string): Promise<IOrderDetailsResponse>
 }
 
 export const getShopProductReviews = async (
-  id: string,
+  productId: string,
   params?: {
-    order?: string
-    page?: number
-    take?: number
-    search?: string
+    page?: number;
+    take?: number;
+    sort?: string;
   }
-): Promise<IShopProductReviewsResponse> => {
-  const res = await sendGet(`/shop-products/my-shop-products/${id}/reviews`, params)
-  return res
-}
+): Promise<any> => {
+  const queryParams = {
+    ...params,
+    productId
+  };
+  const res = await sendGet(`/product-reviews`, queryParams);
+  return res;
+};

@@ -133,15 +133,7 @@ export const useGetOrderDetail = (id: string) => {
   })
 }
 
-export const useGetShopProductReviews = (
-  id: string,
-  params?: {
-    order?: string
-    page?: number
-    take?: number
-    search?: string
-  }
-) => {
+export const useGetShopProductReviews = (id: string, params?: { page?: number, take?: number, sort?: string }) => {
   return useQuery({
     queryKey: ['shopProductReviews', id, params],
     queryFn: () => getShopProductReviews(id, params),
