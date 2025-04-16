@@ -1,14 +1,37 @@
-import { useMutation } from "@tanstack/react-query"
-import { verifyBankAccount } from "@/api/bank"
+import { useQuery, useMutation } from "@tanstack/react-query"
+import { getBankList, verifyBankAccount, IVerifyBankAccountParams } from "@/api/bank"
+import { IBankListResponse, IVerifyBankAccountResponse } from "@/interface/response/bank"
 
-interface VerifyBankAccountParams {
-  bankCode: string
-  accountNumber: string
+export const useBankList = () => {
+  const {
+    data: bankListData,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery<IBankListResponse>({
+    queryKey: ["bankList"],
+    queryFn: () => getBankList(),
+  })
+
+  return {
+    bankListData,
+    isLoading,
+    isFetching,
+    refetch,
+  }
 }
 
 export const useVerifyBankAccount = () => {
-  return useMutation({
-    mutationFn: ({ bankCode, accountNumber }: VerifyBankAccountParams) => 
-      verifyBankAccount(bankCode, accountNumber),
+  const { mutateAsync, isPending } = useMutation<
+    IVerifyBankAccountResponse, 
+    Error,
+    IVerifyBankAccountParams
+  >({
+    mutationFn: (params: IVerifyBankAccountParams) => verifyBankAccount(params),
   })
+
+  return {
+    verifyBankAccount: mutateAsync,
+    isPending,
+  }
 } 

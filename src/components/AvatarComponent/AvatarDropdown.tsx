@@ -1,13 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback, memo, useMemo } from "react"
 import { useUser } from "@/context/useUserContext"
 import { useUpdateUser, useChangePassword } from "@/hooks/authentication"
-import { useVerifyBankAccount } from "@/hooks/bank"
+import { useBankList, useVerifyBankAccount } from "@/hooks/bank"
 import { debounce } from "lodash"
 import { useUploadFile } from "@/hooks/upload"
 import Image from "next/image"
-import { User, Lock, LogOut, Eye, EyeOff, Trash2, Check, ChevronDown, UploadIcon } from "lucide-react"
+import { User, Lock, LogOut, Eye, EyeOff, Trash2, Check, ChevronDown, UploadIcon, Loader2 } from "lucide-react"
 import { message } from "antd"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -23,13 +23,48 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useForm } from "react-hook-form"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Card, CardContent } from "@/components/ui/card"
 import { motion } from "framer-motion"
+import { IBankData } from "@/interface/response/bank"
+import { cn } from "@/lib/utils"
+
+// Add type interface definitions
+interface BankOption {
+  value: string;
+  label: string;
+  shortName: string;
+  logo?: string;
+}
+
+interface FormValues {
+  fullName: string;
+  phone: string;
+  email: string;
+  username: string;
+  logoUrl: string;
+  address: string;
+  bankName: string;
+  bankAccountNumber: string;
+  bankAccountName: string;
+  bankBranch: string;
+  shopName: string;
+  shopAddress: string;
+  idCardType: string;
+  idCardNumber: string;
+  idCardFrontImage: string;
+  idCardBackImage: string;
+}
+
+interface PasswordFormValues {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
 
 const AvatarDropdown = () => {
   const { user, profile, logoutUser, logoUrl } = useUser()
@@ -42,16 +77,20 @@ const AvatarDropdown = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser()
   const { mutateAsync: changePassword, isPending: isChangingPassword } = useChangePassword()
-  const { mutateAsync: verifyBankAccount } = useVerifyBankAccount()
+  const { verifyBankAccount } = useVerifyBankAccount()
   const { mutateAsync: uploadFile, isPending: isUploading } = useUploadFile()
   const [idCardFrontImageUrl, setIdCardFrontImageUrl] = useState("")
   const [idCardBackImageUrl, setIdCardBackImageUrl] = useState("")
   const [avatarImageUrl, setAvatarImageUrl] = useState("")
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [activeTab, setActiveTab] = useState("basic")
+  const [bankAccountStatus, setBankAccountStatus] = useState<"default" | "success" | "error">("default")
+  const [bankAccountHelpMessage, setBankAccountHelpMessage] = useState("")
+  const { bankListData, isLoading: isLoadingBanks } = useBankList()
+  const [bankSearchTerm, setBankSearchTerm] = useState("")
 
   // Form setup with react-hook-form
-  const form = useForm({
+  const form = useForm<FormValues>({
     defaultValues: {
       fullName: "",
       phone: "",
@@ -72,7 +111,7 @@ const AvatarDropdown = () => {
     },
   })
 
-  const passwordForm = useForm({
+  const passwordForm = useForm<PasswordFormValues>({
     defaultValues: {
       currentPassword: "",
       newPassword: "",
@@ -88,7 +127,7 @@ const AvatarDropdown = () => {
     logoutUser()
   }
 
-  const handleProfileUpdate = async (values: any) => {
+  const handleProfileUpdate = async (values: FormValues) => {
     try {
       await updateUser({
         phone: values.phone,
@@ -113,7 +152,7 @@ const AvatarDropdown = () => {
     }
   }
 
-  const handleChangePassword = async (values: any) => {
+  const handleChangePassword = async (values: PasswordFormValues) => {
     try {
       await changePassword({
         currentPassword: values.currentPassword,
@@ -160,50 +199,60 @@ const AvatarDropdown = () => {
     setIsModalOpen(true)
   }
 
-  const [bankAccountStatus, setBankAccountStatus] = useState<"success" | "error" | "">("")
-  const [bankAccountHelp, setBankAccountHelp] = useState("")
-
-  const handleBankAccountVerification = async (accountNumber: string) => {
-    const bankCode = form.getValues("bankName")
-    if (!bankCode) {
-      message.warning("Vui lòng chọn ngân hàng trước!")
-      return
-    }
-
+  const handleBankAccountVerification = async () => {
     try {
-      const response = await verifyBankAccount({ bankCode, accountNumber })
-      if (response.data.isValid) {
+      const bankCode = form.watch("bankName");
+      const accountNumber = form.watch("bankAccountNumber");
+      
+      if (!bankCode || !accountNumber) {
+        message.error("Vui lòng nhập đầy đủ thông tin");
+        return;
+      }
+      
+      setBankAccountStatus("default")
+      setBankAccountHelpMessage("Đang xác thực thông tin tài khoản...")
+
+      const response = await verifyBankAccount({
+        bankCode,
+        accountNumber,
+      })
+
+      if (response?.data?.isValid) {
         setBankAccountStatus("success")
-        setBankAccountHelp("Số tài khoản hợp lệ")
+        setBankAccountHelpMessage(
+          `Xác thực thành công: ${response.data.accountName || "Tài khoản hợp lệ"}`
+        )
+        
+        if (response.data.accountName) {
+          form.setValue("bankAccountName", response.data.accountName)
+        }
       } else {
         setBankAccountStatus("error")
-        setBankAccountHelp("Số tài khoản không hợp lệ")
+        setBankAccountHelpMessage("Thông tin tài khoản không hợp lệ. Vui lòng kiểm tra lại.")
       }
     } catch (error) {
       setBankAccountStatus("error")
-      setBankAccountHelp("Có lỗi xảy ra khi kiểm tra thông tin")
+      setBankAccountHelpMessage("Có lỗi xảy ra khi xác thực tài khoản. Vui lòng thử lại sau.")
     }
   }
 
-  const debouncedVerification = debounce(handleBankAccountVerification, 500)
-
   const handleUploadImage = async (file: File, type: "front" | "back") => {
     try {
-      const response = await uploadFile(file)
-      const imageUrl = response.data.url
+      const response = await uploadFile(file);
+      const imageUrl = response.data.url;
 
       if (type === "front") {
-        setIdCardFrontImageUrl(imageUrl)
-        form.setValue("idCardFrontImage", imageUrl)
+        setIdCardFrontImageUrl(imageUrl);
+        form.setValue("idCardFrontImage", imageUrl);
       } else {
-        setIdCardBackImageUrl(imageUrl)
-        form.setValue("idCardBackImage", imageUrl)
+        setIdCardBackImageUrl(imageUrl);
+        form.setValue("idCardBackImage", imageUrl);
       }
 
-      return false
+      return false;
     } catch (error) {
-      message.error("Có lỗi xảy ra khi tải lên ảnh")
-      return false
+      message.error("Có lỗi xảy ra khi tải lên ảnh");
+      return false;
     }
   }
 
@@ -225,7 +274,18 @@ const AvatarDropdown = () => {
     }
   }
 
-  const BasicInfoTab = () => (
+  const bankOptions = useMemo<BankOption[]>(() => {
+    if (!bankListData?.data) return []
+    
+    return bankListData.data.map((bank: IBankData) => ({
+      value: bank.code,
+      label: bank.name,
+      shortName: bank.short_name,
+      logo: bank.logo_url
+    }))
+  }, [bankListData])
+
+  const BasicInfoTab = useMemo(() => (
     <div className="space-y-4">
       <FormField
         control={form.control}
@@ -331,279 +391,438 @@ const AvatarDropdown = () => {
         </div>
       </div>
     </div>
-  )
+  ), [form, avatarImageUrl, isUploadingAvatar, handleUploadAvatar])
 
-  const PaymentSettingsTab = () => (
-    <div className="space-y-4">
-      <FormField
-        control={form.control}
-        name="fullName"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Tên</FormLabel>
-            <FormControl>
-              <Input placeholder="NHẬP TÊN NGƯỜI DÙNG" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="address"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Địa chỉ</FormLabel>
-            <FormControl>
-              <Textarea placeholder="NHẬP ĐỊA CHỈ NGƯỜI DÙNG" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="idCardType"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Loại giấy tờ</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+  const memoizedPaymentSettingsTab = useMemo(() => {
+    return (
+      <div className="space-y-4">
+        <FormField
+          control={form.control}
+          name="fullName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tên</FormLabel>
               <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="CHỌN LOẠI GIẤY TỜ" />
-                </SelectTrigger>
+                <Input placeholder="NHẬP TÊN NGƯỜI DÙNG" {...field} />
               </FormControl>
-              <SelectContent>
-                <SelectItem value="cccd">CCCD</SelectItem>
-                <SelectItem value="cmnd">CMND</SelectItem>
-                <SelectItem value="passport">Passport</SelectItem>
-                <SelectItem value="driver_license">Bằng lái xe</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="idCardNumber"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Số giấy tờ</FormLabel>
-            <FormControl>
-              <Input placeholder="NHẬP SỐ GIẤY TỜ" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <div className="space-y-2">
-        <Label>Mặt trước</Label>
-        <div className="flex flex-col items-start gap-4">
-          {idCardFrontImageUrl ? (
-            <div className="relative group">
-              <Image
-                src={idCardFrontImageUrl || "/placeholder.svg"}
-                alt="ID Card Front"
-                width={200}
-                height={120}
-                className="rounded-md object-cover h-32 w-full"
-              />
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full !bg-blue-100/70 !text-blue-500"
-                  onClick={() => window.open(idCardFrontImageUrl, "_blank")}
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full !bg-red-100/70 !text-red-500"
-                  onClick={() => {
-                    setIdCardFrontImageUrl("")
-                    form.setValue("idCardFrontImage", "")
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="border border-dashed border-gray-300 rounded-md p-4 flex flex-col items-center justify-center gap-2 w-full">
-              <Label htmlFor="front-id-upload" className="cursor-pointer flex flex-col items-center gap-2">
-                <UploadIcon className="h-8 w-8 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Tải lên ảnh mặt trước</span>
-              </Label>
-              <input
-                id="front-id-upload"
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) {
-                    handleUploadImage(file, "front")
-                  }
-                }}
-              />
-            </div>
+              <FormMessage />
+            </FormItem>
           )}
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Mặt sau</Label>
-        <div className="flex flex-col items-start gap-4">
-          {idCardBackImageUrl ? (
-            <div className="relative group">
-              <Image
-                src={idCardBackImageUrl || "/images/white-image.png"}
-                alt="ID Card Back"
-                width={200}
-                height={120}
-                className="rounded-md object-cover h-32 w-full"
-              />
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full !bg-blue-100/70 !text-blue-500"
-                  onClick={() => window.open(idCardBackImageUrl, "_blank")}
-                >
-                  <Eye className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full !bg-red-100/70 !text-red-500"
-                  onClick={() => {
-                    setIdCardBackImageUrl("")
-                    form.setValue("idCardBackImage", "")
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="border border-dashed border-gray-300 rounded-md p-4 flex flex-col items-center justify-center gap-2 w-full">
-              <Label htmlFor="back-id-upload" className="cursor-pointer flex flex-col items-center gap-2">
-                <UploadIcon className="h-8 w-8 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Tải lên ảnh mặt sau</span>
-              </Label>
-              <input
-                id="back-id-upload"
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) {
-                    handleUploadImage(file, "back")
-                  }
-                }}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-
-      <FormField
-        control={form.control}
-        name="bankName"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Tên ngân hàng</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+        />
+        
+        <FormField
+          control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Địa chỉ</FormLabel>
               <FormControl>
-                <SelectTrigger className="rounded-[6px]">
-                  <SelectValue placeholder="VUI LÒNG CHỌN NGÂN HÀNG" />
-                </SelectTrigger>
+                <Textarea placeholder="NHẬP ĐỊA CHỈ NGƯỜI DÙNG" {...field} />
               </FormControl>
-              <SelectContent className="rounded-[6px]">
-                <SelectItem value="vcb">Vietcombank</SelectItem>
-                <SelectItem value="tcb">Techcombank</SelectItem>
-                <SelectItem value="bidv">BIDV</SelectItem>
-                <SelectItem value="vib">VIB</SelectItem>
-                <SelectItem value="acb">ACB</SelectItem>
-                <SelectItem value="mb">MB Bank</SelectItem>
-                <SelectItem value="vp">VPBank</SelectItem>
-                <SelectItem value="agri">Agribank</SelectItem>
-                <SelectItem value="scb">Sacombank</SelectItem>
-                <SelectItem value="tpb">TPBank</SelectItem>
-                <SelectItem value="ocb">OCB</SelectItem>
-                <SelectItem value="hdbank">HDBank</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <FormField
-        control={form.control}
-        name="bankAccountNumber"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Số tài khoản ngân hàng</FormLabel>
-            <FormControl>
-              <Input
-                placeholder="NHẬP SỐ TÀI KHOẢN NGÂN HÀNG"
-                {...field}
-                onChange={(e) => {
-                  field.onChange(e)
-                  debouncedVerification(e.target.value)
-                }}
-                className={
-                  bankAccountStatus === "error"
-                    ? "border-destructive"
-                    : bankAccountStatus === "success"
-                      ? "border-green-500"
-                      : ""
-                }
-              />
-            </FormControl>
-            {bankAccountHelp && (
-              <div
-                className={`text-sm flex items-center gap-1 ${
-                  bankAccountStatus === "error"
-                    ? "text-destructive"
-                    : bankAccountStatus === "success"
-                      ? "text-green-500"
-                      : ""
-                }`}
-              >
-                {bankAccountStatus === "success" && <Check className="h-3 w-3" />}
-                {bankAccountHelp}
+        <FormField
+          control={form.control}
+          name="idCardType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Loại giấy tờ</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="CHỌN LOẠI GIẤY TỜ" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="cccd">CCCD</SelectItem>
+                  <SelectItem value="cmnd">CMND</SelectItem>
+                  <SelectItem value="passport">Passport</SelectItem>
+                  <SelectItem value="driver_license">Bằng lái xe</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="idCardNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Số giấy tờ</FormLabel>
+              <FormControl>
+                <Input placeholder="NHẬP SỐ GIẤY TỜ" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="space-y-2">
+          <Label>Mặt trước</Label>
+          <div className="flex flex-col items-start gap-4">
+            {idCardFrontImageUrl ? (
+              <div className="relative group">
+                <Image
+                  src={idCardFrontImageUrl || "/placeholder.svg"}
+                  alt="ID Card Front"
+                  width={200}
+                  height={120}
+                  className="rounded-md object-cover h-32 w-full"
+                />
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full !bg-blue-100/70 !text-blue-500"
+                    onClick={() => window.open(idCardFrontImageUrl, "_blank")}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full !bg-red-100/70 !text-red-500"
+                    onClick={() => {
+                      setIdCardFrontImageUrl("")
+                      form.setValue("idCardFrontImage", "")
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="border border-dashed border-gray-300 rounded-md p-4 flex flex-col items-center justify-center gap-2 w-full">
+                <Label htmlFor="front-id-upload" className="cursor-pointer flex flex-col items-center gap-2">
+                  <UploadIcon className="h-8 w-8 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Tải lên ảnh mặt trước</span>
+                </Label>
+                <input
+                  id="front-id-upload"
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      handleUploadImage(file, "front")
+                    }
+                  }}
+                />
               </div>
             )}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Mặt sau</Label>
+          <div className="flex flex-col items-start gap-4">
+            {idCardBackImageUrl ? (
+              <div className="relative group">
+                <Image
+                  src={idCardBackImageUrl || "/images/white-image.png"}
+                  alt="ID Card Back"
+                  width={200}
+                  height={120}
+                  className="rounded-md object-cover h-32 w-full"
+                />
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-md flex items-center justify-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full !bg-blue-100/70 !text-blue-500"
+                    onClick={() => window.open(idCardBackImageUrl, "_blank")}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full !bg-red-100/70 !text-red-500"
+                    onClick={() => {
+                      setIdCardBackImageUrl("")
+                      form.setValue("idCardBackImage", "")
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="border border-dashed border-gray-300 rounded-md p-4 flex flex-col items-center justify-center gap-2 w-full">
+                <Label htmlFor="back-id-upload" className="cursor-pointer flex flex-col items-center gap-2">
+                  <UploadIcon className="h-8 w-8 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Tải lên ảnh mặt sau</span>
+                </Label>
+                <input
+                  id="back-id-upload"
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      handleUploadImage(file, "back")
+                    }
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        <FormField
+          control={form.control}
+          name="bankName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tên ngân hàng</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="rounded-[6px]">
+                    <SelectValue placeholder="VUI LÒNG CHỌN NGÂN HÀNG" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className="rounded-[6px]">
+                  {isLoadingBanks ? (
+                    <div className="p-2 text-center">Đang tải...</div>
+                  ) : (
+                    <>
+                      <div className="p-2 sticky top-0 bg-white z-10">
+                        <Input
+                          placeholder="Tìm kiếm ngân hàng..."
+                          className="border border-input rounded-md"
+                          onChange={(e) => {
+                            const searchTerm = e.target.value.toLowerCase();
+                            // Filter banks is handled automatically since we're filtering directly in the render
+                            setBankSearchTerm(searchTerm);
+                          }}
+                        />
+                      </div>
+                      {bankOptions
+                        .filter(bank => 
+                          bank.label.toLowerCase().includes(bankSearchTerm) || 
+                          bank.shortName.toLowerCase().includes(bankSearchTerm)
+                        )
+                        .map((bank) => (
+                          <SelectItem key={bank.value} value={bank.value} className="flex items-center gap-2">
+                            <div className="flex items-center gap-2">
+                              {bank.logo && (
+                                <img 
+                                  src={bank.logo} 
+                                  alt={bank.shortName} 
+                                  className="h-12 w-12 object-contain mr-2" 
+                                />
+                              )}
+                              {bank.label}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      {bankOptions.filter(bank => 
+                        bank.label.toLowerCase().includes(bankSearchTerm) || 
+                        bank.shortName.toLowerCase().includes(bankSearchTerm)
+                      ).length === 0 && (
+                        <div className="p-2 text-center text-muted-foreground">
+                          Không tìm thấy ngân hàng
+                        </div>
+                      )}
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="bankAccountNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Số tài khoản ngân hàng</FormLabel>
+              <FormControl>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="NHẬP SỐ TÀI KHOẢN NGÂN HÀNG"
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e)
+                      const value = e.target.value
+                      if (value) {
+                        handleBankAccountVerification()
+                      }
+                    }}
+                    className={cn(
+                      bankAccountStatus === "error" && "border-destructive",
+                      bankAccountStatus === "success" && "border-green-500"
+                    )}
+                  />
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={handleBankAccountVerification}
+                    disabled={isUpdating || !form.watch("bankName") || !form.watch("bankAccountNumber")}
+                  >
+                    {isUpdating ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Đang xác thực</span>
+                      </div>
+                    ) : (
+                      "Xác thực"
+                    )}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormDescription className={cn(
+                bankAccountStatus === "success" && "text-green-500",
+                bankAccountStatus === "error" && "text-red-500"
+              )}>
+                {bankAccountHelpMessage}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="bankAccountName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tên tài khoản ngân hàng</FormLabel>
+              <FormControl>
+                <Input placeholder="NHẬP TÊN CHỦ TÀI KHOẢN" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+    )
+  }, [form, idCardFrontImageUrl, idCardBackImageUrl, bankAccountStatus, bankAccountHelpMessage, handleBankAccountVerification, handleUploadImage, isLoadingBanks, bankOptions, isUpdating, bankSearchTerm, setBankSearchTerm])
+
+  const VerificationFormContent = useMemo(() => {
+    return memoizedPaymentSettingsTab;
+  }, [memoizedPaymentSettingsTab])
+
+  const PasswordFormContent = useMemo(() => (
+    <form onSubmit={passwordForm.handleSubmit(handleChangePassword)} className="space-y-4">
+      <FormField
+        control={passwordForm.control}
+        name="currentPassword"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Mật khẩu hiện tại</FormLabel>
+            <FormControl>
+              <div className="relative">
+                <Input 
+                  type={showCurrentPassword ? "text" : "password"} 
+                  {...field} 
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                >
+                  {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
 
       <FormField
-        control={form.control}
-        name="bankAccountName"
+        control={passwordForm.control}
+        name="newPassword"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Tên tài khoản ngân hàng</FormLabel>
+            <FormLabel>Mật khẩu mới</FormLabel>
             <FormControl>
-              <Input placeholder="NHẬP TÊN CHỦ TÀI KHOẢN" {...field} />
+              <div className="relative">
+                <Input 
+                  type={showNewPassword ? "text" : "password"} 
+                  {...field} 
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                >
+                  {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-    </div>
-  )
+
+      <FormField
+        control={passwordForm.control}
+        name="confirmPassword"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Xác nhận mật khẩu mới</FormLabel>
+            <FormControl>
+              <div className="relative">
+                <Input 
+                  type={showConfirmPassword ? "text" : "password"} 
+                  {...field} 
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <DialogFooter className="mt-6 pb-6">
+        <Button
+          type="button"
+          variant="outline"
+          className="rounded-sm"
+          onClick={() => {
+            setIsPasswordModalOpen(false)
+            passwordForm.reset()
+          }}
+        >
+          Hủy
+        </Button>
+        <Button type="submit" disabled={isChangingPassword} className="rounded-sm bg-main-dark-blue !text-white hover:!bg-main-dark-blue/90">
+          {isChangingPassword ? (
+            <>
+              <div className="h-4 w-4 mr-2 rounded-full border-2 border-current border-t-transparent animate-spin" />
+              Đang lưu...
+            </>
+          ) : (
+            "Đổi mật khẩu"
+          )}
+        </Button>
+      </DialogFooter>
+    </form>
+  ), [passwordForm, handleChangePassword, showCurrentPassword, showNewPassword, showConfirmPassword, isChangingPassword, setIsPasswordModalOpen])
 
   if (!isClient) {
     return <div className="avatar-placeholder h-10 w-10 rounded-full bg-muted animate-pulse"></div>
@@ -692,14 +911,14 @@ const AvatarDropdown = () => {
                   <TabsContent value="basic" className="mt-4">
                     <Card className="rounded-[4px]">
                       <CardContent className="pt-6">
-                        <BasicInfoTab />
+                        {BasicInfoTab}
                       </CardContent>
                     </Card>
                   </TabsContent>
                   <TabsContent value="payment" className="mt-4">
                     <Card className="rounded-[4px]">
                       <CardContent className="pt-6">
-                        <PaymentSettingsTab />
+                        {memoizedPaymentSettingsTab}
                       </CardContent>
                     </Card>
                   </TabsContent>
@@ -738,115 +957,7 @@ const AvatarDropdown = () => {
 
           <div className="px-6">
             <Form {...passwordForm}>
-              <form onSubmit={passwordForm.handleSubmit(handleChangePassword)} className="space-y-4">
-                <FormField
-                  control={passwordForm.control}
-                  name="currentPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mật khẩu hiện tại</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input 
-                            type={showCurrentPassword ? "text" : "password"} 
-                            {...field} 
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                          >
-                            {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                          </Button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={passwordForm.control}
-                  name="newPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mật khẩu mới</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input 
-                            type={showNewPassword ? "text" : "password"} 
-                            {...field} 
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                            onClick={() => setShowNewPassword(!showNewPassword)}
-                          >
-                            {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                          </Button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={passwordForm.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Xác nhận mật khẩu mới</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input 
-                            type={showConfirmPassword ? "text" : "password"} 
-                            {...field} 
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          >
-                            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                          </Button>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <DialogFooter className="mt-6 pb-6">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="rounded-sm"
-                    onClick={() => {
-                      setIsPasswordModalOpen(false)
-                      passwordForm.reset()
-                    }}
-                  >
-                    Hủy
-                  </Button>
-                  <Button type="submit" disabled={isChangingPassword} className="rounded-sm bg-main-dark-blue !text-white hover:!bg-main-dark-blue/90">
-                    {isChangingPassword ? (
-                      <>
-                        <div className="h-4 w-4 mr-2 rounded-full border-2 border-current border-t-transparent animate-spin" />
-                        Đang lưu...
-                      </>
-                    ) : (
-                      "Đổi mật khẩu"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </form>
+              {PasswordFormContent}
             </Form>
           </div>
         </DialogContent>
