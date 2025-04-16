@@ -1,6 +1,7 @@
 import React from "react"
 import { DollarOutlined } from "@ant-design/icons"
 import { useShopStatistics } from "@/hooks/dashboard"
+import { formatNumber } from "@/utils"
 
 interface StatCardProps {
   title: string
@@ -34,22 +35,22 @@ const StatCards: React.FC = () => {
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       <StatCard
         title="Tổng số đơn đặt hàng"
-        value={statistics.totalOrders || 0}
+        value={formatNumber(statistics.totalOrders || 0)}
         gradientClass="bg-gradient-to-r from-pink-500 to-purple-500"
       />
       <StatCard
         title="Tổng Thu Nhập"
-        value={`$${(statistics as any).totalRevenue || 0}`}
+        value={`$${formatNumber(statistics.totalRevenue || 0)}`}
         gradientClass="bg-gradient-to-r from-indigo-600 to-blue-500"
       />
       <StatCard
         title="Tổng Lợi Nhuận"
-        value={`$${(statistics as any).totalProfit || 0}`}
+        value={`$${formatNumber(statistics.totalProfit || 0)}`}
         gradientClass="bg-gradient-to-r from-blue-400 to-cyan-500"
       />
       <StatCard
         title="Đơn hàng | Doanh thu | Lợi nhuận hôm nay"
-        value={`${statistics.todayOrders || 0} / $${statistics.todayRevenue || 0} / $${statistics.todayProfit || 0}`}
+        value={`${formatNumber(statistics.todayOrders || 0)} / ${formatNumber(statistics.todayRevenue || 0)} / ${formatNumber(statistics.todayProfit || 0)}`}
         gradientClass="bg-gradient-to-r from-orange-400 to-amber-500"
       />
     </div>

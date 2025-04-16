@@ -133,17 +133,17 @@ export const formatNumber = (number: number | undefined | null): string => {
     return '0';
   }
   
-  // Format with 1 decimal place for non-integers
+  // Format with 2 decimal places for non-integers
   let formatted = Number.isInteger(numValue) 
     ? numValue.toString() 
-    : numValue.toFixed(1);
+    : numValue.toFixed(2);
   
   // Split by decimal point
   const parts = formatted.split('.');
   
   // Add thousand separators to the integer part
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   
-  // Join with comma as decimal separator if there's a decimal part
-  return parts.length > 1 ? parts.join(',') : parts[0];
+  // Join with period as decimal separator if there's a decimal part
+  return parts.length > 1 ? parts.join('.') : parts[0];
 };
