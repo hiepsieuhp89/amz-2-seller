@@ -2,6 +2,9 @@ import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { getShopProductReviews } from "@/api/shop-products";
 import { useState } from "react";
 
+// Re-export all hooks from shop-products/index.ts
+export * from "./shop-products/index";
+
 export interface ReviewPaginationParams {
   page: number;
   take: number;
