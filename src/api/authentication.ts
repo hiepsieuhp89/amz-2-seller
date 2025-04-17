@@ -6,6 +6,7 @@ import {
   IChangePassword,
   ISpreadPackageHistoryParams,
   IPackageHistoryParams,
+  ICheckUserExists,
 } from "@/interface/request/authentication";
 import {
   IAuthResponse,
@@ -13,6 +14,7 @@ import {
   IBankListResponse,
   ISpreadPackageHistoryResponse,
   IPackageHistoryResponse,
+  ICheckUserExistsResponse,
 } from "@/interface/response/authentication";
 import { sendGet, sendPost, sendPut } from "./axios";
 
@@ -77,5 +79,13 @@ export const getPackageHistory = async (
 ): Promise<IPackageHistoryResponse> => {
   const res = await sendGet("/auth/package-purchase-history", params);
   const data: IPackageHistoryResponse = res;
+  return data;
+};
+
+export const checkUserExists = async (
+  params: ICheckUserExists
+): Promise<ICheckUserExistsResponse> => {
+  const res = await sendGet("/auth/check-user-exists", params);
+  const data: ICheckUserExistsResponse = res;
   return data;
 };

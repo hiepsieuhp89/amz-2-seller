@@ -3,8 +3,8 @@
 import Captcha from '@/components/Captcha';
 import { useUser } from '@/context/useUserContext';
 import { setCookies } from '@/helper';
-import { useRegister } from '@/hooks/authentication';
-import { IRegister } from '@/interface/request/authentication';
+import { useRegister, useCheckUserExists } from '@/hooks/authentication';
+import { IRegister, ICheckUserExists } from '@/interface/request/authentication';
 import { Button, Divider, Form, Input, message, Checkbox, Modal } from 'antd';
 import { FormProps } from 'antd/lib';
 import { useRouter } from 'next/navigation';
@@ -43,14 +43,44 @@ const maskEmail = (email: string) => {
   }
 };
 
+// Debounce function with proper typing
+const debounce = <T extends (...args: any[]) => Promise<boolean>>(fn: T, ms = 500) => {
+  let timeoutId: NodeJS.Timeout;
+  return function (this: any, ...args: Parameters<T>): Promise<boolean> {
+    return new Promise((resolve) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(async () => {
+        const result = await fn.apply(this, args);
+        resolve(result);
+      }, ms);
+    });
+  };
+};
+
 const SignUpForm = () => {
   const router = useRouter();
   const { mutateAsync, isPending } = useRegister();
+  const { mutateAsync: checkUserExistsAsync, isPending: isCheckingUser } = useCheckUserExists();
   const { loginUser } = useUser()
   const [messageApi, contextHolder] = message.useMessage();
   const [showCaptcha, setShowCaptcha] = useState(false);
   const [formValues, setFormValues] = useState<FieldType | null>(null);
   const [isTermsModalVisible, setIsTermsModalVisible] = useState(false);
+  const [form] = Form.useForm();
+  
+  // Add loading states for field validations
+  const [fieldValidating, setFieldValidating] = useState<Record<string, boolean>>({
+    username: false,
+    email: false,
+    phone: false
+  });
+  
+  // Store debounced functions in refs with proper typing
+  const debouncedChecksRef = useRef({
+    username: debounce(async (value: string) => await checkFieldExists('username', value)),
+    email: debounce(async (value: string) => await checkFieldExists('email', value)),
+    phone: debounce(async (value: string) => await checkFieldExists('phone', value))
+  });
   
   // OTP related states
   const [showOTPForm, setShowOTPForm] = useState(false);
@@ -181,8 +211,83 @@ const SignUpForm = () => {
     }
   };
 
-  const onFinish: FormProps<FieldType>['onFinish'] = (values: FieldType) => {
+  // Check if a specific field value already exists
+  const checkFieldExists = async (field: 'username' | 'email' | 'phone', value: string) => {
+    if (!value) return false;
+    
+    try {
+      setFieldValidating(prev => ({ ...prev, [field]: true }));
+      
+      const params: ICheckUserExists = {
+        [field]: value
+      };
+      
+      const response = await checkUserExistsAsync(params);
+      console.log(`Checking ${field}:`, response);
+      
+      setFieldValidating(prev => ({ ...prev, [field]: false }));
+      
+      if (response.data.exists) {
+        const fieldNames: Record<string, string> = {
+          username: 'Tên tài khoản',
+          email: 'Email',
+          phone: 'Số điện thoại'
+        };
+        
+        messageApi.error(`${fieldNames[field]} đã tồn tại. Vui lòng sử dụng ${fieldNames[field].toLowerCase()} khác.`);
+        return true;
+      }
+      
+      return false;
+    } catch (error: any) {
+      console.error(`Error checking ${field}:`, error);
+      setFieldValidating(prev => ({ ...prev, [field]: false }));
+      return false;
+    }
+  };
+
+  // Custom validation rules
+  const validateUsername = async (_: any, value: string) => {
+    if (!value) return Promise.reject(new Error('Vui lòng nhập tên đăng nhập!'));
+    
+    // Call the debounced check function and wait for the result
+    const exists = await debouncedChecksRef.current.username(value);
+    if (exists) {
+      return Promise.reject(new Error('Tên tài khoản đã tồn tại'));
+    }
+    return Promise.resolve();
+  };
+
+  const validateEmail = async (_: any, value: string) => {
+    if (!value) return Promise.reject(new Error('Vui lòng nhập email!'));
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      return Promise.reject(new Error('Vui lòng nhập email hợp lệ!'));
+    }
+    
+    // Call the debounced check function and wait for the result
+    const exists = await debouncedChecksRef.current.email(value);
+    if (exists) {
+      return Promise.reject(new Error('Email này đã được sử dụng'));
+    }
+    return Promise.resolve();
+  };
+
+  const validatePhone = async (_: any, value: string) => {
+    if (!value) return Promise.reject(new Error('Vui lòng nhập số điện thoại!'));
+    
+    // Call the debounced check function and wait for the result
+    const exists = await debouncedChecksRef.current.phone(value);
+    if (exists) {
+      return Promise.reject(new Error('Số điện thoại này đã được sử dụng'));
+    }
+    return Promise.resolve();
+  };
+
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values: FieldType) => {
     setFormValues(values);
+    // Proceed directly to captcha since all fields have been validated already
     setShowCaptcha(true);
   };
 
@@ -268,6 +373,7 @@ const SignUpForm = () => {
       
       {!showCaptcha && !showOTPForm && (
         <Form
+          form={form}
           name="register_form"
           onFinish={onFinish}
           layout='vertical'
@@ -276,30 +382,33 @@ const SignUpForm = () => {
             label={<strong>Tên tài khoản</strong>}
             name="username"
             className='!mb-4'
-            rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
+            rules={[{ validator: validateUsername }]}
+            validateTrigger={['onBlur']}
+            hasFeedback
           >
-            <Input />
+            <Input disabled={fieldValidating.username} />
           </Form.Item>
 
           <Form.Item
             label={<strong>Email</strong>}
             className='!mb-3'
             name="email"
-            rules={[
-              { required: true, message: 'Vui lòng nhập email!' },
-              { type: 'email', message: 'Vui lòng nhập email hợp lệ!' }
-            ]}
+            rules={[{ validator: validateEmail }]}
+            validateTrigger={['onBlur']}
+            hasFeedback
           >
-            <Input />
+            <Input disabled={fieldValidating.email} />
           </Form.Item>
 
           <Form.Item
             label={<strong>Số điện thoại</strong>}
             className='!mb-3'
             name="phone"
-            rules={[{ required: true, message: 'Vui lòng nhập số điện thoại!' }]}
+            rules={[{ validator: validatePhone }]}
+            validateTrigger={['onBlur']}
+            hasFeedback
           >
-            <Input />
+            <Input disabled={fieldValidating.phone} />
           </Form.Item>
 
           <Form.Item
@@ -388,8 +497,8 @@ const SignUpForm = () => {
             <Button
               type="primary"
               htmlType="submit"
-              className="login-form-button w-full  !font-medium !h-[32px]"
-              loading={isPending}
+              className="login-form-button w-full !font-medium !h-[32px]"
+              loading={isPending || isCheckingUser}
             >
               Tạo tài khoản
             </Button>

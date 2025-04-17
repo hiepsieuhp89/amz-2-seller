@@ -208,3 +208,13 @@ export interface IPackageHistoryResponse {
   timestamp: string
 }
 
+export interface ICheckUserExistsResponse {
+  status: boolean
+  message: string
+  data: {
+    exists: boolean
+  }
+  errors: null | any
+  timestamp: string
+}
+

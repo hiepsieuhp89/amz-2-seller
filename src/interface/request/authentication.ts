@@ -77,3 +77,9 @@ export interface IPackageHistoryParams {
   search?: string
 }
 
+export interface ICheckUserExists {
+  username?: string
+  email?: string
+  phone?: string
+}
+

@@ -8,6 +8,7 @@ import {
   changePassword,
   getSpreadPackageHistory,
   getPackageHistory,
+  checkUserExists,
 } from "@/api/authentication";
 import type {
   ISignIn,
@@ -17,11 +18,13 @@ import type {
   IChangePassword,
   ISpreadPackageHistoryParams,
   IPackageHistoryParams,
+  ICheckUserExists,
 } from "@/interface/request/authentication";
 import type {
   IAuthResponse,
   ISpreadPackageHistoryResponse,
   IPackageHistoryResponse,
+  ICheckUserExistsResponse,
 } from "@/interface/response/authentication";
 import {
   type UseMutationResult,
@@ -200,4 +203,20 @@ export const usePackageHistory = (params?: IPackageHistoryParams) => {
     isFetching,
     refetch,
   };
+};
+
+export const useCheckUserExists = (): UseMutationResult<
+  ICheckUserExistsResponse,
+  Error,
+  ICheckUserExists
+> => {
+  return useMutation<ICheckUserExistsResponse, Error, ICheckUserExists>({
+    mutationFn: (params: ICheckUserExists) => checkUserExists(params),
+    onSuccess: (result: ICheckUserExistsResponse) => {
+      return result;
+    },
+    onError: (result) => {
+      return result;
+    },
+  });
 };
