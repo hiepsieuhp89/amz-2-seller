@@ -33,16 +33,40 @@ transporter.verify(function(error, success) {
   }
 });
 
+// Helper function to add CORS headers
+function corsHeaders(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Credentials', 'true');
+  response.headers.set('Access-Control-Allow-Origin', '*'); // Adjust this to specific domains in production
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  response.headers.set(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
+  );
+  return response;
+}
+
+// Handle OPTIONS requests for CORS preflight
+export async function OPTIONS(request: NextRequest) {
+  return corsHeaders(NextResponse.json({}, { status: 200 }));
+}
+
 export async function POST(request: NextRequest) {
+  console.log('POST request received at /api/send-otp');
+  console.log('Request headers:', Object.fromEntries(request.headers));
+  
   try {
     // Parse the request body
-    const { email, otp, expiryTime } = await request.json();
+    const body = await request.json();
+    console.log('Request body:', body);
+    
+    const { email, otp, expiryTime } = body;
 
     if (!email || !otp) {
-      return NextResponse.json(
+      console.log('Missing required fields:', { email, otp });
+      return corsHeaders(NextResponse.json(
         { error: 'Email and OTP are required' },
         { status: 400 }
-      );
+      ));
     }
 
     console.log('Attempting to send OTP email to:', email);
@@ -93,25 +117,25 @@ export async function POST(request: NextRequest) {
       const info = await transporter.sendMail(mailOptions);
       console.log('Email sent successfully:', info.messageId);
       
-      return NextResponse.json(
+      return corsHeaders(NextResponse.json(
         { 
           success: true, 
           message: 'OTP email sent successfully'
         },
         { status: 200 }
-      );
+      ));
     } catch (emailError: any) {
       console.error('Error in sendMail:', emailError);
-      return NextResponse.json(
+      return corsHeaders(NextResponse.json(
         { error: 'Failed to send OTP email', details: emailError.message },
         { status: 500 }
-      );
+      ));
     }
   } catch (error: any) {
     console.error('Error in OTP route handler:', error);
-    return NextResponse.json(
+    return corsHeaders(NextResponse.json(
       { error: 'Failed to send OTP email', details: error.message },
       { status: 500 }
-    );
+    ));
   }
 } 
