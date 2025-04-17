@@ -15,12 +15,12 @@ const nextConfig = {
     return config;
   },
   experimental: {
-    outputFileTracingRoot: process.cwd(),
-    outputFileTracingExcludes: {
-      '*': [
-        'node_modules/**/*',
-      ],
-    },
+    // outputFileTracingRoot: process.cwd(),
+    // outputFileTracingExcludes: {
+    //   '*': [
+    //     'node_modules/**/*',
+    //   ],
+    // },
   },
   images: {
     remotePatterns: [
