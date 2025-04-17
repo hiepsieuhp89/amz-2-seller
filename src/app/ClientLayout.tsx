@@ -1,14 +1,14 @@
 "use client"
 import LayoutProvider from '@/components/LayoutProvider';
+import MaintenanceGuard from '@/components/MaintenanceGuard';
+import OtpEmailTester from '@/components/OtpEmailTester';
 import WrapMessage from '@/components/WrapMessage';
 import { UserProvider } from '@/context/useUserContext';
-import { useGetMaintenanceMode } from '@/hooks/maintenance';
+import { useAllConfigs } from '@/hooks/config';
 import { ReactQueryClientProvider } from '@/provider/ReactQueryClientProvider';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { ConfigProvider, ThemeConfig } from 'antd';
 import { usePathname } from 'next/navigation';
-import MaintenanceGuard from '@/components/MaintenanceGuard';
-import { useAllConfigs } from '@/hooks/config';
 import { useEffect } from 'react';
 
 function PathChecker({ children }: { children: React.ReactNode }) {
@@ -157,6 +157,11 @@ export default function ClientLayout({
                   <MaintenanceGuard>
                     <ConfigLoader />
                     <SmartsuppChat />
+                    {process.env.NEXT_PUBLIC_OTP_TEST_MODE === 'true' && (
+                      <div className="fixed bottom-4 right-4 z-50">
+                        <OtpEmailTester />
+                      </div>
+                    )}
                     <PathChecker>
                       {children}
                     </PathChecker>
