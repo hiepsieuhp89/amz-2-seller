@@ -56,13 +56,31 @@ const nextConfig = {
     unoptimized: true,
   },
   async rewrites() {
-    const domain =
-      process.env.NEXT_PUBLIC_API_URL || "amz.dunghaysai.site";
+    const domain = process.env.NEXT_PUBLIC_API_URL || "amz.dunghaysai.site";
+    
     return [
+      // QUAN TRỌNG: Thứ tự của rewrites rất quan trọng!
+      // Các rule cụ thể hơn phải đặt trước các rule tổng quát hơn
+      
+      // 1. Đối với endpoint api-test và api-local, không rewrite
+      {
+        source: '/api-test',
+        destination: '/api-test',
+      },
+      {
+        source: '/api-test/:path*',
+        destination: '/api-test/:path*',
+      },
+      {
+        source: '/api-local/:path*',
+        destination: '/api-local/:path*',
+      },
+      
+      // 2. Tất cả các API routes khác điều hướng đến API server bên ngoài
       {
         source: "/api/:path*",
         destination: `https://${domain}/:path*`,
-      },
+      }
     ];
   },
   async headers() {
