@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from 'react';
 import { Button, Input, message, Select } from 'antd';
-import axios from 'axios';
+import { sendOtp } from '@/api/send-otp';
 
 const { Option } = Select;
 
@@ -9,7 +9,6 @@ const OtpEmailTester = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [testStarted, setTestStarted] = useState(false);
-  const [apiBaseUrl, setApiBaseUrl] = useState('/api'); // Default to relative path
 
   // Function to generate a random 6-digit OTP
   const generateOTP = () => {
@@ -35,20 +34,15 @@ const OtpEmailTester = () => {
       const otp = generateOTP();
       const expiryTime = calculateExpiryTime();
       
-      const apiUrl = `${apiBaseUrl}/send-otp`;
-      console.log('Sending request to:', apiUrl);
+      console.log('Sending OTP to:', email, 'with code:', otp);
       
-      const response = await axios.post(apiUrl, {
+      const response = await sendOtp({
         email,
         otp,
         expiryTime
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
       });
       
-      if (response.data.success) {
+      if (response.success) {
         message.success(`Verification code sent successfully to ${email}`);
       } else {
         message.error('Failed to send verification code');
@@ -79,18 +73,6 @@ const OtpEmailTester = () => {
           value={email} 
           onChange={(e) => setEmail(e.target.value)} 
         />
-        
-        <Select
-          defaultValue={apiBaseUrl}
-          style={{ width: '100%' }}
-          onChange={setApiBaseUrl}
-          className="mb-2"
-        >
-          <Option value="/api">Relative path (/api)</Option>
-          <Option value="https://amz-homepage.com/api">amz-homepage.com</Option>
-          <Option value="https://panel.amz-homepage.com/api">panel.amz-homepage.com</Option>
-          <Option value="https://amazon-cms.vercel.app/api">amazon-cms.vercel.app</Option>
-        </Select>
         
         <Button 
           type="primary" 
