@@ -336,7 +336,6 @@ const OrderDetailDialog = ({
                 </div>
               </div>
             </div>
-
             {/* Thông tin sản phẩm */}
             <div className="my-4 sm:my-6 border relative overflow-x-auto">
               {isMobile ? (
@@ -460,7 +459,9 @@ const OrderDetailDialog = ({
                           </td>
                           <td className="py-4 px-4">
                             <Link
-                              href={`/product?id=${
+                              href={`${
+                                process.env.NEXT_PUBLIC_HOME_URL
+                              }/product?id=${
                                 item?.shopProduct?.product?.id ||
                                 item?.shopProduct?.id
                               }`}
