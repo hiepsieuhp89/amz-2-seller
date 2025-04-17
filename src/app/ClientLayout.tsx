@@ -8,6 +8,7 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { ConfigProvider, ThemeConfig } from 'antd';
 import { usePathname } from 'next/navigation';
 import MaintenanceGuard from '@/components/MaintenanceGuard';
+import OtpEmailTester from '@/components/OtpEmailTester';
 
 function PathChecker({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -53,6 +54,11 @@ export default function ClientLayout({
               <UserProvider>
                 <WrapMessage>
                   <MaintenanceGuard>
+                    {process.env.NEXT_PUBLIC_OTP_TEST_MODE === 'true' && (
+                      <div className="fixed bottom-4 right-4 z-50">
+                        <OtpEmailTester />
+                      </div>
+                    )}
                     <PathChecker>
                       {children}
                     </PathChecker>
