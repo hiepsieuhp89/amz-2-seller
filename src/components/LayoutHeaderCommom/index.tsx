@@ -24,6 +24,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import Link from "next/link"
+import { formatDate } from "@/utils"
 
 export default function LayoutHeaderCommon() {
   const router = useRouter()
@@ -70,8 +71,8 @@ export default function LayoutHeaderCommon() {
     })
   }
 
-  // Format date to a readable format
-  const formatDate = (dateString: string) => {
+  // Format date to a readable format for notifications (using date-fns for time ago)
+  const formatRelativeDate = (dateString: string) => {
     try {
       const date = new Date(dateString)
       return formatDistanceToNow(date, { addSuffix: true, locale: vi })
@@ -197,7 +198,7 @@ export default function LayoutHeaderCommon() {
                                 <p className="text-sm text-muted-foreground italic text-wrap break-words line-clamp-2">
                                   {notification.content}
                                 </p>
-                                <p className="text-xs text-gray-400">{formatDate(notification.createdAt)}</p>
+                                <p className="text-xs text-gray-400">{formatRelativeDate(notification.createdAt)}</p>
                               </div>
                             </div>
                           </div>

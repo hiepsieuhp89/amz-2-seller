@@ -147,3 +147,82 @@ export const formatNumber = (number: number | undefined | null): string => {
   // Join with period as decimal separator if there's a decimal part
   return parts.length > 1 ? parts.join('.') : parts[0];
 };
+
+/**
+ * Formats a date string into various formats
+ * @param dateString - The date string to format
+ * @param format - The format type: 
+ *   'date' - DD/MM/YYYY
+ *   'datetime' - HH:mm DD/MM/YYYY (24-hour)
+ *   'time' - HH:mm (24-hour)
+ *   'datetime-full' - HH:mm DD/MM/YYYY (24-hour)
+ *   'date-text' - DD MMMM YYYY
+ *   'date-short' - DD-MM-YYYY
+ * @param locale - Locale for formatting (default: 'vi-VN')
+ * @returns Formatted date string
+ */
+export const formatDate = (dateString: string, format: 'date' | 'datetime' | 'time' | 'datetime-full' | 'date-text' | 'date-short' = 'date', locale: string = 'vi-VN'): string => {
+  if (!dateString) return '';
+  
+  try {
+    const date = new Date(dateString);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return '';
+    }
+    
+    switch (format) {
+      case 'date':
+        return date.toLocaleDateString(locale, {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      
+      case 'datetime':
+        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')} ${date.toLocaleDateString(locale, {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        })}`;
+      
+      case 'time':
+        return date.toLocaleTimeString(locale, {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        });
+      
+      case 'datetime-full':
+        return date.toLocaleString(locale, {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        });
+      
+      case 'date-text':
+        return date.toLocaleDateString(locale, {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        });
+      
+      case 'date-short':
+        return date.toLocaleDateString(locale, {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        }).replace(/\//g, '-');
+      
+      default:
+        return date.toLocaleDateString(locale);
+    }
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return dateString;
+  }
+};

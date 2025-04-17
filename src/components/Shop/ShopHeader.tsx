@@ -1,16 +1,7 @@
 import Image from "next/image";
 import "./styles.css"
 import { useProfile } from "@/hooks/authentication";
-
-const formatDate = (dateString: string | undefined) => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  }).replace(/\//g, '/');
-};
+import { formatDate } from "@/utils";
 
 export default function ShopHeader() {
   const { profileData } = useProfile()

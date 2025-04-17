@@ -5,6 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { DollarSign, ShoppingBag, TrendingUp } from "lucide-react"
 import { useState } from "react"
 import "./styles.css"
+import { formatDate } from "@/utils"
 
 interface DailyStats {
   date: string
@@ -37,15 +38,14 @@ const RevenueChart = () => {
     { revenue: 0, profit: 0, orders: 0 }
   )
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return `${date.getDate().toString().padStart(2, "0")}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getFullYear()}`
+  const formatChartDate = (dateStr: string) => {
+    return formatDate(dateStr, 'date-short')
   }
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
-      const formattedDate = formatDate(data.date)
+      const formattedDate = formatChartDate(data.date)
       
       return (
         <div className="p-3 bg-white rounded-lg shadow-lg border border-gray-100">
@@ -141,7 +141,7 @@ const RevenueChart = () => {
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis 
               dataKey="date" 
-              tickFormatter={formatDate}
+              tickFormatter={formatChartDate}
               axisLine={{ stroke: "#eee" }}
               tickLine={false}
             />

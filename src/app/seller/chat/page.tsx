@@ -18,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Icon } from '@mdi/react';
 import { mdiMagnify } from '@mdi/js';
+import { formatDate as formatDateUtil } from "@/utils"
 
 // Helper function to get initials from name
 const getInitials = (name: string = "") => {
@@ -31,18 +32,12 @@ const getInitials = (name: string = "") => {
 
 // Helper function to format time
 const formatTime = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  return formatDateUtil(dateString, 'time')
 }
 
 // Helper function to format date
 const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString([], {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  })
+  return formatDateUtil(dateString, 'date-text')
 }
 
 export default function ChatPage() {
