@@ -7,8 +7,8 @@ export const getBankList = async (): Promise<IBankListResponse> => {
 };
 
 export interface IVerifyBankAccountParams {
-  bankCode: string;
-  accountNumber: string;
+  bank: string;
+  account: string;
 }
 
 export const verifyBankAccount = async (params: IVerifyBankAccountParams): Promise<IVerifyBankAccountResponse> => {

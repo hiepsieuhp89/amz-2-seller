@@ -19,9 +19,8 @@ export interface IBankListResponse {
 }
 
 export interface IVerifyBankAccountData {
-  isValid: boolean;
-  accountName?: string;
-  accountNumber: string;
+  ownerName?: string;
+  accountNumber?: string;
   bankName?: string;
 }
 

@@ -213,18 +213,18 @@ const AvatarDropdown = () => {
       setBankAccountHelpMessage("Đang xác thực thông tin tài khoản...")
 
       const response = await verifyBankAccount({
-        bankCode,
-        accountNumber,
+        bank: bankCode,
+        account: accountNumber,
       })
 
-      if (response?.data?.isValid) {
+      if (response?.status) {
         setBankAccountStatus("success")
         setBankAccountHelpMessage(
-          `Xác thực thành công: ${response.data.accountName || "Tài khoản hợp lệ"}`
+          `Xác thực thành công: ${response.data?.ownerName || "Tài khoản hợp lệ"}`
         )
         
-        if (response.data.accountName) {
-          form.setValue("bankAccountName", response.data.accountName)
+        if (response.data?.ownerName) {
+          form.setValue("bankAccountName", response.data.ownerName)
         }
       } else {
         setBankAccountStatus("error")
