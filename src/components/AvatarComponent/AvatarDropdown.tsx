@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, memo, useMemo } from "react"
 import { useUser } from "@/context/useUserContext"
-import { useUpdateUser, useChangePassword } from "@/hooks/authentication"
+import { useUpdateUser } from "@/hooks/authentication"
 import { useBankList, useVerifyBankAccount } from "@/hooks/bank"
 import { debounce } from "lodash"
 import { useUploadFile } from "@/hooks/upload"
@@ -61,9 +61,8 @@ interface FormValues {
 }
 
 interface PasswordFormValues {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
+  oldPassword: string;
+  password: string;
 }
 
 const AvatarDropdown = () => {
@@ -72,11 +71,9 @@ const AvatarDropdown = () => {
   const [isClient, setIsClient] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
-  const [showNewPassword, setShowNewPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showOldPassword, setShowOldPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser()
-  const { mutateAsync: changePassword, isPending: isChangingPassword } = useChangePassword()
   const { verifyBankAccount } = useVerifyBankAccount()
   const { mutateAsync: uploadFile, isPending: isUploading } = useUploadFile()
   const [idCardFrontImageUrl, setIdCardFrontImageUrl] = useState("")
@@ -113,9 +110,8 @@ const AvatarDropdown = () => {
 
   const passwordForm = useForm<PasswordFormValues>({
     defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
+      oldPassword: "",
+      password: "",
     },
   })
 
@@ -154,16 +150,15 @@ const AvatarDropdown = () => {
 
   const handleChangePassword = async (values: PasswordFormValues) => {
     try {
-      await changePassword({
-        currentPassword: values.currentPassword,
-        newPassword: values.newPassword,
-        confirmPassword: values.confirmPassword,
+      await updateUser({
+        oldPassword: values.oldPassword,
+        password: values.password,
       })
-      message.success("Đổi mật khẩu giao dịch thành công!")
+      message.success("Đổi mật khẩu thành công!")
       setIsPasswordModalOpen(false)
       passwordForm.reset()
     } catch (error) {
-      message.error("Có lỗi xảy ra khi đổi mật khẩu giao dịch")
+      message.error("Có lỗi xảy ra khi đổi mật khẩu")
     }
   }
 
@@ -716,14 +711,14 @@ const AvatarDropdown = () => {
     <form onSubmit={passwordForm.handleSubmit(handleChangePassword)} className="space-y-4">
       <FormField
         control={passwordForm.control}
-        name="currentPassword"
+        name="oldPassword"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Mật khẩu hiện tại</FormLabel>
             <FormControl>
               <div className="relative">
                 <Input 
-                  type={showCurrentPassword ? "text" : "password"} 
+                  type={showOldPassword ? "text" : "password"} 
                   {...field} 
                 />
                 <Button
@@ -731,9 +726,9 @@ const AvatarDropdown = () => {
                   variant="ghost"
                   size="icon"
                   className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  onClick={() => setShowOldPassword(!showOldPassword)}
                 >
-                  {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showOldPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
               </div>
             </FormControl>
@@ -744,14 +739,14 @@ const AvatarDropdown = () => {
 
       <FormField
         control={passwordForm.control}
-        name="newPassword"
+        name="password"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Mật khẩu mới</FormLabel>
             <FormControl>
               <div className="relative">
                 <Input 
-                  type={showNewPassword ? "text" : "password"} 
+                  type={showPassword ? "text" : "password"} 
                   {...field} 
                 />
                 <Button
@@ -759,37 +754,9 @@ const AvatarDropdown = () => {
                   variant="ghost"
                   size="icon"
                   className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  onClick={() => setShowPassword(!showPassword)}
                 >
-                  {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={passwordForm.control}
-        name="confirmPassword"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Xác nhận mật khẩu mới</FormLabel>
-            <FormControl>
-              <div className="relative">
-                <Input 
-                  type={showConfirmPassword ? "text" : "password"} 
-                  {...field} 
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </Button>
               </div>
             </FormControl>
@@ -810,8 +777,8 @@ const AvatarDropdown = () => {
         >
           Hủy
         </Button>
-        <Button type="submit" disabled={isChangingPassword} className="rounded-sm bg-main-dark-blue !text-white hover:!bg-main-dark-blue/90">
-          {isChangingPassword ? (
+        <Button type="submit" disabled={isUpdating} className="rounded-sm bg-main-dark-blue !text-white hover:!bg-main-dark-blue/90">
+          {isUpdating ? (
             <>
               <div className="h-4 w-4 mr-2 rounded-full border-2 border-current border-t-transparent animate-spin" />
               Đang lưu...
@@ -822,7 +789,7 @@ const AvatarDropdown = () => {
         </Button>
       </DialogFooter>
     </form>
-  ), [passwordForm, handleChangePassword, showCurrentPassword, showNewPassword, showConfirmPassword, isChangingPassword, setIsPasswordModalOpen])
+  ), [passwordForm, handleChangePassword, showOldPassword, showPassword, isUpdating, setIsPasswordModalOpen])
 
   if (!isClient) {
     return <div className="avatar-placeholder h-10 w-10 rounded-full bg-muted animate-pulse"></div>
@@ -851,7 +818,7 @@ const AvatarDropdown = () => {
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsPasswordModalOpen(true)} className="cursor-pointer">
             <Lock className="h-4 w-4 mr-2" />
-            Mật khẩu giao dịch
+            Mật khẩu
           </DropdownMenuItem>
           <Separator className="my-1" />
           <DropdownMenuItem
@@ -950,7 +917,7 @@ const AvatarDropdown = () => {
         <DialogContent className="max-w-md p-0 bg-white rounded-md">
           <div className="px-6 py-4 border-b border-b-gray-200">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold">Đổi mật khẩu giao dịch</DialogTitle>
+              <DialogTitle className="text-xl font-bold">Đổi mật khẩu</DialogTitle>
               <DialogDescription>Nhập mật khẩu hiện tại và mật khẩu mới để thay đổi</DialogDescription>
             </DialogHeader>
           </div>
