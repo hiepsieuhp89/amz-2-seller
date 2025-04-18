@@ -262,7 +262,7 @@ const OrderDetailDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={`sm:max-w-[1000px] p-0 bg-white rounded-md max-h-[90vh] overflow-y-auto ${
-          isMobile ? "max-w-full mx-2" : ""
+          isMobile ? "max-w-full" : ""
         }`}
       >
         <div id="preview" ref={previewRef} data-loaded={!!orderDetailData?.data}>
