@@ -15,7 +15,7 @@ import jsPDF from "jspdf";
 import { useEffect } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import Link from "next/link";
-import { formatDate } from "@/utils";
+import { formatDate, formatNumber } from "@/utils";
 
 interface OrderDetailDialogProps {
   orderId: string;
@@ -343,7 +343,7 @@ const OrderDetailDialog = ({
                       </div>
                       <div>
                         <p className="text-gray-600">Tổng cộng</p>
-                        <p className="font-semibold">${order?.totalAmount}</p>
+                        <p className="font-semibold">${formatNumber(order?.totalAmount)}</p>
                       </div>
                       <div>
                         <p className="text-gray-600">Phương thức thanh toán</p>
@@ -418,22 +418,22 @@ const OrderDetailDialog = ({
                                   </div>
                                   <div className="flex justify-between text-xs mb-1">
                                     <span className="text-gray-600">Số lượng:</span>
-                                    <span>{item.quantity}</span>
+                                    <span>{formatNumber(item.quantity)}</span>
                                   </div>
                                   <div className="flex justify-between text-xs mb-1">
                                     <span className="text-gray-600">Giá bán:</span>
-                                    <span>${item.price}</span>
+                                    <span>${formatNumber(item.price)}</span>
                                   </div>
                                   <div className="flex justify-between text-xs font-medium">
                                     <span className="text-gray-600">Tổng:</span>
-                                    <span>${item.totalAmount}</span>
+                                    <span>${formatNumber(item.totalAmount)}</span>
                                   </div>
                                 </div>
                               )}
                               {!expandedItems[item.id] && (
                                 <div className="flex-1 flex items-center">
                                   <div className="ml-2 text-sm text-gray-500">
-                                    SL: {item.quantity} | ${item.totalAmount}
+                                    SL: {formatNumber(item.quantity)} | ${formatNumber(item.totalAmount)}
                                   </div>
                                   <Icon
                                     path={mdiChevronRight}
@@ -496,13 +496,13 @@ const OrderDetailDialog = ({
                                 {item?.deliveryType || "-"}
                               </td>
                               <td className="py-4 px-4 text-center">
-                                {item.quantity}
+                                {formatNumber(item.quantity)}
                               </td>
                               <td className="py-4 px-4 text-right">
-                                ${item.price}
+                                ${formatNumber(item.price)}
                               </td>
                               <td className="py-4 px-4 text-right">
-                                ${item.totalAmount}
+                                ${formatNumber(item.totalAmount)}
                               </td>
                             </tr>
                           ))}
@@ -566,34 +566,33 @@ const OrderDetailDialog = ({
                       <div className="flex justify-between py-1">
                         <span className="text-gray-600">Giá nhà kho:</span>
                         <span>
-                          $
-                          {(parseFloat(order?.totalAmount || "0") * 0.8).toFixed(2)}
+                          ${formatNumber((parseFloat(order?.totalAmount || "0") * 0.8))}
                         </span>
                       </div>
                       <div className="flex justify-between py-1">
                         <span className="text-gray-600">Lợi nhuận:</span>
-                        <span>${order?.totalProfit}</span>
+                        <span>${formatNumber(order?.totalProfit)}</span>
                       </div>
                       <div className="flex justify-between py-1">
                         <span className="text-gray-600">Tổng phụ:</span>
-                        <span>${order?.totalAmount}</span>
+                        <span>${formatNumber(order?.totalAmount)}</span>
                       </div>
                       <div className="flex justify-between py-1">
                         <span className="text-gray-600">Thuế:</span>
-                        <span>$0.00</span>
+                        <span>${formatNumber(0)}</span>
                       </div>
                       <div className="flex justify-between py-1">
                         <span className="text-gray-600">Đang chuyển hàng:</span>
-                        <span>$0.00</span>
+                        <span>${formatNumber(0)}</span>
                       </div>
                       <div className="flex justify-between py-1">
                         <span className="text-gray-600">Phiếu mua hàng:</span>
-                        <span>$0.00</span>
+                        <span>${formatNumber(0)}</span>
                       </div>
                       <Divider className="my-1 sm:my-2" />
                       <div className="flex justify-between py-1 font-bold">
                         <span className="text-gray-600">TOÀN BỘ:</span>
-                        <span>${order?.totalAmount}</span>
+                        <span>${formatNumber(order?.totalAmount)}</span>
                       </div>
                     </div>
                   </div>
