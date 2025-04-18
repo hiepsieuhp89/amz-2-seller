@@ -343,7 +343,7 @@ const OrderDetailDialog = ({
                       </div>
                       <div>
                         <p className="text-gray-600">Tổng cộng</p>
-                        <p className="font-semibold">${formatNumber(order?.totalAmount)}</p>
+                        <p className="font-semibold">${formatNumber(parseFloat(order?.totalAmount || "0"))}</p>
                       </div>
                       <div>
                         <p className="text-gray-600">Phương thức thanh toán</p>
@@ -571,11 +571,11 @@ const OrderDetailDialog = ({
                       </div>
                       <div className="flex justify-between py-1">
                         <span className="text-gray-600">Lợi nhuận:</span>
-                        <span>${formatNumber(order?.totalProfit)}</span>
+                        <span>${formatNumber(parseFloat(order?.totalProfit || "0"))}</span>
                       </div>
                       <div className="flex justify-between py-1">
                         <span className="text-gray-600">Tổng phụ:</span>
-                        <span>${formatNumber(order?.totalAmount)}</span>
+                        <span>${formatNumber(parseFloat(order?.totalAmount || "0"))}</span>
                       </div>
                       <div className="flex justify-between py-1">
                         <span className="text-gray-600">Thuế:</span>
@@ -592,7 +592,7 @@ const OrderDetailDialog = ({
                       <Divider className="my-1 sm:my-2" />
                       <div className="flex justify-between py-1 font-bold">
                         <span className="text-gray-600">TOÀN BỘ:</span>
-                        <span>${formatNumber(order?.totalAmount)}</span>
+                        <span>${formatNumber(parseFloat(order?.totalAmount || "0"))}</span>
                       </div>
                     </div>
                   </div>
