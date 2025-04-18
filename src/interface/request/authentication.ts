@@ -27,6 +27,8 @@ export interface IUpdateUser {
   address?: string
   avatar?: string
   withdrawPassword?: string
+  oldPassword?: string
+  password?: string
 }
 
 export interface IChangePassword {
