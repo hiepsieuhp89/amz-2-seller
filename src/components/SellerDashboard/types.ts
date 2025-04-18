@@ -32,6 +32,7 @@ export interface ChartData {
     orderCode: string
     customer: string
     amount: number
+    [key: string]: any
     profit: number
     detailLink: string
   }

@@ -11,12 +11,17 @@ interface OrderData {
     key: string
     time: string
     orderCode: string
+    user: {
+        fullName: string
+        [key: string]: any
+    }
     amount: string
     profit: string
     deliveryStatus: string
     isDelayed: boolean
     delayTime: string
     paymentStatus: string
+    [key: string]: any
     
 }
 
