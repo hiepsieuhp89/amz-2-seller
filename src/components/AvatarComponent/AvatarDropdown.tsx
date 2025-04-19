@@ -423,11 +423,11 @@ const AvatarDropdown = () => {
       </div>
 
       <div>
-        <Label>Mật khẩu</Label>
+        <Label>Mật khẩu đăng nhập</Label>
         <div className="mt-2">
           <Button variant="outline" className="flex items-center bg-gradient-to-l from-main-dark-blue to-main-dark-blue/80 gap-2 rounded-sm !text-white hover:!bg-main-dark-blue/80 transition-colors" onClick={() => setIsPasswordModalOpen(true)}>
             <Lock className="h-4 w-4" />
-            Thay đổi mật khẩu
+            Thay đổi mật khẩu đăng nhập
           </Button>
         </div>
       </div>
@@ -770,7 +770,7 @@ const AvatarDropdown = () => {
         name="oldPassword"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Mật khẩu hiện tại</FormLabel>
+            <FormLabel>Mật khẩu đăng nhập hiện tại</FormLabel>
             <FormControl>
               <div className="relative">
                 <Input 
@@ -798,7 +798,7 @@ const AvatarDropdown = () => {
         name="password"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Mật khẩu mới</FormLabel>
+            <FormLabel>Mật khẩu đăng nhập mới</FormLabel>
             <FormControl>
               <div className="relative">
                 <Input 
@@ -840,7 +840,7 @@ const AvatarDropdown = () => {
               Đang lưu...
             </>
           ) : (
-            "Đổi mật khẩu"
+            "Đổi mật khẩu đăng nhập"
           )}
         </Button>
       </DialogFooter>
@@ -1057,8 +1057,8 @@ const AvatarDropdown = () => {
         <DialogContent className="max-w-md p-0 bg-white rounded-md">
           <div className="px-6 py-4 border-b border-b-gray-200">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold">Đổi mật khẩu</DialogTitle>
-              <DialogDescription>Nhập mật khẩu hiện tại và mật khẩu mới để thay đổi</DialogDescription>
+              <DialogTitle className="text-xl font-bold">Đổi mật khẩu đăng nhập</DialogTitle>
+              <DialogDescription>Nhập mật khẩu đăng nhập hiện tại và mật khẩu đăng nhập mới để thay đổi</DialogDescription>
             </DialogHeader>
           </div>
 

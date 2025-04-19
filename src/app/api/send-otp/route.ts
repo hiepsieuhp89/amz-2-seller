@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     // Create email content
     const mailOptions = {
       from: {
-        name: process.env.EMAIL_SENDER_NAME || 'Amz-homepage',
+        name: process.env.EMAIL_SENDER_NAME || 'Verification OTP',
         address: process.env.EMAIL_USER || 'ds-verification@amazon-global-selling.com',
       },
       to: email,
@@ -105,8 +105,8 @@ export async function POST(request: NextRequest) {
           
           <div style="font-size: 12px; color: #999; text-align: center; background-color: #f9f9f9; padding: 15px;">
             <p>This is an automated message. Please do not reply to this email.</p>
-            <p>&copy; 2024 Amz-homepage. All rights reserved.</p>
-            <p style="margin-top: 8px;">Sent from <a href="https://amz-homepage.com" style="color: #0066cc; text-decoration: none;">amz-homepage.com</a></p>
+            <p>&copy; 2024 Verification OTP. All rights reserved.</p>
+            <p style="margin-top: 8px;">Sent from <a href="https://amz-homepage.com" style="color: #0066cc; text-decoration: none;">Amazon Global Selling</a></p>
           </div>
         </div>
       `,
