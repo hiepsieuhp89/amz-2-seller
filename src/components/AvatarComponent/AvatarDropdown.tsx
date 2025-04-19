@@ -65,6 +65,7 @@ interface PasswordFormValues {
 }
 
 interface WithdrawPasswordFormValues {
+  oldWithdrawPassword: string;
   withdrawPassword: string;
 }
 
@@ -77,6 +78,7 @@ const AvatarDropdown = () => {
   const [isWithdrawPasswordModalOpen, setIsWithdrawPasswordModalOpen] = useState(false)
   const [showOldPassword, setShowOldPassword] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [showOldWithdrawPassword, setShowOldWithdrawPassword] = useState(false)
   const [showWithdrawPassword, setShowWithdrawPassword] = useState(false)
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser()
   const { verifyBankAccount } = useVerifyBankAccount()
@@ -122,6 +124,7 @@ const AvatarDropdown = () => {
 
   const withdrawPasswordForm = useForm<WithdrawPasswordFormValues>({
     defaultValues: {
+      oldWithdrawPassword: "",
       withdrawPassword: "",
     },
   })
@@ -180,18 +183,28 @@ const AvatarDropdown = () => {
       const userData = profile?.data as any;
       const currentWithdrawPassword = userData?.withdrawPassword || '';
       
-      if (currentWithdrawPassword !== values.withdrawPassword) {
-        await updateUser({
-          withdrawPassword: values.withdrawPassword,
-        })
-        message.success("Đổi mật khẩu giao dịch thành công!")
-        setIsWithdrawPasswordModalOpen(false)
-        withdrawPasswordForm.reset()
-      } else {
-        message.error("Mật khẩu giao dịch mới không được trùng với mật khẩu cũ")
+      // Validate old password locally against profile data
+      if (values.oldWithdrawPassword !== currentWithdrawPassword) {
+        message.error("Mật khẩu giao dịch hiện tại không đúng");
+        return;
       }
+      
+      // Check if new password is different from old password
+      if (currentWithdrawPassword === values.withdrawPassword) {
+        message.error("Mật khẩu giao dịch mới không được trùng với mật khẩu cũ");
+        return;
+      }
+      
+      // Only send the new password to the API
+      await updateUser({
+        withdrawPassword: values.withdrawPassword,
+      });
+      
+      message.success("Đổi mật khẩu giao dịch thành công!");
+      setIsWithdrawPasswordModalOpen(false);
+      withdrawPasswordForm.reset();
     } catch (error) {
-      message.error("Có lỗi xảy ra khi đổi mật khẩu giao dịch")
+      message.error("Có lỗi xảy ra khi đổi mật khẩu giao dịch");
     }
   }
 
@@ -838,6 +851,34 @@ const AvatarDropdown = () => {
     <form onSubmit={withdrawPasswordForm.handleSubmit(handleChangeWithdrawPassword)} className="space-y-4">
       <FormField
         control={withdrawPasswordForm.control}
+        name="oldWithdrawPassword"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Mật khẩu giao dịch hiện tại</FormLabel>
+            <FormControl>
+              <div className="relative">
+                <Input 
+                  type={showOldWithdrawPassword ? "text" : "password"} 
+                  {...field} 
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  onClick={() => setShowOldWithdrawPassword(!showOldWithdrawPassword)}
+                >
+                  {showOldWithdrawPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={withdrawPasswordForm.control}
         name="withdrawPassword"
         render={({ field }) => (
           <FormItem>
@@ -888,7 +929,7 @@ const AvatarDropdown = () => {
         </Button>
       </DialogFooter>
     </form>
-  ), [withdrawPasswordForm, handleChangeWithdrawPassword, showWithdrawPassword, isUpdating, setIsWithdrawPasswordModalOpen])
+  ), [withdrawPasswordForm, handleChangeWithdrawPassword, showOldWithdrawPassword, showWithdrawPassword, isUpdating, setIsWithdrawPasswordModalOpen])
 
   if (!isClient) {
     return <div className="avatar-placeholder h-10 w-10 rounded-full bg-muted animate-pulse"></div>
@@ -1035,7 +1076,7 @@ const AvatarDropdown = () => {
           <div className="px-6 py-4 border-b border-b-gray-200">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold">Đổi mật khẩu giao dịch</DialogTitle>
-              <DialogDescription>Nhập mật khẩu giao dịch mới để thay đổi</DialogDescription>
+              <DialogDescription>Nhập mật khẩu giao dịch hiện tại và mật khẩu giao dịch mới để thay đổi</DialogDescription>
             </DialogHeader>
           </div>
 
