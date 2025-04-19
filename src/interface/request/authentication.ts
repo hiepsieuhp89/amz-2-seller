@@ -57,6 +57,8 @@ export interface IUpdateUser {
   idCardBackImage?: string
   oldPassword?: string
   password?: string
+  oldWithdrawPassword?: string
+  withdrawPassword?: string
 }
 
 export interface IChangePassword {

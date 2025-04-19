@@ -64,14 +64,20 @@ interface PasswordFormValues {
   password: string;
 }
 
+interface WithdrawPasswordFormValues {
+  withdrawPassword: string;
+}
+
 const AvatarDropdown = () => {
   const { user, profile, logoutUser, logoUrl } = useUser()
   console.log(profile)
   const [isClient, setIsClient] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
+  const [isWithdrawPasswordModalOpen, setIsWithdrawPasswordModalOpen] = useState(false)
   const [showOldPassword, setShowOldPassword] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [showWithdrawPassword, setShowWithdrawPassword] = useState(false)
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser()
   const { verifyBankAccount } = useVerifyBankAccount()
   const { mutateAsync: uploadFile, isPending: isUploading } = useUploadFile()
@@ -111,6 +117,12 @@ const AvatarDropdown = () => {
     defaultValues: {
       oldPassword: "",
       password: "",
+    },
+  })
+
+  const withdrawPasswordForm = useForm<WithdrawPasswordFormValues>({
+    defaultValues: {
+      withdrawPassword: "",
     },
   })
 
@@ -158,6 +170,28 @@ const AvatarDropdown = () => {
       passwordForm.reset()
     } catch (error) {
       message.error("Có lỗi xảy ra khi đổi mật khẩu")
+    }
+  }
+
+  const handleChangeWithdrawPassword = async (values: WithdrawPasswordFormValues) => {
+    try {
+      // Since TypeScript doesn't recognize withdrawPassword on profile.data
+      // Use a type assertion or check for property existence
+      const userData = profile?.data as any;
+      const currentWithdrawPassword = userData?.withdrawPassword || '';
+      
+      if (currentWithdrawPassword !== values.withdrawPassword) {
+        await updateUser({
+          withdrawPassword: values.withdrawPassword,
+        })
+        message.success("Đổi mật khẩu giao dịch thành công!")
+        setIsWithdrawPasswordModalOpen(false)
+        withdrawPasswordForm.reset()
+      } else {
+        message.error("Mật khẩu giao dịch mới không được trùng với mật khẩu cũ")
+      }
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi đổi mật khẩu giao dịch")
     }
   }
 
@@ -698,6 +732,16 @@ const AvatarDropdown = () => {
             </FormItem>
           )}
         />
+
+        <div>
+          <Label>Mật khẩu giao dịch</Label>
+          <div className="mt-2">
+            <Button variant="outline" className="flex items-center bg-gradient-to-l from-main-dark-blue to-main-dark-blue/80 gap-2 rounded-sm !text-white hover:!bg-main-dark-blue/80 transition-colors" onClick={() => setIsWithdrawPasswordModalOpen(true)}>
+              <Lock className="h-4 w-4" />
+              Thay đổi mật khẩu giao dịch
+            </Button>
+          </div>
+        </div>
       </div>
     )
   }, [form, idCardFrontImageUrl, idCardBackImageUrl, bankAccountStatus, bankAccountHelpMessage, handleBankAccountVerification, handleUploadImage, isLoadingBanks, bankOptions, isUpdating, bankSearchTerm, setBankSearchTerm])
@@ -790,6 +834,62 @@ const AvatarDropdown = () => {
     </form>
   ), [passwordForm, handleChangePassword, showOldPassword, showPassword, isUpdating, setIsPasswordModalOpen])
 
+  const WithdrawPasswordFormContent = useMemo(() => (
+    <form onSubmit={withdrawPasswordForm.handleSubmit(handleChangeWithdrawPassword)} className="space-y-4">
+      <FormField
+        control={withdrawPasswordForm.control}
+        name="withdrawPassword"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Mật khẩu giao dịch mới</FormLabel>
+            <FormControl>
+              <div className="relative">
+                <Input 
+                  type={showWithdrawPassword ? "text" : "password"} 
+                  {...field} 
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                  onClick={() => setShowWithdrawPassword(!showWithdrawPassword)}
+                >
+                  {showWithdrawPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <DialogFooter className="mt-6 pb-6">
+        <Button
+          type="button"
+          variant="outline"
+          className="rounded-sm"
+          onClick={() => {
+            setIsWithdrawPasswordModalOpen(false)
+            withdrawPasswordForm.reset()
+          }}
+        >
+          Hủy
+        </Button>
+        <Button type="submit" disabled={isUpdating} className="rounded-sm bg-main-dark-blue !text-white hover:!bg-main-dark-blue/90">
+          {isUpdating ? (
+            <>
+              <div className="h-4 w-4 mr-2 rounded-full border-2 border-current border-t-transparent animate-spin" />
+              Đang lưu...
+            </>
+          ) : (
+            "Đổi mật khẩu giao dịch"
+          )}
+        </Button>
+      </DialogFooter>
+    </form>
+  ), [withdrawPasswordForm, handleChangeWithdrawPassword, showWithdrawPassword, isUpdating, setIsWithdrawPasswordModalOpen])
+
   if (!isClient) {
     return <div className="avatar-placeholder h-10 w-10 rounded-full bg-muted animate-pulse"></div>
   }
@@ -815,10 +915,10 @@ const AvatarDropdown = () => {
             <User className="h-4 w-4 mr-2" />
             Hồ sơ
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsPasswordModalOpen(true)} className="cursor-pointer">
+          {/* <DropdownMenuItem onClick={() => setIsPasswordModalOpen(true)} className="cursor-pointer">
             <Lock className="h-4 w-4 mr-2" />
             Mật khẩu
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <Separator className="my-1" />
           <DropdownMenuItem
             onClick={handleClickLogout}
@@ -924,6 +1024,24 @@ const AvatarDropdown = () => {
           <div className="px-6">
             <Form {...passwordForm}>
               {PasswordFormContent}
+            </Form>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Withdraw Password Modal */}
+      <Dialog open={isWithdrawPasswordModalOpen} onOpenChange={setIsWithdrawPasswordModalOpen}>
+        <DialogContent className="max-w-md p-0 bg-white rounded-md">
+          <div className="px-6 py-4 border-b border-b-gray-200">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold">Đổi mật khẩu giao dịch</DialogTitle>
+              <DialogDescription>Nhập mật khẩu giao dịch mới để thay đổi</DialogDescription>
+            </DialogHeader>
+          </div>
+
+          <div className="px-6">
+            <Form {...withdrawPasswordForm}>
+              {WithdrawPasswordFormContent}
             </Form>
           </div>
         </DialogContent>
