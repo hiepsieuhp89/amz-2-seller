@@ -21,7 +21,7 @@ import type { MenuProps } from "antd"
 import { Badge, Input, Menu } from "antd"
 import { usePathname, useRouter } from "next/navigation"
 import type React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
 import "./styles.css"
 import Image from "next/image"
 import { useUser } from "@/context/useUserContext"
@@ -32,6 +32,7 @@ import { useLayout } from "@/components/LayoutProvider"
 import useSidebar from '@/stores/useSidebar'
 import { Star } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useGetUnreadNotifications, useMarkAsRead } from "@/hooks/notification"
 
 function LayoutPage() {
   const { isSidebarOpen } = useSidebar()
@@ -45,6 +46,75 @@ function LayoutPage() {
   const [isClient, setIsClient] = useState(false)
   const { isMobileSidebarOpen, toggleMobileSidebar } = useLayout()
   const { profile } = useUser()
+  const { data: unreadNotifications } = useGetUnreadNotifications()
+  const { mutate: markAsRead } = useMarkAsRead()
+  
+  // Count notifications by type
+  const notificationCounts = useMemo(() => {
+    console.log("unreadNotifications", unreadNotifications)
+    if (!unreadNotifications?.data) return { orders: 0, chat: 0 };
+    
+    return unreadNotifications.data.reduce((counts, notification) => {
+      // Map notification types to their respective categories
+      switch (notification.type) {
+        // Order related notifications
+        case 'NEW_ORDER':
+        case 'ORDER_STATUS_UPDATE':
+          counts.orders++;
+          break;
+        
+        // Chat related notifications
+        case 'NEW_MESSAGE':
+          counts.chat++;
+          break;
+          
+        // System notifications can be added to another category if needed
+        case 'ADMIN_NOTIFICATION':
+        case 'FEDEX_BALANCE_UPDATE':
+        case 'SYSTEM_NOTIFICATION':
+          // Add to appropriate category or create a new one if needed
+          break;
+          
+        default:
+          // Fallback for any other types using the previous includes logic
+          if (notification.type.includes('ORDER')) {
+            counts.orders++;
+          } else if (notification.type.includes('CHAT') || notification.type.includes('MESSAGE')) {
+            counts.chat++;
+          }
+          break;
+      }
+      return counts;
+    }, { orders: 0, chat: 0 });
+  }, [unreadNotifications]);
+
+  // Handler for menu item click to mark notifications as read
+  const handleMenuItemClick = useCallback((menuPath: string) => {
+    // Skip for chat menu
+    if (menuPath === '/seller/chat' || !unreadNotifications?.data?.length) return;
+    
+    // Get notifications IDs based on the clicked menu
+    const notificationIds = unreadNotifications.data
+      .filter(notification => {
+        if (menuPath === '/seller/orders') {
+          // Include all order-related notification types
+          return ['NEW_ORDER', 'ORDER_STATUS_UPDATE'].includes(notification.type) || 
+                 notification.type.includes('ORDER');
+        }
+        // Add more menu paths and notification types as needed
+        return false;
+      })
+      .map(notification => notification.id);
+    
+    // Mark notifications as read if there are any
+    if (notificationIds.length > 0) {
+      // Mark each notification as read one by one
+      notificationIds.forEach(id => {
+        markAsRead({ notificationId: id });
+      });
+    }
+  }, [unreadNotifications, markAsRead]);
+
   const menu = [
     {
       key: "/seller/dashboard",
@@ -82,7 +152,7 @@ function LayoutPage() {
       path: `/seller/orders`,
       badge: {
         text: "",
-        count: 0,
+        count: notificationCounts.orders,
         color: "#f08806",
       },
     },
@@ -130,7 +200,7 @@ function LayoutPage() {
       path: `/seller/chat`,
       badge: {
         text: "",
-        count: 0,
+        count: notificationCounts.chat,
         color: "#f08806",
       },
     },
@@ -193,7 +263,10 @@ function LayoutPage() {
           children: item.children.map((child) => ({
             key: child.key,
             label: (
-              <Link href={child.path} onClick={() => setPath(child.path)}>
+              <Link href={child.path} onClick={() => {
+                setPath(child.path)
+                handleMenuItemClick(child.path)
+              }}>
                 <span className="font-medium">{child.name}</span>
               </Link>
             ),
@@ -204,14 +277,20 @@ function LayoutPage() {
       }
 
       let label: React.ReactNode = (
-        <Link href={item.path} onClick={() => setPath(item.path)}>
+        <Link href={item.path} onClick={() => {
+          setPath(item.path)
+          handleMenuItemClick(item.path)
+        }}>
           <span className="font-medium">{item.name}</span>
         </Link>
       )
 
       if (item.badge) {
         label = (
-          <Link href={item.path} onClick={() => setPath(item.path)}>
+          <Link href={item.path} onClick={() => {
+            setPath(item.path)
+            handleMenuItemClick(item.path)
+          }}>
             <div
               style={{
                 display: "flex",
