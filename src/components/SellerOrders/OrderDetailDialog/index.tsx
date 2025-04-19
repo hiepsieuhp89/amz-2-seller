@@ -282,12 +282,12 @@ const OrderDetailDialog = ({
                   <div className="col-span-12 lg:col-span-5 border p-3 sm:p-4 relative">
                     <div>
                       <p className="font-bold">
-                        {maskUserInfo(userInfo.name, "name")}
+                        {userInfo.name}
                       </p>
                       <p>{maskUserInfo(userInfo.email, "email")}</p>
                       <p>{maskUserInfo(userInfo.phone, "phone")}</p>
                       <p className="text-gray-600">
-                        {maskUserInfo(userInfo.address, "address")}
+                        {userInfo.address}
                       </p>
                     </div>
                   </div>
@@ -537,7 +537,7 @@ const OrderDetailDialog = ({
                               Thông tin khách hàng:
                             </p>
                             <p className="text-xs sm:text-sm">
-                              {maskUserInfo(userInfo.name, "name")}
+                              {userInfo.name}
                             </p>
                             <p className="text-xs sm:text-sm">
                               {maskUserInfo(userInfo.email, "email")}
