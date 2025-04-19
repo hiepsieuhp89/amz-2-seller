@@ -1,20 +1,8 @@
 "use client"
 
-import { useEffect, useState, useCallback, memo, useMemo } from "react"
-import { useUser } from "@/context/useUserContext"
-import { useUpdateUser } from "@/hooks/authentication"
-import { useBankList, useVerifyBankAccount } from "@/hooks/bank"
-import { debounce } from "lodash"
-import { useUploadFile } from "@/hooks/upload"
-import Image from "next/image"
-import { User, Lock, LogOut, Eye, EyeOff, Trash2, Check, ChevronDown, UploadIcon, Loader2 } from "lucide-react"
-import { message } from "antd"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Card, CardContent } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -23,15 +11,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useForm } from "react-hook-form"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { Card, CardContent } from "@/components/ui/card"
-import { motion } from "framer-motion"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
+import { useUser } from "@/context/useUserContext"
+import { useUpdateUser } from "@/hooks/authentication"
+import { useBankList, useVerifyBankAccount } from "@/hooks/bank"
+import { useUploadFile } from "@/hooks/upload"
 import { IBankData } from "@/interface/response/bank"
 import { cn } from "@/lib/utils"
+import { message } from "antd"
+import { motion } from "framer-motion"
+import { Eye, EyeOff, Loader2, Lock, LogOut, Trash2, UploadIcon, User } from "lucide-react"
+import Image from "next/image"
+import { useEffect, useMemo, useState } from "react"
+import { useForm } from "react-hook-form"
 
 // Add type interface definitions
 interface BankOption {
