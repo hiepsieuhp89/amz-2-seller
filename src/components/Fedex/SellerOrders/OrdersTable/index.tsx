@@ -3,6 +3,7 @@
 import { useGetMyOrders, usePayOrders } from "@/hooks/shop-products";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import { IOrder } from "@/interface/response/shop-products";
+import { formatNumber } from "@/utils";
 import {
   Badge,
   Button,
@@ -230,7 +231,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
         width: isMobile ? "20%" : "10%",
         render: (text) => (
           <span className="whitespace-nowrap text-xs sm:text-sm">
-            ${text}
+            ${formatNumber(text)}
           </span>
         ),
       },
