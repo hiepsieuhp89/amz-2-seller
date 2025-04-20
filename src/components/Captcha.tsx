@@ -6,15 +6,6 @@ import { useEffect, useState } from 'react';
 
 type CaptchaType = 'image' | 'audio' | 'text';
 
-const captchaImages = [
-  { id: 1, src: 'https://source.unsplash.com/100x100/?cat', type: 'cat' },
-  { id: 2, src: 'https://source.unsplash.com/100x100/?dog', type: 'dog' },
-  { id: 3, src: 'https://source.unsplash.com/100x100/?koala', type: 'koala' },
-  { id: 4, src: 'https://source.unsplash.com/100x100/?bird', type: 'bird' },
-  { id: 5, src: 'https://source.unsplash.com/100x100/?fish', type: 'fish' },
-  { id: 6, src: 'https://source.unsplash.com/100x100/?rabbit', type: 'rabbit' },
-];
-
 const generateTextCaptcha = () => {
   const operators = ['+', '-', '*'];
   const num1 = Math.floor(Math.random() * 10);
@@ -40,7 +31,7 @@ interface CaptchaProps {
 
 const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
   const [captchaType, setCaptchaType] = useState<CaptchaType>(() => {
-    const types: CaptchaType[] = ['image', 'audio', 'text'];
+    const types: CaptchaType[] = ['image', 'text'];
     return types[Math.floor(Math.random() * types.length)];
   });
   const [captchaLoading, setCaptchaLoading] = useState(false);
@@ -96,7 +87,7 @@ const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
   };
 
   const generateRandomCaptcha = () => {
-    const types: CaptchaType[] = ['image', 'audio', 'text'];
+    const types: CaptchaType[] = ['image', 'text'];
     const randomType = types[Math.floor(Math.random() * types.length)];
     setCaptchaType(randomType);
 
