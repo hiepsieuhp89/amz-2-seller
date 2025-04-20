@@ -19,5 +19,6 @@ export interface ICategoryQueryParams {
   limit?: number
   search?: string
   status?: string
+  categoryId?: string
 }
 

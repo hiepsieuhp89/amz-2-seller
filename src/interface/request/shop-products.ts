@@ -47,6 +47,7 @@ export interface IGetShopProductsRequest {
   code?: string
   minPrice?: number
   maxPrice?: number
+  categoryId?: string
 }
 
 export interface IGetRevenueStatisticsRequest {

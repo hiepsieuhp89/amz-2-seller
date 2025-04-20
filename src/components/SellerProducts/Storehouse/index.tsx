@@ -1,7 +1,7 @@
 "use client"
 import React from "react"
 import { useState, useEffect } from "react"
-import { Input, Button, Badge, Empty, Spin, message, Pagination, Row, Col, Drawer } from "antd"
+import { Input, Button, Badge, Empty, Spin, message, Pagination, Row, Col, Drawer, Select, TreeSelect } from "antd"
 import { PlusOutlined, SearchOutlined, DeleteOutlined, ShoppingCartOutlined, LeftOutlined, RightOutlined, CheckOutlined } from "@ant-design/icons"
 import styles from "./storehouse.module.scss"
 import { useGetAllShopProducts } from "@/hooks/shop-products"
@@ -22,6 +22,70 @@ import { formatNumber } from "@/utils"
 import useSidebar from "@/stores/useSidebar"
 import Icon from "@mdi/react"
 import { mdiChevronDoubleLeft, mdiChevronDoubleRight } from "@mdi/js"
+import { useCategories } from "@/hooks/categories"
+
+const { Option, OptGroup } = Select;
+const { SHOW_PARENT } = TreeSelect;
+
+// Define interfaces for tree data
+interface ITreeNode {
+  title: string;
+  value: string;
+  key: string;
+  selectable: boolean;
+  children?: ITreeNode[];
+}
+
+interface ICategoryWithChildren {
+  id: string;
+  name: string;
+  children?: ICategoryWithChildren[];
+  [key: string]: any;
+}
+
+// Helper function to convert categories to TreeSelect format
+const buildTreeData = (categories: ICategoryWithChildren[]): ITreeNode[] => {
+  if (!categories || !Array.isArray(categories)) return [];
+  
+  return categories.map(category => {
+    const node: ITreeNode = {
+      title: category.name,
+      value: category.id,
+      key: category.id,
+      selectable: !category.children || category.children.length === 0,
+      children: category.children && category.children.length > 0 
+        ? buildTreeData(category.children) 
+        : undefined
+    };
+    
+    return node;
+  });
+};
+
+// Helper function to build nested categories tree
+const buildNestedCategories = (categories: any[]): ICategoryWithChildren[] => {
+  if (!categories || !Array.isArray(categories)) return [];
+  const categoriesMap = new Map();
+  
+  // Create a map of categories by id
+  categories.forEach(category => {
+    categoriesMap.set(category.id, {...category, children: []});
+  });
+  
+  // Build the tree structure
+  const rootCategories: ICategoryWithChildren[] = [];
+  
+  categoriesMap.forEach(category => {
+    if (category.parentId && categoriesMap.has(category.parentId)) {
+      const parent = categoriesMap.get(category.parentId);
+      parent.children.push(category);
+    } else {
+      rootCategories.push(category);
+    }
+  });
+  
+  return rootCategories;
+};
 
 const Storehouse = () => {
   const { user } = useUser()
@@ -34,6 +98,7 @@ const Storehouse = () => {
   const [keyword, setKeyword] = useState("")
   const [minPrice, setMinPrice] = useState<number | undefined>()
   const [maxPrice, setMaxPrice] = useState<number | undefined>()
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | undefined>()
   const [totalSelectedProducts, setTotalSelectedProducts] = useState(0)
   const [isClient, setIsClient] = useState(false)
   const { setSelectedProduct } = useSelectedProduct()
@@ -42,12 +107,32 @@ const Storehouse = () => {
   const [isLastPage, setIsLastPage] = useState(false)
   const [loadedPages, setLoadedPages] = useState<number[]>([])
   const { isSidebarOpen } = useSidebar()
+  const [treeData, setTreeData] = useState<ITreeNode[]>([]);
+
   const { data: productsData, isLoading, refetch } = useGetAllShopProducts({
     page: currentPage,
     take: pageSize,
     shopId: user?.id,
-    search: keyword
+    search: keyword,
+    categoryId: selectedCategoryId
   })
+  
+  // Fetch categories with large take value to get all categories
+  const { categoriesData, isLoading: isCategoriesLoading } = useCategories({ take: 999999 });
+  const [nestedCategories, setNestedCategories] = useState<any[]>([]);
+
+  // Process categories on load
+  useEffect(() => {
+    if (categoriesData?.data?.data) {
+      const processedCategories = buildNestedCategories(categoriesData.data.data);
+      setNestedCategories(processedCategories);
+      
+      // Build tree data for TreeSelect
+      const treeDataFormatted = buildTreeData(processedCategories);
+      setTreeData(treeDataFormatted);
+    }
+  }, [categoriesData]);
+
   useEffect(() => {
     setIsClient(true)
     
@@ -90,6 +175,14 @@ const Storehouse = () => {
       setIsLastPage(page >= pageCount);
     }
   }, [productsData, currentPage, loadedPages]);
+  
+  // Reset page and loaded pages when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+    setLoadedPages([]);
+    setAllProducts([]);
+    refetch();
+  }, [selectedCategoryId, refetch]);
   
   // Filter products when search criteria or all products change
   useEffect(() => {
@@ -186,6 +279,10 @@ const Storehouse = () => {
 
   const isProductSelected = (product: any) => {
     return selectedProducts.some(item => item.id === product.id)
+  }
+
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategoryId(value);
   }
 
   if (!isClient) {
@@ -359,7 +456,7 @@ const Storehouse = () => {
       {user ? (
         <div className="flex flex-col md:flex-row gap-4">
           <div className={`md:flex-1 flex flex-col h-full ${isCollapsed ? 'lg:pr-[70px]' : 'lg:pr-0'}`}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
               <Input
                 placeholder="Tìm kiếm sản phẩm"
                 className="h-10"
@@ -380,6 +477,21 @@ const Storehouse = () => {
                 className="h-10"
                 value={maxPrice}
                 onChange={(e: any) => setMaxPrice(e.target.value ? Number(e.target.value) : undefined)}
+              />
+              <TreeSelect
+                treeDefaultExpandAll
+                placeholder="Chọn danh mục"
+                className="h-10"
+                style={{ width: '100%' }}
+                value={selectedCategoryId}
+                onChange={handleCategoryChange}
+                allowClear
+                loading={isCategoriesLoading}
+                showSearch
+                treeLine={{ showLeafIcon: false }}
+                treeData={treeData}
+                treeNodeFilterProp="title"
+                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
               />
             </div>
 
