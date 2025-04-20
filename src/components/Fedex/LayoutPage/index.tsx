@@ -109,7 +109,7 @@ function LayoutPage({ isSidebarOpen }: LayoutFedExProps) {
               {/* User Info */}
               <div className="flex flex-col gap-0 w-full items-center">
                 <div className="flex items-center">
-                  <span className="text-lg font-medium">{profile?.data?.shopName || "Cửa hàng chưa có tên"}</span>
+                  <span className="text-lg font-medium truncate line-clamp-1">{profile?.data?.shopName || "Cửa hàng chưa có tên"}</span>
                   {profile?.data?.shopStatus === "ACTIVE" ? (
                     <div className="h-7 w-7 relative">
                       <Image
