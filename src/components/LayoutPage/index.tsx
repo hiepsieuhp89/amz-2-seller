@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   mdiCartOutline,
   mdiChevronDown,
@@ -15,105 +15,120 @@ import {
   mdiMenu,
   mdiAccountOutline,
   mdiBullhornOutline,
-} from "@mdi/js"
-import Icon from "@mdi/react"
-import type { MenuProps } from "antd"
-import { Badge, Input, Menu } from "antd"
-import { usePathname, useRouter } from "next/navigation"
-import type React from "react"
-import { useEffect, useState, useMemo, useCallback } from "react"
-import "./styles.css"
-import Image from "next/image"
-import { useUser } from "@/context/useUserContext"
-import { motion, AnimatePresence } from "framer-motion"
-import Link from "next/link"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { useLayout } from "@/components/LayoutProvider"
-import useSidebar from '@/stores/useSidebar'
-import { Star } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useGetUnreadNotifications, useMarkAsRead } from "@/hooks/notification"
+} from "@mdi/js";
+import Icon from "@mdi/react";
+import type { MenuProps } from "antd";
+import { Badge, Input, Menu } from "antd";
+import { usePathname, useRouter } from "next/navigation";
+import type React from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import "./styles.css";
+import Image from "next/image";
+import { useUser } from "@/context/useUserContext";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useLayout } from "@/components/LayoutProvider";
+import useSidebar from "@/stores/useSidebar";
+import { Star } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useGetUnreadNotifications, useMarkAsRead } from "@/hooks/notification";
 
 function LayoutPage() {
-  const { isSidebarOpen } = useSidebar()
-  const router = useRouter()
-  const pathname = usePathname()
-  const [path, setPath] = useState(`seller/dashboard`)
-  const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null)
-  const [searchTerm, setSearchTerm] = useState("")
-  const { user } = useUser()
-  const [shopLink, setShopLink] = useState("/shop?id=")
-  const [isClient, setIsClient] = useState(false)
-  const { isMobileSidebarOpen, toggleMobileSidebar } = useLayout()
-  const { profile } = useUser()
-  const { data: unreadNotifications } = useGetUnreadNotifications()
-  const { mutate: markAsRead } = useMarkAsRead()
-  
+  const { isSidebarOpen } = useSidebar();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [path, setPath] = useState(`seller/dashboard`);
+  const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { user } = useUser();
+  const [shopLink, setShopLink] = useState(
+    process.env.NEXT_PUBLIC_HOME_URL + "/shop?id="
+  );
+  const [isClient, setIsClient] = useState(false);
+  const { isMobileSidebarOpen, toggleMobileSidebar } = useLayout();
+  const { profile } = useUser();
+  const { data: unreadNotifications } = useGetUnreadNotifications();
+  const { mutate: markAsRead } = useMarkAsRead();
+
   // Count notifications by type
   const notificationCounts = useMemo(() => {
-    console.log("unreadNotifications", unreadNotifications)
+    console.log("unreadNotifications", unreadNotifications);
     if (!unreadNotifications?.data) return { orders: 0, chat: 0 };
-    
-    return unreadNotifications.data.reduce((counts, notification) => {
-      // Map notification types to their respective categories
-      switch (notification.type) {
-        // Order related notifications
-        case 'NEW_ORDER':
-        case 'ORDER_STATUS_UPDATE':
-          counts.orders++;
-          break;
-        
-        // Chat related notifications
-        case 'NEW_MESSAGE':
-          counts.chat++;
-          break;
-          
-        // System notifications can be added to another category if needed
-        case 'ADMIN_NOTIFICATION':
-        case 'FEDEX_BALANCE_UPDATE':
-        case 'SYSTEM_NOTIFICATION':
-          // Add to appropriate category or create a new one if needed
-          break;
-          
-        default:
-          // Fallback for any other types using the previous includes logic
-          if (notification.type.includes('ORDER')) {
+
+    return unreadNotifications.data.reduce(
+      (counts, notification) => {
+        // Map notification types to their respective categories
+        switch (notification.type) {
+          // Order related notifications
+          case "NEW_ORDER":
+          case "ORDER_STATUS_UPDATE":
             counts.orders++;
-          } else if (notification.type.includes('CHAT') || notification.type.includes('MESSAGE')) {
+            break;
+
+          // Chat related notifications
+          case "NEW_MESSAGE":
             counts.chat++;
-          }
-          break;
-      }
-      return counts;
-    }, { orders: 0, chat: 0 });
+            break;
+
+          // System notifications can be added to another category if needed
+          case "ADMIN_NOTIFICATION":
+          case "FEDEX_BALANCE_UPDATE":
+          case "SYSTEM_NOTIFICATION":
+            // Add to appropriate category or create a new one if needed
+            break;
+
+          default:
+            // Fallback for any other types using the previous includes logic
+            if (notification.type.includes("ORDER")) {
+              counts.orders++;
+            } else if (
+              notification.type.includes("CHAT") ||
+              notification.type.includes("MESSAGE")
+            ) {
+              counts.chat++;
+            }
+            break;
+        }
+        return counts;
+      },
+      { orders: 0, chat: 0 }
+    );
   }, [unreadNotifications]);
 
   // Handler for menu item click to mark notifications as read
-  const handleMenuItemClick = useCallback((menuPath: string) => {
-    // Skip for chat menu
-    if (menuPath === '/seller/chat' || !unreadNotifications?.data?.length) return;
-    
-    // Get notifications IDs based on the clicked menu
-    const notificationIds = unreadNotifications.data
-      .filter(notification => {
-        if (menuPath === '/seller/orders') {
-          // Include all order-related notification types
-          return ['NEW_ORDER', 'ORDER_STATUS_UPDATE'].includes(notification.type) || 
-                 notification.type.includes('ORDER');
-        }
-        // Add more menu paths and notification types as needed
-        return false;
-      })
-      .map(notification => notification.id);
-    
-    // Mark notifications as read if there are any
-    if (notificationIds.length > 0) {
-      // Mark each notification as read one by one
-      notificationIds.forEach(id => {
-        markAsRead({ notificationId: id });
-      });
-    }
-  }, [unreadNotifications, markAsRead]);
+  const handleMenuItemClick = useCallback(
+    (menuPath: string) => {
+      // Skip for chat menu
+      if (menuPath === "/seller/chat" || !unreadNotifications?.data?.length)
+        return;
+
+      // Get notifications IDs based on the clicked menu
+      const notificationIds = unreadNotifications.data
+        .filter((notification) => {
+          if (menuPath === "/seller/orders") {
+            // Include all order-related notification types
+            return (
+              ["NEW_ORDER", "ORDER_STATUS_UPDATE"].includes(
+                notification.type
+              ) || notification.type.includes("ORDER")
+            );
+          }
+          // Add more menu paths and notification types as needed
+          return false;
+        })
+        .map((notification) => notification.id);
+
+      // Mark notifications as read if there are any
+      if (notificationIds.length > 0) {
+        // Mark each notification as read one by one
+        notificationIds.forEach((id) => {
+          markAsRead({ notificationId: id });
+        });
+      }
+    },
+    [unreadNotifications, markAsRead]
+  );
 
   const menu = [
     {
@@ -134,7 +149,9 @@ function LayoutPage() {
       key: "/seller/products",
       name: "Các sản phẩm",
       icon: <Icon path={mdiPackageVariant} size={0.8} />,
-      activeIcon: <Icon path={mdiPackageVariant} size={0.8} color={"#FCAF17"} />,
+      activeIcon: (
+        <Icon path={mdiPackageVariant} size={0.8} color={"#FCAF17"} />
+      ),
       path: `/seller/products`,
     },
     {
@@ -160,7 +177,9 @@ function LayoutPage() {
       key: "/seller/account-packages",
       name: "Gói tài khoản",
       icon: <Icon path={mdiAccountOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiAccountOutline} size={0.8} color={"#FCAF17"} />,
+      activeIcon: (
+        <Icon path={mdiAccountOutline} size={0.8} color={"#FCAF17"} />
+      ),
       children: [
         {
           key: "seller-packages",
@@ -178,7 +197,9 @@ function LayoutPage() {
       key: "/seller/marketing-packages",
       name: "Gói tiếp thị",
       icon: <Icon path={mdiBullhornOutline} size={0.8} />,
-      activeIcon: <Icon path={mdiBullhornOutline} size={0.8} color={"#FCAF17"} />,
+      activeIcon: (
+        <Icon path={mdiBullhornOutline} size={0.8} color={"#FCAF17"} />
+      ),
       children: [
         {
           key: "spread-packages",
@@ -208,7 +229,9 @@ function LayoutPage() {
       key: "/seller/payment-history",
       name: "Lịch sử thanh toán",
       icon: <Icon path={mdiPackageVariantClosed} size={0.8} />,
-      activeIcon: <Icon path={mdiPackageVariantClosed} size={0.8} color={"#FCAF17"} />,
+      activeIcon: (
+        <Icon path={mdiPackageVariantClosed} size={0.8} color={"#FCAF17"} />
+      ),
       path: "/seller/money-withdraw-requests",
     },
     {
@@ -218,42 +241,48 @@ function LayoutPage() {
       activeIcon: <Icon path={mdiCogOutline} size={0.8} color={"#FCAF17"} />,
       path: "/seller/shop",
     },
-  ]
+  ];
 
   useEffect(() => {
-    setPath(pathname || "")
+    setPath(pathname || "");
     if (user?.id) {
-      setShopLink(`/shop?id=${user.id}`)
+      setShopLink(`${process.env.NEXT_PUBLIC_HOME_URL}/shop?id=${user.id}`);
     }
-    setIsClient(true)
-  }, [pathname, user?.id])
+    setIsClient(true);
+  }, [pathname, user?.id]);
 
   const isActive = (menuPath: string | undefined) => {
-    if (!menuPath) return false
+    if (!menuPath) return false;
 
-    if (path === menuPath) return true
+    if (path === menuPath) return true;
 
     for (const item of menu) {
-      if (item.path && path.startsWith(item.path) && item.path.length > menuPath.length) {
-        return false
+      if (
+        item.path &&
+        path.startsWith(item.path) &&
+        item.path.length > menuPath.length
+      ) {
+        return false;
       }
     }
 
-    return path.startsWith(menuPath) && path.charAt(menuPath.length) === "/"
-  }
+    return path.startsWith(menuPath) && path.charAt(menuPath.length) === "/";
+  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value)
-  }
+    setSearchTerm(e.target.value);
+  };
 
   const filteredMenu = searchTerm
-    ? menu.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    : menu
+    ? menu.filter((item) =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : menu;
 
   const getMenuItems = (): MenuProps["items"] => {
     return filteredMenu.map((item) => {
-      const isItemActive = isActive(item.path)
-      const displayIcon = isItemActive ? item.activeIcon : item.icon
+      const isItemActive = isActive(item.path);
+      const displayIcon = isItemActive ? item.activeIcon : item.icon;
 
       if (item.children) {
         return {
@@ -263,34 +292,47 @@ function LayoutPage() {
           children: item.children.map((child) => ({
             key: child.key,
             label: (
-              <Link href={child.path} onClick={() => {
-                setPath(child.path)
-                handleMenuItemClick(child.path)
-              }}>
+              <Link
+                href={child.path}
+                onClick={() => {
+                  setPath(child.path);
+                  handleMenuItemClick(child.path);
+                }}
+              >
                 <span className="font-medium">{child.name}</span>
               </Link>
             ),
           })),
           expandIcon: ({ isOpen }: { isOpen: boolean }) =>
-            isOpen ? <Icon path={mdiChevronDown} size={0.8} /> : <Icon path={mdiChevronRight} size={0.8} />,
-        }
+            isOpen ? (
+              <Icon path={mdiChevronDown} size={0.8} />
+            ) : (
+              <Icon path={mdiChevronRight} size={0.8} />
+            ),
+        };
       }
 
       let label: React.ReactNode = (
-        <Link href={item.path} onClick={() => {
-          setPath(item.path)
-          handleMenuItemClick(item.path)
-        }}>
+        <Link
+          href={item.path}
+          onClick={() => {
+            setPath(item.path);
+            handleMenuItemClick(item.path);
+          }}
+        >
           <span className="font-medium">{item.name}</span>
         </Link>
-      )
+      );
 
       if (item.badge) {
         label = (
-          <Link href={item.path} onClick={() => {
-            setPath(item.path)
-            handleMenuItemClick(item.path)
-          }}>
+          <Link
+            href={item.path}
+            onClick={() => {
+              setPath(item.path);
+              handleMenuItemClick(item.path);
+            }}
+          >
             <div
               style={{
                 display: "flex",
@@ -327,22 +369,22 @@ function LayoutPage() {
               )}
             </div>
           </Link>
-        )
+        );
       }
 
       return {
         key: item.key,
         icon: displayIcon,
         label,
-      }
-    })
-  }
+      };
+    });
+  };
 
   // Animation variants for consistent timing
   const sidebarVariants = {
     open: { width: 280, transition: { duration: 0.3, ease: "easeInOut" } },
     closed: { width: 60, transition: { duration: 0.3, ease: "easeInOut" } },
-  }
+  };
 
   const contentVariants = {
     open: {
@@ -366,7 +408,7 @@ function LayoutPage() {
         staggerDirection: -1,
       },
     },
-  }
+  };
 
   const itemVariants = {
     open: {
@@ -379,7 +421,7 @@ function LayoutPage() {
       y: -10,
       transition: { duration: 0.2, ease: "easeIn" },
     },
-  }
+  };
 
   const RatingStars = ({ rating }: { rating: number }) => {
     return (
@@ -389,21 +431,25 @@ function LayoutPage() {
             key={index}
             className={cn(
               "w-5 h-5",
-              index < rating ? "fill-yellow-400 stroke-yellow-400" : "fill-gray-300 stroke-gray-300"
+              index < rating
+                ? "fill-yellow-400 stroke-yellow-400"
+                : "fill-gray-300 stroke-gray-300"
             )}
           />
         ))}
       </div>
-    )
-  }
+    );
+  };
 
   const MobileSidebar = () => {
-    const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+    const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
+      {}
+    );
 
     const toggleExpand = (key: string) => {
-      setExpandedItems(prev => ({
+      setExpandedItems((prev) => ({
         ...prev,
-        [key]: !prev[key]
+        [key]: !prev[key],
       }));
     };
 
@@ -411,31 +457,39 @@ function LayoutPage() {
       open: {
         opacity: 1,
         x: 0,
-        transition: { duration: 0.3, ease: "easeOut" }
+        transition: { duration: 0.3, ease: "easeOut" },
       },
       closed: {
         opacity: 0,
         x: -50,
-        transition: { duration: 0.3, ease: "easeIn" }
-      }
+        transition: { duration: 0.3, ease: "easeIn" },
+      },
     };
 
     return (
       <Sheet open={isMobileSidebarOpen} onOpenChange={toggleMobileSidebar}>
-        <SheetContent side="left" className="w-[280px] p-0 border-r-0 bg-[#131921]">
+        <SheetContent
+          side="left"
+          className="w-[280px] p-0 border-r-0 bg-[#131921]"
+        >
           <div className="flex flex-col h-full">
             {/* Header */}
             <div className="p-4 border-b border-gray-800 bg-[#232f3e]">
               <div className="flex flex-col items-center mb-4">
                 <div className="text-[#ff9900] hover:text-[#FCAF17] transition-all duration-300 flex items-center cursor-pointer mb-3">
-                  <Link href={shopLink} className="font-medium text-base flex-shrink-0">
+                  <Link
+                    href={shopLink}
+                    className="font-medium text-base flex-shrink-0"
+                  >
                     Ghé thăm cửa hàng
                   </Link>
                   <span className="ml-1 flex-shrink-0 text-base">→</span>
                 </div>
 
                 <div className="flex items-center gap-1 flex-shrink-0">
-                  <span className="text-lg font-medium text-white flex-shrink-0">{profile?.data?.shopName || "Cửa hàng chưa có tên"}</span>
+                  <span className="text-lg font-medium text-white flex-shrink-0">
+                    {profile?.data?.shopName || "Cửa hàng chưa có tên"}
+                  </span>
                   {profile?.data?.isVerified && (
                     <div className="h-6 w-6 relative flex-shrink-0">
                       <Image
@@ -452,14 +506,20 @@ function LayoutPage() {
                 </div>
 
                 {isClient && (
-                  <div className="text-sm text-gray-300 flex-shrink-0 mt-1">{profile?.data?.email}</div>
+                  <div className="text-sm text-gray-300 flex-shrink-0 mt-1">
+                    {profile?.data?.email}
+                  </div>
                 )}
 
                 <RatingStars rating={profile?.data?.stars ?? 0} />
 
                 <div className="mt-2">
-                  <span className="text-white/80 font-medium text-sm">Điểm uy tín: </span>
-                  <span className="text-green-400 text-sm">{profile?.data?.reputationPoints || 0}</span>
+                  <span className="text-white/80 font-medium text-sm">
+                    Điểm uy tín:{" "}
+                  </span>
+                  <span className="text-green-400 text-sm">
+                    {profile?.data?.reputationPoints || 0}
+                  </span>
                 </div>
               </div>
 
@@ -482,7 +542,11 @@ function LayoutPage() {
             <div className="flex-1 overflow-y-auto py-2">
               <AnimatePresence>
                 {menu
-                  .filter(item => !searchTerm || item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .filter(
+                    (item) =>
+                      !searchTerm ||
+                      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+                  )
                   .map((item) => (
                     <motion.div
                       key={item.key}
@@ -495,20 +559,29 @@ function LayoutPage() {
                       {item.children ? (
                         <>
                           <div
-                            className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 ${expandedItems[item.key]
-                                ? 'bg-[#232f3e] text-[#FCAF17]'
-                                : 'text-white hover:bg-[#232f3e] hover:text-[#FCAF17]'
-                              }`}
+                            className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                              expandedItems[item.key]
+                                ? "bg-[#232f3e] text-[#FCAF17]"
+                                : "text-white hover:bg-[#232f3e] hover:text-[#FCAF17]"
+                            }`}
                             onClick={() => toggleExpand(item.key)}
                           >
                             <div className="flex items-center space-x-3">
-                              {expandedItems[item.key] ? item.activeIcon : item.icon}
+                              {expandedItems[item.key]
+                                ? item.activeIcon
+                                : item.icon}
                               <span className="font-medium">{item.name}</span>
                             </div>
                             <Icon
-                              path={expandedItems[item.key] ? mdiChevronDown : mdiChevronRight}
+                              path={
+                                expandedItems[item.key]
+                                  ? mdiChevronDown
+                                  : mdiChevronRight
+                              }
                               size={0.8}
-                              color={expandedItems[item.key] ? "#FCAF17" : "white"}
+                              color={
+                                expandedItems[item.key] ? "#FCAF17" : "white"
+                              }
                             />
                           </div>
 
@@ -521,14 +594,16 @@ function LayoutPage() {
                                 exit={{ opacity: 0, height: 0 }}
                                 transition={{ duration: 0.2 }}
                               >
-                                {item.children.map(child => (
+                                {item.children.map((child) => (
                                   <Link
                                     key={child.key}
                                     href={child.path}
                                     className="flex items-center space-x-2 p-2 my-1 text-white/90 hover:text-[#FCAF17] hover:bg-[#232f3e]/50 rounded-md transition-all duration-200"
                                     onClick={toggleMobileSidebar}
                                   >
-                                    <span className="font-medium">{child.name}</span>
+                                    <span className="font-medium">
+                                      {child.name}
+                                    </span>
                                   </Link>
                                 ))}
                               </motion.div>
@@ -538,10 +613,11 @@ function LayoutPage() {
                       ) : (
                         <Link
                           href={item.path || ""}
-                          className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${isActive(item.path)
-                              ? 'bg-[#232f3e] text-[#FCAF17]'
-                              : 'text-white hover:bg-[#232f3e] hover:text-[#FCAF17]'
-                            }`}
+                          className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
+                            isActive(item.path)
+                              ? "bg-[#232f3e] text-[#FCAF17]"
+                              : "text-white hover:bg-[#232f3e] hover:text-[#FCAF17]"
+                          }`}
                           onClick={toggleMobileSidebar}
                         >
                           <div className="flex items-center space-x-3">
@@ -549,17 +625,18 @@ function LayoutPage() {
                             <span className="font-medium">{item.name}</span>
                           </div>
 
-                          {item.badge && (item.badge.text || item.badge.count > 0) && (
-                            <Badge
-                              count={item.badge.text || item.badge.count}
-                              style={{
-                                backgroundColor: item.badge.color,
-                                borderRadius: "10px",
-                                boxShadow: "0 0 8px rgba(240, 136, 6, 0.5)",
-                              }}
-                              className="ml-auto"
-                            />
-                          )}
+                          {item.badge &&
+                            (item.badge.text || item.badge.count > 0) && (
+                              <Badge
+                                count={item.badge.text || item.badge.count}
+                                style={{
+                                  backgroundColor: item.badge.color,
+                                  borderRadius: "10px",
+                                  boxShadow: "0 0 8px rgba(240, 136, 6, 0.5)",
+                                }}
+                                className="ml-auto"
+                              />
+                            )}
                         </Link>
                       )}
                     </motion.div>
@@ -593,9 +670,11 @@ function LayoutPage() {
         flexDirection: "column",
       }}
     >
-      <div className="
+      <div
+        className="
       hidden md:flex
-      fixed top-0 left-0 h-full flex-col pt-[68px] overflow-y-auto w-fit">
+      fixed top-0 left-0 h-full flex-col pt-[68px] overflow-y-auto w-fit"
+      >
         <div className="md:hidden p-2">
           <MobileSidebar />
         </div>
@@ -619,9 +698,15 @@ function LayoutPage() {
                   overflow: "hidden",
                 }}
               >
-                <motion.div variants={itemVariants} className="w-full flex flex-col items-center gap-1">
+                <motion.div
+                  variants={itemVariants}
+                  className="w-full flex flex-col items-center gap-1"
+                >
                   <div className="text-[#ff9900] hover:text-main-golden-orange transition-all duration-300 flex items-center cursor-pointer">
-                    <Link href={shopLink} className="font-medium text-base flex-shrink-0">
+                    <Link
+                      href={shopLink}
+                      className="font-medium text-base flex-shrink-0"
+                    >
                       Ghé thăm cửa hàng
                     </Link>
                     <span className="ml-1 flex-shrink-0 text-base">→</span>
@@ -630,7 +715,9 @@ function LayoutPage() {
                   <div className="flex flex-col gap-0 w-full items-center">
                     {/* Shop Info */}
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      <span className="text-lg font-medium flex-shrink-0">{profile?.data?.shopName || "Cửa hàng chưa có tên"}</span>
+                      <span className="text-lg font-medium flex-shrink-0">
+                        {profile?.data?.shopName || "Cửa hàng chưa có tên"}
+                      </span>
                       {profile?.data?.isVerified && (
                         <div className="h-7 w-7 relative flex-shrink-0">
                           <Image
@@ -639,16 +726,18 @@ function LayoutPage() {
                             height={100}
                             width={100}
                             className="object-cover"
-                          src={"/images/tick-icon.png"}
-                          alt="logo"
-                        />
-                      </div>
+                            src={"/images/tick-icon.png"}
+                            alt="logo"
+                          />
+                        </div>
                       )}
                     </div>
 
                     {/* Email */}
                     {isClient && (
-                      <div className="text-sm text-gray-300 flex-shrink-0">{profile?.data?.email}</div>
+                      <div className="text-sm text-gray-300 flex-shrink-0">
+                        {profile?.data?.email}
+                      </div>
                     )}
                   </div>
 
@@ -657,8 +746,12 @@ function LayoutPage() {
 
                   {/* Trust Score */}
                   <div className="mb-4">
-                    <span className="!text-white/80 font-medium text-sm">Điểm uy tín: </span>
-                    <span className="text-green-400 text-sm">{profile?.data?.reputationPoints || 0}</span>
+                    <span className="!text-white/80 font-medium text-sm">
+                      Điểm uy tín:{" "}
+                    </span>
+                    <span className="text-green-400 text-sm">
+                      {profile?.data?.reputationPoints || 0}
+                    </span>
                   </div>
 
                   {/* Search Box */}
@@ -696,7 +789,9 @@ function LayoutPage() {
                 width: "100%",
                 transition: "all 0.3s ease",
               }}
-              defaultSelectedKeys={[menu.find((item) => isActive(item.path))?.key || ""]}
+              defaultSelectedKeys={[
+                menu.find((item) => isActive(item.path))?.key || "",
+              ]}
               defaultOpenKeys={[activeSubMenu || ""]}
               items={getMenuItems()}
               inlineCollapsed={!isSidebarOpen}
@@ -706,8 +801,7 @@ function LayoutPage() {
       </div>
       <MobileSidebar />
     </motion.div>
-  )
+  );
 }
 
-export default LayoutPage
-
+export default LayoutPage;

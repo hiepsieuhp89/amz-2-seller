@@ -81,7 +81,7 @@ const LeftSideSection = () => {
               <div className='p-4'>
                 <div className="flex items-start mb-3">
                   {/* Shop Logo */}
-                  <Link href={"/shop?id=" + profileData?.data?.id}>
+                  <Link href={process.env.NEXT_PUBLIC_HOME_URL + "/shop?id=" + profileData?.data?.id}>
                     <motion.div
                       className="mr-3 w-14 h-14 bg-white border relative rounded-full"
                     >
@@ -99,7 +99,7 @@ const LeftSideSection = () => {
 
                   {/* Shop Name & Location */}
                   <div>
-                    <Link href={"/shop?id=" + profileData?.data?.id} className="text-sm flex items-center font-semibold">
+                    <Link href={process.env.NEXT_PUBLIC_HOME_URL + "/shop?id=" + profileData?.data?.id} className="text-sm flex items-center font-semibold">
                       {profileData?.data?.shopName || "Shop ẩn danh"}
                       <motion.span
                         className="ml-2 text-blue-500"
