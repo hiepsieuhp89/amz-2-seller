@@ -290,6 +290,7 @@ const AvatarDropdown = () => {
         form.setValue("idCardBackImage", imageUrl);
       }
 
+      message.success("Tải ảnh lên thành công");
       return false;
     } catch (error) {
       message.error("Có lỗi xảy ra khi tải lên ảnh");
@@ -305,7 +306,8 @@ const AvatarDropdown = () => {
 
       setAvatarImageUrl(imageUrl)
       form.setValue("logoUrl", imageUrl)
-
+      
+      message.success("Tải ảnh đại diện lên thành công");
       return false
     } catch (error) {
       message.error("Có lỗi xảy ra khi tải lên ảnh đại diện")
