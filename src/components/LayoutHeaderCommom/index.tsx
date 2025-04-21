@@ -140,7 +140,12 @@ export default function LayoutHeaderCommon() {
               </div>
             </PopoverTrigger>
 
-            <PopoverContent side="bottom" align="end" className="w-80 p-0 bg-white  rounded-lg border-none">
+            <PopoverContent 
+              side="bottom" 
+              align="center"
+              className="w-[90vw] max-w-[320px] p-0 bg-white rounded-lg border-none md:align-end md:w-80"
+              sideOffset={5}
+            >
               <div className="border-0 shadow-none">
                 <div className="pb-2 pt-3 px-4 border-b">
                   <div className="text-base font-medium flex justify-between items-center">
