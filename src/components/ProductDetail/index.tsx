@@ -63,6 +63,7 @@ export default function ProductDetail() {
   const imgContainerRef = useRef<HTMLDivElement>(null);
   const [isZoomed, setIsZoomed] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const [isImagePreviewOpen, setIsImagePreviewOpen] = useState(false);
 
   // Update selected product when data is fetched
   useEffect(() => {
@@ -149,6 +150,31 @@ export default function ProductDetail() {
     setIsZoomed(false);
   };
 
+  // Handle mobile image tap to open preview
+  const handleImageTap = () => {
+    // Only open preview on mobile devices
+    if (window.innerWidth < 768) {
+      setIsImagePreviewOpen(true);
+    }
+  };
+
+  // Close image preview
+  const closeImagePreview = () => {
+    setIsImagePreviewOpen(false);
+  };
+
+  // Handle swipe to next/previous image in preview
+  const handlePreviewSwipe = (direction: 'next' | 'prev') => {
+    if (!selectedProduct?.imageUrls) return;
+    
+    const totalImages = selectedProduct.imageUrls.length;
+    if (direction === 'next') {
+      setCurrentImage((prev) => (prev + 1) % totalImages);
+    } else {
+      setCurrentImage((prev) => (prev - 1 + totalImages) % totalImages);
+    }
+  };
+
   // Show loading state while fetching product data
   if (isLoading) {
     return (
@@ -174,6 +200,7 @@ export default function ProductDetail() {
               onMouseEnter={handleMouseEnter}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
+              onClick={handleImageTap}
             >
               <div
                 className={cn(
@@ -206,6 +233,68 @@ export default function ProductDetail() {
                 />
               </div>
             </div>
+
+            {/* Image Preview Modal for Mobile */}
+            {isImagePreviewOpen && (
+              <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center md:hidden">
+                <div className="relative w-full h-full">
+                  {/* Close button */}
+                  <button 
+                    className="absolute top-4 right-4 z-10 text-white bg-black bg-opacity-50 rounded-full p-2"
+                    onClick={closeImagePreview}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                  
+                  {/* Image counter */}
+                  <div className="absolute top-4 left-4 z-10 text-white bg-black bg-opacity-50 px-2 py-1 rounded-md text-sm">
+                    {currentImage + 1}/{selectedProduct?.imageUrls?.length || 1}
+                  </div>
+                  
+                  {/* Image */}
+                  <div 
+                    className="w-full h-full flex items-center justify-center"
+                    onClick={(e) => {
+                      // Determine tap position to navigate
+                      const { clientX, currentTarget } = e;
+                      const { width } = currentTarget.getBoundingClientRect();
+                      const tapPosition = clientX / width;
+                      
+                      if (tapPosition > 0.5) {
+                        handlePreviewSwipe('next');
+                      } else {
+                        handlePreviewSwipe('prev');
+                      }
+                    }}
+                  >
+                    <Image
+                      src={
+                        (selectedProduct?.imageUrls &&
+                          selectedProduct?.imageUrls[currentImage]) ||
+                        "/images/white-image.png"
+                      }
+                      alt="Product preview"
+                      height={1000}
+                      width={1000}
+                      className="object-contain max-h-full max-w-full p-4"
+                    />
+                  </div>
+                  
+                  {/* Navigation indicators */}
+                  <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1">
+                    {selectedProduct?.imageUrls?.map((_, index) => (
+                      <div 
+                        key={index}
+                        className={`w-2 h-2 rounded-full ${index === currentImage ? 'bg-white' : 'bg-gray-500'}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Thumbnail Carousel */}
             <div className="relative w-full pb-4">

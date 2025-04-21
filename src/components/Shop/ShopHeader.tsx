@@ -17,7 +17,7 @@ export default function ShopHeader() {
   return (
     <div className="bg-red border-b px-[104px] py-6">
       <div className="container mx-auto max-w-[1440px] flex items-center">
-        <div className="w-16 h-16 border-2 border-main-golden-orange rounded-full bg-gray-200 items-center justify-center overflow-hidden mr-4">
+        <div className="w-16 h-16 border-2 border-main-golden-orange rounded-full bg-gray-200 items-center justify-center overflow-hidden mr-4 p-2 bg-white">
           <Image
             className="flex-shrink-0 object-fill h-full w-full rounded-full"
             src={profileData?.data?.logoUrl || "/images/default-avatar.jpg"} alt="seller-avatar" width={100} height={100} quality={100} draggable={false} />
