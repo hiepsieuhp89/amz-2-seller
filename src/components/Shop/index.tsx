@@ -3,9 +3,9 @@ import { Header } from "@/components/Common/Header";
 import ShopContent from '@/components/Shop/ShopContent';
 import ShopHeader from '@/components/Shop/ShopHeader';
 import ShopNavigation from '@/components/Shop/ShopNavigation';
-import { useGetAllShopProducts } from "@/hooks/shop-products";
+import { useProducts } from "@/hooks/products";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Footer } from "../Common/Footer";
 
 function ShopContentWrapper() {
@@ -20,7 +20,7 @@ function ShopContentWrapper() {
   const [status, setStatus] = useState<string | undefined>(undefined);
   const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
   const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
-  const { data: shopProductsData, isLoading, refetch } = useGetAllShopProducts({
+  const { data: shopProductsData, isLoading, refetch } = useProducts({
     page: page,
     take: pageSize,
     shopId: shopId
