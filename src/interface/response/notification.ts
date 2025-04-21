@@ -16,7 +16,7 @@ export interface INotification {
 export interface INotificationsResponse {
   status: boolean
   message: string
-  data: INotification[]
+  data: any
   errors: any | null
   timestamp: string
 } 

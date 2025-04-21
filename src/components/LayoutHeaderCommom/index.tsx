@@ -140,8 +140,8 @@ export default function LayoutHeaderCommon() {
               </div>
             </PopoverTrigger>
 
-            <PopoverContent 
-              side="bottom" 
+            <PopoverContent
+              side="bottom"
               align="center"
               className="left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-0 w-[90vw] max-w-[320px] p-0 bg-white rounded-lg border-none md:w-80"
               sideOffset={5}
@@ -160,14 +160,13 @@ export default function LayoutHeaderCommon() {
 
                 <ScrollArea className="h-[300px]">
                   <div className="p-0">
-                    {allNotifications?.data && allNotifications.data.length > 0 ? (
+                    {allNotifications?.data?.data && allNotifications.data.data.length > 0 ? (
                       <div className="divide-y">
-                        {allNotifications.data?.map((notification: any) => (
+                        {allNotifications.data.data?.map((notification: any) => (
                           <div
                             key={notification.id}
-                            className={`p-3 hover:bg-muted/50 cursor-pointer transition-colors ${
-                              notification.status === "UNREAD" ? "bg-muted/30" : ""
-                            }`}
+                            className={`p-3 hover:bg-muted/50 cursor-pointer transition-colors ${notification.status === "UNREAD" ? "bg-muted/30" : ""
+                              }`}
                             onClick={() => handleNotificationClick(notification.id)}
                           >
                             <div className="flex items-start gap-3">
