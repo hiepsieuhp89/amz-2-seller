@@ -143,7 +143,7 @@ export default function LayoutHeaderCommon() {
             <PopoverContent 
               side="bottom" 
               align="center"
-              className="w-[90vw] max-w-[320px] p-0 bg-white rounded-lg border-none md:align-end md:w-80"
+              className="left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-0 w-[90vw] max-w-[320px] p-0 bg-white rounded-lg border-none md:w-80"
               sideOffset={5}
             >
               <div className="border-0 shadow-none">
