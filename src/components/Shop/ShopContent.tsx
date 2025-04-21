@@ -69,7 +69,10 @@ export default function ShopContent({
             <Spin size="small" />
           </div>
         ) : shopProducts && shopProducts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div 
+            key={`products-grid-${page}-${pageSize}-${sortField}-${sortOrder}`} 
+            className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+          >
             {shopProducts.map((item: any) => (
               <Link
                 href={`/shop/product?id=${item.id}`}
@@ -84,8 +87,7 @@ export default function ShopContent({
                   {/* Product Image */}
                   <div className="relative h-48 mb-3">
                     <Image
-                      src={item.imageUrls[0] || "/images/white-image.png"
-                      }
+                      src={item.imageUrls[0] || "/images/white-image.png"}
                       alt={item.name}
                       fill
                       className="object-contain"
@@ -155,7 +157,14 @@ export default function ShopContent({
               current={page}
               total={meta.itemCount}
               pageSize={pageSize}
-              onChange={handlePageChange}
+              onChange={(newPage, newPageSize) => {
+                if (newPageSize !== pageSize) {
+                  // If page size changes, reset to page 1
+                  handlePageChange(1, newPageSize);
+                } else {
+                  handlePageChange(newPage, newPageSize);
+                }
+              }}
               showSizeChanger={true}
               pageSizeOptions={['10', '20', '50']}
             />

@@ -23,7 +23,8 @@ function ShopContentWrapper() {
   const { data: shopProductsData, isLoading, refetch } = useGetAllShopProducts({
     page: page,
     take: pageSize,
-    shopId: shopId
+    shopId: shopId,
+    order: `${sortField}:${sortOrder}`
   })
 
   const shopProducts = shopProductsData?.data?.data || [];
@@ -40,7 +41,7 @@ function ShopContentWrapper() {
 
   useEffect(() => {
     refetch();
-  }, [page, pageSize]);
+  }, [page, pageSize, sortField, sortOrder, refetch]);
 
   const handleSearch = (value: string) => {
     setSearch(value);
@@ -51,6 +52,7 @@ function ShopContentWrapper() {
     const [field, order] = value.split(":");
     setSortField(field);
     setSortOrder(order as "ASC" | "DESC");
+    setPage(1);
   };
 
   const handlePageChange = (newPage: number, newPageSize: number) => {
