@@ -1,15 +1,4 @@
 "use client"
-import React from "react"
-import { useState, useEffect } from "react"
-import { Input, Button, Badge, Empty, Spin, message, Pagination, Row, Col, Drawer, Select, TreeSelect } from "antd"
-import { PlusOutlined, SearchOutlined, DeleteOutlined, ShoppingCartOutlined, LeftOutlined, RightOutlined, CheckOutlined } from "@ant-design/icons"
-import styles from "./storehouse.module.scss"
-import { useGetAllShopProducts } from "@/hooks/shop-products"
-import { useAddShopProducts } from "@/hooks/shop-products"
-import Image from "next/image"
-import { useUser } from "@/context/useUserContext"
-import { DollarSign, Coins, Import } from "lucide-react"
-import { checkImageUrl } from "@/lib/utils"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,15 +6,21 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { useSelectedProduct } from "@/stores/useSelectedProduct"
-import { formatNumber } from "@/utils"
-import useSidebar from "@/stores/useSidebar"
-import Icon from "@mdi/react"
-import { mdiChevronDoubleLeft, mdiChevronDoubleRight } from "@mdi/js"
+import { useUser } from "@/context/useUserContext"
 import { useCategories } from "@/hooks/categories"
-
-const { Option, OptGroup } = Select;
-const { SHOW_PARENT } = TreeSelect;
+import { useAddShopProducts, useGetAllShopProducts } from "@/hooks/shop-products"
+import { checkImageUrl } from "@/lib/utils"
+import { useSelectedProduct } from "@/stores/useSelectedProduct"
+import useSidebar from "@/stores/useSidebar"
+import { formatNumber } from "@/utils"
+import { CheckOutlined, DeleteOutlined, PlusOutlined, SearchOutlined, ShoppingCartOutlined } from "@ant-design/icons"
+import { mdiChevronDoubleLeft, mdiChevronDoubleRight } from "@mdi/js"
+import Icon from "@mdi/react"
+import { Badge, Button, Drawer, Empty, Input, message, Spin, TreeSelect } from "antd"
+import { Coins, DollarSign, Import } from "lucide-react"
+import Image from "next/image"
+import { useEffect, useState } from "react"
+import styles from "./storehouse.module.scss"
 
 // Define interfaces for tree data
 interface ITreeNode {
@@ -114,6 +109,7 @@ const Storehouse = () => {
     take: pageSize,
     shopId: user?.id,
     search: keyword,
+    order: "DESC",
     categoryId: selectedCategoryId
   })
   
