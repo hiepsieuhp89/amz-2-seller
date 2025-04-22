@@ -57,7 +57,7 @@ function LayoutPage() {
     if (!unreadNotifications?.data) return { orders: 0, chat: 0 };
 
     return unreadNotifications.data.reduce(
-      (counts, notification) => {
+      (counts: { orders: number; chat: number }, notification: any) => {
         // Map notification types to their respective categories
         switch (notification.type) {
           // Order related notifications
@@ -105,7 +105,7 @@ function LayoutPage() {
 
       // Get notifications IDs based on the clicked menu
       const notificationIds = unreadNotifications.data
-        .filter((notification) => {
+        .filter((notification: any) => {
           if (menuPath === "/seller/orders") {
             // Include all order-related notification types
             return (
@@ -117,12 +117,12 @@ function LayoutPage() {
           // Add more menu paths and notification types as needed
           return false;
         })
-        .map((notification) => notification.id);
+        .map((notification: any) => notification.id);
 
       // Mark notifications as read if there are any
       if (notificationIds.length > 0) {
         // Mark each notification as read one by one
-        notificationIds.forEach((id) => {
+        notificationIds.forEach((id: any) => {
           markAsRead({ notificationId: id });
         });
       }
