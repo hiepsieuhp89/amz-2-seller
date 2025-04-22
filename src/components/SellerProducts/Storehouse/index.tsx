@@ -110,7 +110,9 @@ const Storehouse = () => {
     shopId: user?.id,
     search: keyword,
     order: "DESC",
-    categoryId: selectedCategoryId
+    categoryId: selectedCategoryId,
+    minPrice: minPrice,
+    maxPrice: maxPrice
   })
   
   // Fetch categories with large take value to get all categories
@@ -172,57 +174,22 @@ const Storehouse = () => {
     }
   }, [productsData, currentPage, loadedPages]);
   
-  // Reset page and loaded pages when category changes
+  // Reset page and loaded pages when filters change
   useEffect(() => {
     setCurrentPage(1);
     setLoadedPages([]);
     setAllProducts([]);
     refetch();
-  }, [selectedCategoryId, refetch]);
+  }, [selectedCategoryId, keyword, minPrice, maxPrice, refetch]);
   
-  // Filter products when search criteria or all products change
+  // Filter products when all products change
   useEffect(() => {
-    filterProducts();
-  }, [keyword, minPrice, maxPrice, allProducts]);
+    setFilteredProducts(allProducts);
+  }, [allProducts]);
 
   const filterProducts = () => {
-    if (keyword || minPrice !== undefined || maxPrice !== undefined) {
-      let filtered = [...allProducts];
-
-      if (keyword) {
-        filtered = filtered.filter((product: any) =>
-          product.name.toLowerCase().includes(keyword.toLowerCase())
-        );
-      }
-
-      if (minPrice !== undefined) {
-        filtered = filtered.filter((product: any) =>
-          Number(product.salePrice) >= minPrice
-        );
-      }
-
-      if (maxPrice !== undefined) {
-        filtered = filtered.filter((product: any) =>
-          Number(product.salePrice) <= maxPrice
-        );
-      }
-
-      // Limit the number of filtered products to prevent memory issues
-      const maxFilteredProducts = 300;
-      const limitedFiltered = filtered.length > maxFilteredProducts 
-        ? filtered.slice(0, maxFilteredProducts) 
-        : filtered;
-        
-      setFilteredProducts(limitedFiltered);
-    } else {
-      // Limit the number of displayed products to prevent memory issues
-      const maxDisplayProducts = 300;
-      const displayProducts = allProducts.length > maxDisplayProducts 
-        ? allProducts.slice(0, maxDisplayProducts) 
-        : allProducts;
-        
-      setFilteredProducts(displayProducts);
-    }
+    // Function kept for reference but simplified
+    setFilteredProducts(allProducts);
   };
 
   const addProduct = (product: any) => {

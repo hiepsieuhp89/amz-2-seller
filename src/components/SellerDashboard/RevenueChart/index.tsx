@@ -5,7 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { DollarSign, ShoppingBag, TrendingUp } from "lucide-react"
 import { useState } from "react"
 import "./styles.css"
-import { formatDate } from "@/utils"
+import { formatDate, formatNumber } from "@/utils"
 
 interface DailyStats {
   date: string
@@ -97,7 +97,7 @@ const RevenueChart = () => {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-amber-700">Tổng doanh thu</p>
-              <h4 className="text-2xl font-bold mt-1 text-amber-900">${totals.revenue.toLocaleString("vi-VN")}</h4>
+              <h4 className="text-2xl font-bold mt-1 text-amber-900">${formatNumber(totals.revenue)}</h4>
             </div>
             <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
               <DollarSign className="h-5 w-5 text-amber-600" />
@@ -110,7 +110,7 @@ const RevenueChart = () => {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-green-700">Tổng lợi nhuận</p>
-              <h4 className="text-2xl font-bold mt-1 text-green-900">${totals.profit.toLocaleString("vi-VN")}</h4>
+              <h4 className="text-2xl font-bold mt-1 text-green-900">${formatNumber(totals.profit)}</h4>
             </div>
             <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
               <TrendingUp className="h-5 w-5 text-green-600" />
@@ -123,7 +123,7 @@ const RevenueChart = () => {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-blue-700">Tổng đơn hàng</p>
-              <h4 className="text-2xl font-bold mt-1 text-blue-900">{totals.orders}</h4>
+              <h4 className="text-2xl font-bold mt-1 text-blue-900">{formatNumber(totals.orders)}</h4>
             </div>
             <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
               <ShoppingBag className="h-5 w-5 text-blue-600" />
