@@ -22,6 +22,11 @@ export const markMessageAsRead = async (messageId: string): Promise<any> => {
   return res
 }
 
+export const markAllMessagesWithUserAsRead = async (userId: string): Promise<any> => {
+  const res = await sendPost(`/shop/chat/user/${userId}/read-all`)
+  return res
+}
+
 export const deleteMessage = async (messageId: string): Promise<any> => {
   const res = await sendDelete(`/shop/chat/${messageId}`)
   return res

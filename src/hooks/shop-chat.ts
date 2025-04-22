@@ -3,6 +3,7 @@ import {
   getListMessageAvailable,
   getMessagesWithUser,
   markMessageAsRead,
+  markAllMessagesWithUserAsRead,
   sendMessageToUser
 } from "@/api/shop-chat"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -34,7 +35,19 @@ export const useMarkMessageAsRead = () => {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: (userId: string) => markMessageAsRead(userId),
+    mutationFn: (messageId: string) => markMessageAsRead(messageId),
+    onSuccess: (_: any, messageId: string) => {
+      queryClient.invalidateQueries({ queryKey: ['shopChat'] })
+      queryClient.invalidateQueries({ queryKey: ['shopChat', 'list'] })
+    }
+  })
+}
+
+export const useMarkAllMessagesWithUserAsRead = () => {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: (userId: string) => markAllMessagesWithUserAsRead(userId),
     onSuccess: (_: any, userId: string) => {
       queryClient.invalidateQueries({ queryKey: ['shopChat', userId] })
       queryClient.invalidateQueries({ queryKey: ['shopChat', 'list'] })

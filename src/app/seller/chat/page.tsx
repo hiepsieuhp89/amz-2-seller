@@ -4,6 +4,7 @@ import {
   useGetListMessageAvailable,
   useGetMessagesWithUser,
   useMarkMessageAsRead,
+  useMarkAllMessagesWithUserAsRead,
   useSendMessageToUser,
 } from "@/hooks/shop-chat";
 import { useGetShopProductDetail } from "@/hooks/shop-products";
@@ -61,7 +62,7 @@ const ProductCard = ({ productId }: { productId: string }) => {
   // Use type assertion to handle the flexible structure
   const productData = response?.data as any;
   const product = productData?.product;
-
+  
   if (isLoading) {
     return (
       <div className="mt-2 border rounded-md p-3 bg-background flex items-center space-x-3">
@@ -84,6 +85,11 @@ const ProductCard = ({ productId }: { productId: string }) => {
     );
   }
 
+  // Check if product is on sale (salePrice > 0 and different from regular price)
+  const isOnSale = Number(product.salePrice) > 0 && product.price !== product.salePrice;
+  // Use the appropriate price for display
+  const displayPrice = isOnSale ? product.salePrice : product.price;
+
   return (
     <div className="mt-2 border rounded-md p-3 bg-background hover:bg-muted/30 transition-colors">
       <div className="flex space-x-3">
@@ -104,19 +110,19 @@ const ProductCard = ({ productId }: { productId: string }) => {
           </h3>
           <div className="flex items-baseline mt-1">
             <span className="text-xs text-destructive font-semibold">
-              {Number(product.salePrice || 0).toLocaleString()} đ
+              {Number(displayPrice || 0).toLocaleString()} đ
             </span>
-            {product.price !== product.salePrice && (
+            {isOnSale && (
               <span className="ml-2 text-xs text-muted-foreground line-through">
                 {Number(product.price || 0).toLocaleString()} đ
               </span>
             )}
           </div>
           <div className="flex mt-2 space-x-2 justify-end">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 px-2.5 text-xs rounded-md"
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 px-2.5 text-xs rounded-md" 
               onClick={() =>
                 window.open(
                   `${process.env.NEXT_PUBLIC_HOME_URL}/shop/product?id=${product.id}`,
@@ -127,8 +133,8 @@ const ProductCard = ({ productId }: { productId: string }) => {
               <Eye className="h-3.5 w-3.5 mr-1.5" />
               Chi tiết
             </Button>
-            <Button
-              size="sm"
+            <Button 
+              size="sm" 
               className="h-8 px-2.5 text-xs rounded-md bg-main-golden-orange hover:bg-main-golden-orange/90 text-primary-foreground"
             >
               <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
@@ -151,6 +157,7 @@ export default function ChatPage() {
   );
   const { mutate: sendMessage } = useSendMessageToUser();
   const { mutate: markAsRead } = useMarkMessageAsRead();
+  const { mutate: markAllAsRead } = useMarkAllMessagesWithUserAsRead();
   const { mutate: deleteMessage } = useDeleteMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -200,23 +207,17 @@ export default function ChatPage() {
     if (selectedUser === userId) return; // Avoid re-selecting the same user
 
     setSelectedUser(userId);
-    // refetchMessages() is handled by react-query's enabled flag
-
-    const selectedChat = transformedChatList.find(
-      (chat: any) => chat.userId === userId
-    );
-    if (selectedChat?.unreadCount > 0 && selectedChat?.latestMessageId) {
-      try {
-        // Call markAsRead with the latest message ID instead of userId
-        await markAsRead(selectedChat.latestMessageId);
-        // Refetch chat list on success
-        refetchChatList();
-      } catch (error) {
-        // Optional: Handle error if markAsRead fails
-        console.error("Failed to mark chat as read:", error);
-        toast.error("Lỗi đánh dấu đã đọc", { id: "mark-read-error" });
-      }
+    
+    try {
+      // Mark all messages with this user as read
+      await markAllAsRead(userId);
+      // Refetch chat list to update unread counts
+      refetchChatList();
+    } catch (error) {
+      console.error("Failed to mark messages as read:", error);
+      toast.error("Lỗi đánh dấu đã đọc", { id: "mark-read-error" });
     }
+    
     setShowMobileSidebar(false);
   };
 
@@ -232,7 +233,7 @@ export default function ChatPage() {
         refetchMessages(); // Refetch messages for the selected user
       }
       refetchChatList(); // Always refetch the chat list
-    }, 15000); // Poll every 15 seconds
+    }, 10000); // Poll every 10 seconds
 
     return () => clearInterval(interval);
   }, [selectedUser, refetchMessages, refetchChatList]);
