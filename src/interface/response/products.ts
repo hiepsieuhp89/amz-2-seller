@@ -100,3 +100,11 @@ export interface IProductsListResponse {
     errors: any | null
     timestamp: string
 }
+
+export interface IProductDetailResponse {
+    status: boolean
+    message: string
+    data: IProduct
+    errors: any | null
+    timestamp: string
+}

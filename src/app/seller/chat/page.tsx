@@ -6,7 +6,8 @@ import {
   useMarkMessageAsRead,
   useSendMessageToUser,
 } from "@/hooks/shop-chat"
-import { Check, MoreVertical, MessageSquare, Send, Trash2, MessageCircle } from "lucide-react"
+import { useGetShopProductDetail } from "@/hooks/shop-products"
+import { Check, MoreVertical, MessageSquare, Send, Trash2, MessageCircle, Eye, ShoppingCart } from "lucide-react"
 import { motion } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
 import { toast, Toaster } from "react-hot-toast"
@@ -39,6 +40,75 @@ const formatTime = (dateString: string) => {
 const formatDate = (dateString: string) => {
   return formatDateUtil(dateString, 'date-text')
 }
+
+// ProductCard component for displaying product in message
+const ProductCard = ({ productId }: { productId: string }) => {
+  const { data: response, isLoading } = useGetShopProductDetail(productId);
+  // Use type assertion to handle the flexible structure
+  const productData = response?.data as any;
+  const product = productData?.product;
+  
+  if (isLoading) {
+    return (
+      <div className="mt-2 border rounded-md p-3 bg-background flex items-center space-x-3">
+        <div className="w-16 h-16 bg-gray-200 animate-pulse rounded-md"></div>
+        <div className="space-y-2 flex-1">
+          <div className="h-4 bg-gray-200 animate-pulse rounded w-3/4"></div>
+          <div className="h-4 bg-gray-200 animate-pulse rounded w-1/2"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="mt-2 border rounded-md p-3 bg-background flex items-center">
+        <p className="text-sm text-muted-foreground">Sản phẩm không tồn tại hoặc đã bị xóa</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-2 border rounded-md p-3 bg-background hover:bg-muted/30 transition-colors">
+      <div className="flex space-x-3">
+        <div className="w-16 h-16 flex-shrink-0 overflow-hidden rounded-md border">
+          <img
+            src={product.imageUrl || product.imageUrls?.[0] || "https://via.placeholder.com/150"}
+            alt={product.name}
+            className="h-full w-full object-cover object-center"
+          />
+        </div>
+        <div className="flex flex-1 flex-col">
+          <h3 className="text-sm font-medium text-foreground line-clamp-2">{product.name}</h3>
+          <div className="flex items-baseline mt-1">
+            <span className="text-xs text-destructive font-semibold">{Number(product.salePrice || 0).toLocaleString()} đ</span>
+            {product.price !== product.salePrice && (
+              <span className="ml-2 text-xs text-muted-foreground line-through">{Number(product.price || 0).toLocaleString()} đ</span>
+            )}
+          </div>
+          <div className="flex mt-2 space-x-2 justify-end">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 px-2.5 text-xs rounded-md" 
+              onClick={() => window.open(`/shop/product?id=${product.id}`, '_blank')}
+            >
+              <Eye className="h-3.5 w-3.5 mr-1.5" />
+              Chi tiết
+            </Button>
+            <Button 
+              size="sm" 
+              className="h-8 px-2.5 text-xs rounded-md bg-main-golden-orange hover:bg-main-golden-orange/90 text-primary-foreground"
+            >
+              <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
+              Mua ngay
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function ChatPage() {
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
@@ -419,6 +489,7 @@ export default function ChatPage() {
                                 <p className="font-normal break-words whitespace-pre-wrap">
                                   {msg.message}
                                 </p>
+                                {msg.shopProductId && <ProductCard productId={msg.shopProductId} />}
                                 <p className={`text-xs mt-1 text-right ${isSender ? 'text-primary-foreground/70' : 'text-muted-foreground/70'}`}>
                                   {formatTime(msg.createdAt)}
                                 </p>

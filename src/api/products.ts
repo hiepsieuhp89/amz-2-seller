@@ -2,7 +2,8 @@ import {
     IProductSearchParams
 } from "@/interface/request/products";
 import {
-    IProductsListResponse
+    IProductsListResponse,
+    IProductDetailResponse
 } from "@/interface/response/products";
 import {  sendGet} from "./axios";
 
@@ -15,5 +16,11 @@ export const getShopProducts = async (params?: IProductSearchParams): Promise<IP
 export const getProducts = async (params?: IProductSearchParams): Promise<IProductsListResponse> => {
     const res = await sendGet('/products', params);
     const data: IProductsListResponse = res;
+    return data;
+};
+
+export const getProductDetail = async (id: string): Promise<IProductDetailResponse> => {
+    const res = await sendGet(`/products/${id}`);
+    const data: IProductDetailResponse = res;
     return data;
 };
