@@ -1,25 +1,39 @@
-"use client"
+"use client";
 import {
   useDeleteMessage,
   useGetListMessageAvailable,
   useGetMessagesWithUser,
   useMarkMessageAsRead,
   useSendMessageToUser,
-} from "@/hooks/shop-chat"
-import { useGetShopProductDetail } from "@/hooks/shop-products"
-import { Check, MoreVertical, MessageSquare, Send, Trash2, MessageCircle, Eye, ShoppingCart } from "lucide-react"
-import { motion } from "framer-motion"
-import { useEffect, useRef, useState } from "react"
-import { toast, Toaster } from "react-hot-toast"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Icon } from '@mdi/react';
-import { mdiMagnify } from '@mdi/js';
-import { formatDate as formatDateUtil } from "@/utils"
+} from "@/hooks/shop-chat";
+import { useGetShopProductDetail } from "@/hooks/shop-products";
+import {
+  Check,
+  MoreVertical,
+  MessageSquare,
+  Send,
+  Trash2,
+  MessageCircle,
+  Eye,
+  ShoppingCart,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { toast, Toaster } from "react-hot-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Icon } from "@mdi/react";
+import { mdiMagnify } from "@mdi/js";
+import { formatDate as formatDateUtil } from "@/utils";
 
 // Helper function to get initials from name
 const getInitials = (name: string = "") => {
@@ -28,18 +42,18 @@ const getInitials = (name: string = "") => {
     .map((part) => part[0])
     .join("")
     .toUpperCase()
-    .substring(0, 2)
-}
+    .substring(0, 2);
+};
 
 // Helper function to format time
 const formatTime = (dateString: string) => {
-  return formatDateUtil(dateString, 'time')
-}
+  return formatDateUtil(dateString, "time");
+};
 
 // Helper function to format date
 const formatDate = (dateString: string) => {
-  return formatDateUtil(dateString, 'date-text')
-}
+  return formatDateUtil(dateString, "date-text");
+};
 
 // ProductCard component for displaying product in message
 const ProductCard = ({ productId }: { productId: string }) => {
@@ -47,7 +61,7 @@ const ProductCard = ({ productId }: { productId: string }) => {
   // Use type assertion to handle the flexible structure
   const productData = response?.data as any;
   const product = productData?.product;
-  
+
   if (isLoading) {
     return (
       <div className="mt-2 border rounded-md p-3 bg-background flex items-center space-x-3">
@@ -63,7 +77,9 @@ const ProductCard = ({ productId }: { productId: string }) => {
   if (!product) {
     return (
       <div className="mt-2 border rounded-md p-3 bg-background flex items-center">
-        <p className="text-sm text-muted-foreground">Sản phẩm không tồn tại hoặc đã bị xóa</p>
+        <p className="text-sm text-muted-foreground">
+          Sản phẩm không tồn tại hoặc đã bị xóa
+        </p>
       </div>
     );
   }
@@ -73,31 +89,46 @@ const ProductCard = ({ productId }: { productId: string }) => {
       <div className="flex space-x-3">
         <div className="w-16 h-16 flex-shrink-0 overflow-hidden rounded-md border">
           <img
-            src={product.imageUrl || product.imageUrls?.[0] || "https://via.placeholder.com/150"}
+            src={
+              product.imageUrl ||
+              product.imageUrls?.[0] ||
+              "https://via.placeholder.com/150"
+            }
             alt={product.name}
             className="h-full w-full object-cover object-center"
           />
         </div>
         <div className="flex flex-1 flex-col">
-          <h3 className="text-sm font-medium text-foreground line-clamp-2">{product.name}</h3>
+          <h3 className="text-sm font-medium text-foreground line-clamp-2">
+            {product.name}
+          </h3>
           <div className="flex items-baseline mt-1">
-            <span className="text-xs text-destructive font-semibold">{Number(product.salePrice || 0).toLocaleString()} đ</span>
+            <span className="text-xs text-destructive font-semibold">
+              {Number(product.salePrice || 0).toLocaleString()} đ
+            </span>
             {product.price !== product.salePrice && (
-              <span className="ml-2 text-xs text-muted-foreground line-through">{Number(product.price || 0).toLocaleString()} đ</span>
+              <span className="ml-2 text-xs text-muted-foreground line-through">
+                {Number(product.price || 0).toLocaleString()} đ
+              </span>
             )}
           </div>
           <div className="flex mt-2 space-x-2 justify-end">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-8 px-2.5 text-xs rounded-md" 
-              onClick={() => window.open(`/shop/product?id=${product.id}`, '_blank')}
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 px-2.5 text-xs rounded-md"
+              onClick={() =>
+                window.open(
+                  `${process.env.NEXT_PUBLIC_HOME_URL}/shop/product?id=${product.id}`,
+                  "_blank"
+                )
+              }
             >
               <Eye className="h-3.5 w-3.5 mr-1.5" />
               Chi tiết
             </Button>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               className="h-8 px-2.5 text-xs rounded-md bg-main-golden-orange hover:bg-main-golden-orange/90 text-primary-foreground"
             >
               <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
@@ -111,57 +142,69 @@ const ProductCard = ({ productId }: { productId: string }) => {
 };
 
 export default function ChatPage() {
-  const [selectedUser, setSelectedUser] = useState<string | null>(null)
-  const [message, setMessage] = useState("")
-  const { data: chatList, refetch: refetchChatList } = useGetListMessageAvailable({})
-  const { data: messages, refetch: refetchMessages } = useGetMessagesWithUser(selectedUser || "")
-  const { mutate: sendMessage } = useSendMessageToUser()
-  const { mutate: markAsRead } = useMarkMessageAsRead()
-  const { mutate: deleteMessage } = useDeleteMessage()
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const [showMobileSidebar, setShowMobileSidebar] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
+  const { data: chatList, refetch: refetchChatList } =
+    useGetListMessageAvailable({});
+  const { data: messages, refetch: refetchMessages } = useGetMessagesWithUser(
+    selectedUser || ""
+  );
+  const { mutate: sendMessage } = useSendMessageToUser();
+  const { mutate: markAsRead } = useMarkMessageAsRead();
+  const { mutate: deleteMessage } = useDeleteMessage();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   // Transform chat list data
   const transformedChatList = (
     chatList?.data?.data?.reduce((acc: any, msg: any) => {
-      const userId = msg.user.id
-      const existingChat = acc.find((chat: any) => chat.userId === userId)
+      const userId = msg.user.id;
+      const existingChat = acc.find((chat: any) => chat.userId === userId);
 
       const chatItem = {
         userId: userId,
-        userName: msg.senderRole === "user" ? msg.user.fullName : msg.shop.shopName,
-        userAvatar: msg.senderRole === "user" ? "https://via.placeholder.com/150" : msg.shop.logoUrl, // Consider a default avatar
+        userName:
+          msg.senderRole === "user" ? msg.user.fullName : msg.shop.shopName,
+        userAvatar:
+          msg.senderRole === "user"
+            ? "https://via.placeholder.com/150"
+            : msg.shop.logoUrl, // Consider a default avatar
         lastMessage: msg.message,
         lastMessageDate: msg.createdAt,
         unreadCount: msg.isRead ? 0 : 1,
         latestMessageId: msg.id, // Store the latest message ID
-      }
+      };
 
       if (existingChat) {
         if (new Date(msg.createdAt) > new Date(existingChat.lastMessageDate)) {
-          existingChat.lastMessage = chatItem.lastMessage
-          existingChat.lastMessageDate = chatItem.lastMessageDate
-          existingChat.unreadCount += chatItem.unreadCount // Accumulate unread count correctly
-          existingChat.latestMessageId = chatItem.latestMessageId // Update latest message ID
+          existingChat.lastMessage = chatItem.lastMessage;
+          existingChat.lastMessageDate = chatItem.lastMessageDate;
+          existingChat.unreadCount += chatItem.unreadCount; // Accumulate unread count correctly
+          existingChat.latestMessageId = chatItem.latestMessageId; // Update latest message ID
         } else {
           // If older message, still potentially increment unread count
-          existingChat.unreadCount += chatItem.unreadCount
+          existingChat.unreadCount += chatItem.unreadCount;
         }
       } else {
-        acc.push(chatItem)
+        acc.push(chatItem);
       }
-      return acc
+      return acc;
     }, [] as any) || []
-  ).sort((a: any, b: any) => new Date(b.lastMessageDate).getTime() - new Date(a.lastMessageDate).getTime()) // Sort by most recent message
-
+  ).sort(
+    (a: any, b: any) =>
+      new Date(b.lastMessageDate).getTime() -
+      new Date(a.lastMessageDate).getTime()
+  ); // Sort by most recent message
 
   const handleUserClick = async (userId: string) => {
-    if (selectedUser === userId) return // Avoid re-selecting the same user
+    if (selectedUser === userId) return; // Avoid re-selecting the same user
 
-    setSelectedUser(userId)
+    setSelectedUser(userId);
     // refetchMessages() is handled by react-query's enabled flag
 
-    const selectedChat = transformedChatList.find((chat: any) => chat.userId === userId)
+    const selectedChat = transformedChatList.find(
+      (chat: any) => chat.userId === userId
+    );
     if (selectedChat?.unreadCount > 0 && selectedChat?.latestMessageId) {
       try {
         // Call markAsRead with the latest message ID instead of userId
@@ -171,56 +214,57 @@ export default function ChatPage() {
       } catch (error) {
         // Optional: Handle error if markAsRead fails
         console.error("Failed to mark chat as read:", error);
-        toast.error("Lỗi đánh dấu đã đọc", { id: 'mark-read-error' })
+        toast.error("Lỗi đánh dấu đã đọc", { id: "mark-read-error" });
       }
     }
-    setShowMobileSidebar(false)
-  }
+    setShowMobileSidebar(false);
+  };
 
   // Scroll to bottom effect
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages?.data]) // Depend on messages.data for accurate scrolling
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages?.data]); // Depend on messages.data for accurate scrolling
 
   // Polling effect for new messages and chat list updates
   useEffect(() => {
     const interval = setInterval(() => {
       if (selectedUser) {
-        refetchMessages() // Refetch messages for the selected user
+        refetchMessages(); // Refetch messages for the selected user
       }
-      refetchChatList() // Always refetch the chat list
-    }, 15000) // Poll every 15 seconds
+      refetchChatList(); // Always refetch the chat list
+    }, 15000); // Poll every 15 seconds
 
-    return () => clearInterval(interval)
-  }, [selectedUser, refetchMessages, refetchChatList])
+    return () => clearInterval(interval);
+  }, [selectedUser, refetchMessages, refetchChatList]);
 
   // Effect to show toast for new messages (simplified)
   useEffect(() => {
     // This logic could be improved by comparing previous and current message lists
     // or by using a WebSocket connection for real-time updates.
     // For now, skipping the new message count toast to avoid complexity with polling.
-  }, [messages?.data])
-
+  }, [messages?.data]);
 
   const handleSendMessage = () => {
-    const trimmedMessage = message.trim()
+    const trimmedMessage = message.trim();
     if (trimmedMessage && selectedUser) {
       sendMessage(
         { userId: selectedUser, message: trimmedMessage },
         {
           onSuccess: () => {
-            setMessage("")
+            setMessage("");
             // Let react-query handle the refetch after mutation if configured,
             // or rely on the polling interval.
             // setTimeout(() => refetchMessages(), 100) // Optional: faster refresh
           },
           onError: (error: any) => {
-            toast.error(error.message || "Không thể gửi tin nhắn", { id: 'send-error' })
+            toast.error(error.message || "Không thể gửi tin nhắn", {
+              id: "send-error",
+            });
           },
-        },
-      )
+        }
+      );
     }
-  }
+  };
 
   // Removed handleMarkMessage as marking is done on user click
   // Individual message marking might need a different API call or logic
@@ -230,13 +274,15 @@ export default function ChatPage() {
       onSuccess: () => {
         // Let react-query handle the refetch or rely on polling
         // setTimeout(() => refetchMessages(), 100) // Optional: faster refresh
-        toast.success("Đã xoá tin nhắn", { id: 'delete-success' })
+        toast.success("Đã xoá tin nhắn", { id: "delete-success" });
       },
       onError: (error: any) => {
-        toast.error(error.message || "Lỗi xoá tin nhắn", { id: 'delete-error' })
-      }
-    })
-  }
+        toast.error(error.message || "Lỗi xoá tin nhắn", {
+          id: "delete-error",
+        });
+      },
+    });
+  };
 
   const renderMessageActions = (messageId: string, isSender: boolean) => {
     // Only show actions for sender's messages for now
@@ -248,7 +294,11 @@ export default function ChatPage() {
           <Button
             variant="ghost"
             size="icon"
-            className={`h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity rounded-full ${isSender ? "text-primary-foreground/80 hover:bg-main-gunmetal-blue/80/80" : "text-muted-foreground hover:bg-accent"}`}
+            className={`h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity rounded-full ${
+              isSender
+                ? "text-primary-foreground/80 hover:bg-main-gunmetal-blue/80/80"
+                : "text-muted-foreground hover:bg-accent"
+            }`}
           >
             <MoreVertical className="h-4 w-4" />
             <span className="sr-only">Tùy chọn</span>
@@ -268,10 +318,12 @@ export default function ChatPage() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    )
-  }
+    );
+  };
 
-  const selectedUserDetails = transformedChatList.find((chat: any) => chat.userId === selectedUser)
+  const selectedUserDetails = transformedChatList.find(
+    (chat: any) => chat.userId === selectedUser
+  );
 
   return (
     <>
@@ -299,10 +351,11 @@ export default function ChatPage() {
               {transformedChatList?.map((item: any) => (
                 <div
                   key={item.userId}
-                  className={`flex items-start gap-3 p-3 rounded-md cursor-pointer transition-colors duration-150 ease-in-out ${selectedUser === item.userId
+                  className={`flex items-start gap-3 p-3 rounded-md cursor-pointer transition-colors duration-150 ease-in-out ${
+                    selectedUser === item.userId
                       ? "bg-muted"
                       : "hover:bg-muted/60"
-                    }`}
+                  }`}
                   onClick={() => handleUserClick(item.userId)}
                 >
                   {/* Avatar + Badge */}
@@ -334,12 +387,12 @@ export default function ChatPage() {
                         {formatTime(item.lastMessageDate)}
                       </span>
                     </div>
-                    <p
-                      className={`text-sm truncate text-muted-foreground`}
-                    >
+                    <p className={`text-sm truncate text-muted-foreground`}>
                       {item.lastMessage}
                     </p>
-                    <p className="text-xs text-muted-foreground/80 mt-1">{formatDate(item.lastMessageDate)}</p>
+                    <p className="text-xs text-muted-foreground/80 mt-1">
+                      {formatDate(item.lastMessageDate)}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -361,7 +414,10 @@ export default function ChatPage() {
 
         {/* --- Mobile Sidebar --- */}
         {showMobileSidebar && (
-          <div className="fixed inset-0 bg-black/60 z-40 md:hidden" onClick={() => setShowMobileSidebar(false)}>
+          <div
+            className="fixed inset-0 bg-black/60 z-40 md:hidden"
+            onClick={() => setShowMobileSidebar(false)}
+          >
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
@@ -389,12 +445,19 @@ export default function ChatPage() {
                   {transformedChatList?.map((item: any) => (
                     <div
                       key={`mobile-${item.userId}`}
-                      className={`flex items-start gap-3 p-3 rounded-md cursor-pointer transition-colors duration-150 ease-in-out ${selectedUser === item.userId ? "bg-muted" : "hover:bg-muted/60"}`}
+                      className={`flex items-start gap-3 p-3 rounded-md cursor-pointer transition-colors duration-150 ease-in-out ${
+                        selectedUser === item.userId
+                          ? "bg-muted"
+                          : "hover:bg-muted/60"
+                      }`}
                       onClick={() => handleUserClick(item.userId)}
                     >
                       <div className="relative flex-shrink-0 mt-1">
                         <Avatar className="h-11 w-11 border bg-gradient-to-br from-main-gunmetal-blue/50 to-main-gunmetal-blue/70">
-                          <AvatarImage src={item.userAvatar} alt={item.userName} />
+                          <AvatarImage
+                            src={item.userAvatar}
+                            alt={item.userName}
+                          />
                           <AvatarFallback className="bg-gradient-to-br from-main-gunmetal-blue/10 to-main-gunmetal-blue/70 text-primary-foreground text-sm font-semibold">
                             {getInitials(item.userName)}
                           </AvatarFallback>
@@ -410,10 +473,28 @@ export default function ChatPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-0.5">
-                          <span className={`font-semibold truncate ${item.unreadCount > 0 ? "text-foreground" : "text-foreground/90"}`}>{item.userName}</span>
-                          <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">{formatTime(item.lastMessageDate)}</span>
+                          <span
+                            className={`font-semibold truncate ${
+                              item.unreadCount > 0
+                                ? "text-foreground"
+                                : "text-foreground/90"
+                            }`}
+                          >
+                            {item.userName}
+                          </span>
+                          <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
+                            {formatTime(item.lastMessageDate)}
+                          </span>
                         </div>
-                        <p className={`text-sm truncate ${item.unreadCount > 0 ? "text-foreground font-medium" : "text-muted-foreground"}`}>{item.lastMessage}</p>
+                        <p
+                          className={`text-sm truncate ${
+                            item.unreadCount > 0
+                              ? "text-foreground font-medium"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {item.lastMessage}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -431,7 +512,10 @@ export default function ChatPage() {
               <header className="p-3 border-b bg-background h-[75px] flex items-center">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border bg-gradient-to-br from-main-gunmetal-blue/50 to-main-gunmetal-blue/70">
-                    <AvatarImage src={selectedUserDetails?.userAvatar} alt="User avatar" />
+                    <AvatarImage
+                      src={selectedUserDetails?.userAvatar}
+                      alt="User avatar"
+                    />
                     <AvatarFallback className="bg-gradient-to-br from-main-gunmetal-blue/10 to-main-gunmetal-blue/70 text-primary-foreground text-sm font-semibold">
                       {getInitials(selectedUserDetails?.userName)}
                     </AvatarFallback>
@@ -443,7 +527,9 @@ export default function ChatPage() {
                     {/* Status indicator can be added here if needed */}
                     <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                      <p className="text-xs text-muted-foreground">Đang hoạt động</p>
+                      <p className="text-xs text-muted-foreground">
+                        Đang hoạt động
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -454,8 +540,13 @@ export default function ChatPage() {
                 <div className="max-w-full mx-auto flex flex-col space-y-1.5">
                   {messages?.data?.length ? (
                     messages.data.map((msg: any, index: number) => {
-                      const isFirstMessageOfDay = index === 0 || new Date(msg.createdAt).toDateString() !== new Date(messages.data[index - 1].createdAt).toDateString()
-                      const isSender = msg.senderRole !== "user" // Assuming 'shop' is the sender
+                      const isFirstMessageOfDay =
+                        index === 0 ||
+                        new Date(msg.createdAt).toDateString() !==
+                          new Date(
+                            messages.data[index - 1].createdAt
+                          ).toDateString();
+                      const isSender = msg.senderRole !== "user"; // Assuming 'shop' is the sender
 
                       return (
                         <div key={`message-group-${msg.id}`}>
@@ -463,7 +554,15 @@ export default function ChatPage() {
                           {isFirstMessageOfDay && (
                             <div className="flex justify-center my-4">
                               <div className="bg-background border px-3 py-1 rounded-full text-xs text-muted-foreground shadow-sm">
-                                {new Date(msg.createdAt).toLocaleDateString([], { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+                                {new Date(msg.createdAt).toLocaleDateString(
+                                  [],
+                                  {
+                                    weekday: "long",
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  }
+                                )}
                               </div>
                             </div>
                           )}
@@ -472,25 +571,48 @@ export default function ChatPage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.2 }}
-                            className={`flex group ${isSender ? "justify-end" : "justify-start"}`}
+                            className={`flex group ${
+                              isSender ? "justify-end" : "justify-start"
+                            }`}
                           >
-                            <div className={`flex items-end gap-2 max-w-[75%] ${isSender ? "flex-row-reverse" : "flex-row"}`}>
+                            <div
+                              className={`flex items-end gap-2 max-w-[75%] ${
+                                isSender ? "flex-row-reverse" : "flex-row"
+                              }`}
+                            >
                               {/* Avatar for received messages */}
                               {!isSender && (
                                 <Avatar className="h-7 w-7 flex-shrink-0 mb-1">
-                                  <AvatarImage src={selectedUserDetails?.userAvatar} alt="User avatar" />
+                                  <AvatarImage
+                                    src={selectedUserDetails?.userAvatar}
+                                    alt="User avatar"
+                                  />
                                   <AvatarFallback className="bg-main-gunmetal-blue/80 text-primary-foreground text-xs font-semibold">
                                     {getInitials(selectedUserDetails?.userName)}
                                   </AvatarFallback>
                                 </Avatar>
                               )}
                               {/* Message Bubble */}
-                              <div className={`rounded-lg py-2 px-3 border text-sm shadow-sm ${isSender ? 'bg-main-gunmetal-blue/80 text-primary-foreground rounded-br-none' : 'bg-card text-card-foreground rounded-bl-none'}`}>
+                              <div
+                                className={`rounded-lg py-2 px-3 border text-sm shadow-sm ${
+                                  isSender
+                                    ? "bg-main-gunmetal-blue/80 text-primary-foreground rounded-br-none"
+                                    : "bg-card text-card-foreground rounded-bl-none"
+                                }`}
+                              >
                                 <p className="font-normal break-words whitespace-pre-wrap">
                                   {msg.message}
                                 </p>
-                                {msg.shopProductId && <ProductCard productId={msg.shopProductId} />}
-                                <p className={`text-xs mt-1 text-right ${isSender ? 'text-primary-foreground/70' : 'text-muted-foreground/70'}`}>
+                                {msg.shopProductId && (
+                                  <ProductCard productId={msg.shopProductId} />
+                                )}
+                                <p
+                                  className={`text-xs mt-1 text-right ${
+                                    isSender
+                                      ? "text-primary-foreground/70"
+                                      : "text-muted-foreground/70"
+                                  }`}
+                                >
                                   {formatTime(msg.createdAt)}
                                 </p>
                               </div>
@@ -499,7 +621,7 @@ export default function ChatPage() {
                             </div>
                           </motion.div>
                         </div>
-                      )
+                      );
                     })
                   ) : (
                     /* Empty Chat Placeholder */
@@ -515,8 +637,12 @@ export default function ChatPage() {
                             <MessageCircle className="h-8 w-8" />
                           </div>
                         </div>
-                        <h3 className="text-xl font-semibold text-foreground mb-1">Bắt đầu trò chuyện</h3>
-                        <p className="text-sm text-muted-foreground">Chưa có tin nhắn nào trong cuộc trò chuyện này.</p>
+                        <h3 className="text-xl font-semibold text-foreground mb-1">
+                          Bắt đầu trò chuyện
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Chưa có tin nhắn nào trong cuộc trò chuyện này.
+                        </p>
                       </motion.div>
                     </div>
                   )}
@@ -533,8 +659,8 @@ export default function ChatPage() {
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault()
-                        handleSendMessage()
+                        e.preventDefault();
+                        handleSendMessage();
                       }
                     }}
                     placeholder="Nhập tin nhắn..."
@@ -566,14 +692,17 @@ export default function ChatPage() {
                     <MessageCircle className="h-8 w-8" />
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">Tin nhắn</h3>
-                <p className="text-sm text-muted-foreground">Chọn một người dùng từ danh sách bên trái để bắt đầu nhắn tin.</p>
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  Tin nhắn
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Chọn một người dùng từ danh sách bên trái để bắt đầu nhắn tin.
+                </p>
               </motion.div>
             </div>
           )}
         </main>
       </div>
     </>
-  )
+  );
 }
-
