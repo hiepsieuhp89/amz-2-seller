@@ -528,7 +528,7 @@ export default function PrivacyPolicyPage() {
                     </span>
                     <br />
                     <span>
-                        8.7 Notwithstanding anything set forth herein, Sellers (including any employees, agents, representatives, or any other person acting for such User or on such User’s behalf) shall comply with all applicable Privacy Laws and, in respect of any buyer’s personal data received from , (i) are not permitted to use such buyer’s personal data except as reasonably necessary to respond to buyersenquiries and to carry out respond to, process, deal with or complete a transaction without the buyers and ’s prior written consent; (ii) should refrain from contacting buyers using such information outside of the  platform; (iii) are not permitted to disclose such buyer’s personal data to any unauthorized third parties without the buyer’s and ’s prior written consent; (iv) shall employ sufficient security measures to protect each  user’s personal data in their possession, retain such data only for as long as necessary for the purposes above and in accordance with the Privacy Laws,  and to delete or return such data to  upon any request from  or as soon as reasonably possible upon completion of the transaction; and (v) to inform ’s Personal Data Protection Officer at amazon66@gmail.com in the event of any potential data breach or other loss of such user’s data.
+                        8.7 Notwithstanding anything set forth herein, Sellers (including any employees, agents, representatives, or any other person acting for such User or on such User’s behalf) shall comply with all applicable Privacy Laws and, in respect of any buyer’s personal data received from , (i) are not permitted to use such buyer’s personal data except as reasonably necessary to respond to buyersenquiries and to carry out respond to, process, deal with or complete a transaction without the buyers and ’s prior written consent; (ii) should refrain from contacting buyers using such information outside of the  platform; (iii) are not permitted to disclose such buyer’s personal data to any unauthorized third parties without the buyer’s and ’s prior written consent; (iv) shall employ sufficient security measures to protect each  user’s personal data in their possession, retain such data only for as long as necessary for the purposes above and in accordance with the Privacy Laws,  and to delete or return such data to  upon any request from  or as soon as reasonably possible upon completion of the transaction; and (v) to inform ’s Personal Data Protection Officer at ds-reply@amazon-global-selling.com in the event of any potential data breach or other loss of such user’s data.
                     </span>
                     <br />
                     <span>
@@ -590,7 +590,7 @@ export default function PrivacyPolicyPage() {
                     <br />
                     <br />
                     <span>
-                        13.1.1 You may withdraw your consent for the collection, use and/or disclosure and/or request deletion of your personal data in our possession or under our control by sending an email to our Personal Data Protection Officer at amazon66@gmail.com, and we will process such requests in accordance with this Privacy Policy and our obligations under the Privacy Laws and other applicable law.  However, your withdrawal of consent may mean that we will not be able to continue providing the Services to you and we may need to terminate your existing relationship and/or the contract you have with us.
+                        13.1.1 You may withdraw your consent for the collection, use and/or disclosure and/or request deletion of your personal data in our possession or under our control by sending an email to our Personal Data Protection Officer at ds-reply@amazon-global-selling.com, and we will process such requests in accordance with this Privacy Policy and our obligations under the Privacy Laws and other applicable law.  However, your withdrawal of consent may mean that we will not be able to continue providing the Services to you and we may need to terminate your existing relationship and/or the contract you have with us.
                     </span>
                     <br />
                     <span>
@@ -603,7 +603,7 @@ export default function PrivacyPolicyPage() {
                     <br />
                     <br />
                     <span>
-                        13.2.1 If you have an account with us, you may personally access and/or correct your personal data currently in our possession or control through the Account Settings page on the Platform. If you do not have an account with us, you may request to access and/or correct your personal data currently in our possession or control by submitting a written request to us. We will need enough information from you in order to ascertain your identity as well as the nature of your request so as to be able to deal with your request. Hence, please submit your written request by sending an email to our Personal Data Protection Officer at amazon66@gmail.com.
+                        13.2.1 If you have an account with us, you may personally access and/or correct your personal data currently in our possession or control through the Account Settings page on the Platform. If you do not have an account with us, you may request to access and/or correct your personal data currently in our possession or control by submitting a written request to us. We will need enough information from you in order to ascertain your identity as well as the nature of your request so as to be able to deal with your request. Hence, please submit your written request by sending an email to our Personal Data Protection Officer at ds-reply@amazon-global-selling.com.
                     </span>
                     <br />
                     <span>
@@ -620,7 +620,7 @@ export default function PrivacyPolicyPage() {
                     <br />
                     <br />
                     <span>
-                        14.1 If you have any questions or concerns about our privacy practices, we welcome you to contact us by e-mail at amazon66@gmail.com.
+                        14.1 If you have any questions or concerns about our privacy practices, we welcome you to contact us by e-mail at ds-reply@amazon-global-selling.com.
                     </span>
                 </div>
             </section>
