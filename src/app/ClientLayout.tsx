@@ -36,6 +36,9 @@ function SmartsuppChat() {
                 c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
               })(document);
               
+              // Set Smartsupp group
+              smartsupp('group', 'Hs0YzIBk5u'); //group FEDEX
+              
               // Create global openChat function
               window.openChat = function() {
                 if (window.smartsupp) {
