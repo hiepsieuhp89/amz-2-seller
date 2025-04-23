@@ -294,6 +294,7 @@ const OrdersTable = () => {
                 <OrderDetailDialog 
                     orderId={selectedOrderId} 
                     open={isDetailOpen} 
+                    
                     onOpenChange={setIsDetailOpen} 
                 />
             )}
