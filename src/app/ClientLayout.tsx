@@ -65,6 +65,11 @@ function SmartsuppChat() {
             // Append to document
             document.head.appendChild(script);
             
+            // Add group configuration
+            const groupScript = document.createElement('script');
+            groupScript.innerHTML = `smartsupp('group', 'DlRScJm8T1'); //group SHOP`;
+            document.head.appendChild(groupScript);
+            
             // Add noscript element if it exists in the config
             if (cskhConfig.value.includes('<noscript>')) {
               const noscriptContent = document.createElement('div');
