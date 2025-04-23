@@ -53,6 +53,7 @@ interface OrderData {
   quantity: number;
   confirmedAt: string | null;
   totalProfit: string | null;
+  totalPaidAmount: string;
 }
 
 const OrdersTable = () => {
@@ -297,6 +298,14 @@ const OrdersTable = () => {
       sorter: (a, b) => parseFloat(a.totalAmount) - parseFloat(b.totalAmount),
     },
     {
+      title: "Tổng tiền cần thanh toán",
+      dataIndex: "totalPaidAmount",
+      key: "totalPaidAmount",
+      width: 80,
+      render: (text) => `$${formatNumber(parseFloat(text))}`,
+      sorter: (a, b) => parseFloat(a.totalPaidAmount) - parseFloat(b.totalPaidAmount),
+    },
+    {
       title: "Lợi nhuận",
       dataIndex: "totalProfit",
       key: "totalProfit",
@@ -512,6 +521,7 @@ const OrdersTable = () => {
                 ),
                 confirmedAt: order.confirmedAt,
                 totalProfit: order.totalProfit || null,
+                totalPaidAmount: order.totalPaidAmount,
               }))
             : []
         }
