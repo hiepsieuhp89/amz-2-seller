@@ -614,7 +614,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
       </ConfigProvider>
 
       <Modal
-        title="Nhập mật khẩu rút tiền"
+        title="Nhập mật khẩu giao dịch"
         open={isPaymentModalVisible}
         onOk={handlePayOrders}
         onCancel={() => setIsPaymentModalVisible(false)}
@@ -625,9 +625,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
           loading: payOrdersMutation.isPending
         }}
       >
-        <p className="mb-4">Vui lòng nhập mật khẩu rút tiền để xác nhận thanh toán.</p>
+        <p className="mb-4">Vui lòng nhập mật khẩu giao dịch để xác nhận thanh toán.</p>
         <Input.Password
-          placeholder="Nhập mật khẩu rút tiền"
+          placeholder="Nhập mật khẩu giao dịch"
           value={withdrawPassword}
           onChange={(e) => setWithdrawPassword(e.target.value)}
           className="w-full"
