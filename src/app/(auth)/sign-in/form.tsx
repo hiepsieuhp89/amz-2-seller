@@ -148,7 +148,7 @@ const SignInForm = () => {
             layout='vertical'
           >
             <Form.Item
-              label={<strong>Email</strong>}
+              label={<strong>Tên đăng nhập</strong>}
               name="username"
               rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
             >
