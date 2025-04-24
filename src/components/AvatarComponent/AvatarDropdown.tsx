@@ -1,11 +1,11 @@
 "use client"
 
-import { type MenuProps, Dropdown, Avatar, Space, Typography, Modal, Form, Input, message } from "antd"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { UserOutlined, LockOutlined, LogoutOutlined } from "@ant-design/icons"
 import { useUser } from "@/context/useUserContext"
 import { useUpdateUser } from "@/hooks/authentication"
+import { LockOutlined, LogoutOutlined } from "@ant-design/icons"
+import { type MenuProps, Avatar, Dropdown, Form, Input, message, Modal, Space, Typography } from "antd"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 const { Text, Title } = Typography
 

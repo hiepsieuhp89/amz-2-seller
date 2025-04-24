@@ -3,9 +3,9 @@ import { createContext, useContext, useState, useEffect } from "react"
 import type React from "react"
 
 import { useRouter } from "next/navigation"
-import { QueryClient } from "@tanstack/react-query"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { clearToken, setTokenToLocalStorage } from "@/helper/tokenStorage"
-import { getProfile } from "@/api/authentication"
+import { useProfile } from "@/hooks/authentication"
 import { IProfileResponse } from "@/interface/response/authentication"
 
 const queryClient = new QueryClient()
@@ -31,7 +31,7 @@ const deleteCookie = (name: string) => {
   document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
 }
 
-export function UserProvider({ children }: { children: React.ReactNode }) {
+function UserProviderContent({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [user, setUser] = useState<null | Record<string, any>>(() => {
     if (typeof window !== "undefined") {
@@ -42,6 +42,19 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   })
   const [profile, setProfile] = useState<IProfileResponse | null>(null)
   const [isLoadingProfile, setIsLoadingProfile] = useState<boolean>(false)
+  
+  // Use the useProfile hook
+  const { profileData, isLoading, refetch } = useProfile()
+
+  useEffect(() => {
+    if (profileData) {
+      setProfile(profileData)
+      // Store profile in localStorage for persistence
+      if (typeof window !== "undefined") {
+        localStorage.setItem("userProfile", JSON.stringify(profileData))
+      }
+    }
+  }, [profileData])
 
   const loginUser = (userInfo: any, token: string) => {
     setUser(userInfo)
@@ -54,12 +67,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const fetchUserProfile = async () => {
     try {
       setIsLoadingProfile(true)
-      const profileData = await getProfile()
-      setProfile(profileData)
-      // Store profile in localStorage for persistence
-      if (typeof window !== "undefined") {
-        localStorage.setItem("userProfile", JSON.stringify(profileData))
-      }
+      await refetch()
     } catch (error) {
       console.error("Failed to fetch user profile:", error)
     } finally {
@@ -79,10 +87,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   // Fetch profile when user is available but profile isn't
   useEffect(() => {
-    if (user && !profile) {
+    if (user && !profile && !isLoading) {
       fetchUserProfile()
     }
-  }, [user, profile])
+  }, [user, profile, isLoading])
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -116,11 +124,19 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         loginUser,
         logoutUser,
         fetchUserProfile,
-        isLoadingProfile
+        isLoadingProfile: isLoadingProfile || isLoading
       }}
     >
       {children}
     </UserContext.Provider>
+  )
+}
+
+export function UserProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <UserProviderContent>{children}</UserProviderContent>
+    </QueryClientProvider>
   )
 }
 
