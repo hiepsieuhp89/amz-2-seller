@@ -158,7 +158,7 @@ export function Footer() {
 
         <div className="flex flex-col md:flex-row justify-between items-center py-8">
           <p className="text-gray-400 text-sm">
-            &copy; {new Date().getFullYear()} Amazon Shop. Tất cả các quyền được bảo lưu.
+            &copy; {new Date().getFullYear()} Amazon Global Selling. Tất cả các quyền được bảo lưu.
           </p>
           <div className="relative h-[30px] w-[216px]">
             <Image

@@ -147,7 +147,7 @@ export default function SupportPolicyPage() {
                     <br />
                     <br />
                     <span>
-                        By sending us an email: amazon66@gmail.com
+                        By sending us an email: ds-reply@amazon-global-selling.com
                     </span>
                     <br />
                     <br />
