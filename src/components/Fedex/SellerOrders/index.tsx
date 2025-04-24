@@ -156,19 +156,11 @@ const SellerOrders = () => {
         dataIndex: "money",
         key: "money",
         render: (text: string, record: any) => {
-          let amount = parseFloat(text);
-          
-          // Đảm bảo rằng "Nạp tiền" luôn hiển thị là số dương
-          if (record.type === "manual_fedex_amount" && amount < 0) {
-            amount = Math.abs(amount);
-          }
-          
-          // Với "Thanh toán", bảo đảm số âm
-          if (record.type === "fedex_payment" && amount > 0) {
-            amount = -amount;
-          }
-          
+          const amount = parseFloat(text);
+          // Determine if the amount should be displayed as positive or negative based on the transaction type
+          // API already provides the correct sign, so we should respect it
           const isPositive = amount >= 0;
+          
           return (
             <span className={`font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
               {isPositive ? '+' : ''}{formatNumber(amount)} USD
