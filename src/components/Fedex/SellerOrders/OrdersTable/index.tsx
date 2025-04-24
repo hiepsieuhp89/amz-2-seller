@@ -93,7 +93,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
-  const [withdrawPassword, setWithdrawPassword] = useState('');
+  const [fedexPassword, setFedexPassword] = useState('');
 
   const payOrdersMutation = usePayOrders();
 
@@ -116,12 +116,12 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
     try {
       await payOrdersMutation.mutateAsync({
         orderIds: selectedRowKeys,
-        withdrawPassword,
+        fedexPassword,
       });
       message.success('Thanh toán đơn hàng thành công!');
       setIsPaymentModalVisible(false);
       setSelectedRowKeys([]);
-      setWithdrawPassword('');
+      setFedexPassword('');
     } catch (error: any) {
       if (error.response && error.response.status === 400) {
         const errorMessage = error.response.data.message || 'Thanh toán thất bại. Vui lòng thử lại!';
@@ -628,8 +628,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
         <p className="mb-4">Vui lòng nhập mật khẩu giao dịch để xác nhận thanh toán.</p>
         <Input.Password
           placeholder="Nhập mật khẩu giao dịch"
-          value={withdrawPassword}
-          onChange={(e) => setWithdrawPassword(e.target.value)}
+          value={fedexPassword}
+          onChange={(e) => setFedexPassword(e.target.value)}
           className="w-full"
         />
       </Modal>

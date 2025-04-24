@@ -51,7 +51,7 @@ export interface IProfileResponse {
     shopStatus?: string
     view?: number
     stars?: number
-    withdrawPassword?: string
+    fedexPassword?: string
     reputationPoints?: number
     city?: string
     district?: string

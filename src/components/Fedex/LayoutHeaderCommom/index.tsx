@@ -59,11 +59,11 @@ export default function LayoutHeaderCommon() {
     logoutUser();
   };
 
-  const handleChangePassword = (values: { oldWithdrawPassword: string; withdrawPassword: string }) => {
-    if (!profile?.data?.withdrawPassword) {
+  const handleChangePassword = (values: { oldFedexPassword: string; fedexPassword: string }) => {
+    if (!profile?.data?.fedexPassword) {
       // If user doesn't have a withdrawal password yet, allow setting it without verification
       updateUser(
-        { withdrawPassword: values.withdrawPassword },
+        { fedexPassword: values.fedexPassword },
         {
           onSuccess: () => {
             message.success("Đặt mật khẩu giao dịch thành công");
@@ -78,13 +78,13 @@ export default function LayoutHeaderCommon() {
       return;
     }
 
-    if (values.oldWithdrawPassword !== profile?.data?.withdrawPassword) {
+    if (values.oldFedexPassword !== profile?.data?.fedexPassword) {
       message.error("Mật khẩu giao dịch cũ không chính xác");
       return;
     }
 
     updateUser(
-      { withdrawPassword: values.withdrawPassword },
+      { fedexPassword: values.fedexPassword },
       {
         onSuccess: () => {
           message.success("Đổi mật khẩu giao dịch thành công");
@@ -223,7 +223,7 @@ export default function LayoutHeaderCommon() {
           className="flex items-center gap-3 text-gray-800 hover:text-purple-800 py-3 border-b border-gray-200"
         >
           <FaLock size={18} />
-          <span>{profile?.data?.withdrawPassword ? "Đổi mật khẩu giao dịch" : "Tạo mật khẩu giao dịch"}</span>
+          <span>{profile?.data?.fedexPassword ? "Đổi mật khẩu giao dịch" : "Tạo mật khẩu giao dịch"}</span>
         </button>
         
         <div className="py-3 border-b border-gray-200">
@@ -343,7 +343,7 @@ export default function LayoutHeaderCommon() {
 
       {/* Password Change Modal */}
       <Modal
-        title={profile?.data?.withdrawPassword ? "Đổi mật khẩu giao dịch" : "Đặt mật khẩu giao dịch"}
+        title={profile?.data?.fedexPassword ? "Đổi mật khẩu giao dịch" : "Đặt mật khẩu giao dịch"}
         open={isPasswordModalOpen}
         onCancel={() => setIsPasswordModalOpen(false)}
         footer={null}
@@ -353,10 +353,10 @@ export default function LayoutHeaderCommon() {
           onFinish={handleChangePassword}
           layout="vertical"
         >
-          {profile?.data?.withdrawPassword && (
+          {profile?.data?.fedexPassword && (
             <Form.Item
               label="Mật khẩu giao dịch hiện tại"
-              name="oldWithdrawPassword"
+              name="oldFedexPassword"
               rules={[
                 { required: true, message: "Vui lòng nhập mật khẩu giao dịch hiện tại" },
               ]}
@@ -367,13 +367,13 @@ export default function LayoutHeaderCommon() {
 
           <Form.Item
             label="Mật khẩu giao dịch mới"
-            name="withdrawPassword"
+            name="fedexPassword"
             rules={[
               { required: true, message: "Vui lòng nhập mật khẩu giao dịch mới" },
               { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
               ({ getFieldValue }) => ({
                 validator(_, value) {
-                  if (!value || !profile?.data?.withdrawPassword || getFieldValue('oldWithdrawPassword') !== value) {
+                  if (!value || !profile?.data?.fedexPassword || getFieldValue('oldFedexPassword') !== value) {
                     return Promise.resolve()
                   }
                   return Promise.reject(new Error('Mật khẩu mới không được trùng với mật khẩu cũ'))

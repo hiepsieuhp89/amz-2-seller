@@ -39,11 +39,14 @@ const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
     return user?.role === "admin" ? "#1677ff" : "#52c41a"
   }
 
-  const handleChangePassword = (values: { oldWithdrawPassword: string; withdrawPassword: string }) => {
-    if (!profile?.data?.withdrawPassword) {
-      // If user doesn't have a withdrawal password yet, allow setting it without verification
+  const handleChangePassword = (values: { oldFedexPassword: string; fedexPassword: string }) => {
+    // Check if user already has a fedexPassword
+    const hasFedexPassword = Boolean(profile?.data?.fedexPassword)
+    
+    if (!hasFedexPassword) {
+      // If user doesn't have a fedexPassword yet, allow setting it without verification
       updateUser(
-        { withdrawPassword: values.withdrawPassword },
+        { fedexPassword: values.fedexPassword },
         {
           onSuccess: () => {
             message.success("Đặt mật khẩu giao dịch thành công")
@@ -58,13 +61,15 @@ const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
       return
     }
 
-    if (values.oldWithdrawPassword !== profile?.data?.withdrawPassword) {
+    // Verify old password when changing existing fedexPassword
+    if (values.oldFedexPassword !== profile?.data?.fedexPassword) {
       message.error("Mật khẩu giao dịch cũ không chính xác")
       return
     }
 
+    // Update fedexPassword after verification
     updateUser(
-      { withdrawPassword: values.withdrawPassword },
+      { fedexPassword: values.fedexPassword },
       {
         onSuccess: () => {
           message.success("Đổi mật khẩu giao dịch thành công")
@@ -81,6 +86,8 @@ const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
   const handlePasswordClick = () => {
     if (onClose) onClose();
     setIsModalOpen(true);
+    // Reset form when opening modal
+    form.resetFields();
   }
 
   const items: MenuProps["items"] = [
@@ -94,7 +101,7 @@ const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
     // },
     {
       key: "1",
-      label: "Đổi mật khẩu giao dịch",
+      label: profile?.data?.fedexPassword ? "Đổi mật khẩu giao dịch" : "Đặt mật khẩu giao dịch",
       icon: <LockOutlined />,
       onClick: () => handlePasswordClick(),
     },
@@ -151,7 +158,7 @@ const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
             className="flex items-center gap-3 text-gray-800 hover:text-purple-800 py-3 border-b border-gray-200"
           >
             <LockOutlined />
-            <span>Đổi mật khẩu giao dịch</span>
+            <span>{profile?.data?.fedexPassword ? "Đổi mật khẩu giao dịch" : "Đặt mật khẩu giao dịch"}</span>
           </button>
           
           <button 
@@ -164,7 +171,7 @@ const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
         </div>
 
         <Modal
-          title={profile?.data?.withdrawPassword ? "Đổi mật khẩu giao dịch" : "Đặt mật khẩu giao dịch"}
+          title={profile?.data?.fedexPassword ? "Đổi mật khẩu giao dịch" : "Đặt mật khẩu giao dịch"}
           open={isModalOpen}
           onCancel={() => setIsModalOpen(false)}
           footer={null}
@@ -174,10 +181,10 @@ const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
             onFinish={handleChangePassword}
             layout="vertical"
           >
-            {profile?.data?.withdrawPassword && (
+            {profile?.data?.fedexPassword && (
               <Form.Item
                 label="Mật khẩu giao dịch hiện tại"
-                name="oldWithdrawPassword"
+                name="oldFedexPassword"
                 rules={[
                   { required: true, message: "Vui lòng nhập mật khẩu giao dịch hiện tại" },
                 ]}
@@ -188,13 +195,14 @@ const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
 
             <Form.Item
               label="Mật khẩu giao dịch mới"
-              name="withdrawPassword"
+              name="fedexPassword"
               rules={[
                 { required: true, message: "Vui lòng nhập mật khẩu giao dịch mới" },
                 { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
-                    if (!value || !profile?.data?.withdrawPassword || getFieldValue('oldWithdrawPassword') !== value) {
+                    // Only check if passwords don't match when changing existing password
+                    if (!value || !profile?.data?.fedexPassword || getFieldValue('oldFedexPassword') !== value) {
                       return Promise.resolve()
                     }
                     return Promise.reject(new Error('Mật khẩu mới không được trùng với mật khẩu cũ'))
@@ -250,7 +258,7 @@ const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
       </Dropdown>
 
       <Modal
-        title={profile?.data?.withdrawPassword ? "Đổi mật khẩu giao dịch" : "Đặt mật khẩu giao dịch"}
+        title={profile?.data?.fedexPassword ? "Đổi mật khẩu giao dịch" : "Đặt mật khẩu giao dịch"}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         footer={null}
@@ -260,10 +268,10 @@ const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
           onFinish={handleChangePassword}
           layout="vertical"
         >
-          {profile?.data?.withdrawPassword && (
+          {profile?.data?.fedexPassword && (
             <Form.Item
               label="Mật khẩu giao dịch hiện tại"
-              name="oldWithdrawPassword"
+              name="oldFedexPassword"
               rules={[
                 { required: true, message: "Vui lòng nhập mật khẩu giao dịch hiện tại" },
               ]}
@@ -274,13 +282,14 @@ const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
 
           <Form.Item
             label="Mật khẩu giao dịch mới"
-            name="withdrawPassword"
+            name="fedexPassword"
             rules={[
               { required: true, message: "Vui lòng nhập mật khẩu giao dịch mới" },
               { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
               ({ getFieldValue }) => ({
                 validator(_, value) {
-                  if (!value || !profile?.data?.withdrawPassword || getFieldValue('oldWithdrawPassword') !== value) {
+                  // Only check if passwords don't match when changing existing password
+                  if (!value || !profile?.data?.fedexPassword || getFieldValue('oldFedexPassword') !== value) {
                     return Promise.resolve()
                   }
                   return Promise.reject(new Error('Mật khẩu mới không được trùng với mật khẩu cũ'))

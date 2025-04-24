@@ -26,7 +26,7 @@ export interface IUpdateUser {
   phone?: string
   address?: string
   avatar?: string
-  withdrawPassword?: string
+  fedexPassword?: string
   oldPassword?: string
   password?: string
 }
