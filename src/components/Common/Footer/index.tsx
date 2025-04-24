@@ -160,6 +160,7 @@ export function Footer() {
           <p className="text-gray-400 text-sm">
             &copy; {new Date().getFullYear()} Amazon Global Selling. Tất cả các quyền được bảo lưu.
           </p>
+          
           <div className="relative h-[30px] w-[216px]">
             <Image
               src="/images/payments.png"
