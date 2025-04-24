@@ -236,6 +236,17 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
         ),
       },
       {
+        title: "Giá nhập",
+        dataIndex: "totalPaidAmount",
+        key: "totalPaidAmount",
+        width: isMobile ? "20%" : "10%",
+        render: (text) => (
+          <span className="whitespace-nowrap text-xs sm:text-sm">
+            ${formatNumber(text)}
+          </span>
+        ),
+      },
+      {
         title: "Lợi nhuận",
         dataIndex: "totalProfit",
         key: "totalProfit",
