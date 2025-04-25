@@ -15,7 +15,8 @@ import {
   Select,
   Spin,
   Table,
-  message
+  message,
+  Pagination
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type React from "react";
@@ -91,6 +92,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
     orderTimeLte: currentDateISO
   });
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
+  const [expandedCardIds, setExpandedCardIds] = useState<string[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
   const [fedexPassword, setFedexPassword] = useState('');
@@ -163,27 +165,104 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
     if (pageSize) setPageSize(pageSize);
   };
 
-  if (isLoading) {
+  const toggleCardExpand = (id: string) => {
+    if (expandedCardIds.includes(id)) {
+      setExpandedCardIds(expandedCardIds.filter(cardId => cardId !== id));
+    } else {
+      setExpandedCardIds([...expandedCardIds, id]);
+    }
+  };
+
+  const renderStatusBadge = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return (
+          <div className="animate-gradient bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 text-gray-600 px-2 py-1 rounded font-medium text-xs">
+            🕙 Đang chờ xử lý
+          </div>
+        );
+      case 'CONFIRMED':
+        return (
+          <div className="bg-blue-100 text-blue-600 px-2 py-1 rounded font-medium text-xs">
+            ✓ Đã xác nhận
+          </div>
+        );
+      case 'SHIPPING':
+        return (
+          <div className="bg-purple-100 text-purple-600 px-2 py-1 rounded font-medium text-xs">
+            🚚 Đang trên đường đi
+          </div>
+        );
+      case 'DELIVERED':
+        return (
+          <div className="bg-green-100 text-green-600 px-2 py-1 rounded font-medium text-xs">
+            ✓ Đã giao hàng
+          </div>
+        );
+      case 'CANCELED':
+        return (
+          <div className="bg-red-100 text-red-600 px-2 py-1 rounded font-medium text-xs">
+            ✕ Đã hủy
+          </div>
+        );
+      case 'REJECTED':
+        return (
+          <div className="bg-red-100 text-red-600 px-2 py-1 rounded font-medium text-xs">
+            ✕ Đã từ chối
+          </div>
+        );
+      default:
+        return (
+          <div className="bg-gray-100 text-gray-600 px-2 py-1 rounded font-medium text-xs">
+            Không xác định
+          </div>
+        );
+    }
+  };
+
+  const renderDelayBadge = (delayStatus: string) => {
+    if (!delayStatus || delayStatus === 'NORMAL') return null;
+    
+    let delayText;
+    switch (delayStatus) {
+      case 'DELAY_24H':
+        delayText = '24h';
+        break;
+      case 'DELAY_36H':
+        delayText = '36h';
+        break;
+      case 'DELAY_72H':
+        delayText = '72h';
+        break;
+      default:
+        if (delayStatus.startsWith('DELAY_')) {
+          delayText = delayStatus.replace('DELAY_', '');
+        } else {
+          delayText = delayStatus;
+        }
+    }
+    
     return (
-      <div className="flex justify-center items-center h-[50vh]">
-        <Spin size="small" />
+      <div className="bg-orange-100 text-orange-600 px-2 py-1 rounded font-medium text-xs mt-1">
+        ⚠️ Trễ {delayText}
       </div>
     );
-  }
+  };
 
-  if (
-    !ordersData ||
-    !ordersData.data ||
-    !ordersData.data.data ||
-    ordersData.data.data.length === 0
-  ) {
+  const renderPaymentBadge = (paymentStatus: string) => {
+    if (paymentStatus === 'PAID') {
+      return (
+        <div className="bg-green-100 text-green-600 px-2 py-1 rounded font-medium text-xs">
+          ✓ Đã thanh toán
+        </div>
+      );
+    }
     return (
-      <Empty
-        description="Không có đơn hàng nào"
-        className="flex justify-center items-center h-96"
-      />
+      <div className="bg-yellow-100 text-yellow-600 px-2 py-1 rounded font-medium text-xs">
+        ⚠️ Chưa thanh toán
+      </div>
     );
-  }
+  };
 
   const toggleExpand = (key: string) => {
     if (expandedRowKeys.includes(key)) {
@@ -555,6 +634,142 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
     },
   } : undefined;
 
+  // For mobile view, render cards instead of a table
+  const renderMobileCards = () => {
+    if (!ordersData?.data?.data || ordersData.data.data.length === 0) {
+      return (
+        <Empty
+          description="Không có đơn hàng nào"
+          className="flex justify-center items-center h-64"
+        />
+      );
+    }
+
+    return (
+      <div className="space-y-3">
+        {ordersData.data.data.map((order: any) => (
+          <div 
+            key={order.id} 
+            className="border rounded-lg shadow-sm bg-white overflow-hidden"
+          >
+            <div className="p-3 flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={selectedRowKeys.includes(order.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedRowKeys([...selectedRowKeys, order.id]);
+                    } else {
+                      setSelectedRowKeys(selectedRowKeys.filter(key => key !== order.id));
+                    }
+                  }}
+                  className="mr-3 h-4 w-4"
+                />
+                <div>
+                  <div className="text-xs font-medium">
+                    {new Date(order.orderTime).toLocaleDateString('vi-VN', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit'
+                    })}
+                  </div>
+                  <div className="text-xs font-mono text-gray-500 truncate max-w-[140px]">
+                    {generateOrderCode(order.orderTime)}
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-xs font-bold">${formatNumber(order.totalAmount)}</div>
+                <div className="text-xs text-green-500">${order.totalProfit}</div>
+              </div>
+            </div>
+            
+            <div className="px-3 pb-2 flex flex-wrap gap-1">
+              {renderStatusBadge(order.status)}
+              {renderDelayBadge(order.delayStatus)}
+              {renderPaymentBadge(order.paymentStatus)}
+            </div>
+            
+            {expandedCardIds.includes(order.id) && (
+              <div className="px-3 py-2 bg-gray-50 border-t">
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <div className="text-gray-500">Giá nhập:</div>
+                    <div>${formatNumber(order.totalPaidAmount)}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Lợi nhuận:</div>
+                    <div className="text-green-500">${order.totalProfit}</div>
+                  </div>
+                  {order.user && (
+                    <>
+                      <div className="col-span-2">
+                        <div className="text-gray-500">Khách hàng:</div>
+                        <div>{order.user.fullName || "—"}</div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            <div 
+              className="px-3 py-2 border-t text-center text-xs text-blue-500"
+              onClick={() => toggleCardExpand(order.id)}
+            >
+              {expandedCardIds.includes(order.id) ? 'Thu gọn' : 'Xem thêm'}
+            </div>
+          </div>
+        ))}
+        
+        <div className="mt-4 flex justify-center">
+          <ConfigProvider
+            theme={{
+              components: {
+                Pagination: {
+                  itemSize: 24,
+                  fontSize: 12,
+                }
+              }
+            }}
+          >
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={ordersData?.data?.meta?.itemCount || 0}
+              onChange={handlePaginationChange}
+              size="small"
+              simple
+            />
+          </ConfigProvider>
+        </div>
+      </div>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-[50vh]">
+        <Spin size="small" />
+      </div>
+    );
+  }
+
+  if (
+    !ordersData ||
+    !ordersData.data ||
+    !ordersData.data.data ||
+    ordersData.data.data.length === 0
+  ) {
+    return (
+      <Empty
+        description="Không có đơn hàng nào"
+        className="flex justify-center items-center h-96"
+      />
+    );
+  }
+
   return (
     <Card className="shadow-sm border rounded-lg">
       <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
@@ -586,43 +801,44 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
         </div>
       </div>
 
-      <ConfigProvider 
-        theme={{
-          components: {
-            Table: {
-              fontSize: isMobile ? 12 : 14,
-              padding: isMobile ? 8 : 16,
-              paddingContentVertical: isMobile ? 8 : 16,
-              paddingContentHorizontal: isMobile ? 8 : 16,
+      {isMobile ? (
+        renderMobileCards()
+      ) : (
+        <ConfigProvider 
+          theme={{
+            components: {
+              Table: {
+                fontSize: 14,
+                padding: 16,
+                paddingContentVertical: 16,
+                paddingContentHorizontal: 16,
+              }
             }
-          }
-        }}
-      >
-        <Table
-          rowSelection={rowSelection}
-          columns={getColumns()}
-          dataSource={ordersData?.data?.data || []}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: ordersData?.data?.meta?.itemCount || 0,
-            onChange: handlePaginationChange,
-            showSizeChanger: !isMobile,
-            pageSizeOptions: isMobile ? ['10'] : ['10', '20', '50', '100'],
-            size: isMobile ? 'small' : 'default',
-            responsive: true,
-            showTotal: (total) => 
-              isMobile ? 
-                `${total} đơn` : 
-                `Tổng ${total} đơn hàng`,
-            simple: isMobile,
           }}
-          scroll={{ x: 'max-content' }}
-          size={isMobile ? "small" : "middle"}
-          expandable={expandableConfig}
-          rowKey="id"
-        />
-      </ConfigProvider>
+        >
+          <Table
+            rowSelection={rowSelection}
+            columns={getColumns()}
+            dataSource={ordersData?.data?.data || []}
+            pagination={{
+              current: currentPage,
+              pageSize: pageSize,
+              total: ordersData?.data?.meta?.itemCount || 0,
+              onChange: handlePaginationChange,
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '50', '100'],
+              size: 'default',
+              responsive: true,
+              showTotal: (total) => `Tổng ${total} đơn hàng`,
+              simple: false,
+            }}
+            scroll={{ x: 'max-content' }}
+            size="middle"
+            expandable={expandableConfig}
+            rowKey="id"
+          />
+        </ConfigProvider>
+      )}
 
       <Modal
         title="Nhập mật khẩu giao dịch"
