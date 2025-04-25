@@ -13,7 +13,7 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
         <Image src="/images/fedex.png" width={120} height={40} alt="FedEx Logo" />
       </div>
 
-      <div className="w-[480px] flex flex-col justify-center">
+      <div className="w-full max-w-[480px] flex flex-col justify-center px-4 sm:px-0">
         {children}
       </div>
     </div>
