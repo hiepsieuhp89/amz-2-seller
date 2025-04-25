@@ -402,7 +402,7 @@ export default function ChatPage() {
         </aside>
 
         {/* --- Mobile Sidebar Toggle --- */}
-        <div className="md:hidden fixed bottom-5 right-5 z-50">
+        <div className="md:hidden fixed bottom-24 right-5 z-50">
           <Button
             size="icon"
             onClick={() => setShowMobileSidebar(true)}
@@ -425,7 +425,7 @@ export default function ChatPage() {
               exit={{ x: "-100%" }}
               transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside sidebar
-              className="absolute inset-y-0 left-0 w-[85%] max-w-[350px] bg-background border-r flex flex-col"
+              className="absolute inset-y-0 left-0 w-[85%] max-w-[350px] bg-background border-r flex flex-col mt-16"
             >
               {/* Mobile Sidebar Header */}
               <div className="p-4 border-b h-[75px]">
