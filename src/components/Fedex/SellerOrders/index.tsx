@@ -52,6 +52,7 @@ const SellerOrders = () => {
   const { width } = useWindowSize()
   const isMobile = width ? width < 768 : false
   const isTablet = width ? width >= 768 && width < 1024 : false
+  const [expandedTransactionIds, setExpandedTransactionIds] = useState<string[]>([])
 
   const {
     transactionHistoryData: transactionHistoryDataResponse,
@@ -321,9 +322,18 @@ const SellerOrders = () => {
 
   const { profile } = useUser()
 
+  const toggleTransactionExpand = (id: string) => {
+    if (expandedTransactionIds.includes(id)) {
+      setExpandedTransactionIds(expandedTransactionIds.filter(transactionId => transactionId !== id));
+    } else {
+      setExpandedTransactionIds([...expandedTransactionIds, id]);
+    }
+  };
+
   const renderMobileTransactionCard = (transaction: any) => {
     const amount = parseFloat(transaction.money);
     const isPositive = amount >= 0;
+    const isExpanded = expandedTransactionIds.includes(transaction.id);
     
     const typeMap: Record<string, string> = {
       "fedex_payment": "Thanh toán",
@@ -350,47 +360,98 @@ const SellerOrders = () => {
     };
 
     return (
-      <div className="border rounded-lg p-3 mb-3 bg-white shadow-sm">
-        <div className="flex justify-between items-start mb-2">
-          <div className="flex-1">
-            <div className="text-xs text-gray-500">
-              {new Date(transaction.createdAt).toLocaleDateString('vi-VN', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-              })}
+      <div className="border rounded-lg mb-3 bg-white shadow-sm overflow-hidden" key={transaction.id}>
+        <div className="p-3">
+          <div className="flex justify-between items-start mb-2">
+            <div className="flex-1">
+              <div className="text-xs text-gray-500">
+                {new Date(transaction.createdAt).toLocaleDateString('vi-VN', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                })}
+              </div>
+              <div className="text-xs font-mono text-gray-700 truncate max-w-[180px]">
+                {transaction.id}
+              </div>
             </div>
-            <div className="text-xs font-mono text-gray-700 truncate max-w-[180px]">
-              {transaction.id}
+            <div className="text-right">
+              <div className={`font-medium text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                {isPositive ? '+' : ''}{formatNumber(amount)} USD
+              </div>
+              <div className="text-xs text-gray-500">
+                {typeMap[transaction.type] || transaction.type || "—"}
+              </div>
             </div>
           </div>
-          <div className="text-right">
-            <div className={`font-medium text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-              {isPositive ? '+' : ''}{formatNumber(amount)} USD
+          
+          <div className="flex justify-between items-center">
+            <div 
+              className="px-2 py-1 rounded-full text-xs font-medium truncate"
+              style={{
+                color: status.color,
+                backgroundColor: status.bgColor,
+                border: `1px solid ${status.color}20`
+              }}
+            >
+              {status.label}
             </div>
-            <div className="text-xs text-gray-500">
-              {typeMap[transaction.type] || transaction.type || "—"}
-            </div>
+            
+            {!isExpanded && transaction.description && (
+              <div className="text-xs text-gray-600 truncate max-w-[180px]">
+                {transaction.description}
+              </div>
+            )}
           </div>
         </div>
         
-        <div className="flex justify-between items-center">
-          <div 
-            className="px-2 py-1 rounded-full text-xs font-medium truncate"
-            style={{
-              color: status.color,
-              backgroundColor: status.bgColor,
-              border: `1px solid ${status.color}20`
-            }}
-          >
-            {status.label}
-          </div>
-          
-          {transaction.description && (
-            <div className="text-xs text-gray-600 truncate max-w-[180px]">
-              {transaction.description}
+        {isExpanded && (
+          <div className="px-3 py-2 bg-gray-50 border-t">
+            <div className="space-y-2">
+              {transaction.description && (
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Mô tả:</div>
+                  <div className="text-xs text-gray-700">{transaction.description}</div>
+                </div>
+              )}
+              
+              {transaction.referenceId && (
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Mã tham chiếu:</div>
+                  <div className="flex items-center space-x-2">
+                    <span className="font-mono text-xs text-gray-600">{transaction.referenceId}</span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(transaction.referenceId);
+                      }}
+                      className="text-blue-500 hover:text-blue-700 transition-colors"
+                      title="Copy to clipboard"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M8 17.929H6c-1.105 0-2-.895-2-2V6c0-1.105.895-2 2-2h8c1.105 0 2 .895 2 2v2M16 6h4c1.105 0 2 .895 2 2v10c0 1.105-.895 2-2 2h-8c-1.105 0-2-.895-2-2V8c0-1.105.895-2 2-2z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
+        )}
+        
+        <div 
+          className="px-3 py-2 border-t text-center text-xs text-blue-500 cursor-pointer hover:bg-gray-50"
+          onClick={() => toggleTransactionExpand(transaction.id)}
+        >
+          {isExpanded ? 'Thu gọn' : 'Xem thêm'}
         </div>
       </div>
     );
