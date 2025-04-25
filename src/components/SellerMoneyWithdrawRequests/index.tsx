@@ -73,6 +73,7 @@ const SellerMoneyWithdrawRequests = () => {
       render: (text) => {
         const statusMap = {
           completed: { label: "Hoàn thành", color: "green" },
+          rejected: { label: "Bị từ chối", color: "red" },
           pending: { label: "Đang chờ", color: "orange" },
           failed: { label: "Thất bại", color: "red" },
           processing: { label: "Đang xử lý", color: "blue" },
