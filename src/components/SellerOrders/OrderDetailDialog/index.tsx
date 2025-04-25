@@ -614,7 +614,9 @@ const OrderDetailDialog = ({
 
               <div className="space-y-4 sm:space-y-6">
                 {order?.statusHistory &&
-                  order.statusHistory.map((history: any, index: number) => (
+                  [...order.statusHistory]
+                    .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+                    .map((history: any, index: number) => (
                     <div
                       key={history.id}
                       className="flex items-start gap-3 sm:gap-4"
