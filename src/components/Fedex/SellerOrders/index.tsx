@@ -176,6 +176,7 @@ const SellerOrders = () => {
         render: (text: string) => {
           const statusMap = {
             completed: { label: "Hoàn thành", color: "#10b981", bgColor: "#ecfdf5" },
+            rejected: { label: "Từ chối", color: "#ef4444", bgColor: "#fef2f2" },
             pending: { label: "Đang chờ", color: "#f59e0b", bgColor: "#fffbeb" },
             failed: { label: "Thất bại", color: "#ef4444", bgColor: "#fef2f2" },
             processing: { label: "Đang xử lý", color: "#3b82f6", bgColor: "#eff6ff" },
