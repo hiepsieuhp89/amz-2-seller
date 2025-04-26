@@ -60,8 +60,8 @@ const LeftSideSection = () => {
   };
 
   const { data: topSellingProducts, isLoading } = useTopSellingProducts()
-  const {setSelectedProduct} = useSelectedProduct()
-  const {profileData} = useProfile()
+  const { setSelectedProduct } = useSelectedProduct()
+  const { profileData } = useProfile()
   return (
     <div>
       <motion.div
@@ -138,6 +138,10 @@ const LeftSideSection = () => {
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     type="primary"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                    }}
                     icon={<Icon path={mdiStorefront} size={0.8} />}
                     block
                     style={{
@@ -170,9 +174,9 @@ const LeftSideSection = () => {
                   whileHover="hover"
                   className="p-4"
                 >
-                  <Link 
-                  onClick={()=> setSelectedProduct(product?.product)}
-                  href={"/product?id=" + product?.product.id} className="block">
+                  <Link
+                    onClick={() => setSelectedProduct(product?.product)}
+                    href={"/product?id=" + product?.product.id} className="block">
                     <div className="flex items-center">
                       {/* Product Image */}
                       <div className="w-1/4 xl:w-1/3 overflow-hidden">
