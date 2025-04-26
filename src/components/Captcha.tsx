@@ -184,7 +184,7 @@ const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
                       lion: 'https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=100',
                       panda: 'https://images.pexels.com/photos/6952419/pexels-photo-6952419.jpeg?auto=compress&cs=tinysrgb&w=100',
                       horse: 'https://images.pexels.com/photos/635499/pexels-photo-635499.jpeg?auto=compress&cs=tinysrgb&w=100',
-                      monkey: 'https://images.pexels.com/photos/1161024/pexels-photo-1161024.jpeg?auto=compress&cs=tinysrgb&w=100',
+                      monkey: 'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?w=100&auto=format&fit=crop',
                       // Transportation
                       car: 'https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=100',
                       bus: 'https://images.pexels.com/photos/2031758/pexels-photo-2031758.jpeg?auto=compress&cs=tinysrgb&w=100',
@@ -214,6 +214,19 @@ const Captcha = ({ onSuccess, onError, onBack }: CaptchaProps) => {
                       cup: 'https://images.pexels.com/photos/324028/pexels-photo-324028.jpeg?auto=compress&cs=tinysrgb&w=100'
                     };
                     (e.target as HTMLImageElement).src = fallbackUrls[image.type as keyof typeof fallbackUrls] || 'https://picsum.photos/100/100';
+
+                    // Add a second error handler for monkey images specifically
+                    if (image.type === 'monkey') {
+                      (e.target as HTMLImageElement).onerror = () => {
+                        const monkeyFallbacks = [
+                          'https://images.unsplash.com/photo-1463852247062-1bbca38f7805?w=100&auto=format&fit=crop',
+                          'https://images.pexels.com/photos/3608263/pexels-photo-3608263.jpeg?auto=compress&cs=tinysrgb&w=100',
+                          'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Bonnet_macaque_%28Macaca_radiata%29_Photograph_By_Shantanu_Kuveskar.jpg/100px-Bonnet_macaque_%28Macaca_radiata%29_Photograph_By_Shantanu_Kuveskar.jpg',
+                          'https://picsum.photos/100/100?monkey'
+                        ];
+                        (e.target as HTMLImageElement).src = monkeyFallbacks[Math.floor(Math.random() * monkeyFallbacks.length)];
+                      };
+                    }
                   }}
                 />
               </div>
