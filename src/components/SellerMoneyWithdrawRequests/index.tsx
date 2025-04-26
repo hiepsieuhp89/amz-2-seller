@@ -104,7 +104,7 @@ const SellerMoneyWithdrawRequests = () => {
           case "manual_total_profit_amount":
             return "Lợi nhuận";
           case "manual_balance_amount":
-            return "Nạp tiền";
+            return "Quy đổi";
           default:
             return text;
         }
