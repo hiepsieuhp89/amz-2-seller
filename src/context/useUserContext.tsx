@@ -90,13 +90,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }, [profileData])
 
-  // Poll profile API every 5 seconds
+  // Poll profile API every 10 seconds
   useEffect(() => {
     if (!user) return
 
     const intervalId = setInterval(() => {
       fetchUserProfile()
-    }, 5000) // 5 seconds interval
+    }, 10000) // 10 seconds interval
 
     return () => clearInterval(intervalId) // Cleanup on unmount
   }, [user])
