@@ -250,6 +250,22 @@ const SignUpForm = () => {
   const validateUsername = async (_: any, value: string) => {
     if (!value) return Promise.reject(new Error('Vui lòng nhập tên đăng nhập!'));
     
+    // Check for spaces
+    if (/\s/.test(value)) {
+      return Promise.reject(new Error('Tên tài khoản không được chứa khoảng trắng'));
+    }
+    
+    // Check for uppercase letters
+    if (value !== value.toLowerCase()) {
+      return Promise.reject(new Error('Tên tài khoản không được viết hoa'));
+    }
+    
+    // Check for accent marks (diacritics)
+    const accentRegex = /[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđÀÁẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÈÉẺẼẸÊẾỀỂỄỆÌÍỈĨỊÒÓỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÙÚỦŨỤƯỨỪỬỮỰỲÝỶỸỴĐ]/;
+    if (accentRegex.test(value)) {
+      return Promise.reject(new Error('Tên tài khoản không được chứa dấu'));
+    }
+    
     // Call the debounced check function and wait for the result
     const exists = await debouncedChecksRef.current.username(value);
     if (exists) {
