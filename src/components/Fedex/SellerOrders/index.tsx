@@ -52,6 +52,7 @@ const SellerOrders = () => {
   const { width } = useWindowSize()
   const isMobile = width ? width < 768 : false
   const isTablet = width ? width >= 768 && width < 1024 : false
+  const [expandedTransactionIds, setExpandedTransactionIds] = useState<string[]>([])
 
   const {
     transactionHistoryData: transactionHistoryDataResponse,
@@ -176,6 +177,7 @@ const SellerOrders = () => {
         render: (text: string) => {
           const statusMap = {
             completed: { label: "Hoàn thành", color: "#10b981", bgColor: "#ecfdf5" },
+            rejected: { label: "Từ chối", color: "#ef4444", bgColor: "#fef2f2" },
             pending: { label: "Đang chờ", color: "#f59e0b", bgColor: "#fffbeb" },
             failed: { label: "Thất bại", color: "#ef4444", bgColor: "#fef2f2" },
             processing: { label: "Đang xử lý", color: "#3b82f6", bgColor: "#eff6ff" },
@@ -320,6 +322,141 @@ const SellerOrders = () => {
 
   const { profile } = useUser()
 
+  const toggleTransactionExpand = (id: string) => {
+    if (expandedTransactionIds.includes(id)) {
+      setExpandedTransactionIds(expandedTransactionIds.filter(transactionId => transactionId !== id));
+    } else {
+      setExpandedTransactionIds([...expandedTransactionIds, id]);
+    }
+  };
+
+  const renderMobileTransactionCard = (transaction: any) => {
+    const amount = parseFloat(transaction.money);
+    const isPositive = amount >= 0;
+    const isExpanded = expandedTransactionIds.includes(transaction.id);
+    
+    const typeMap: Record<string, string> = {
+      "fedex_payment": "Thanh toán",
+      "package_purchase": "Mua gói",
+      "manual_fedex_amount": "Quy đổi",
+      "withdrawal": "Rút tiền",
+      "deposit": "Nạp tiền",
+      "refund": "Hoàn tiền",
+      "commission": "Hoa hồng",
+    };
+
+    const statusMap: Record<string, { label: string, color: string, bgColor: string }> = {
+      completed: { label: "Hoàn thành", color: "#10b981", bgColor: "#ecfdf5" },
+      rejected: { label: "Từ chối", color: "#ef4444", bgColor: "#fef2f2" },
+      pending: { label: "Đang chờ", color: "#f59e0b", bgColor: "#fffbeb" },
+      failed: { label: "Thất bại", color: "#ef4444", bgColor: "#fef2f2" },
+      processing: { label: "Đang xử lý", color: "#3b82f6", bgColor: "#eff6ff" },
+    };
+    
+    const status = statusMap[transaction.status.toLowerCase() as keyof typeof statusMap] || {
+      label: transaction.status,
+      color: "#6b7280",
+      bgColor: "#f9fafb",
+    };
+
+    return (
+      <div className="border rounded-lg mb-3 bg-white shadow-sm overflow-hidden" key={transaction.id}>
+        <div className="p-3">
+          <div className="flex justify-between items-start mb-2">
+            <div className="flex-1">
+              <div className="text-xs text-gray-500">
+                {new Date(transaction.createdAt).toLocaleDateString('vi-VN', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit'
+                })}
+              </div>
+              <div className="text-xs font-mono text-gray-700 truncate max-w-[180px]">
+                {transaction.id}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className={`font-medium text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                {isPositive ? '+' : ''}{formatNumber(amount)} USD
+              </div>
+              <div className="text-xs text-gray-500">
+                {typeMap[transaction.type] || transaction.type || "—"}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-between items-center">
+            <div 
+              className="px-2 py-1 rounded-full text-xs font-medium truncate"
+              style={{
+                color: status.color,
+                backgroundColor: status.bgColor,
+                border: `1px solid ${status.color}20`
+              }}
+            >
+              {status.label}
+            </div>
+            
+            {!isExpanded && transaction.description && (
+              <div className="text-xs text-gray-600 truncate max-w-[180px]">
+                {transaction.description}
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {isExpanded && (
+          <div className="px-3 py-2 bg-gray-50 border-t">
+            <div className="space-y-2">
+              {transaction.description && (
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Mô tả:</div>
+                  <div className="text-xs text-gray-700">{transaction.description}</div>
+                </div>
+              )}
+              
+              {transaction.referenceId && (
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Mã tham chiếu:</div>
+                  <div className="flex items-center space-x-2">
+                    <span className="font-mono text-xs text-gray-600">{transaction.referenceId}</span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(transaction.referenceId);
+                      }}
+                      className="text-blue-500 hover:text-blue-700 transition-colors"
+                      title="Copy to clipboard"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M8 17.929H6c-1.105 0-2-.895-2-2V6c0-1.105.895-2 2-2h8c1.105 0 2 .895 2 2v2M16 6h4c1.105 0 2 .895 2 2v10c0 1.105-.895 2-2 2h-8c-1.105 0-2-.895-2-2V8c0-1.105.895-2 2-2z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        
+        <div 
+          className="px-3 py-2 border-t text-center text-xs text-blue-500 cursor-pointer hover:bg-gray-50"
+          onClick={() => toggleTransactionExpand(transaction.id)}
+        >
+          {isExpanded ? 'Thu gọn' : 'Xem thêm'}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="py-4 px-0 md:px-2 lg:px-4">
       <div className="mt-2">
@@ -369,7 +506,7 @@ const SellerOrders = () => {
                     <div className="w-[30px] h-[30px] rounded-full bg-white bg-opacity-20 flex items-center justify-center mb-2">
                       <span className="text-xl">$</span>
                     </div>
-                    <div className="text-xl font-bold">{formatNumber(profile?.data?.fedexBalance ?? 0)}</div>
+                    <div className="text-xl font-bold">${formatNumber(profile?.data?.fedexBalance ?? 0)}</div>
                     <div className="text-sm opacity-80 text-center">Số Dư Logistics</div>
                   </div>
                 </Card>
@@ -405,38 +542,81 @@ const SellerOrders = () => {
                 </div>
               </div>
 
-              <ConfigProvider
-                theme={{
-                  components: {
-                    Table: {
-                      fontSize: isMobile ? 12 : 14,
-                      padding: isMobile ? 8 : 16,
-                      paddingContentVertical: isMobile ? 8 : 16,
-                      paddingContentHorizontal: isMobile ? 8 : 16,
-                    }
-                  }
-                }}
-              >
-                <Table
-                  columns={getWalletColumns()}
-                  dataSource={filteredTransactionData}
-                  pagination={false}
-                  loading={isLoadingTransactions}
-                  scroll={{ x: 'max-content' }}
-                  size={isMobile ? "small" : "middle"}
-                  rowClassName={() => "hover:bg-gray-50 transition-colors"}
-                  className="transaction-history-table"
-                  locale={{
-                    emptyText: (
-                      <div className="py-8 sm:py-12 md:py-16 flex flex-col items-center">
-                        <div className="text-4xl sm:text-5xl md:text-6xl text-gray-300 mb-4">📋</div>
-                        <div className="text-base sm:text-lg text-gray-500 font-medium">Không có giao dịch nào</div>
-                        <div className="text-xs sm:text-sm text-gray-400 mt-2">Các giao dịch của bạn sẽ xuất hiện ở đây</div>
+              {isMobile ? (
+                <div className="px-3 py-3">
+                  {isLoadingTransactions ? (
+                    <div className="flex justify-center items-center py-10">
+                      <Spin size="small" />
+                    </div>
+                  ) : filteredTransactionData.length > 0 ? (
+                    <div>
+                      {filteredTransactionData.map((transaction: any) => (
+                        renderMobileTransactionCard(transaction)
+                      ))}
+                      <div className="flex justify-center mt-4">
+                        <ConfigProvider
+                          theme={{
+                            components: {
+                              Pagination: {
+                                itemSize: 24,
+                                fontSize: 12,
+                              }
+                            }
+                          }}
+                        >
+                          <Pagination
+                            current={currentTransactionPage}
+                            pageSize={transactionPageSize}
+                            total={transactionHistoryDataResponse?.data?.meta?.itemCount || 0}
+                            onChange={handleTransactionPaginationChange}
+                            size="small"
+                            simple
+                          />
+                        </ConfigProvider>
                       </div>
-                    ),
+                    </div>
+                  ) : (
+                    <div className="py-8 flex flex-col items-center">
+                      <div className="text-4xl text-gray-300 mb-4">📋</div>
+                      <div className="text-base text-gray-500 font-medium">Không có giao dịch nào</div>
+                      <div className="text-xs text-gray-400 mt-2">Các giao dịch của bạn sẽ xuất hiện ở đây</div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <ConfigProvider
+                  theme={{
+                    components: {
+                      Table: {
+                        fontSize: 14,
+                        padding: 16,
+                        paddingContentVertical: 16,
+                        paddingContentHorizontal: 16,
+                      }
+                    }
                   }}
-                />
-              </ConfigProvider>
+                >
+                  <Table
+                    columns={getWalletColumns()}
+                    dataSource={filteredTransactionData}
+                    pagination={false}
+                    loading={isLoadingTransactions}
+                    scroll={{ x: 'max-content' }}
+                    size="middle"
+                    rowClassName={() => "hover:bg-gray-50 transition-colors"}
+                    className="transaction-history-table"
+                    locale={{
+                      emptyText: (
+                        <div className="py-8 sm:py-12 md:py-16 flex flex-col items-center">
+                          <div className="text-4xl sm:text-5xl md:text-6xl text-gray-300 mb-4">📋</div>
+                          <div className="text-base sm:text-lg text-gray-500 font-medium">Không có giao dịch nào</div>
+                          <div className="text-xs sm:text-sm text-gray-400 mt-2">Các giao dịch của bạn sẽ xuất hiện ở đây</div>
+                        </div>
+                      ),
+                    }}
+                  />
+                </ConfigProvider>
+              )}
 
               <div className="px-3 sm:px-4 md:px-6 py-4 border-t bg-gray-50 rounded-b-lg">
                 <Row
@@ -457,13 +637,13 @@ const SellerOrders = () => {
                     </Col>
                   )}
                   <Col xs={24} md={12} className="text-center md:text-right">
-                    {transactionHistoryDataResponse?.data?.data?.length > 0 && (
+                    {!isMobile && transactionHistoryDataResponse?.data?.data?.length > 0 && (
                       <ConfigProvider
                         theme={{
                           components: {
                             Pagination: {
-                              itemSize: isMobile ? 24 : 32,
-                              fontSize: isMobile ? 12 : 14,
+                              itemSize: 32,
+                              fontSize: 14,
                             }
                           }
                         }}
@@ -472,13 +652,12 @@ const SellerOrders = () => {
                           current={currentTransactionPage}
                           pageSize={transactionPageSize}
                           total={transactionHistoryDataResponse?.data?.meta?.itemCount || 0}
-                          showSizeChanger={!isMobile}
-                          pageSizeOptions={isMobile ? ['10'] : ['10', '20', '50', '100']}
+                          showSizeChanger={true}
+                          pageSizeOptions={['10', '20', '50', '100']}
                           onChange={handleTransactionPaginationChange}
                           onShowSizeChange={handleTransactionPaginationChange}
                           className="custom-pagination"
-                          size={isMobile ? "small" : "default"}
-                          simple={isMobile}
+                          size="default"
                         />
                       </ConfigProvider>
                     )}
