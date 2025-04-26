@@ -6,8 +6,12 @@ interface MaintenanceGuardProps {
 }
 
 const MaintenanceGuard = ({ children }: MaintenanceGuardProps) => {
-    const { data: maintenanceMode } = useGetMaintenanceMode();
-    if (maintenanceMode?.isMaintenance === true) {
+    const { data: maintenanceMode, isError } = useGetMaintenanceMode();
+    
+    // Show maintenance page if:
+    // 1. Maintenance mode is explicitly set to true
+    // 2. There's an API error (like 502) and we couldn't fetch maintenance status
+    if (maintenanceMode?.isMaintenance === true || isError) {
         return (
             <div className="h-screen w-screen flex flex-col items-center justify-center bg-white p-6">
                 <div className="max-w-3xl w-full text-center">
@@ -35,7 +39,7 @@ const MaintenanceGuard = ({ children }: MaintenanceGuardProps) => {
                     </div>
 
                     <div className="text-xs text-gray-500">
-                        © 1996-{new Date().getFullYear()}, Amazon.com, Inc. or its affiliates
+                        © 1996-{new Date().getFullYear()}, Amz-sellpanels.store, Inc. or its affiliates
                     </div>
                 </div>
             </div>
@@ -45,4 +49,4 @@ const MaintenanceGuard = ({ children }: MaintenanceGuardProps) => {
     return <>{children}</>;
 };
 
-export default MaintenanceGuard; 
+export default MaintenanceGuard;
