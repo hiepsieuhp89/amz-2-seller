@@ -39,7 +39,7 @@ const MaintenanceGuard = ({ children }: MaintenanceGuardProps) => {
                     </div>
 
                     <div className="text-xs text-gray-500">
-                        © 1996-{new Date().getFullYear()}, Amz-sellpanels.store, Inc. or its affiliates
+                        © 1996-{new Date().getFullYear()}, Inc. or its affiliates
                     </div>
                 </div>
             </div>
