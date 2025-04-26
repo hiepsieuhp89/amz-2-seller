@@ -264,8 +264,9 @@ const OrderDetailDialog = ({
         className={`sm:max-w-[1000px] p-0 bg-white rounded-md max-h-[90vh] overflow-y-auto ${
           isMobile ? "max-w-full" : ""
         }`}
+        style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
       >
-        <div id="preview" ref={previewRef} data-loaded={!!orderDetailData?.data}>
+        <div id="preview" ref={previewRef} data-loaded={!!orderDetailData?.data} className="h-auto">
           {!orderDetailData?.data && isPrinting ? (
             <div className="flex justify-center items-center h-[300px]">
               <Spin size="small" />
