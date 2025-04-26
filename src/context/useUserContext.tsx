@@ -81,8 +81,25 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (profileData) {
       setProfile(profileData)
+      
+      // Automatically logout if shop is suspended
+      if (profileData.data?.shopStatus === "SUSPENDED") {
+        console.log("Account suspended. Logging out...")
+        logoutUser()
+      }
     }
   }, [profileData])
+
+  // Poll profile API every 5 seconds
+  useEffect(() => {
+    if (!user) return
+
+    const intervalId = setInterval(() => {
+      fetchUserProfile()
+    }, 5000) // 5 seconds interval
+
+    return () => clearInterval(intervalId) // Cleanup on unmount
+  }, [user])
 
   useEffect(() => {
     if (typeof window !== "undefined") {
