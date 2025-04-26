@@ -7,24 +7,25 @@ import { ConfigProvider, ThemeConfig } from 'antd';
 import FedexLayout from './FedexLayout';
 import { useAllConfigs } from '@/hooks/config';
 import { useEffect } from 'react';
+import MaintenanceGuard from '@/components/MaintenanceGuard';
 
 function SmartsuppChat() {
   const { configsData } = useAllConfigs();
-  
+
   useEffect(() => {
     if (configsData?.data) {
       const cskhConfig = configsData.data.find((config: any) => config.key === 'CSKH' && config.isActive);
-      
+
       if (cskhConfig && typeof window !== 'undefined') {
         console.log('cskhConfig', cskhConfig);
-        
+
         // For Smartsupp chat, we'll use a safer direct insertion approach
         if (cskhConfig.key === 'CSKH') {
           try {
             // Create a script element
             const script = document.createElement('script');
             script.type = 'text/javascript';
-            
+
             // Set the correct content for Smartsupp
             script.innerHTML = `
               var _smartsupp = _smartsupp || {};
@@ -49,10 +50,10 @@ function SmartsuppChat() {
                 }
               };
             `;
-            
+
             // Append to document
             document.head.appendChild(script);
-            
+
             // Add noscript element if it exists in the config
             if (cskhConfig.value.includes('<noscript>')) {
               const noscriptContent = document.createElement('div');
@@ -72,28 +73,28 @@ function SmartsuppChat() {
             // Create a container div
             const container = document.createElement('div');
             container.innerHTML = cskhConfig.value;
-            
+
             // Extract and execute all scripts
             const scripts = container.querySelectorAll('script');
             scripts.forEach(script => {
               const newScript = document.createElement('script');
-              
+
               // Copy all attributes
               Array.from(script.attributes).forEach(attr => {
                 newScript.setAttribute(attr.name, attr.value);
               });
-              
+
               // Set the script content
               newScript.innerHTML = script.innerHTML;
-              
+
               // Append to document
               document.body.appendChild(newScript);
             });
-            
+
             // Add any HTML content that's not a script
             const htmlContent = document.createElement('div');
             htmlContent.innerHTML = cskhConfig.value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-            
+
             // Only append if there's actual content (not just whitespace)
             if (htmlContent.innerHTML.trim()) {
               document.body.appendChild(htmlContent);
@@ -105,7 +106,7 @@ function SmartsuppChat() {
       }
     }
   }, [configsData]);
-  
+
   return null;
 }
 
@@ -142,7 +143,9 @@ export default function ClientLayout({
             <ConfigProvider theme={theme}>
               <UserProvider>
                 <WrapMessage>
-                  <FedexLayout>{children}</FedexLayout>
+                  <MaintenanceGuard>
+                    <FedexLayout>{children}</FedexLayout>
+                  </MaintenanceGuard>
                 </WrapMessage>
               </UserProvider>
             </ConfigProvider>
