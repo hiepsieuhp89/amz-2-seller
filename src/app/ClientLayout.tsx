@@ -6,25 +6,64 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { ConfigProvider, ThemeConfig } from 'antd';
 import FedexLayout from './FedexLayout';
 import { useAllConfigs } from '@/hooks/config';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import MaintenanceGuard from '@/components/MaintenanceGuard';
 
-function SmartsuppChat() {
+// Add TypeScript declarations for the window object properties
+declare global {
+  interface Window {
+    smartsupp?: any;
+    _smartsupp?: any;
+    Tawk_API?: any;
+    Tawk_LoadStart?: Date;
+    openChat?: () => void;
+  }
+}
+
+function ChatWidget() {
   const { configsData } = useAllConfigs();
+  // State to toggle between chat services
+  const [chatService, setChatService] = useState('tawkto'); // 'smartsupp' or 'tawkto'
 
   useEffect(() => {
+    // Cleanup function to remove previous chat scripts
+    const cleanup = () => {
+      // Remove any existing Smartsupp or Tawk.to scripts
+      const existingScripts = document.querySelectorAll('script[data-chat-widget]');
+      existingScripts.forEach(script => script.remove());
+      
+      // Remove global Smartsupp variables
+      if (window.smartsupp) {
+        delete window.smartsupp;
+      }
+      if (window._smartsupp) {
+        delete window._smartsupp;
+      }
+      
+      // Remove global Tawk_API variables
+      if (window.Tawk_API) {
+        delete window.Tawk_API;
+      }
+      if (window.Tawk_LoadStart) {
+        delete window.Tawk_LoadStart;
+      }
+    };
+
+    // First cleanup any existing chat widgets
+    cleanup();
+
     if (configsData?.data) {
       const cskhConfig = configsData.data.find((config: any) => config.key === 'CSKH' && config.isActive);
 
       if (cskhConfig && typeof window !== 'undefined') {
         console.log('cskhConfig', cskhConfig);
 
-        // For Smartsupp chat, we'll use a safer direct insertion approach
-        if (cskhConfig.key === 'CSKH') {
+        if (chatService === 'smartsupp') {
           try {
             // Create a script element
             const script = document.createElement('script');
             script.type = 'text/javascript';
+            script.setAttribute('data-chat-widget', 'smartsupp');
 
             // Set the correct content for Smartsupp
             script.innerHTML = `
@@ -67,6 +106,39 @@ function SmartsuppChat() {
           } catch (error) {
             console.error('Error initializing Smartsupp chat:', error);
           }
+        } else if (chatService === 'tawkto') {
+          try {
+            // Create a script element for Tawk.to
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.setAttribute('data-chat-widget', 'tawkto');
+            
+            script.innerHTML = `
+              var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+              (function(){
+                var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+                s1.async=true;
+                s1.src='https://embed.tawk.to/680dd7893aab2b190ea25f4b/1ipr13sbb';
+                s1.charset='UTF-8';
+                s1.setAttribute('crossorigin','*');
+                s0.parentNode.insertBefore(s1,s0);
+              })();
+              
+              // Create global openChat function
+              window.openChat = function() {
+                if (window.Tawk_API) {
+                  window.Tawk_API.maximize();
+                  console.log('Opening Tawk.to chat');
+                } else {
+                  console.error('Tawk.to not initialized yet');
+                }
+              };
+            `;
+            
+            document.head.appendChild(script);
+          } catch (error) {
+            console.error('Error initializing Tawk.to chat:', error);
+          }
         } else {
           // Handle other types of chat widgets or content
           try {
@@ -78,6 +150,7 @@ function SmartsuppChat() {
             const scripts = container.querySelectorAll('script');
             scripts.forEach(script => {
               const newScript = document.createElement('script');
+              newScript.setAttribute('data-chat-widget', 'other');
 
               // Copy all attributes
               Array.from(script.attributes).forEach(attr => {
@@ -105,9 +178,30 @@ function SmartsuppChat() {
         }
       }
     }
-  }, [configsData]);
 
-  return null;
+    // Cleanup when component unmounts
+    return cleanup;
+  }, [configsData, chatService]);
+
+  // Button to toggle between chat services
+  return (
+    <></>
+    // <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000 }}>
+    //   <button 
+    //     onClick={() => setChatService(chatService === 'smartsupp' ? 'tawkto' : 'smartsupp')}
+    //     style={{ 
+    //       padding: '8px 12px', 
+    //       background: '#232F3E', 
+    //       color: 'white', 
+    //       border: 'none', 
+    //       borderRadius: '4px',
+    //       cursor: 'pointer'
+    //     }}
+    //   >
+    //     Switch to {chatService === 'smartsupp' ? 'Tawk.to' : 'Smartsupp'}
+    //   </button>
+    // </div>
+  );
 }
 
 
@@ -150,7 +244,7 @@ export default function ClientLayout({
               </UserProvider>
             </ConfigProvider>
           </AntdRegistry>
-          <SmartsuppChat />
+          <ChatWidget />
         </body>
       </html>
     </ReactQueryClientProvider>
