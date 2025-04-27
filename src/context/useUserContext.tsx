@@ -3,7 +3,7 @@ import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 
 import { clearToken, setTokenToLocalStorage } from "@/helper/tokenStorage"
-import { useProfile } from "@/hooks/authentication"
+import { getProfile } from "@/api/authentication"
 import { IProfileResponse } from "@/interface/response/authentication"
 import { QueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -37,7 +37,6 @@ const deleteCookie = (name: string) => {
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const { profileData, refetch: refetchProfile, isLoading: isProfileLoading } = useProfile()
   const [user, setUser] = useState<null | Record<string, any>>(() => {
     if (typeof window !== "undefined") {
       const storedUser = localStorage.getItem("user")
@@ -60,12 +59,19 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const fetchUserProfile = async () => {
     try {
       setIsLoadingProfile(true)
-      await refetchProfile()
+      const profileData = await getProfile()
       if (typeof window !== "undefined" && profileData) {
         localStorage.setItem("userProfile", JSON.stringify(profileData))
+        setProfile(profileData)
         
         // Check if the user has a transaction password set
         checkTransactionPasswordStatus(profileData)
+        
+        // Check if shop is suspended
+        if (profileData.data?.shopStatus === "SUSPENDED") {
+          console.log("Account suspended. Logging out...")
+          logoutUser()
+        }
       }
     } catch (error) {
       console.error("Failed to fetch user profile:", error)
@@ -147,26 +153,24 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Update profile state when profileData changes
-  useEffect(() => {
-    if (profileData) {
-      setProfile(profileData)
-      checkTransactionPasswordStatus(profileData)
-      
-      // Automatically logout if shop is suspended
-      if (profileData.data?.shopStatus === "SUSPENDED") {
-        console.log("Account suspended. Logging out...")
-        logoutUser()
-      }
-    }
-  }, [profileData])
-
-  // Poll profile API every 10 seconds
+  // Check shop suspension status without triggering rerenders
   useEffect(() => {
     if (!user) return
 
+    const checkShopStatus = async () => {
+      try {
+        const profileData = await getProfile()
+        if (profileData?.data?.shopStatus === "SUSPENDED") {
+          console.log("Account suspended. Logging out...")
+          logoutUser()
+        }
+      } catch (error) {
+        console.error("Failed to check shop status:", error)
+      }
+    }
+
     const intervalId = setInterval(() => {
-      fetchUserProfile()
+      checkShopStatus()
     }, 10000) // 10 seconds interval
 
     return () => clearInterval(intervalId) // Cleanup on unmount
@@ -206,8 +210,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         loginUser,
         logoutUser,
         fetchUserProfile,
-        logoUrl: profileData?.data?.logoUrl || "",
-        isLoadingProfile: isProfileLoading || isLoadingProfile,
+        logoUrl: profile?.data?.logoUrl || "",
+        isLoadingProfile,
         hasTransactionPassword,
         setTransactionPassword,
         verifyTransactionPassword
