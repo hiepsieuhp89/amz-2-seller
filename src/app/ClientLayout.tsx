@@ -117,10 +117,11 @@ function ChatWidget() {
         (function(){
           var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
           s1.async=true;
-          s1.src='https://embed.tawk.to/680dd7893aab2b190ea25f4b/1ipr6dee2';
+          s1.src='https://embed.tawk.to/680df2c2ba317119092324a4/1ipr7oj9s';
           s1.charset='UTF-8';
           s1.setAttribute('crossorigin','*');
           s0.parentNode.insertBefore(s1,s0);
+          
         })();
       `;
       
