@@ -108,33 +108,41 @@ function ChatWidget() {
           }
         } else if (chatService === 'tawkto') {
           try {
+            // Remove any previous tawk instances
+            if (document.getElementById('tawk-script')) {
+              document.getElementById('tawk-script')?.remove();
+            }
+            
+            // Initialize Tawk_API safely
+            window.Tawk_API = window.Tawk_API || {};
+            window.Tawk_LoadStart = new Date();
+            
             // Create a script element for Tawk.to
             const script = document.createElement('script');
+            script.id = 'tawk-script';
             script.type = 'text/javascript';
+            script.async = true;
+            script.src = 'https://embed.tawk.to/680dd7893aab2b190ea25f4b/1ipr13sbb';
+            script.charset = 'UTF-8';
+            script.setAttribute('crossorigin', '*');
             script.setAttribute('data-chat-widget', 'tawkto');
             
-            script.innerHTML = `
-              var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-              (function(){
-                var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-                s1.async=true;
-                s1.src='https://embed.tawk.to/680dd7893aab2b190ea25f4b/1ipr13sbb';
-                s1.charset='UTF-8';
-                s1.setAttribute('crossorigin','*');
-                s0.parentNode.insertBefore(s1,s0);
-              })();
-              
-              // Create global openChat function
-              window.openChat = function() {
-                if (window.Tawk_API) {
-                  window.Tawk_API.maximize();
-                  console.log('Opening Tawk.to chat');
-                } else {
-                  console.error('Tawk.to not initialized yet');
-                }
-              };
-            `;
+            // Add error handling
+            script.onerror = (error) => {
+              console.error('Failed to load Tawk.to script:', error);
+            };
             
+            // Create global openChat function
+            window.openChat = function() {
+              if (window.Tawk_API && typeof window.Tawk_API.maximize === 'function') {
+                window.Tawk_API.maximize();
+                console.log('Opening Tawk.to chat');
+              } else {
+                console.error('Tawk.to not initialized yet');
+              }
+            };
+            
+            // Append script to document
             document.head.appendChild(script);
           } catch (error) {
             console.error('Error initializing Tawk.to chat:', error);
