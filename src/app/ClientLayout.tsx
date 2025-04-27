@@ -24,6 +24,150 @@ function ChatWidget() {
   const { configsData } = useAllConfigs();
   // State to toggle between chat services
   const [chatService, setChatService] = useState('tawkto'); // 'smartsupp' or 'tawkto'
+  const [chatInitialized, setChatInitialized] = useState(false);
+
+  // Function to initialize Tawk.to chat
+  const initializeTawkto = () => {
+    try {
+      // Remove any previous tawk instances
+      if (document.getElementById('tawk-script')) {
+        document.getElementById('tawk-script')?.remove();
+      }
+      
+      // Initialize Tawk_API safely
+      window.Tawk_API = window.Tawk_API || {};
+      window.Tawk_LoadStart = new Date();
+      
+      // Create a script element for Tawk.to
+      const script = document.createElement('script');
+      script.id = 'tawk-script';
+      script.type = 'text/javascript';
+      script.async = true;
+      script.src = 'https://embed.tawk.to/680dd7893aab2b190ea25f4b/1ipr13sbb';
+      script.charset = 'UTF-8';
+      script.setAttribute('crossorigin', '*');
+      script.setAttribute('data-chat-widget', 'tawkto');
+      
+      // Add error handling
+      script.onerror = (error) => {
+        console.error('Failed to load Tawk.to script:', error);
+        setChatInitialized(false);
+      };
+      
+      script.onload = () => {
+        setChatInitialized(true);
+        console.log('Tawk.to script loaded successfully');
+      };
+      
+      // Create global openChat function
+      window.openChat = function() {
+        if (window.Tawk_API && typeof window.Tawk_API.maximize === 'function') {
+          window.Tawk_API.maximize();
+          console.log('Opening Tawk.to chat');
+        } else {
+          console.error('Tawk.to not initialized yet');
+          // Attempt to reinitialize
+          initializeTawkto();
+        }
+      };
+      
+      // Append script to document
+      document.head.appendChild(script);
+    } catch (error) {
+      console.error('Error initializing Tawk.to chat:', error);
+      setChatInitialized(false);
+    }
+  };
+
+  // Function to initialize Smartsupp chat
+  const initializeSmartsupp = (cskhConfig: any) => {
+    try {
+      // Create a script element
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.setAttribute('data-chat-widget', 'smartsupp');
+
+      // Set the correct content for Smartsupp
+      script.innerHTML = `
+        var _smartsupp = _smartsupp || {};
+        _smartsupp.key = '${cskhConfig.value}';
+        window.smartsupp||(function(d) {
+          var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
+          s=d.getElementsByTagName('script')[0];c=d.createElement('script');
+          c.type='text/javascript';c.charset='utf-8';c.async=true;
+          c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
+        })(document);
+        
+        // Set Smartsupp group
+        smartsupp('group', 'Hs0YzIBk5u'); //group FEDEX
+        
+        // Create global openChat function
+        window.openChat = function() {
+          if (window.smartsupp) {
+            window.smartsupp('chat:open');
+            console.log('Opening Smartsupp chat');
+          } else {
+            console.error('Smartsupp not initialized yet');
+          }
+        };
+      `;
+
+      // Append to document
+      document.head.appendChild(script);
+      setChatInitialized(true);
+
+      // Add noscript element if it exists in the config
+      if (cskhConfig.value.includes('<noscript>')) {
+        const noscriptContent = document.createElement('div');
+        noscriptContent.innerHTML = cskhConfig.value.match(/<noscript>([\s\S]*?)<\/noscript>/)?.[1] || '';
+        if (noscriptContent.innerHTML.trim()) {
+          const noscript = document.createElement('noscript');
+          noscript.innerHTML = noscriptContent.innerHTML;
+          document.body.appendChild(noscript);
+        }
+      }
+    } catch (error) {
+      console.error('Error initializing Smartsupp chat:', error);
+      setChatInitialized(false);
+    }
+  };
+
+  // Setup periodic check for chat initialization
+  useEffect(() => {
+    let checkInterval: NodeJS.Timeout;
+    
+    if (!chatInitialized) {
+      checkInterval = setInterval(() => {
+        if (typeof window !== 'undefined') {
+          const isTawkReady = window.Tawk_API && typeof window.Tawk_API.maximize === 'function';
+          const isSmartSuppReady = window.smartsupp && typeof window.smartsupp === 'function';
+          
+          if ((chatService === 'tawkto' && !isTawkReady) || 
+              (chatService === 'smartsupp' && !isSmartSuppReady)) {
+            console.log('Chat not initialized, attempting to reinitialize...');
+            if (configsData?.data) {
+              const cskhConfig = configsData.data.find((config: any) => config.key === 'CSKH' && config.isActive);
+              if (cskhConfig) {
+                if (chatService === 'tawkto') {
+                  initializeTawkto();
+                } else if (chatService === 'smartsupp') {
+                  initializeSmartsupp(cskhConfig);
+                }
+              }
+            }
+          } else if ((chatService === 'tawkto' && isTawkReady) || 
+                    (chatService === 'smartsupp' && isSmartSuppReady)) {
+            setChatInitialized(true);
+            clearInterval(checkInterval);
+          }
+        }
+      }, 5000); // Check every 5 seconds
+    }
+    
+    return () => {
+      if (checkInterval) clearInterval(checkInterval);
+    };
+  }, [chatInitialized, chatService, configsData]);
 
   useEffect(() => {
     // Cleanup function to remove previous chat scripts
@@ -47,6 +191,8 @@ function ChatWidget() {
       if (window.Tawk_LoadStart) {
         delete window.Tawk_LoadStart;
       }
+      
+      setChatInitialized(false);
     };
 
     // First cleanup any existing chat widgets
@@ -59,94 +205,9 @@ function ChatWidget() {
         console.log('cskhConfig', cskhConfig);
 
         if (chatService === 'smartsupp') {
-          try {
-            // Create a script element
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.setAttribute('data-chat-widget', 'smartsupp');
-
-            // Set the correct content for Smartsupp
-            script.innerHTML = `
-              var _smartsupp = _smartsupp || {};
-              _smartsupp.key = '${cskhConfig.value}';
-              window.smartsupp||(function(d) {
-                var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
-                s=d.getElementsByTagName('script')[0];c=d.createElement('script');
-                c.type='text/javascript';c.charset='utf-8';c.async=true;
-                c.src='https://www.smartsuppchat.com/loader.js?';s.parentNode.insertBefore(c,s);
-              })(document);
-              
-              // Set Smartsupp group
-              smartsupp('group', 'Hs0YzIBk5u'); //group FEDEX
-              
-              // Create global openChat function
-              window.openChat = function() {
-                if (window.smartsupp) {
-                  window.smartsupp('chat:open');
-                  console.log('Opening Smartsupp chat');
-                } else {
-                  console.error('Smartsupp not initialized yet');
-                }
-              };
-            `;
-
-            // Append to document
-            document.head.appendChild(script);
-
-            // Add noscript element if it exists in the config
-            if (cskhConfig.value.includes('<noscript>')) {
-              const noscriptContent = document.createElement('div');
-              noscriptContent.innerHTML = cskhConfig.value.match(/<noscript>([\s\S]*?)<\/noscript>/)?.[1] || '';
-              if (noscriptContent.innerHTML.trim()) {
-                const noscript = document.createElement('noscript');
-                noscript.innerHTML = noscriptContent.innerHTML;
-                document.body.appendChild(noscript);
-              }
-            }
-          } catch (error) {
-            console.error('Error initializing Smartsupp chat:', error);
-          }
+          initializeSmartsupp(cskhConfig);
         } else if (chatService === 'tawkto') {
-          try {
-            // Remove any previous tawk instances
-            if (document.getElementById('tawk-script')) {
-              document.getElementById('tawk-script')?.remove();
-            }
-            
-            // Initialize Tawk_API safely
-            window.Tawk_API = window.Tawk_API || {};
-            window.Tawk_LoadStart = new Date();
-            
-            // Create a script element for Tawk.to
-            const script = document.createElement('script');
-            script.id = 'tawk-script';
-            script.type = 'text/javascript';
-            script.async = true;
-            script.src = 'https://embed.tawk.to/680dd7893aab2b190ea25f4b/1ipr13sbb';
-            script.charset = 'UTF-8';
-            script.setAttribute('crossorigin', '*');
-            script.setAttribute('data-chat-widget', 'tawkto');
-            
-            // Add error handling
-            script.onerror = (error) => {
-              console.error('Failed to load Tawk.to script:', error);
-            };
-            
-            // Create global openChat function
-            window.openChat = function() {
-              if (window.Tawk_API && typeof window.Tawk_API.maximize === 'function') {
-                window.Tawk_API.maximize();
-                console.log('Opening Tawk.to chat');
-              } else {
-                console.error('Tawk.to not initialized yet');
-              }
-            };
-            
-            // Append script to document
-            document.head.appendChild(script);
-          } catch (error) {
-            console.error('Error initializing Tawk.to chat:', error);
-          }
+          initializeTawkto();
         } else {
           // Handle other types of chat widgets or content
           try {
@@ -180,8 +241,11 @@ function ChatWidget() {
             if (htmlContent.innerHTML.trim()) {
               document.body.appendChild(htmlContent);
             }
+            
+            setChatInitialized(true);
           } catch (error) {
             console.error('Error initializing chat:', error);
+            setChatInitialized(false);
           }
         }
       }
