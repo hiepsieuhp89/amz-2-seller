@@ -304,8 +304,8 @@ export default function ChatPage() {
             variant="ghost"
             size="icon"
             className={`h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity rounded-full ${isSender
-                ? "text-primary-foreground/80 hover:bg-main-gunmetal-blue/80/80"
-                : "text-muted-foreground hover:bg-accent"
+              ? "text-primary-foreground/80 hover:bg-main-gunmetal-blue/80/80"
+              : "text-muted-foreground hover:bg-accent"
               }`}
           >
             <MoreVertical className="h-4 w-4" />
@@ -360,8 +360,8 @@ export default function ChatPage() {
                 <div
                   key={item.userId}
                   className={`flex items-start gap-3 p-3 rounded-md cursor-pointer transition-colors duration-150 ease-in-out ${selectedUser === item.userId
-                      ? "bg-muted"
-                      : "hover:bg-muted/60"
+                    ? "bg-muted"
+                    : "hover:bg-muted/60"
                     }`}
                   onClick={() => handleUserClick(item.userId)}
                 >
@@ -453,8 +453,8 @@ export default function ChatPage() {
                     <div
                       key={`mobile-${item.userId}`}
                       className={`flex items-start gap-3 p-3 rounded-md cursor-pointer transition-colors duration-150 ease-in-out ${selectedUser === item.userId
-                          ? "bg-muted"
-                          : "hover:bg-muted/60"
+                        ? "bg-muted"
+                        : "hover:bg-muted/60"
                         }`}
                       onClick={() => handleUserClick(item.userId)}
                     >
@@ -481,8 +481,8 @@ export default function ChatPage() {
                         <div className="flex items-center justify-between mb-0.5">
                           <span
                             className={`font-semibold truncate ${item.unreadCount > 0
-                                ? "text-foreground"
-                                : "text-foreground/90"
+                              ? "text-foreground"
+                              : "text-foreground/90"
                               }`}
                           >
                             {item.userName}
@@ -493,8 +493,8 @@ export default function ChatPage() {
                         </div>
                         <p
                           className={`text-sm truncate ${item.unreadCount > 0
-                              ? "text-foreground font-medium"
-                              : "text-muted-foreground"
+                            ? "text-foreground font-medium"
+                            : "text-muted-foreground"
                             }`}
                         >
                           {item.lastMessage}
@@ -597,8 +597,8 @@ export default function ChatPage() {
                               {/* Message Bubble */}
                               <div
                                 className={`rounded-lg py-2 px-3 border text-sm shadow-sm ${isSender
-                                    ? "bg-main-gunmetal-blue/80 text-primary-foreground rounded-br-none"
-                                    : "bg-card text-card-foreground rounded-bl-none"
+                                  ? "bg-main-gunmetal-blue/80 text-primary-foreground rounded-br-none"
+                                  : "bg-card text-card-foreground rounded-bl-none"
                                   }`}
                               >
                                 <p className="font-normal break-words whitespace-pre-wrap">
@@ -609,8 +609,8 @@ export default function ChatPage() {
                                 )}
                                 <p
                                   className={`text-xs mt-1 text-right ${isSender
-                                      ? "text-primary-foreground/70"
-                                      : "text-muted-foreground/70"
+                                    ? "text-primary-foreground/70"
+                                    : "text-muted-foreground/70"
                                     }`}
                                 >
                                   {formatTime(msg.createdAt)}
