@@ -18,6 +18,9 @@ type UserContextType = {
   fetchUserProfile: () => Promise<void>
   isLoadingProfile: boolean
   logoUrl: string | undefined
+  hasTransactionPassword: boolean
+  setTransactionPassword: (password: string) => Promise<boolean>
+  verifyTransactionPassword: (password: string) => Promise<boolean>
 }
 
 const UserContext = createContext<UserContextType | null>(null)
@@ -44,6 +47,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   })
   const [profile, setProfile] = useState<IProfileResponse | null>(null)
   const [isLoadingProfile, setIsLoadingProfile] = useState<boolean>(false)
+  const [hasTransactionPassword, setHasTransactionPassword] = useState<boolean>(false)
 
   const loginUser = (userInfo: any, token: string) => {
     setUser(userInfo)
@@ -59,6 +63,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       await refetchProfile()
       if (typeof window !== "undefined" && profileData) {
         localStorage.setItem("userProfile", JSON.stringify(profileData))
+        
+        // Check if the user has a transaction password set
+        checkTransactionPasswordStatus(profileData)
       }
     } catch (error) {
       console.error("Failed to fetch user profile:", error)
@@ -67,12 +74,75 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const checkTransactionPasswordStatus = (profile: IProfileResponse) => {
+    // This logic may need to be adjusted based on your API response structure
+    // Since hasTransactionPassword doesn't exist in the profile data structure,
+    // we need to use a different indicator or check from localStorage
+    
+    // Example: Check if the user has set a transaction password using localStorage
+    const transactionPasswordStatus = localStorage.getItem('hasTransactionPassword')
+    
+    // Set based on localStorage or default to false for new users
+    setHasTransactionPassword(transactionPasswordStatus === 'true')
+  }
+
+  const setTransactionPassword = async (password: string): Promise<boolean> => {
+    try {
+      // API call to set transaction password goes here
+      // Below is a placeholder, replace with actual API call
+      const response = await fetch('/api/user/transaction-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        // Store transaction password status in localStorage
+        localStorage.setItem('hasTransactionPassword', 'true')
+        setHasTransactionPassword(true)
+        // Refresh profile to get updated data
+        await fetchUserProfile()
+        return true
+      }
+      return false
+    } catch (error) {
+      console.error('Failed to set transaction password:', error)
+      return false
+    }
+  }
+
+  const verifyTransactionPassword = async (password: string): Promise<boolean> => {
+    try {
+      // API call to verify transaction password goes here
+      // Below is a placeholder, replace with actual API call
+      const response = await fetch('/api/user/verify-transaction-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      })
+      
+      const result = await response.json()
+      return result.success
+    } catch (error) {
+      console.error('Failed to verify transaction password:', error)
+      return false
+    }
+  }
+
   // Load profile from localStorage on initial render
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedProfile = localStorage.getItem("userProfile")
       if (storedProfile) {
-        setProfile(JSON.parse(storedProfile))
+        const parsedProfile = JSON.parse(storedProfile)
+        setProfile(parsedProfile)
+        checkTransactionPasswordStatus(parsedProfile)
       }
     }
   }, [])
@@ -81,6 +151,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (profileData) {
       setProfile(profileData)
+      checkTransactionPasswordStatus(profileData)
       
       // Automatically logout if shop is suspended
       if (profileData.data?.shopStatus === "SUSPENDED") {
@@ -115,9 +186,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     clearToken()
     setUser(null)
     setProfile(null)
+    setHasTransactionPassword(false)
     // Clear profile from localStorage
     if (typeof window !== "undefined") {
       localStorage.removeItem("userProfile")
+      localStorage.removeItem("hasTransactionPassword")
     }
     // Also clear the cookie
     deleteCookie("accessToken")
@@ -134,7 +207,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         logoutUser,
         fetchUserProfile,
         logoUrl: profileData?.data?.logoUrl || "",
-        isLoadingProfile: isProfileLoading || isLoadingProfile
+        isLoadingProfile: isProfileLoading || isLoadingProfile,
+        hasTransactionPassword,
+        setTransactionPassword,
+        verifyTransactionPassword
       }}
     >
       {children}
