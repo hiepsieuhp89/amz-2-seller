@@ -11,6 +11,17 @@ import { ConfigProvider, ThemeConfig } from 'antd';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+// Function to open chat that can be called from other components
+export const openChat = () => {
+  if (window.smartsupp) {
+    // Open Smartsupp chat if initialized
+    window.smartsupp('chat:open');
+  } else if (window.Tawk_API) {
+    // Open Tawk chat if initialized
+    window.Tawk_API.maximize();
+  }
+};
+
 // Extend Window interface to include Smartsupp properties
 declare global {
   interface Window {

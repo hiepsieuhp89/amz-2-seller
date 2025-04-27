@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import Link from "next/link"
 import { formatDate } from "@/utils"
+import { openChat } from "@/app/ClientLayout"
 
 export default function LayoutHeaderCommon() {
   const router = useRouter()
@@ -118,6 +119,7 @@ export default function LayoutHeaderCommon() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             className="p-2 rounded-full hover:bg-[#FCAF17]/10 cursor-pointer"
+            onClick={openChat}
           >
             <Icon path={mdiFaceAgent} size={0.9} color="#FCAF17" />
           </motion.div>
