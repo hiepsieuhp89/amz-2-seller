@@ -1,6 +1,5 @@
 'use client';
 
-import Captcha from '@/components/Captcha';
 import { useUser } from '@/context/useUserContext';
 import { setCookies } from '@/helper';
 import { useRegister, useCheckUserExists } from '@/hooks/authentication';
@@ -8,8 +7,7 @@ import { IRegister, ICheckUserExists } from '@/interface/request/authentication'
 import { Button, Divider, Form, Input, message, Checkbox, Modal } from 'antd';
 import { FormProps } from 'antd/lib';
 import { useRouter } from 'next/navigation';
-import { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useRef } from 'react';
 
 type FieldType = {
   username: string;
@@ -22,25 +20,6 @@ type FieldType = {
   shopName: string;
   shopAddress: string;
   agreement: boolean;
-};
-
-// Generate 6-digit OTP
-const generateOTP = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
-// Function to mask email for privacy
-const maskEmail = (email: string) => {
-  if (!email) return '';
-  const [username, domain] = email.split('@');
-  
-  if (username.length <= 3) {
-    // For very short usernames, show only the first character
-    return `${username.substring(0, 1)}${'*'.repeat(username.length - 1)}@${domain}`;
-  } else {
-    // For longer usernames, show first 3 characters and mask the rest
-    return `${username.substring(0, 3)}${'*'.repeat(username.length - 3)}@${domain}`;
-  }
 };
 
 // Debounce function with proper typing
@@ -63,8 +42,6 @@ const SignUpForm = () => {
   const { mutateAsync: checkUserExistsAsync, isPending: isCheckingUser } = useCheckUserExists();
   const { loginUser } = useUser()
   const [messageApi, contextHolder] = message.useMessage();
-  const [showCaptcha, setShowCaptcha] = useState(false);
-  const [formValues, setFormValues] = useState<FieldType | null>(null);
   const [isTermsModalVisible, setIsTermsModalVisible] = useState(false);
   const [form] = Form.useForm();
   
@@ -81,135 +58,6 @@ const SignUpForm = () => {
     email: debounce(async (value: string) => await checkFieldExists('email', value)),
     phone: debounce(async (value: string) => await checkFieldExists('phone', value))
   });
-  
-  // OTP related states
-  const [showOTPForm, setShowOTPForm] = useState(false);
-  const [otp, setOTP] = useState('');
-  const [generatedOTP, setGeneratedOTP] = useState('');
-  const [sendingOTP, setSendingOTP] = useState(false);
-  const [otpExpiry, setOtpExpiry] = useState<Date | null>(null);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const [userEmail, setUserEmail] = useState('');
-  const [userData, setUserData] = useState<any>(null);
-  const [userToken, setUserToken] = useState<string | null>(null);
-  const [registrationPayload, setRegistrationPayload] = useState<IRegister | null>(null);
-
-  // Cleanup timer on unmount
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
-
-  const handleSendOTP = async (emailAddress: string) => {
-    if (!emailAddress) return;
-    
-    try {
-      setSendingOTP(true);
-      
-      // Generate OTP
-      const newOTP = generateOTP();
-      setGeneratedOTP(newOTP);
-      
-      // Set expiry time - 15 minutes from now
-      const expiryTime = new Date();
-      expiryTime.setMinutes(expiryTime.getMinutes() + 15);
-      setOtpExpiry(expiryTime);
-      setTimeLeft(15 * 60); // 15 minutes in seconds
-      
-      // Start the countdown timer
-      if (timerRef.current) clearInterval(timerRef.current);
-      timerRef.current = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            if (timerRef.current) clearInterval(timerRef.current);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      
-      // Format expiry time as "HH:MM"
-      const expiryTimeStr = `${expiryTime.getHours().toString().padStart(2, '0')}:${expiryTime.getMinutes().toString().padStart(2, '0')}`;
-      
-      // Send OTP via our API route
-      const response = await axios.post('/api/send-otp', {
-        email: emailAddress,
-        otp: newOTP,
-        expiryTime: expiryTimeStr
-      });
-      
-      if (response.data.success) {
-        // Update the state with the email so it can be displayed in the UI
-        setUserEmail(emailAddress);
-        setShowOTPForm(true);
-      } else {
-        throw new Error(response.data.error || 'Failed to send OTP');
-      }
-    } catch (error) {
-      console.error('Error sending OTP:', error);
-      messageApi.error('Failed to send OTP. Please try again.');
-    } finally {
-      setSendingOTP(false);
-    }
-  };
-
-  const formatTimeLeft = () => {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const handleCaptchaSuccess = async () => {
-    setShowCaptcha(false);
-    if (formValues) {
-      try {
-        // Prepare registration payload
-        const payload: IRegister = {
-          username: formValues.username,
-          email: formValues.email,
-          phone: formValues.phone,
-          password: formValues.password,
-          fullName: formValues.fullName,
-          invitationCode: formValues.invitationCode,
-          shopName: formValues.shopName,
-          shopAddress: formValues.shopAddress
-        };
-        
-        // Store payload for later use after OTP verification
-        setRegistrationPayload(payload);
-        
-        // Send OTP to user's email
-        await handleSendOTP(formValues.email);
-      } catch (error: any) {
-        messageApi.error(error?.response?.data?.message || 'Có lỗi xảy ra khi đăng ký');
-      }
-    }
-  };
-
-  const handleVerifyOTP = async () => {
-    if (otp === generatedOTP && otpExpiry && new Date() < otpExpiry) {
-      // OTP is valid, complete registration
-      if (registrationPayload) {
-        try {
-          const response = await mutateAsync(registrationPayload);
-          loginUser(response?.data?.user, response?.data?.accessToken);
-          messageApi.success('Đăng ký tài khoản thành công!');
-          setCookies(response?.data?.accessToken);
-          router.push('/seller/dashboard');
-        } catch (error: any) {
-          messageApi.error(error?.response?.data?.message || 'Có lỗi xảy ra khi đăng ký');
-        }
-      }
-    } else {
-      if (!otpExpiry || new Date() > otpExpiry) {
-        messageApi.error('OTP has expired. Please try again.');
-      } else {
-        messageApi.error('Invalid OTP. Please check and try again.');
-      }
-    }
-  };
 
   // Check if a specific field value already exists
   const checkFieldExists = async (field: 'username' | 'email' | 'phone', value: string) => {
@@ -302,9 +150,28 @@ const SignUpForm = () => {
   };
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values: FieldType) => {
-    setFormValues(values);
-    // Proceed directly to captcha since all fields have been validated already
-    setShowCaptcha(true);
+    try {
+      // Prepare registration payload
+      const payload: IRegister = {
+        username: values.username,
+        email: values.email,
+        phone: values.phone,
+        password: values.password,
+        fullName: values.fullName,
+        invitationCode: values.invitationCode,
+        shopName: values.shopName,
+        shopAddress: values.shopAddress
+      };
+      
+      // Register directly
+      const response = await mutateAsync(payload);
+      loginUser(response?.data?.user, response?.data?.accessToken);
+      messageApi.success('Đăng ký tài khoản thành công!');
+      setCookies(response?.data?.accessToken);
+      router.push('/seller/dashboard');
+    } catch (error: any) {
+      messageApi.error(error?.response?.data?.message || 'Có lỗi xảy ra khi đăng ký');
+    }
   };
 
   const showTermsModal = () => {
@@ -318,218 +185,151 @@ const SignUpForm = () => {
   return (
     <>
       {contextHolder}
-      {!showCaptcha && !showOTPForm ? (
-        <h1 className='text-[28px] font-medium'>
-          Tạo tài khoản seller
-        </h1>
-      ) : showCaptcha ? (
-        <Captcha
-          onSuccess={handleCaptchaSuccess}
-          onError={(message: string) => messageApi.error(message)}
-          onBack={() => setShowCaptcha(false)}
-        />
-      ) : (
-        <div className="otp-verification">
-          <h1 className='text-[28px] font-medium'>Verify OTP</h1>
-          <p className="mb-4">
-            OTP has been sent to your email: <strong>{maskEmail(userEmail)}</strong>
-          </p>
-          <p className="mb-4 text-sm">
-            This OTP will be valid for {formatTimeLeft()}
-          </p>
-          <Form layout="vertical">
-            <Form.Item 
-              label={<strong>Enter OTP</strong>}
-              rules={[{ required: true, message: 'Please enter the OTP sent to your email' }]}
-            >
-              <Input 
-                placeholder="Enter 6-digit OTP"
-                value={otp}
-                onChange={(e) => setOTP(e.target.value)}
-                maxLength={6}
-              />
-            </Form.Item>
-            <div className="flex gap-4">
-              <Button
-                type="primary"
-                onClick={handleVerifyOTP}
-                className="!font-medium !h-[32px] !rounded-sm !px-2 !py-1"
-                disabled={!otp || otp.length < 6}
-              >
-                Verify & Register
-              </Button>
-              <Button
-                onClick={() => handleSendOTP(userEmail)}
-                className="!font-medium !h-[32px] !rounded-sm !px-2 !py-1"
-                disabled={sendingOTP || timeLeft > 0}
-                loading={sendingOTP}
-              >
-                Resend OTP
-              </Button>
-              <Button
-                onClick={() => {
-                  // Cancel OTP verification and return to registration form
-                  if (timerRef.current) clearInterval(timerRef.current);
-                  setShowOTPForm(false);
-                  // Reset OTP-related states
-                  setOTP('');
-                  setGeneratedOTP('');
-                  setTimeLeft(0);
-                  setOtpExpiry(null);
-                  setUserEmail('');
-                }}
-                className="!font-medium !h-[32px] !rounded-sm !px-2 !py-1"
-              >
-                Cancel
-              </Button>
-            </div>
-          </Form>
-        </div>
-      )}
+      <h1 className='text-[28px] font-medium'>
+        Tạo tài khoản seller
+      </h1>
       
-      {!showCaptcha && !showOTPForm && (
-        <Form
-          form={form}
-          name="register_form"
-          onFinish={onFinish}
-          layout='vertical'
+      <Form
+        form={form}
+        name="register_form"
+        onFinish={onFinish}
+        layout='vertical'
+      >
+        <Form.Item
+          label={<strong>Tên tài khoản</strong>}
+          name="username"
+          className='!mb-4'
+          rules={[{ validator: validateUsername }]}
+          validateTrigger={['onBlur']}
+          hasFeedback
         >
-          <Form.Item
-            label={<strong>Tên tài khoản</strong>}
-            name="username"
-            className='!mb-4'
-            rules={[{ validator: validateUsername }]}
-            validateTrigger={['onBlur']}
-            hasFeedback
-          >
-            <Input disabled={fieldValidating.username} />
-          </Form.Item>
+          <Input disabled={fieldValidating.username} />
+        </Form.Item>
 
-          <Form.Item
-            label={<strong>Email</strong>}
-            className='!mb-3'
-            name="email"
-            rules={[{ validator: validateEmail }]}
-            validateTrigger={['onBlur']}
-            hasFeedback
-          >
-            <Input disabled={fieldValidating.email} />
-          </Form.Item>
+        <Form.Item
+          label={<strong>Email</strong>}
+          className='!mb-3'
+          name="email"
+          rules={[{ validator: validateEmail }]}
+          validateTrigger={['onBlur']}
+          hasFeedback
+        >
+          <Input disabled={fieldValidating.email} />
+        </Form.Item>
 
-          <Form.Item
-            label={<strong>Số điện thoại</strong>}
-            className='!mb-3'
-            name="phone"
-            rules={[{ validator: validatePhone }]}
-            validateTrigger={['onBlur']}
-            hasFeedback
-          >
-            <Input disabled={fieldValidating.phone} />
-          </Form.Item>
+        <Form.Item
+          label={<strong>Số điện thoại</strong>}
+          className='!mb-3'
+          name="phone"
+          rules={[{ validator: validatePhone }]}
+          validateTrigger={['onBlur']}
+          hasFeedback
+        >
+          <Input disabled={fieldValidating.phone} />
+        </Form.Item>
 
-          <Form.Item
-            label={<strong>Họ và tên</strong>}
-            className='!mb-3'
-            name="fullName"
-            rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
-          >
-            <Input />
-          </Form.Item>
+        <Form.Item
+          label={<strong>Họ và tên</strong>}
+          className='!mb-3'
+          name="fullName"
+          rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
+        >
+          <Input />
+        </Form.Item>
 
-          <Form.Item
-            label={<strong>Mật khẩu</strong>}
-            className='!mb-4'
-            name="password"
-            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
-          >
-            <Input.Password
-              type="password"
-              placeholder="Mật khẩu"
-            />
-          </Form.Item>
-          <Form.Item
-            name="confirmPassword"
-            label={<strong>Xác nhận mật khẩu</strong>}
-            dependencies={['password']}
-            className='!mb-4'
-            rules={[
-              {
-                required: true,
-                message: 'Vui lòng nhập mật khẩu',
+        <Form.Item
+          label={<strong>Mật khẩu</strong>}
+          className='!mb-4'
+          name="password"
+          rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
+        >
+          <Input.Password
+            type="password"
+            placeholder="Mật khẩu"
+          />
+        </Form.Item>
+        <Form.Item
+          name="confirmPassword"
+          label={<strong>Xác nhận mật khẩu</strong>}
+          dependencies={['password']}
+          className='!mb-4'
+          rules={[
+            {
+              required: true,
+              message: 'Vui lòng nhập mật khẩu',
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('Mật khẩu mới bạn đã nhập không khớp!'));
               },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Mật khẩu mới bạn đã nhập không khớp!'));
-                },
-              }),
-            ]}
+            }),
+          ]}
+        >
+          <Input.Password />
+        </Form.Item>
+        <Form.Item
+          label={<strong>Mã mời</strong>}
+          name="invitationCode"
+          className='!mb-4'
+          rules={[{ required: true, message: 'Vui lòng nhập mã mời!' }]}
+        >
+          <Input />
+        </Form.Item>
+        <Divider className='!mb-3' />
+        <Form.Item
+          label={<strong>Tên cửa hàng</strong>}
+          name="shopName"
+          className='!mb-4'
+          rules={[{ required: true, message: 'Vui lòng nhập tên cửa hàng!' }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label={<strong>Địa chỉ cửa hàng</strong>}
+          name="shopAddress"
+          className='!mb-4'
+          rules={[{ required: true, message: 'Vui lòng địa chỉ cửa hàng!' }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="agreement"
+          valuePropName="checked"
+          className='!mb-4'
+          rules={[
+            {
+              validator: (_, value) =>
+                value ? Promise.resolve() : Promise.reject(new Error('Vui lòng đồng ý với điều khoản và điều kiện')),
+            },
+          ]}
+        >
+          <Checkbox>
+            Tôi đã đọc và đồng ý với <a onClick={showTermsModal}>điều khoản và điều kiện</a>
+          </Checkbox>
+        </Form.Item>
+        <Form.Item className='!mb-2'>
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="login-form-button w-full !font-medium !h-[32px]"
+            loading={isPending || isCheckingUser}
           >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item
-            label={<strong>Mã mời</strong>}
-            name="invitationCode"
-            className='!mb-4'
-            rules={[{ required: true, message: 'Vui lòng nhập mã mời!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Divider className='!mb-3' />
-          <Form.Item
-            label={<strong>Tên cửa hàng</strong>}
-            name="shopName"
-            className='!mb-4'
-            rules={[{ required: true, message: 'Vui lòng nhập tên cửa hàng!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label={<strong>Địa chỉ cửa hàng</strong>}
-            name="shopAddress"
-            className='!mb-4'
-            rules={[{ required: true, message: 'Vui lòng địa chỉ cửa hàng!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="agreement"
-            valuePropName="checked"
-            className='!mb-4'
-            rules={[
-              {
-                validator: (_, value) =>
-                  value ? Promise.resolve() : Promise.reject(new Error('Vui lòng đồng ý với điều khoản và điều kiện')),
-              },
-            ]}
-          >
-            <Checkbox>
-              Tôi đã đọc và đồng ý với <a onClick={showTermsModal}>điều khoản và điều kiện</a>
-            </Checkbox>
-          </Form.Item>
-          <Form.Item className='!mb-2'>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="login-form-button w-full !font-medium !h-[32px]"
-              loading={isPending || isCheckingUser}
-            >
-              Tạo tài khoản
-            </Button>
-          </Form.Item>
-          <div className="flex justify-center items-center pb-4 ">
-            <span className="border-t border-gray-300 w-1/6 mr-1"></span>
-            <span className="text-[#767676] text-[11px]">Bạn đã có tài khoản Amazon Seller?</span>
-            <span className="border-t border-gray-300 w-1/6 ml-1"></span>
-          </div>
-
-          <Button className='login_register !w-full !h-[28px]' onClick={() => router.push('/sign-in')}>
-            Đăng nhập
+            Tạo tài khoản
           </Button>
-        </Form>
-      )}
+        </Form.Item>
+        <div className="flex justify-center items-center pb-4 ">
+          <span className="border-t border-gray-300 w-1/6 mr-1"></span>
+          <span className="text-[#767676] text-[11px]">Bạn đã có tài khoản Amazon Seller?</span>
+          <span className="border-t border-gray-300 w-1/6 ml-1"></span>
+        </div>
+
+        <Button className='login_register !w-full !h-[28px]' onClick={() => router.push('/sign-in')}>
+          Đăng nhập
+        </Button>
+      </Form>
 
       <Modal
         title={<div className="flex items-center"><img src="/images/icon.png" alt="Amazon Logo" className="h-6 mr-2" style={{objectFit: 'contain'}} />Điều khoản và Điều kiện</div>}
