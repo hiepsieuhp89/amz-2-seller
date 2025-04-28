@@ -89,3 +89,18 @@ export const checkUserExists = async (
   const data: ICheckUserExistsResponse = res;
   return data;
 };
+
+export const verifyEmail = async (
+  payload: { email: string; otp: string }
+): Promise<IAuthResponse> => {
+  const res = await sendPost("/auth/verify-email", payload);
+  const data: IAuthResponse = res;
+  return data;
+};
+
+export const resendOtp = async (
+  payload: { email: string }
+): Promise<{ success: boolean; message: string }> => {
+  const res = await sendPost("/auth/resend-otp", payload);
+  return res;
+};

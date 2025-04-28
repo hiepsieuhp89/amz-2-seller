@@ -2,12 +2,12 @@
 
 import { useUser } from '@/context/useUserContext';
 import { setCookies } from '@/helper';
-import { useRegister, useCheckUserExists } from '@/hooks/authentication';
+import { useRegister, useCheckUserExists, useVerifyEmail, useResendOtp } from '@/hooks/authentication';
 import { IRegister, ICheckUserExists } from '@/interface/request/authentication';
 import { Button, Divider, Form, Input, message, Checkbox, Modal } from 'antd';
 import { FormProps } from 'antd/lib';
 import { useRouter } from 'next/navigation';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 type FieldType = {
   username: string;
@@ -20,6 +20,20 @@ type FieldType = {
   shopName: string;
   shopAddress: string;
   agreement: boolean;
+};
+
+// Function to mask email for privacy
+const maskEmail = (email: string) => {
+  if (!email) return '';
+  const [username, domain] = email.split('@');
+  
+  if (username.length <= 3) {
+    // For very short usernames, show only the first character
+    return `${username.substring(0, 1)}${'*'.repeat(username.length - 1)}@${domain}`;
+  } else {
+    // For longer usernames, show first 3 characters and mask the rest
+    return `${username.substring(0, 3)}${'*'.repeat(username.length - 3)}@${domain}`;
+  }
 };
 
 // Debounce function with proper typing
@@ -39,8 +53,10 @@ const debounce = <T extends (...args: any[]) => Promise<boolean>>(fn: T, ms = 50
 const SignUpForm = () => {
   const router = useRouter();
   const { mutateAsync, isPending } = useRegister();
+  const { mutateAsync: verifyEmailAsync, isPending: isVerifying } = useVerifyEmail();
+  const { mutateAsync: resendOtpAsync, isPending: isResendingOtp } = useResendOtp();
   const { mutateAsync: checkUserExistsAsync, isPending: isCheckingUser } = useCheckUserExists();
-  const { loginUser } = useUser()
+  const { loginUser } = useUser();
   const [messageApi, contextHolder] = message.useMessage();
   const [isTermsModalVisible, setIsTermsModalVisible] = useState(false);
   const [form] = Form.useForm();
@@ -58,6 +74,89 @@ const SignUpForm = () => {
     email: debounce(async (value: string) => await checkFieldExists('email', value)),
     phone: debounce(async (value: string) => await checkFieldExists('phone', value))
   });
+
+  // OTP related states
+  const [showOTPForm, setShowOTPForm] = useState(false);
+  const [otp, setOTP] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [registrationPayload, setRegistrationPayload] = useState<IRegister | null>(null);
+  const [canResendOtp, setCanResendOtp] = useState(true);
+  const [resendCountdown, setResendCountdown] = useState(0);
+  const resendTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (resendTimerRef.current) clearInterval(resendTimerRef.current);
+    };
+  }, []);
+
+  // Format countdown time
+  const formatCountdown = () => {
+    const minutes = Math.floor(resendCountdown / 60);
+    const seconds = resendCountdown % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // Start countdown for resend OTP
+  const startResendCountdown = () => {
+    setCanResendOtp(false);
+    setResendCountdown(300); // 5 minutes = 300 seconds
+    
+    if (resendTimerRef.current) {
+      clearInterval(resendTimerRef.current);
+    }
+    
+    resendTimerRef.current = setInterval(() => {
+      setResendCountdown(prev => {
+        if (prev <= 1) {
+          if (resendTimerRef.current) {
+            clearInterval(resendTimerRef.current);
+          }
+          setCanResendOtp(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  // Handle resend OTP
+  const handleResendOTP = async () => {
+    if (!canResendOtp || !userEmail) return;
+    
+    try {
+      const response = await resendOtpAsync({ email: userEmail });
+      
+      if (response.success) {
+        messageApi.success('OTP đã được gửi lại thành công!');
+        startResendCountdown();
+      } else {
+        messageApi.error(response.message || 'Gửi lại OTP thất bại. Vui lòng thử lại sau.');
+      }
+    } catch (error: any) {
+      messageApi.error(error?.response?.data?.message || 'Có lỗi xảy ra khi gửi lại OTP');
+    }
+  };
+
+  // Handle verify OTP
+  const handleVerifyOTP = async () => {
+    if (!otp || !userEmail) return;
+    
+    try {
+      const response = await verifyEmailAsync({
+        email: userEmail,
+        otp: otp
+      });
+      
+      loginUser(response?.data?.user, response?.data?.accessToken);
+      messageApi.success('Xác thực email thành công!');
+      setCookies(response?.data?.accessToken);
+      router.push('/seller/dashboard');
+    } catch (error: any) {
+      messageApi.error(error?.response?.data?.message || 'Mã OTP không hợp lệ. Vui lòng thử lại.');
+    }
+  };
 
   // Check if a specific field value already exists
   const checkFieldExists = async (field: 'username' | 'email' | 'phone', value: string) => {
@@ -163,12 +262,19 @@ const SignUpForm = () => {
         shopAddress: values.shopAddress
       };
       
-      // Register directly
-      const response = await mutateAsync(payload);
-      loginUser(response?.data?.user, response?.data?.accessToken);
-      messageApi.success('Đăng ký tài khoản thành công!');
-      setCookies(response?.data?.accessToken);
-      router.push('/seller/dashboard');
+      // Store registration data
+      setRegistrationPayload(payload);
+      
+      // Register the user
+      await mutateAsync(payload);
+      
+      // Show OTP form for email verification
+      setUserEmail(values.email);
+      setShowOTPForm(true);
+      startResendCountdown();
+      
+      // Success message
+      messageApi.success('Đăng ký tài khoản thành công! Vui lòng xác thực email.');
     } catch (error: any) {
       messageApi.error(error?.response?.data?.message || 'Có lỗi xảy ra khi đăng ký');
     }
@@ -185,151 +291,214 @@ const SignUpForm = () => {
   return (
     <>
       {contextHolder}
-      <h1 className='text-[28px] font-medium'>
-        Tạo tài khoản seller
-      </h1>
-      
-      <Form
-        form={form}
-        name="register_form"
-        onFinish={onFinish}
-        layout='vertical'
-      >
-        <Form.Item
-          label={<strong>Tên tài khoản</strong>}
-          name="username"
-          className='!mb-4'
-          rules={[{ validator: validateUsername }]}
-          validateTrigger={['onBlur']}
-          hasFeedback
-        >
-          <Input disabled={fieldValidating.username} />
-        </Form.Item>
-
-        <Form.Item
-          label={<strong>Email</strong>}
-          className='!mb-3'
-          name="email"
-          rules={[{ validator: validateEmail }]}
-          validateTrigger={['onBlur']}
-          hasFeedback
-        >
-          <Input disabled={fieldValidating.email} />
-        </Form.Item>
-
-        <Form.Item
-          label={<strong>Số điện thoại</strong>}
-          className='!mb-3'
-          name="phone"
-          rules={[{ validator: validatePhone }]}
-          validateTrigger={['onBlur']}
-          hasFeedback
-        >
-          <Input disabled={fieldValidating.phone} />
-        </Form.Item>
-
-        <Form.Item
-          label={<strong>Họ và tên</strong>}
-          className='!mb-3'
-          name="fullName"
-          rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label={<strong>Mật khẩu</strong>}
-          className='!mb-4'
-          name="password"
-          rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
-        >
-          <Input.Password
-            type="password"
-            placeholder="Mật khẩu"
-          />
-        </Form.Item>
-        <Form.Item
-          name="confirmPassword"
-          label={<strong>Xác nhận mật khẩu</strong>}
-          dependencies={['password']}
-          className='!mb-4'
-          rules={[
-            {
-              required: true,
-              message: 'Vui lòng nhập mật khẩu',
-            },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue('password') === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error('Mật khẩu mới bạn đã nhập không khớp!'));
-              },
-            }),
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item
-          label={<strong>Mã mời</strong>}
-          name="invitationCode"
-          className='!mb-4'
-          rules={[{ required: true, message: 'Vui lòng nhập mã mời!' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Divider className='!mb-3' />
-        <Form.Item
-          label={<strong>Tên cửa hàng</strong>}
-          name="shopName"
-          className='!mb-4'
-          rules={[{ required: true, message: 'Vui lòng nhập tên cửa hàng!' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label={<strong>Địa chỉ cửa hàng</strong>}
-          name="shopAddress"
-          className='!mb-4'
-          rules={[{ required: true, message: 'Vui lòng địa chỉ cửa hàng!' }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="agreement"
-          valuePropName="checked"
-          className='!mb-4'
-          rules={[
-            {
-              validator: (_, value) =>
-                value ? Promise.resolve() : Promise.reject(new Error('Vui lòng đồng ý với điều khoản và điều kiện')),
-            },
-          ]}
-        >
-          <Checkbox>
-            Tôi đã đọc và đồng ý với <a onClick={showTermsModal}>điều khoản và điều kiện</a>
-          </Checkbox>
-        </Form.Item>
-        <Form.Item className='!mb-2'>
-          <Button
-            type="primary"
-            htmlType="submit"
-            className="login-form-button w-full !font-medium !h-[32px]"
-            loading={isPending || isCheckingUser}
+      {!showOTPForm ? (
+        <>
+          <h1 className='text-[28px] font-medium'>
+            Tạo tài khoản seller
+          </h1>
+          
+          <Form
+            form={form}
+            name="register_form"
+            onFinish={onFinish}
+            layout='vertical'
           >
-            Tạo tài khoản
-          </Button>
-        </Form.Item>
-        <div className="flex justify-center items-center pb-4 ">
-          <span className="border-t border-gray-300 w-1/6 mr-1"></span>
-          <span className="text-[#767676] text-[11px]">Bạn đã có tài khoản Amazon Seller?</span>
-          <span className="border-t border-gray-300 w-1/6 ml-1"></span>
-        </div>
+            <Form.Item
+              label={<strong>Tên tài khoản</strong>}
+              name="username"
+              className='!mb-4'
+              rules={[{ validator: validateUsername }]}
+              validateTrigger={['onBlur']}
+              hasFeedback
+            >
+              <Input disabled={fieldValidating.username} />
+            </Form.Item>
 
-        <Button className='login_register !w-full !h-[28px]' onClick={() => router.push('/sign-in')}>
-          Đăng nhập
-        </Button>
-      </Form>
+            <Form.Item
+              label={<strong>Email</strong>}
+              className='!mb-3'
+              name="email"
+              rules={[{ validator: validateEmail }]}
+              validateTrigger={['onBlur']}
+              hasFeedback
+            >
+              <Input disabled={fieldValidating.email} />
+            </Form.Item>
+
+            <Form.Item
+              label={<strong>Số điện thoại</strong>}
+              className='!mb-3'
+              name="phone"
+              rules={[{ validator: validatePhone }]}
+              validateTrigger={['onBlur']}
+              hasFeedback
+            >
+              <Input disabled={fieldValidating.phone} />
+            </Form.Item>
+
+            <Form.Item
+              label={<strong>Họ và tên</strong>}
+              className='!mb-3'
+              name="fullName"
+              rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label={<strong>Mật khẩu</strong>}
+              className='!mb-4'
+              name="password"
+              rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
+            >
+              <Input.Password
+                type="password"
+                placeholder="Mật khẩu"
+              />
+            </Form.Item>
+            <Form.Item
+              name="confirmPassword"
+              label={<strong>Xác nhận mật khẩu</strong>}
+              dependencies={['password']}
+              className='!mb-4'
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng nhập mật khẩu',
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('password') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Mật khẩu mới bạn đã nhập không khớp!'));
+                  },
+                }),
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+            <Form.Item
+              label={<strong>Mã mời</strong>}
+              name="invitationCode"
+              className='!mb-4'
+              rules={[{ required: true, message: 'Vui lòng nhập mã mời!' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Divider className='!mb-3' />
+            <Form.Item
+              label={<strong>Tên cửa hàng</strong>}
+              name="shopName"
+              className='!mb-4'
+              rules={[{ required: true, message: 'Vui lòng nhập tên cửa hàng!' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label={<strong>Địa chỉ cửa hàng</strong>}
+              name="shopAddress"
+              className='!mb-4'
+              rules={[{ required: true, message: 'Vui lòng địa chỉ cửa hàng!' }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="agreement"
+              valuePropName="checked"
+              className='!mb-4'
+              rules={[
+                {
+                  validator: (_, value) =>
+                    value ? Promise.resolve() : Promise.reject(new Error('Vui lòng đồng ý với điều khoản và điều kiện')),
+                },
+              ]}
+            >
+              <Checkbox>
+                Tôi đã đọc và đồng ý với <a onClick={showTermsModal}>điều khoản và điều kiện</a>
+              </Checkbox>
+            </Form.Item>
+            <Form.Item className='!mb-2'>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="login-form-button w-full !font-medium !h-[32px]"
+                loading={isPending || isCheckingUser}
+              >
+                Tạo tài khoản
+              </Button>
+            </Form.Item>
+            <div className="flex justify-center items-center pb-4 ">
+              <span className="border-t border-gray-300 w-1/6 mr-1"></span>
+              <span className="text-[#767676] text-[11px]">Bạn đã có tài khoản Amazon Seller?</span>
+              <span className="border-t border-gray-300 w-1/6 ml-1"></span>
+            </div>
+
+            <Button className='login_register !w-full !h-[28px]' onClick={() => router.push('/sign-in')}>
+              Đăng nhập
+            </Button>
+          </Form>
+        </>
+      ) : (
+        <div className="otp-verification">
+          <h1 className='text-[28px] font-medium'>Xác thực Email</h1>
+          <p className="mb-4">
+            Mã OTP đã được gửi tới email: <strong>{maskEmail(userEmail)}</strong>
+          </p>
+          {resendCountdown > 0 && (
+            <p className="mb-4 text-sm">
+              Bạn có thể gửi lại mã OTP sau: <strong>{formatCountdown()}</strong>
+            </p>
+          )}
+          <Form layout="vertical">
+            <Form.Item 
+              label={<strong>Nhập mã OTP</strong>}
+              rules={[{ required: true, message: 'Vui lòng nhập mã OTP' }]}
+            >
+              <Input 
+                placeholder="Nhập mã OTP 6 số"
+                value={otp}
+                onChange={(e) => setOTP(e.target.value)}
+                maxLength={6}
+              />
+            </Form.Item>
+            <div className="flex gap-4">
+              <Button
+                type="primary"
+                onClick={handleVerifyOTP}
+                className="!font-medium !h-[32px] !rounded-sm !px-2 !py-1"
+                disabled={!otp || otp.length < 6 || isVerifying}
+                loading={isVerifying}
+              >
+                Xác thực
+              </Button>
+              <Button
+                onClick={handleResendOTP}
+                className="!font-medium !h-[32px] !rounded-sm !px-2 !py-1"
+                disabled={!canResendOtp || isResendingOtp}
+                loading={isResendingOtp}
+              >
+                Gửi lại OTP
+              </Button>
+              <Button
+                onClick={() => {
+                  // Return to registration form
+                  if (resendTimerRef.current) clearInterval(resendTimerRef.current);
+                  setShowOTPForm(false);
+                  // Reset OTP-related states
+                  setOTP('');
+                  setUserEmail('');
+                  setResendCountdown(0);
+                  setCanResendOtp(true);
+                }}
+                className="!font-medium !h-[32px] !rounded-sm !px-2 !py-1"
+              >
+                Quay lại
+              </Button>
+            </div>
+          </Form>
+        </div>
+      )}
 
       <Modal
         title={<div className="flex items-center"><img src="/images/icon.png" alt="Amazon Logo" className="h-6 mr-2" style={{objectFit: 'contain'}} />Điều khoản và Điều kiện</div>}

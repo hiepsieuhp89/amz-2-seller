@@ -9,6 +9,8 @@ import {
   getSpreadPackageHistory,
   getPackageHistory,
   checkUserExists,
+  verifyEmail,
+  resendOtp,
 } from "@/api/authentication";
 import type {
   ISignIn,
@@ -213,6 +215,42 @@ export const useCheckUserExists = (): UseMutationResult<
   return useMutation<ICheckUserExistsResponse, Error, ICheckUserExists>({
     mutationFn: (params: ICheckUserExists) => checkUserExists(params),
     onSuccess: (result: ICheckUserExistsResponse) => {
+      return result;
+    },
+    onError: (result) => {
+      return result;
+    },
+  });
+};
+
+export const useVerifyEmail = (): UseMutationResult<
+  IAuthResponse,
+  Error,
+  { email: string; otp: string }
+> => {
+  return useMutation<IAuthResponse, Error, { email: string; otp: string }>({
+    mutationFn: (params: { email: string; otp: string }) => verifyEmail(params),
+    onSuccess: (result: IAuthResponse) => {
+      return result;
+    },
+    onError: (result) => {
+      return result;
+    },
+  });
+};
+
+export const useResendOtp = (): UseMutationResult<
+  { success: boolean; message: string },
+  Error,
+  { email: string }
+> => {
+  return useMutation<
+    { success: boolean; message: string },
+    Error,
+    { email: string }
+  >({
+    mutationFn: (params: { email: string }) => resendOtp(params),
+    onSuccess: (result) => {
       return result;
     },
     onError: (result) => {
