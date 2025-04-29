@@ -506,8 +506,21 @@ function LayoutPage() {
                 </div>
 
                 {isClient && (
-                  <div className="text-sm text-gray-300 flex-shrink-0 mt-1">
+                  <div className="text-sm text-gray-300 flex-shrink-0 mt-1 flex items-center gap-1">
                     {profile?.data?.email}
+                    {profile?.data?.isVerified && (
+                      <div className="h-4 w-4 relative">
+                        <Image
+                          draggable={false}
+                          quality={100}
+                          height={16}
+                          width={16}
+                          className="object-cover"
+                          src={"/images/tick-icon.png"}
+                          alt="verified"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -735,8 +748,21 @@ function LayoutPage() {
 
                     {/* Email */}
                     {isClient && (
-                      <div className="text-sm text-gray-300 flex-shrink-0">
+                      <div className="text-sm text-gray-300 flex-shrink-0 flex items-center gap-1">
                         {profile?.data?.email}
+                        {profile?.data?.isVerified && (
+                          <div className="h-4 w-4 relative">
+                            <Image
+                              draggable={false}
+                              quality={100}
+                              height={16}
+                              width={16}
+                              className="object-cover"
+                              src={"/images/tick-icon.png"}
+                              alt="verified"
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
