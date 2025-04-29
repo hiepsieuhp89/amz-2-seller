@@ -7,6 +7,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { useShopStatistics } from "@/hooks/dashboard"
 import { formatNumber } from "@/utils"
+import { useProfile } from "@/hooks/authentication"
 
 interface StatCardProps {
   title: string
@@ -46,14 +47,20 @@ const ActionCard = ({ title, onClick }: { title: string, onClick?: () => void })
 }
 
 const StatCards = () => {
-  const { profile } = useUser()
+  const { profileData: profile } = useProfile()
   const [amount, setAmount] = useState<number>(0)
   const [withdrawPassword, setWithdrawPassword] = useState<string>("")
   const [isModalVisible, setIsModalVisible] = useState(false)
   const { mutate: createWithdrawal, isPending } = useCreateWithdrawal()
   const { statistics, isLoading } = useShopStatistics()
-
   const handleWithdrawClick = () => {
+    const stars = profile?.data?.stars ?? 0
+    const reputationPoints = profile?.data?.reputationPoints ?? 0
+    if (stars <= 4 && reputationPoints <= 90) {
+      message.warning("Bạn chưa đủ điều kiện để rút tiền.")
+      return
+    }
+
     if (!profile?.data?.bankAccountNumber || !profile?.data?.bankName || !profile?.data?.bankAccountName) {
       message.warning(
         <span>
@@ -145,7 +152,6 @@ const StatCards = () => {
           title="Gửi yêu cầu rút tiền"
           onClick={handleWithdrawClick}
         />
-        {/* <ActionCard title="Nạp tiền" /> */}
       </div>
 
       <Modal
