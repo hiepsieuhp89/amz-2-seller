@@ -1,15 +1,19 @@
-'use client';
+"use client";
 
-import Captcha from '@/components/Captcha';
-import { useUser } from '@/context/useUserContext';
-import { setCookies } from '@/helper';
-import { useSignIn, useVerifyEmail, useResendOtp } from '@/hooks/authentication';
-import { ISignIn } from '@/interface/request/authentication';
-import MessageClientContext from '@/provider/MessageProvider';
-import { Button, Form, Input, message } from 'antd';
-import { FormProps } from 'antd/lib';
-import { useRouter } from 'next/navigation';
-import { useContext, useState, useRef, useEffect } from 'react';
+import Captcha from "@/components/Captcha";
+import { useUser } from "@/context/useUserContext";
+import { setCookies } from "@/helper";
+import {
+  useSignIn,
+  useVerifyEmail,
+  useResendOtp,
+} from "@/hooks/authentication";
+import { ISignIn } from "@/interface/request/authentication";
+import MessageClientContext from "@/provider/MessageProvider";
+import { Button, Form, Input, message } from "antd";
+import { FormProps } from "antd/lib";
+import { useRouter } from "next/navigation";
+import { useContext, useState, useRef, useEffect } from "react";
 
 type FieldType = {
   username: string;
@@ -17,24 +21,28 @@ type FieldType = {
 };
 
 // Add new captcha types
-type CaptchaType = 'image' | 'audio' | 'text';
+type CaptchaType = "image" | "audio" | "text";
 
 // Function to mask email for privacy
 const maskEmail = (email: string) => {
-  if (!email) return '';
-  const [username, domain] = email.split('@');
-  
+  if (!email) return "";
+  const [username, domain] = email.split("@");
+
   if (username.length <= 3) {
     // For very short usernames, show only the first character
-    return `${username.substring(0, 1)}${'*'.repeat(username.length - 1)}@${domain}`;
+    return `${username.substring(0, 1)}${"*".repeat(
+      username.length - 1
+    )}@${domain}`;
   } else {
     // For longer usernames, show first 3 characters and mask the rest
-    return `${username.substring(0, 3)}${'*'.repeat(username.length - 3)}@${domain}`;
+    return `${username.substring(0, 3)}${"*".repeat(
+      username.length - 3
+    )}@${domain}`;
   }
 };
 
 const generateTextCaptcha = () => {
-  const operators = ['+', '-', '*'];
+  const operators = ["+", "-", "*"];
   const num1 = Math.floor(Math.random() * 10);
   const num2 = Math.floor(Math.random() * 10);
   const operator = operators[Math.floor(Math.random() * operators.length)];
@@ -44,33 +52,53 @@ const generateTextCaptcha = () => {
 };
 
 const generateAudioCaptcha = () => {
-  const numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-  const randomNumbers = Array.from({length: 3}, () => Math.floor(Math.random() * 10));
-  const audioText = randomNumbers.map(num => numbers[num]).join(' ');
-  return { audioText, answer: randomNumbers.join('') };
+  const numbers = [
+    "zero",
+    "one",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+  ];
+  const randomNumbers = Array.from({ length: 3 }, () =>
+    Math.floor(Math.random() * 10)
+  );
+  const audioText = randomNumbers.map((num) => numbers[num]).join(" ");
+  return { audioText, answer: randomNumbers.join("") };
 };
 
 const SignInForm = () => {
   const router = useRouter();
   const { mutateAsync, isPending } = useSignIn();
-  const { mutateAsync: verifyEmailAsync, isPending: isVerifying } = useVerifyEmail();
-  const { mutateAsync: resendOtpAsync, isPending: isResendingOtp } = useResendOtp();
+  const { mutateAsync: verifyEmailAsync, isPending: isVerifying } =
+    useVerifyEmail();
+  const { mutateAsync: resendOtpAsync, isPending: isResendingOtp } =
+    useResendOtp();
   const { handleErrorMessage } = useContext(MessageClientContext);
   const { loginUser } = useUser();
   const [messageApi, contextHolder] = message.useMessage();
   const [showCaptcha, setShowCaptcha] = useState(false);
   const [captchaLoading, setCaptchaLoading] = useState(false);
-  const [captchaTarget, setCaptchaTarget] = useState('');
-  const [captchaImages, setCaptchaImages] = useState<Array<{ id: number, src: string, type: string }>>([]);
+  const [captchaTarget, setCaptchaTarget] = useState("");
+  const [captchaImages, setCaptchaImages] = useState<
+    Array<{ id: number; src: string; type: string }>
+  >([]);
   const [formValues, setFormValues] = useState<FieldType | null>(null);
-  const [captchaType, setCaptchaType] = useState<CaptchaType>('image');
-  const [textCaptcha, setTextCaptcha] = useState({ question: '', answer: '' });
-  const [audioCaptcha, setAudioCaptcha] = useState({ audioText: '', answer: '' });
+  const [captchaType, setCaptchaType] = useState<CaptchaType>("image");
+  const [textCaptcha, setTextCaptcha] = useState({ question: "", answer: "" });
+  const [audioCaptcha, setAudioCaptcha] = useState({
+    audioText: "",
+    answer: "",
+  });
 
   // OTP related states
   const [showOTPForm, setShowOTPForm] = useState(false);
-  const [otp, setOTP] = useState('');
-  const [userEmail, setUserEmail] = useState('');
+  const [otp, setOTP] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [canResendOtp, setCanResendOtp] = useState(true);
   const [resendCountdown, setResendCountdown] = useState(0);
   const resendTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -86,20 +114,20 @@ const SignInForm = () => {
   const formatCountdown = () => {
     const minutes = Math.floor(resendCountdown / 60);
     const seconds = resendCountdown % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   // Start countdown for resend OTP
   const startResendCountdown = () => {
     setCanResendOtp(false);
     setResendCountdown(300); // 5 minutes = 300 seconds
-    
+
     if (resendTimerRef.current) {
       clearInterval(resendTimerRef.current);
     }
-    
+
     resendTimerRef.current = setInterval(() => {
-      setResendCountdown(prev => {
+      setResendCountdown((prev) => {
         if (prev <= 1) {
           if (resendTimerRef.current) {
             clearInterval(resendTimerRef.current);
@@ -115,37 +143,44 @@ const SignInForm = () => {
   // Handle resend OTP
   const handleResendOTP = async () => {
     if (!canResendOtp || !userEmail) return;
-    
+
     try {
       const response = await resendOtpAsync({ email: userEmail });
-      
+
       if (response.success) {
-        messageApi.success('OTP đã được gửi lại thành công!');
+        messageApi.success("OTP đã được gửi lại thành công!");
         startResendCountdown();
       } else {
-        messageApi.error(response.message || 'Gửi lại OTP thất bại. Vui lòng thử lại sau.');
+        messageApi.error(
+          response.message || "Gửi lại OTP thất bại. Vui lòng thử lại sau."
+        );
       }
     } catch (error: any) {
-      messageApi.error(error?.response?.data?.message || 'Có lỗi xảy ra khi gửi lại OTP');
+      messageApi.error(
+        error?.response?.data?.message || "Có lỗi xảy ra khi gửi lại OTP"
+      );
     }
   };
 
   // Handle verify OTP
   const handleVerifyOTP = async () => {
     if (!otp || !userEmail) return;
-    
+
     try {
       const response = await verifyEmailAsync({
         email: userEmail,
-        otp: otp
+        otp: otp,
       });
-      
+
       loginUser(response?.data?.user, response?.data?.accessToken);
-      messageApi.success('Xác thực email thành công!');
+      messageApi.success("Xác thực email thành công!");
       setCookies(response?.data?.accessToken);
-      router.push('/seller/dashboard');
+      router.push("/seller/dashboard");
     } catch (error: any) {
-      messageApi.error(error?.response?.data?.message || 'Mã OTP không hợp lệ. Vui lòng thử lại.');
+      messageApi.error(
+        error?.response?.data?.message ||
+          "Mã OTP không hợp lệ. Vui lòng thử lại."
+      );
     }
   };
 
@@ -153,7 +188,7 @@ const SignInForm = () => {
   const generateCaptcha = () => {
     setCaptchaLoading(true);
 
-    const types = ['cat', 'dog', 'koala', 'bird', 'fish', 'rabbit'];
+    const types = ["cat", "dog", "koala", "bird", "fish", "rabbit"];
     const randomType = types[Math.floor(Math.random() * types.length)];
 
     // Create unique image URLs using timestamp to prevent caching
@@ -163,20 +198,21 @@ const SignInForm = () => {
     const correctImage = {
       id: 1,
       src: `https://source.unsplash.com/100x100/?${randomType}&${timestamp}`,
-      type: randomType
+      type: randomType,
     };
 
     // Generate 5 unique wrong images
-    const wrongTypes = types.filter(t => t !== randomType);
+    const wrongTypes = types.filter((t) => t !== randomType);
     const wrongImages: { id: number; src: string; type: string }[] = [];
 
     while (wrongImages.length < 5) {
-      const randomWrongType = wrongTypes[Math.floor(Math.random() * wrongTypes.length)];
-      if (!wrongImages.some(img => img.type === randomWrongType)) {
+      const randomWrongType =
+        wrongTypes[Math.floor(Math.random() * wrongTypes.length)];
+      if (!wrongImages.some((img) => img.type === randomWrongType)) {
         wrongImages.push({
           id: wrongImages.length + 2,
           src: `https://source.unsplash.com/100x100/?${randomWrongType}&${timestamp}`,
-          type: randomWrongType
+          type: randomWrongType,
         });
       }
     }
@@ -194,22 +230,22 @@ const SignInForm = () => {
   };
 
   const generateRandomCaptcha = () => {
-    const types: CaptchaType[] = ['image', 'audio', 'text'];
+    const types: CaptchaType[] = ["image", "audio", "text"];
     const randomType = types[Math.floor(Math.random() * types.length)];
     setCaptchaType(randomType);
 
-    if (randomType === 'image') {
+    if (randomType === "image") {
       generateCaptcha();
-    } else if (randomType === 'text') {
+    } else if (randomType === "text") {
       setTextCaptcha(generateTextCaptcha());
-    } else if (randomType === 'audio') {
+    } else if (randomType === "audio") {
       setAudioCaptcha(generateAudioCaptcha());
     }
   };
 
   const handleCaptchaSuccess = async () => {
     setShowCaptcha(false);
-    
+
     // Login after captcha verification
     if (formValues) {
       try {
@@ -218,7 +254,7 @@ const SignInForm = () => {
           password: formValues.password,
         };
         const response = await mutateAsync(payload);
-        
+
         // Check shop verification status - handle as generic response first
         const responseData = response as any;
         if (responseData?.data?.shopStatus === "NOT_VERIFIED") {
@@ -226,28 +262,32 @@ const SignInForm = () => {
           setUserEmail(responseData.data.user.email);
           setShowOTPForm(true);
           startResendCountdown();
-          messageApi.info('Tài khoản chưa được xác thực. Vui lòng xác thực email để tiếp tục.');
+          messageApi.info(
+            "Tài khoản chưa được xác thực. Vui lòng xác thực email để tiếp tục."
+          );
         } else if (response?.data?.accessToken) {
           // Login user immediately
           setCookies(response.data.accessToken);
           loginUser(response.data.user, response.data.accessToken);
-          router.push('/seller/dashboard');
+          router.push("/seller/dashboard");
         }
       } catch (error: any) {
-        console.log("error tracking:", error)
+        console.log("error tracking:", error);
         if (error?.response?.data?.shopStatus === "NOT_VERIFIED") {
           // Need OTP verification
           setUserEmail(error?.response?.data?.user?.email);
           setShowOTPForm(true);
           startResendCountdown();
-          messageApi.info('Tài khoản chưa được xác thực. Vui lòng xác thực email để tiếp tục.');
-        } 
-        handleErrorMessage(error?.response?.data?.message || 'Login failed');
+          messageApi.info(
+            "Tài khoản chưa được xác thực. Vui lòng xác thực email để tiếp tục."
+          );
+        }
+        handleErrorMessage(error?.response?.data?.message || "Login failed");
       }
     }
   };
 
-  const onFinish: FormProps<FieldType>['onFinish'] = (values: FieldType) => {
+  const onFinish: FormProps<FieldType>["onFinish"] = (values: FieldType) => {
     setFormValues(values);
     setShowCaptcha(true);
   };
@@ -257,28 +297,23 @@ const SignInForm = () => {
       {contextHolder}
       {!showCaptcha && !showOTPForm ? (
         <>
-          <h1 className='text-[28px] font-medium'>Sign In</h1>
-          <Form
-            name="normal_login"
-            onFinish={onFinish}
-            layout='vertical'
-          >
+          <h1 className="text-[28px] font-medium">Sign In</h1>
+          <Form name="normal_login" onFinish={onFinish} layout="vertical">
             <Form.Item
               label={<strong>Tên đăng nhập</strong>}
               name="username"
-              rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
+              rules={[
+                { required: true, message: "Vui lòng nhập tên đăng nhập!" },
+              ]}
             >
               <Input placeholder="Tên đăng nhập" />
             </Form.Item>
             <Form.Item
               label={<strong>Mật khẩu</strong>}
               name="password"
-              rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
+              rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
             >
-              <Input.Password
-                type="password"
-                placeholder="Mật khẩu"
-              />
+              <Input.Password type="password" placeholder="Mật khẩu" />
             </Form.Item>
 
             <Form.Item>
@@ -295,21 +330,23 @@ const SignInForm = () => {
         </>
       ) : showOTPForm ? (
         <div className="otp-verification">
-          <h1 className='text-[28px] font-medium'>Xác thực Email</h1>
+          <h1 className="text-[28px] font-medium">Xác thực Email</h1>
           <p className="mb-4">
-            Mã OTP đã được gửi tới email: <strong>{maskEmail(userEmail)}</strong>
+            Mã OTP đã được gửi tới email:{" "}
+            <strong>{maskEmail(userEmail)}</strong>
           </p>
           {resendCountdown > 0 && (
             <p className="mb-4 text-sm">
-              Bạn có thể gửi lại mã OTP sau: <strong>{formatCountdown()}</strong>
+              Bạn có thể gửi lại mã OTP sau:{" "}
+              <strong>{formatCountdown()}</strong>
             </p>
           )}
           <Form layout="vertical">
-            <Form.Item 
+            <Form.Item
               label={<strong>Nhập mã OTP</strong>}
-              rules={[{ required: true, message: 'Vui lòng nhập mã OTP' }]}
+              rules={[{ required: true, message: "Vui lòng nhập mã OTP" }]}
             >
-              <Input 
+              <Input
                 placeholder="Nhập mã OTP 6 số"
                 value={otp}
                 onChange={(e) => setOTP(e.target.value)}
@@ -337,11 +374,12 @@ const SignInForm = () => {
               <Button
                 onClick={() => {
                   // Return to login form
-                  if (resendTimerRef.current) clearInterval(resendTimerRef.current);
+                  if (resendTimerRef.current)
+                    clearInterval(resendTimerRef.current);
                   setShowOTPForm(false);
                   // Reset OTP-related states
-                  setOTP('');
-                  setUserEmail('');
+                  setOTP("");
+                  setUserEmail("");
                   setResendCountdown(0);
                   setCanResendOtp(true);
                 }}
@@ -353,7 +391,7 @@ const SignInForm = () => {
           </Form>
         </div>
       ) : (
-        <Captcha 
+        <Captcha
           onSuccess={handleCaptchaSuccess}
           onError={handleErrorMessage}
           onBack={() => setShowCaptcha(false)}
