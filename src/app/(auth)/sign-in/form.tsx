@@ -254,12 +254,11 @@ const SignInForm = () => {
           password: formValues.password,
         };
         const response = await mutateAsync(payload);
-
         // Check shop verification status - handle as generic response first
         const responseData = response as any;
         if (responseData?.data?.shopStatus === "NOT_VERIFIED") {
           // Need OTP verification
-          setUserEmail(responseData.data.user.email);
+          setUserEmail(responseData.data.email);
           setShowOTPForm(true);
           startResendCountdown();
           messageApi.info(
@@ -272,10 +271,9 @@ const SignInForm = () => {
           router.push("/seller/dashboard");
         }
       } catch (error: any) {
-        console.log("error tracking:", error);
         if (error?.response?.data?.shopStatus === "NOT_VERIFIED") {
           // Need OTP verification
-          setUserEmail(error?.response?.data?.user?.email);
+          setUserEmail(error?.response?.data?.email);
           setShowOTPForm(true);
           startResendCountdown();
           messageApi.info(

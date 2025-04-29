@@ -33,6 +33,7 @@ import useSidebar from "@/stores/useSidebar";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGetUnreadNotifications, useMarkAsRead } from "@/hooks/notification";
+import { useProfile } from "@/hooks/authentication";
 
 function LayoutPage() {
   const { isSidebarOpen } = useSidebar();
@@ -47,18 +48,15 @@ function LayoutPage() {
   );
   const [isClient, setIsClient] = useState(false);
   const { isMobileSidebarOpen, toggleMobileSidebar } = useLayout();
-  const { profile } = useUser();
+  const { profileData } = useProfile();
   const { data: unreadNotifications } = useGetUnreadNotifications();
   const { mutate: markAsRead } = useMarkAsRead();
 
-  // Count notifications by type
   const notificationCounts = useMemo(() => {
-    console.log("unreadNotifications", unreadNotifications);
     if (!unreadNotifications?.data) return { orders: 0, chat: 0 };
 
     return unreadNotifications.data.reduce(
       (counts: { orders: number; chat: number }, notification: any) => {
-        // Map notification types to their respective categories
         switch (notification.type) {
           // Order related notifications
           case "NEW_ORDER":
@@ -488,9 +486,9 @@ function LayoutPage() {
 
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <span className="text-lg font-medium text-white flex-shrink-0">
-                    {profile?.data?.shopName || "Cửa hàng chưa có tên"}
+                    {profileData?.data?.shopName || "Cửa hàng chưa có tên"}
                   </span>
-                  {profile?.data?.isVerified && (
+                  {profileData?.data?.isVerified && (
                     <div className="h-6 w-6 relative flex-shrink-0">
                       <Image
                         draggable={false}
@@ -507,31 +505,18 @@ function LayoutPage() {
 
                 {isClient && (
                   <div className="text-sm text-gray-300 flex-shrink-0 mt-1 flex items-center gap-1">
-                    {profile?.data?.email}
-                    {profile?.data?.isVerified && (
-                      <div className="h-4 w-4 relative">
-                        <Image
-                          draggable={false}
-                          quality={100}
-                          height={16}
-                          width={16}
-                          className="object-cover"
-                          src={"/images/tick-icon.png"}
-                          alt="verified"
-                        />
-                      </div>
-                    )}
+                    {profileData?.data?.email}
                   </div>
                 )}
 
-                <RatingStars rating={profile?.data?.stars ?? 0} />
+                <RatingStars rating={profileData?.data?.stars ?? 0} />
 
                 <div className="mt-2">
                   <span className="text-white/80 font-medium text-sm">
                     Điểm uy tín:{" "}
                   </span>
                   <span className="text-green-400 text-sm">
-                    {profile?.data?.reputationPoints || 0}
+                    {profileData?.data?.reputationPoints || 0}
                   </span>
                 </div>
               </div>
@@ -729,9 +714,9 @@ function LayoutPage() {
                     {/* Shop Info */}
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <span className="text-lg font-medium flex-shrink-0">
-                        {profile?.data?.shopName || "Cửa hàng chưa có tên"}
+                        {profileData?.data?.shopName || "Cửa hàng chưa có tên"}
                       </span>
-                      {profile?.data?.isVerified && (
+                      {profileData?.data?.isVerified && (
                         <div className="h-7 w-7 relative flex-shrink-0">
                           <Image
                             draggable={false}
@@ -749,26 +734,13 @@ function LayoutPage() {
                     {/* Email */}
                     {isClient && (
                       <div className="text-sm text-gray-300 flex-shrink-0 flex items-center gap-1">
-                        {profile?.data?.email}
-                        {profile?.data?.isVerified && (
-                          <div className="h-4 w-4 relative">
-                            <Image
-                              draggable={false}
-                              quality={100}
-                              height={16}
-                              width={16}
-                              className="object-cover"
-                              src={"/images/tick-icon.png"}
-                              alt="verified"
-                            />
-                          </div>
-                        )}
+                        {profileData?.data?.email}
                       </div>
                     )}
                   </div>
 
                   {/* Rating Stars */}
-                  <RatingStars rating={profile?.data?.stars ?? 0} />
+                  <RatingStars rating={profileData?.data?.stars ?? 0} />
 
                   {/* Trust Score */}
                   <div className="mb-4">
@@ -776,7 +748,7 @@ function LayoutPage() {
                       Điểm uy tín:{" "}
                     </span>
                     <span className="text-green-400 text-sm">
-                      {profile?.data?.reputationPoints || 0}
+                      {profileData?.data?.reputationPoints || 0}
                     </span>
                   </div>
 
