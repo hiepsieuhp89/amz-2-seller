@@ -149,10 +149,9 @@ const SignUpForm = () => {
         otp: otp
       });
       
-      loginUser(response?.data?.user, response?.data?.accessToken);
-      messageApi.success('Xác thực email thành công!');
-      setCookies(response?.data?.accessToken);
-      router.push('/seller/dashboard');
+      messageApi.success('Xác thực email thành công! Vui lòng đăng nhập để tiếp tục.');
+      // Redirect to sign-in page instead of logging in
+      router.push('/sign-in');
     } catch (error: any) {
       messageApi.error(error?.response?.data?.message || 'Mã OTP không hợp lệ. Vui lòng thử lại.');
     }
@@ -174,7 +173,24 @@ const SignUpForm = () => {
       
       setFieldValidating(prev => ({ ...prev, [field]: false }));
       
-      if (response.data.exists) {
+      // Check if there was an error response
+      if (!response.status) {
+        // Display the error message from the API
+        if (response.message) {
+          messageApi.error(response.message);
+        }
+        
+        // If there are specific validation errors, show them
+        if (response.errors && response.errors.length > 0) {
+          messageApi.error(response.errors[0]);
+          return true; // Return true to indicate validation failed
+        }
+        
+        return true; // Return true to indicate validation failed
+      }
+      
+      // Check if the field already exists
+      if (response.data && response.data.exists) {
         const fieldNames: Record<string, string> = {
           username: 'Tên tài khoản',
           email: 'Email',
@@ -189,7 +205,24 @@ const SignUpForm = () => {
     } catch (error: any) {
       console.error(`Error checking ${field}:`, error);
       setFieldValidating(prev => ({ ...prev, [field]: false }));
-      return false;
+      
+      // Handle error response from API if available
+      if (error?.response?.data) {
+        const errorData = error.response.data;
+        
+        if (errorData.errors && errorData.errors.length > 0) {
+          messageApi.error(errorData.errors[0]);
+        } else if (errorData.message) {
+          messageApi.error(errorData.message);
+        } else {
+          messageApi.error(`Có lỗi xảy ra khi kiểm tra ${field.toLowerCase()}`);
+        }
+        
+        return true;
+      }
+      
+      messageApi.error(`Có lỗi xảy ra khi kiểm tra ${field.toLowerCase()}`);
+      return true;
     }
   };
 
@@ -200,6 +233,12 @@ const SignUpForm = () => {
     // Check for spaces
     if (/\s/.test(value)) {
       return Promise.reject(new Error('Tên tài khoản không được chứa khoảng trắng'));
+    }
+    
+    // Basic validation for allowed characters
+    const validUsernameRegex = /^[a-z0-9_]+$/;
+    if (!validUsernameRegex.test(value)) {
+      return Promise.reject(new Error('Tên tài khoản chỉ được chứa chữ cái thường, số và dấu gạch dưới'));
     }
     
     // Check for uppercase letters
@@ -216,7 +255,8 @@ const SignUpForm = () => {
     // Call the debounced check function and wait for the result
     const exists = await debouncedChecksRef.current.username(value);
     if (exists) {
-      return Promise.reject(new Error('Tên tài khoản đã tồn tại'));
+      // No need to add specific error message here as it will be displayed by the checkFieldExists function
+      return Promise.reject(new Error(''));
     }
     return Promise.resolve();
   };
@@ -232,7 +272,8 @@ const SignUpForm = () => {
     // Call the debounced check function and wait for the result
     const exists = await debouncedChecksRef.current.email(value);
     if (exists) {
-      return Promise.reject(new Error('Email này đã được sử dụng'));
+      // No need to add specific error message here as it will be displayed by the checkFieldExists function
+      return Promise.reject(new Error(''));
     }
     return Promise.resolve();
   };
@@ -240,10 +281,17 @@ const SignUpForm = () => {
   const validatePhone = async (_: any, value: string) => {
     if (!value) return Promise.reject(new Error('Vui lòng nhập số điện thoại!'));
     
+    // Basic phone validation
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (!phoneRegex.test(value)) {
+      return Promise.reject(new Error('Số điện thoại không hợp lệ. Vui lòng nhập 10-11 chữ số'));
+    }
+    
     // Call the debounced check function and wait for the result
     const exists = await debouncedChecksRef.current.phone(value);
     if (exists) {
-      return Promise.reject(new Error('Số điện thoại này đã được sử dụng'));
+      // No need to add specific error message here as it will be displayed by the checkFieldExists function
+      return Promise.reject(new Error(''));
     }
     return Promise.resolve();
   };
