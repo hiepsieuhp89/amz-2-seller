@@ -35,9 +35,8 @@ import { Icon } from "@mdi/react";
 import { mdiChevronLeft, mdiMagnify } from "@mdi/js";
 import { formatDate as formatDateUtil } from "@/utils";
 
-// Helper function to get initials from name
 const getInitials = (name: string = "") => {
-  if (!name) return "UN"; // Return "UN" for undefined or empty names
+  if (!name) return "UN"; 
 
   return name
     .split(" ")
@@ -47,20 +46,16 @@ const getInitials = (name: string = "") => {
     .substring(0, 2);
 };
 
-// Helper function to format time
 const formatTime = (dateString: string) => {
   return formatDateUtil(dateString, "time");
 };
 
-// Helper function to format date
 const formatDate = (dateString: string) => {
   return formatDateUtil(dateString, "date-text");
 };
 
-// ProductCard component for displaying product in message
 const ProductCard = ({ productId }: { productId: string }) => {
   const { data: response, isLoading } = useGetShopProductDetail(productId);
-  // Use type assertion to handle the flexible structure
   const productData = response?.data as any;
   const product = productData?.product;
 
@@ -86,9 +81,7 @@ const ProductCard = ({ productId }: { productId: string }) => {
     );
   }
 
-  // Check if product is on sale (salePrice > 0 and different from regular price)
   const isOnSale = Number(product.salePrice) > 0 && product.price !== product.salePrice;
-  // Use the appropriate price for display
   const displayPrice = isOnSale ? product.salePrice : product.price;
 
   return (
@@ -161,7 +154,7 @@ export default function ChatPage() {
   const { mutate: markAllAsRead } = useMarkAllMessagesWithUserAsRead();
   const { mutate: deleteMessage } = useDeleteMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [showMobileSidebar, setShowMobileSidebar] = useState(true);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
 
   // Transform chat list data
   const transformedChatList = (

@@ -560,14 +560,13 @@ const Storehouse = () => {
               </div>
             )}
             
-            <div className="md:hidden fixed bottom-24 right-3 z-10">
+            <div className="md:hidden fixed bottom-24 right-6 z-10">
               <Button
                 type="primary"
                 shape="circle"
-                size="large"
-                icon={<ShoppingCartOutlined />}
+                icon={<ShoppingCartOutlined size={20} />}
                 onClick={() => setDrawerVisible(true)}
-                className="flex items-center justify-center !h-14 !w-14 shadow-lg"
+                className="flex items-center justify-center !h-10 !w-10 !flex-shrink-0 shadow-lg"
               >
                 {totalSelectedProducts > 0 && (
                   <Badge 

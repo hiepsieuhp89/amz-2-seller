@@ -110,43 +110,43 @@ const OrdersTable = () => {
       // Set the order for the detail dialog
       setSelectedOrderId(orderId);
       setIsDetailOpen(true);
-      
+
       // Set printing state to true
       setIsPrinting(true);
-      
+
       // Wait for the dialog to open and render
       // Using a longer timeout to ensure content is fully loaded
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      
+
       // Use a polling mechanism to check if the preview element is ready with content
       let maxAttempts = 20; // Increase max attempts
       let attempt = 0;
       let input = null;
-      
+
       while (attempt < maxAttempts) {
         input = document.getElementById("preview");
         // Check for the data-loaded attribute that we added to the preview div
         const isLoaded = input && input.getAttribute('data-loaded') === 'true';
         const hasContent = input && input.children.length > 0 && input.getBoundingClientRect().height > 100;
-        
+
         if (isLoaded && hasContent) {
           break;
         }
-        
+
         // Wait a bit more between checks
         await new Promise((resolve) => setTimeout(resolve, 500));
         attempt++;
-        
+
         // Add a visual indicator of loading progress
         if (attempt % 4 === 0) {
           console.log(`Waiting for order data to load... Attempt ${attempt}/${maxAttempts}`);
         }
       }
-      
+
       if (!input || input.getAttribute('data-loaded') !== 'true' || input.children.length === 0) {
         throw new Error("Preview element not fully loaded after multiple attempts");
       }
-      
+
       // Proceed with printing
       try {
         // Display processing message
@@ -162,10 +162,10 @@ const OrdersTable = () => {
         processingMsg.style.zIndex = "9999";
         processingMsg.textContent = "Đang tạo PDF...";
         document.body.appendChild(processingMsg);
-        
+
         // Give the browser one more moment to completely render everything
         await new Promise((resolve) => setTimeout(resolve, 500));
-        
+
         // Convert DOM to canvas
         const canvas = await html2canvas(input, {
           scale: 1.5,
@@ -174,7 +174,7 @@ const OrdersTable = () => {
           allowTaint: true,
           scrollY: -window.scrollY,
         });
-        
+
         // Create PDF from canvas
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF({
@@ -182,20 +182,20 @@ const OrdersTable = () => {
           unit: "mm",
           format: "a4",
         });
-        
+
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
         const imgWidth = pageWidth;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
+
         // Add image to PDF
         pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-        
+
         // Handle multi-page content
         if (imgHeight > pageHeight) {
           let heightLeft = imgHeight - pageHeight;
           let position = -pageHeight;
-          
+
           while (heightLeft > 0) {
             pdf.addPage();
             pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
@@ -203,7 +203,7 @@ const OrdersTable = () => {
             position -= pageHeight;
           }
         }
-        
+
         // Save PDF
         pdf.save(`don-hang-${orderId.substring(0, 8)}.pdf`);
       } catch (err) {
@@ -382,8 +382,8 @@ const OrdersTable = () => {
                   ? "Đã TT"
                   : "Đã thanh toán"
                 : isMobile
-                ? "Chưa TT"
-                : "Chưa thanh toán"
+                  ? "Chưa TT"
+                  : "Chưa thanh toán"
             }
           />
         );
@@ -411,22 +411,32 @@ const OrdersTable = () => {
       width: 110,
       render: (_, record) => (
         <div className="flex items-center justify-center gap-6">
-          <Tooltip title="Xem chi tiết">
+          {!isMobile ? <Tooltip title="Xem chi tiết">
             <span
               onClick={() => handleOpenDetail(record.orderCode)}
               style={{ cursor: "pointer", display: "inline-flex" }}
             >
               <Icon path={mdiEye} size={0.7} color={"#A3A3A3"} />
             </span>
-          </Tooltip>
-          <Tooltip title="In đơn hàng">
+          </Tooltip> : <span
+            onClick={() => handleOpenDetail(record.orderCode)}
+            style={{ cursor: "pointer", display: "inline-flex" }}
+          >
+            <Icon path={mdiEye} size={0.7} color={"#A3A3A3"} />
+          </span>}
+          {!isMobile ? <Tooltip title="In đơn hàng">
             <span
               onClick={() => handlePrintInvoice(record.orderCode)}
               style={{ cursor: "pointer", display: "inline-flex" }}
             >
               <Icon path={mdiPrinter} size={0.7} color={"#A3A3A3"} />
             </span>
-          </Tooltip>
+          </Tooltip> : <span
+            onClick={() => handlePrintInvoice(record.orderCode)}
+            style={{ cursor: "pointer", display: "inline-flex" }}
+          >
+            <Icon path={mdiPrinter} size={0.7} color={"#A3A3A3"} />
+          </span>}
         </div>
       ),
     },
@@ -505,24 +515,24 @@ const OrdersTable = () => {
         dataSource={
           Array.isArray(ordersData?.data?.data)
             ? ordersData.data.data.map((order: any) => ({
-                key: order.id,
-                time: new Date(order.orderTime).toLocaleString(),
-                orderCode: order.id,
-                totalAmount: order.totalAmount,
-                user: order.user,
-                status: order.status,
-                delayStatus: order.delayStatus,
-                paymentStatus: order.paymentStatus || "UNPAID",
-                itemsCount: order.items.length,
-                userId: order.userId,
-                quantity: order.items.reduce(
-                  (acc: number, item: any) => acc + item.quantity,
-                  0
-                ),
-                confirmedAt: order.confirmedAt,
-                totalProfit: order.totalProfit || null,
-                totalPaidAmount: order.totalPaidAmount,
-              }))
+              key: order.id,
+              time: new Date(order.orderTime).toLocaleString(),
+              orderCode: order.id,
+              totalAmount: order.totalAmount,
+              user: order.user,
+              status: order.status,
+              delayStatus: order.delayStatus,
+              paymentStatus: order.paymentStatus || "UNPAID",
+              itemsCount: order.items.length,
+              userId: order.userId,
+              quantity: order.items.reduce(
+                (acc: number, item: any) => acc + item.quantity,
+                0
+              ),
+              confirmedAt: order.confirmedAt,
+              totalProfit: order.totalProfit || null,
+              totalPaidAmount: order.totalPaidAmount,
+            }))
             : []
         }
         pagination={false}
@@ -574,11 +584,10 @@ const OrdersTable = () => {
               <p>
                 <strong>Thanh toán:</strong>{" "}
                 <span
-                  className={`${
-                    record.paymentStatus === "PAID"
-                      ? "bg-green-100 text-green-600"
-                      : "bg-yellow-100 text-yellow-600"
-                  } px-2 py-1 rounded`}
+                  className={`${record.paymentStatus === "PAID"
+                    ? "bg-green-100 text-green-600"
+                    : "bg-yellow-100 text-yellow-600"
+                    } px-2 py-1 rounded`}
                 >
                   {record.paymentStatus === "PAID"
                     ? "Đã thanh toán"
