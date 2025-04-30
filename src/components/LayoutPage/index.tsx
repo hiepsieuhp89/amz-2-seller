@@ -568,7 +568,7 @@ function LayoutPage() {
                               {expandedItems[item.key]
                                 ? item.activeIcon
                                 : item.icon}
-                              <span className="font-medium">{item.name}</span>
+                              <span className="!font-normal">{item.name}</span>
                             </div>
                             <Icon
                               path={
@@ -599,7 +599,7 @@ function LayoutPage() {
                                     className="flex items-center space-x-2 p-2 my-1 text-white/90 hover:text-[#FCAF17] hover:bg-[#232f3e]/50 rounded-md transition-all duration-200"
                                     onClick={toggleMobileSidebar}
                                   >
-                                    <span className="font-medium">
+                                    <span className="font-normal">
                                       {child.name}
                                     </span>
                                   </Link>
@@ -620,7 +620,7 @@ function LayoutPage() {
                         >
                           <div className="flex items-center space-x-3">
                             {isActive(item.path) ? item.activeIcon : item.icon}
-                            <span className="font-medium">{item.name}</span>
+                            <span className="!font-normal">{item.name}</span>
                           </div>
 
                           {item.badge &&

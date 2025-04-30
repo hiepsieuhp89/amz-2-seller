@@ -178,24 +178,19 @@ const AvatarDropdown = () => {
 
   const handleChangeWithdrawPassword = async (values: WithdrawPasswordFormValues) => {
     try {
-      // Since TypeScript doesn't recognize withdrawPassword on profile.data
-      // Use a type assertion or check for property existence
       const userData = profile?.data as any;
       const currentWithdrawPassword = userData?.withdrawPassword || '';
       
-      // Validate old password locally against profile data
       if (values.oldWithdrawPassword !== currentWithdrawPassword) {
         message.error("Mật khẩu giao dịch hiện tại không đúng");
         return;
       }
       
-      // Check if new password is different from old password
       if (currentWithdrawPassword === values.withdrawPassword) {
         message.error("Mật khẩu giao dịch mới không được trùng với mật khẩu cũ");
         return;
       }
       
-      // Only send the new password to the API
       await updateUser({
         withdrawPassword: values.withdrawPassword,
       });
@@ -210,25 +205,21 @@ const AvatarDropdown = () => {
 
   const showProfileModal = () => {
     form.reset({
-      // Tab thông tin cơ bản
       fullName: profile?.data?.fullName || "",
       phone: profile?.data?.phone || "",
       email: profile?.data?.email || "",
       username: profile?.data?.username || "",
       logoUrl: profile?.data?.logoUrl || "",
 
-      // Tab cài đặt thanh toán
       address: profile?.data?.address || "",
       bankName: profile?.data?.bankName || "",
       bankAccountNumber: profile?.data?.bankAccountNumber || "",
       bankAccountName: profile?.data?.bankAccountName || "",
       bankBranch: profile?.data?.bankBranch || "",
 
-      // Thông tin shop
       shopName: profile?.data?.shopName || "",
       shopAddress: profile?.data?.shopAddress || "",
 
-      // Thông tin giấy tờ
       idCardType: profile?.data?.idCardType || "",
       idCardNumber: profile?.data?.idCardNumber || "",
       idCardFrontImage: profile?.data?.idCardFrontImage || "",
@@ -942,14 +933,14 @@ const AvatarDropdown = () => {
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <div className="flex items-center gap-2 cursor-pointer rounded-md transition-all p-1 hover:bg-transparent">
+            <div className="flex flex-col">
+              <p className="font-medium text-sm">{user?.username}</p>
+              <p className="text-xs text-end text-main-golden-orange">{user?.role === "admin" ? "Admin" : "Seller"}</p>
+            </div>
             <div className="flex-shrink-0 h-8 w-8 flex items-center justify-center bg-primary rounded-full overflow-hidden">
               <Avatar className="h-full w-full">
                 <AvatarImage src={logoUrl || "/images/icon.png"} alt="User avatar" />
               </Avatar>
-            </div>
-            <div className="flex flex-col">
-              <p className="font-medium text-sm">{user?.username}</p>
-              <p className="text-xs text-muted-foreground">{user?.role === "admin" ? "Admin" : "Seller"}</p>
             </div>
           </div>
         </DropdownMenuTrigger>
@@ -958,10 +949,6 @@ const AvatarDropdown = () => {
             <User className="h-4 w-4 mr-2" />
             Hồ sơ
           </DropdownMenuItem>
-          {/* <DropdownMenuItem onClick={() => setIsPasswordModalOpen(true)} className="cursor-pointer">
-            <Lock className="h-4 w-4 mr-2" />
-            Mật khẩu
-          </DropdownMenuItem> */}
           <Separator className="my-1" />
           <DropdownMenuItem
             onClick={handleClickLogout}

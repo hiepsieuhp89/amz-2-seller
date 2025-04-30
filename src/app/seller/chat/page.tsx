@@ -9,7 +9,6 @@ import {
 } from "@/hooks/shop-chat";
 import { useGetShopProductDetail } from "@/hooks/shop-products";
 import {
-  Check,
   MoreVertical,
   MessageSquare,
   Send,
@@ -33,7 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Icon } from "@mdi/react";
-import { mdiMagnify } from "@mdi/js";
+import { mdiChevronLeft, mdiMagnify } from "@mdi/js";
 import { formatDate as formatDateUtil } from "@/utils";
 
 // Helper function to get initials from name
@@ -162,7 +161,7 @@ export default function ChatPage() {
   const { mutate: markAllAsRead } = useMarkAllMessagesWithUserAsRead();
   const { mutate: deleteMessage } = useDeleteMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(true);
 
   // Transform chat list data
   const transformedChatList = (
@@ -217,9 +216,7 @@ export default function ChatPage() {
     setSelectedUser(userId);
 
     try {
-      // Mark all messages with this user as read
       await markAllAsRead(userId);
-      // Refetch chat list to update unread counts
       refetchChatList();
     } catch (error) {
       console.error("Failed to mark messages as read:", error);
@@ -229,12 +226,10 @@ export default function ChatPage() {
     setShowMobileSidebar(false);
   };
 
-  // Scroll to bottom effect
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages?.data]); // Depend on messages.data for accurate scrolling
 
-  // Polling effect for new messages and chat list updates
   useEffect(() => {
     const interval = setInterval(() => {
       if (selectedUser) {
@@ -246,11 +241,7 @@ export default function ChatPage() {
     return () => clearInterval(interval);
   }, [selectedUser, refetchMessages, refetchChatList]);
 
-  // Effect to show toast for new messages (simplified)
   useEffect(() => {
-    // This logic could be improved by comparing previous and current message lists
-    // or by using a WebSocket connection for real-time updates.
-    // For now, skipping the new message count toast to avoid complexity with polling.
   }, [messages?.data]);
 
   const handleSendMessage = () => {
@@ -261,9 +252,6 @@ export default function ChatPage() {
         {
           onSuccess: () => {
             setMessage("");
-            // Let react-query handle the refetch after mutation if configured,
-            // or rely on the polling interval.
-            // setTimeout(() => refetchMessages(), 100) // Optional: faster refresh
           },
           onError: (error: any) => {
             toast.error(error.message || "Không thể gửi tin nhắn", {
@@ -275,14 +263,9 @@ export default function ChatPage() {
     }
   };
 
-  // Removed handleMarkMessage as marking is done on user click
-  // Individual message marking might need a different API call or logic
-
   const handleDeleteMessage = (messageId: string) => {
     deleteMessage(messageId, {
       onSuccess: () => {
-        // Let react-query handle the refetch or rely on polling
-        // setTimeout(() => refetchMessages(), 100) // Optional: faster refresh
         toast.success("Đã xoá tin nhắn", { id: "delete-success" });
       },
       onError: (error: any) => {
@@ -294,7 +277,6 @@ export default function ChatPage() {
   };
 
   const renderMessageActions = (messageId: string, isSender: boolean) => {
-    // Only show actions for sender's messages for now
     if (!isSender) return null;
 
     return (
@@ -332,12 +314,10 @@ export default function ChatPage() {
   const selectedUserDetails = transformedChatList.find(
     (chat: any) => chat.userId === selectedUser
   );
-
   return (
     <>
       <Toaster position="bottom-right" reverseOrder={false} />
-      {/* Adjusted height calculation if necessary, consider using flex-grow for content */}
-      <div className="flex h-[calc(100vh-80px)] overflow-hidden border bg-background rounded-lg">
+      <div className="flex h-[calc(100vh-68px)] overflow-hidden border bg-background">
         {/* --- Sidebar (Desktop) --- */}
         <aside className="w-[320px] border-r flex-col hidden md:flex">
           {/* Sidebar Header */}
@@ -406,110 +386,256 @@ export default function ChatPage() {
             </div>
           </ScrollArea>
         </aside>
-
-        {/* --- Mobile Sidebar Toggle --- */}
-        <div className="md:hidden fixed bottom-24 right-5 z-50">
-          <Button
-            size="icon"
-            onClick={() => setShowMobileSidebar(true)}
-            className="rounded-full h-14 w-14 shadow-lg bg-main-gunmetal-blue/80 hover:bg-main-gunmetal-blue/80/90 text-primary-foreground"
-          >
-            <MessageSquare className="h-6 w-6" />
-            <span className="sr-only">Mở tin nhắn</span>
-          </Button>
-        </div>
-
-        {/* --- Mobile Sidebar --- */}
-        {showMobileSidebar && (
-          <div
-            className="fixed inset-0 bg-black/60 z-40 md:hidden"
-            onClick={() => setShowMobileSidebar(false)}
-          >
-            <motion.aside
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
-              onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside sidebar
-              className="absolute inset-y-0 left-0 w-[85%] max-w-[350px] bg-background border-r flex flex-col mt-16"
-            >
-              {/* Mobile Sidebar Header */}
-              <div className="p-4 border-b h-[75px]">
-                <h2 className="text-xl font-semibold mb-3">Tin nhắn</h2>
-                <div className="relative">
-                  <Input
-                    placeholder="Tìm kiếm..."
-                    className="rounded-md h-9 pl-9 text-sm focus-visible:ring-primary focus-visible:ring-offset-0"
+        {/* Mobile View */}
+        {showMobileSidebar ? (
+          <div className="md:hidden flex flex-col bg-background w-full rounded-none">
+            {/* Mobile Sidebar Header */}
+            <div className="border-b h-[80px] p-2 px-4
+            md:h-[75px] md:p-4">
+              <h2 className="text-lg md:text-xl font-semibold md:mb-3">Tin nhắn</h2>
+              <div className="relative">
+                <Input
+                  placeholder="Tìm kiếm..."
+                  className="rounded-md h-9 pl-9 text-sm focus-visible:ring-primary focus-visible:ring-offset-0"
+                />
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  <Icon path={mdiMagnify} size={0.8} />
+                </div>
+              </div>
+            </div>
+            {/* Mobile Sidebar Chat List */}
+            <ScrollArea className="flex-1">
+              <div className="flex flex-col p-2">
+                {transformedChatList?.map((item: any) => (
+                  <div
+                    key={`mobile-${item.userId}`}
+                    className={`flex items-start gap-3 p-3 rounded-md cursor-pointer transition-colors duration-150 ease-in-out ${selectedUser === item.userId
+                      ? "bg-muted"
+                      : "hover:bg-muted/60"
+                      }`}
+                    onClick={() => handleUserClick(item.userId)}
+                  >
+                    <div className="relative flex-shrink-0 mt-1">
+                      <Avatar className="h-11 w-11 border bg-gradient-to-br from-main-gunmetal-blue/50 to-main-gunmetal-blue/70">
+                        <AvatarImage
+                          src={item.userAvatar}
+                          alt={item.userName}
+                        />
+                        <AvatarFallback className="bg-gradient-to-br from-main-gunmetal-blue/10 to-main-gunmetal-blue/70 text-primary-foreground text-sm font-semibold">
+                          {getInitials(item.userName)}
+                        </AvatarFallback>
+                      </Avatar>
+                      {item.unreadCount > 0 && (
+                        <Badge
+                          variant="destructive"
+                          className="absolute -top-1 -right-1 h-5 min-w-[20px] p-1 flex items-center justify-center rounded-full text-xs"
+                        >
+                          {item.unreadCount}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span
+                          className={`font-semibold truncate ${item.unreadCount > 0
+                            ? "text-foreground"
+                            : "text-foreground/90"
+                            }`}
+                        >
+                          {item.userName}
+                        </span>
+                        <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
+                          {formatTime(item.lastMessageDate)}
+                        </span>
+                      </div>
+                      <p
+                        className={`text-sm truncate ${item.unreadCount > 0
+                          ? "text-foreground font-medium"
+                          : "text-muted-foreground"
+                          }`}
+                      >
+                        {item.lastMessage}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
+        ) : (
+          /* Mobile Chat Detail */
+          <div className="md:hidden flex flex-col bg-background w-full">
+            {/* Mobile Chat Header */}
+            <header className="p-2 px-4 border-b bg-background h-[80px] flex items-center">
+              <button 
+                className="mr-4 rounded-[4px] bg-transparent px-0 hover:bg-transparent flex !justify-start"
+                onClick={() => setShowMobileSidebar(true)}
+              >
+               <Icon path={mdiChevronLeft} size={1.3} className="text-gray-500 -ml-2"/>
+              </button>
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10 border bg-gradient-to-br from-main-gunmetal-blue/50 to-main-gunmetal-blue/70">
+                  <AvatarImage
+                    src={selectedUserDetails?.userAvatar}
+                    alt="User avatar"
                   />
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                    <Icon path={mdiMagnify} size={0.8} />
+                  <AvatarFallback className="bg-gradient-to-br from-main-gunmetal-blue/10 to-main-gunmetal-blue/70 text-primary-foreground text-sm font-semibold">
+                    {getInitials(selectedUserDetails?.userName)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h2 className="text-base font-semibold text-foreground">
+                    {selectedUserDetails?.userName}
+                  </h2>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <p className="text-xs text-muted-foreground">
+                      Đang hoạt động
+                    </p>
                   </div>
                 </div>
               </div>
-              {/* Mobile Sidebar Chat List */}
-              <ScrollArea className="flex-1">
-                <div className="flex flex-col p-2">
-                  {transformedChatList?.map((item: any) => (
-                    <div
-                      key={`mobile-${item.userId}`}
-                      className={`flex items-start gap-3 p-3 rounded-md cursor-pointer transition-colors duration-150 ease-in-out ${selectedUser === item.userId
-                        ? "bg-muted"
-                        : "hover:bg-muted/60"
-                        }`}
-                      onClick={() => handleUserClick(item.userId)}
-                    >
-                      <div className="relative flex-shrink-0 mt-1">
-                        <Avatar className="h-11 w-11 border bg-gradient-to-br from-main-gunmetal-blue/50 to-main-gunmetal-blue/70">
-                          <AvatarImage
-                            src={item.userAvatar}
-                            alt={item.userName}
-                          />
-                          <AvatarFallback className="bg-gradient-to-br from-main-gunmetal-blue/10 to-main-gunmetal-blue/70 text-primary-foreground text-sm font-semibold">
-                            {getInitials(item.userName)}
-                          </AvatarFallback>
-                        </Avatar>
-                        {item.unreadCount > 0 && (
-                          <Badge
-                            variant="destructive"
-                            className="absolute -top-1 -right-1 h-5 min-w-[20px] p-1 flex items-center justify-center rounded-full text-xs"
-                          >
-                            {item.unreadCount}
-                          </Badge>
+            </header>
+
+            {/* Mobile Message List */}
+            <ScrollArea className="flex-1 p-4">
+              <div className="max-w-full mx-auto flex flex-col space-y-1.5">
+                {messages?.data?.length ? (
+                  messages.data.map((msg: any, index: number) => {
+                    const isFirstMessageOfDay =
+                      index === 0 ||
+                      new Date(msg.createdAt).toDateString() !==
+                      new Date(
+                        messages.data[index - 1].createdAt
+                      ).toDateString();
+                    const isSender = msg.senderRole !== "user"; // Assuming 'shop' is the sender
+
+                    return (
+                      <div key={`mobile-message-${msg.id}`}>
+                        {/* Date Separator */}
+                        {isFirstMessageOfDay && (
+                          <div className="flex justify-center my-4">
+                            <div className="bg-background border px-3 py-1 rounded-full text-xs text-muted-foreground shadow-sm">
+                              {new Date(msg.createdAt).toLocaleDateString(
+                                [],
+                                {
+                                  weekday: "long",
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                }
+                              )}
+                            </div>
+                          </div>
                         )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-0.5">
-                          <span
-                            className={`font-semibold truncate ${item.unreadCount > 0
-                              ? "text-foreground"
-                              : "text-foreground/90"
-                              }`}
-                          >
-                            {item.userName}
-                          </span>
-                          <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
-                            {formatTime(item.lastMessageDate)}
-                          </span>
-                        </div>
-                        <p
-                          className={`text-sm truncate ${item.unreadCount > 0
-                            ? "text-foreground font-medium"
-                            : "text-muted-foreground"
+                        {/* Message Item */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className={`flex group ${isSender ? "justify-end" : "justify-start"
                             }`}
                         >
-                          {item.lastMessage}
-                        </p>
+                          <div
+                            className={`flex items-end gap-2 max-w-[75%] ${isSender ? "flex-row-reverse" : "flex-row"
+                              }`}
+                          >
+                            {/* Avatar for received messages */}
+                            {!isSender && (
+                              <Avatar className="h-7 w-7 flex-shrink-0 mb-1">
+                                <AvatarImage
+                                  src={selectedUserDetails?.userAvatar}
+                                  alt="User avatar"
+                                />
+                                <AvatarFallback className="bg-main-gunmetal-blue/80 text-primary-foreground text-xs font-semibold">
+                                  {getInitials(selectedUserDetails?.userName)}
+                                </AvatarFallback>
+                              </Avatar>
+                            )}
+                            {/* Message Bubble */}
+                            <div
+                              className={`rounded-lg py-2 px-3 border text-sm shadow-sm ${isSender
+                                ? "bg-main-gunmetal-blue/80 text-primary-foreground rounded-br-none"
+                                : "bg-card text-card-foreground rounded-bl-none"
+                                }`}
+                            >
+                              <p className="font-normal break-words whitespace-pre-wrap">
+                                {msg.message}
+                              </p>
+                              {msg.shopProductId && (
+                                <ProductCard productId={msg.shopProductId} />
+                              )}
+                              <p
+                                className={`text-xs mt-1 text-right ${isSender
+                                  ? "text-primary-foreground/70"
+                                  : "text-muted-foreground/70"
+                                  }`}
+                              >
+                                {formatTime(msg.createdAt)}
+                              </p>
+                            </div>
+                            {renderMessageActions(msg.id, isSender)}
+                          </div>
+                        </motion.div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </motion.aside>
+                    );
+                  })
+                ) : (
+                  <div className="md:flex hidden items-center justify-center h-[calc(100%-75px)]">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="text-center p-6 max-w-xs mx-auto"
+                    >
+                      <div className="mb-4 flex justify-center">
+                        <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground">
+                          <MessageCircle className="h-8 w-8" />
+                        </div>
+                      </div>
+                      <h3 className="text-xl font-semibold text-foreground mb-1">
+                        Bắt đầu trò chuyện
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Chưa có tin nhắn nào trong cuộc trò chuyện này.
+                      </p>
+                    </motion.div>
+                  </div>
+                )}
+                {/* Element to scroll to */}
+                <div ref={messagesEndRef} className="h-px" />
+              </div>
+            </ScrollArea>
+
+            {/* Mobile Message Input Area */}
+            <footer className="p-3 border-t bg-background">
+              <div className="flex items-end gap-2">
+                <Input
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
+                  placeholder="Nhập tin nhắn..."
+                  className="h-10 flex-1 resize-none focus-visible:ring-primary focus-visible:ring-offset-0"
+                  autoComplete="off"
+                />
+                <Button
+                  onClick={handleSendMessage}
+                  disabled={!message.trim() || !selectedUser}
+                  className="h-10 transition-colors duration-200 ease-in-out bg-main-gunmetal-blue/80 hover:bg-main-gunmetal-blue/90 text-primary-foreground disabled:opacity-50 rounded-[6px]"
+                >
+                  <Send className="h-4 w-4 mr-2" />
+                  Gửi
+                </Button>
+              </div>
+            </footer>
           </div>
         )}
-
-        {/* --- Main Content Area --- */}
-        <main className="flex-1 flex flex-col bg-muted/40">
+        <main className="flex-1 md:flex hidden flex-col bg-muted/40">
           {selectedUser ? (
             <>
               {/* Chat Header */}
@@ -679,8 +805,7 @@ export default function ChatPage() {
               </footer>
             </>
           ) : (
-            /* Placeholder when no user is selected */
-            <div className="flex items-center justify-center h-full">
+            <div className="md:flex hidden items-center justify-center h-full">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

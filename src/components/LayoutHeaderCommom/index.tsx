@@ -114,7 +114,7 @@ export default function LayoutHeaderCommon() {
         />
       </Link>
       <div className="flex items-center">
-        <div className="ml-8 flex items-center gap-1 pr-6">
+        <div className="ml-8 flex items-center gap-1 mr-2">
           <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
