@@ -147,8 +147,6 @@ function ChatWidget() {
       const cskhConfig = configsData.data.find((config: any) => config.key === 'CSKH' && config.isActive);
       
       if (cskhConfig && typeof window !== 'undefined') {
-        console.log('cskhConfig', cskhConfig);
-        
         if (chatProvider === 'smartsupp') {
           initializeSmartsuppChat(cskhConfig);
         } else if (chatProvider === 'tawk') {

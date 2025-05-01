@@ -13,9 +13,6 @@ interface SendOTPParams {
  */
 export const sendOtp = async (params: SendOTPParams): Promise<any> => {
   try {
-    console.log('Sending OTP via local API route:', params);
-    
-    
     // Sử dụng fetch API để gọi đến local API route
     const response = await fetch('/api/send-otp', {
       method: 'POST',
@@ -32,8 +29,6 @@ export const sendOtp = async (params: SendOTPParams): Promise<any> => {
     }
     
     const data = await response.json();
-    console.log('Email sent successfully via API route:', data);
-    
     return data;
   } catch (error) {
     console.error('Error sending OTP via API route:', error);

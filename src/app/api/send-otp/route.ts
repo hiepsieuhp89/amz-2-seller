@@ -1,17 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-
-// Debug logging for environment variables
-console.log('Email config check:', {
-  service: process.env.EMAIL_SERVICE,
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  secure: process.env.EMAIL_SECURE,
-  userEnvVar: !!process.env.EMAIL_USER,
-  passEnvVar: !!process.env.EMAIL_PASSWORD,
-});
-
-// Create email transporter
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   host: 'smtp.gmail.com',
@@ -28,9 +16,7 @@ const transporter = nodemailer.createTransport({
 transporter.verify(function(error: any, success: any) {
   if (error) {
     console.error('SMTP connection error:', error);
-  } else {
-    console.log('SMTP server is ready to send emails');
-  }
+  } 
 });
 
 // Helper function to add CORS headers
@@ -51,26 +37,18 @@ export async function OPTIONS(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  console.log('POST request received at /api/send-otp');
-  console.log('Request headers:', Object.fromEntries(request.headers));
-  
   try {
     // Parse the request body
     const body = await request.json();
-    console.log('Request body:', body);
     
     const { email, otp, expiryTime } = body;
 
     if (!email || !otp) {
-      console.log('Missing required fields:', { email, otp });
       return corsHeaders(NextResponse.json(
         { error: 'Email and OTP are required' },
         { status: 400 }
       ));
     }
-
-    console.log('Attempting to send OTP email to:', email);
-
     // Format current time
     const currentTime = new Date();
     const formattedTime = `${currentTime.getHours().toString().padStart(2, '0')}:${currentTime.getMinutes().toString().padStart(2, '0')}`;
@@ -115,8 +93,6 @@ export async function POST(request: NextRequest) {
     try {
       // Send email
       const info = await transporter.sendMail(mailOptions);
-      console.log('Email sent successfully:', info.messageId);
-      
       return corsHeaders(NextResponse.json(
         { 
           success: true, 

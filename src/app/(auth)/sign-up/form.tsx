@@ -169,8 +169,6 @@ const SignUpForm = () => {
       };
       
       const response = await checkUserExistsAsync(params);
-      console.log(`Checking ${field}:`, response);
-      
       setFieldValidating(prev => ({ ...prev, [field]: false }));
       
       // Check if there was an error response

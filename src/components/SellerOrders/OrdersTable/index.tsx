@@ -136,11 +136,6 @@ const OrdersTable = () => {
         // Wait a bit more between checks
         await new Promise((resolve) => setTimeout(resolve, 500));
         attempt++;
-
-        // Add a visual indicator of loading progress
-        if (attempt % 4 === 0) {
-          console.log(`Waiting for order data to load... Attempt ${attempt}/${maxAttempts}`);
-        }
       }
 
       if (!input || input.getAttribute('data-loaded') !== 'true' || input.children.length === 0) {

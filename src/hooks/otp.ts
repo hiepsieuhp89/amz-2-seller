@@ -33,8 +33,6 @@ export const useSendOtp = (props?: UseSendOtpProps) => {
     try {
       const otp = generateOTP();
       const expiryTime = calculateExpiryTime();
-
-      console.log(`Sending verification code to ${email}`, { otp, expiryTime });
       const response = await sendOtp({
         email,
         otp,
