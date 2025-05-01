@@ -53,12 +53,11 @@ function LayoutPage() {
   const { mutate: markAsRead } = useMarkAsRead();
 
   const notificationCounts = useMemo(() => {
-    if (!unreadNotifications?.data) return { orders: 0, chat: 0 };
+    if (!unreadNotifications?.data) return { orders: 0, chat: 0, reviews: 0 };
 
     return unreadNotifications.data.reduce(
-      (counts: { orders: number; chat: number }, notification: any) => {
+      (counts: { orders: number; chat: number; reviews: number }, notification: any) => {
         switch (notification.type) {
-          // Order related notifications
           case "NEW_ORDER":
           case "ORDER_STATUS_UPDATE":
             counts.orders++;
@@ -67,6 +66,10 @@ function LayoutPage() {
           // Chat related notifications
           case "NEW_MESSAGE":
             counts.chat++;
+            break;
+          // New review notifications
+          case "NEW_REVIEW":
+            counts.reviews++;
             break;
 
           // System notifications can be added to another category if needed
@@ -85,12 +88,14 @@ function LayoutPage() {
               notification.type.includes("MESSAGE")
             ) {
               counts.chat++;
+            } else if (notification.type.includes("REVIEW")) {
+              counts.reviews++;
             }
             break;
         }
         return counts;
       },
-      { orders: 0, chat: 0 }
+      { orders: 0, chat: 0, reviews: 0 }
     );
   }, [unreadNotifications]);
 
@@ -105,21 +110,23 @@ function LayoutPage() {
       const notificationIds = unreadNotifications.data
         .filter((notification: any) => {
           if (menuPath === "/seller/orders") {
-            // Include all order-related notification types
             return (
               ["NEW_ORDER", "ORDER_STATUS_UPDATE"].includes(
                 notification.type
               ) || notification.type.includes("ORDER")
             );
           }
-          // Add more menu paths and notification types as needed
+          if (menuPath === "/seller/reviews") {
+            return notification.type.includes("NEW_REVIEW");
+          }
+          if (menuPath === "/seller/chat") {
+            return notification.type.includes("NEW_MESSAGE");
+          }
           return false;
         })
         .map((notification: any) => notification.id);
 
-      // Mark notifications as read if there are any
       if (notificationIds.length > 0) {
-        // Mark each notification as read one by one
         notificationIds.forEach((id: any) => {
           markAsRead({ notificationId: id });
         });
@@ -158,6 +165,11 @@ function LayoutPage() {
       icon: <Icon path={mdiStar} size={0.8} />,
       activeIcon: <Icon path={mdiStar} size={0.8} color={"#FCAF17"} />,
       path: `/seller/reviews`,
+      badge: {
+        text: "",
+        count: notificationCounts.reviews,
+        color: "#f08806",
+      },
     },
     {
       key: "/seller/orders",
