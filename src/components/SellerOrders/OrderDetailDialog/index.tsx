@@ -33,7 +33,7 @@ const OrderDetailDialog = ({
   const { data: orderDetailData, isLoading } = useGetOrderDetail(orderId);
   const [barcodeSvg, setBarcodeSvg] = React.useState<string>("");
   const [localIsPrinting, setLocalIsPrinting] = React.useState<boolean>(false);
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const [expandedItems, setExpandedItems] = React.useState<
     Record<string, boolean>
   >({});
@@ -262,7 +262,7 @@ const OrderDetailDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={`sm:max-w-[1000px] p-0 bg-white rounded-md max-h-[90vh] overflow-y-auto ${
-          isMobile ? "max-w-full" : ""
+          isMobile ? "max-w-full !rounded-none !h-screen !max-h-screen mt-[70px]" : ""
         }`}
         style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
       >

@@ -23,6 +23,7 @@ import { useUser } from "@/context/useUserContext"
 import { useUpdateUser } from "@/hooks/authentication"
 import { useBankList, useVerifyBankAccount } from "@/hooks/bank"
 import { useUploadFile } from "@/hooks/upload"
+import useMediaQuery from "@/hooks/use-media-query"
 import { IBankData } from "@/interface/response/bank"
 import { cn } from "@/lib/utils"
 import { message } from "antd"
@@ -71,7 +72,7 @@ interface WithdrawPasswordFormValues {
 
 const AvatarDropdown = () => {
   const { user, profile, logoutUser, logoUrl } = useUser()
-  console.log(profile)
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const [isClient, setIsClient] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
@@ -178,28 +179,23 @@ const AvatarDropdown = () => {
 
   const handleChangeWithdrawPassword = async (values: WithdrawPasswordFormValues) => {
     try {
-      // Since TypeScript doesn't recognize withdrawPassword on profile.data
-      // Use a type assertion or check for property existence
       const userData = profile?.data as any;
       const currentWithdrawPassword = userData?.withdrawPassword || '';
-      
-      // Validate old password locally against profile data
+
       if (values.oldWithdrawPassword !== currentWithdrawPassword) {
         message.error("Mật khẩu giao dịch hiện tại không đúng");
         return;
       }
-      
-      // Check if new password is different from old password
+
       if (currentWithdrawPassword === values.withdrawPassword) {
         message.error("Mật khẩu giao dịch mới không được trùng với mật khẩu cũ");
         return;
       }
-      
-      // Only send the new password to the API
+
       await updateUser({
         withdrawPassword: values.withdrawPassword,
       });
-      
+
       message.success("Đổi mật khẩu giao dịch thành công!");
       setIsWithdrawPasswordModalOpen(false);
       withdrawPasswordForm.reset();
@@ -210,25 +206,21 @@ const AvatarDropdown = () => {
 
   const showProfileModal = () => {
     form.reset({
-      // Tab thông tin cơ bản
       fullName: profile?.data?.fullName || "",
       phone: profile?.data?.phone || "",
       email: profile?.data?.email || "",
       username: profile?.data?.username || "",
       logoUrl: profile?.data?.logoUrl || "",
 
-      // Tab cài đặt thanh toán
       address: profile?.data?.address || "",
       bankName: profile?.data?.bankName || "",
       bankAccountNumber: profile?.data?.bankAccountNumber || "",
       bankAccountName: profile?.data?.bankAccountName || "",
       bankBranch: profile?.data?.bankBranch || "",
 
-      // Thông tin shop
       shopName: profile?.data?.shopName || "",
       shopAddress: profile?.data?.shopAddress || "",
 
-      // Thông tin giấy tờ
       idCardType: profile?.data?.idCardType || "",
       idCardNumber: profile?.data?.idCardNumber || "",
       idCardFrontImage: profile?.data?.idCardFrontImage || "",
@@ -244,12 +236,12 @@ const AvatarDropdown = () => {
     try {
       const bankCode = form.watch("bankName");
       const accountNumber = form.watch("bankAccountNumber");
-      
+
       if (!bankCode || !accountNumber) {
         message.error("Vui lòng nhập đầy đủ thông tin");
         return;
       }
-      
+
       setBankAccountStatus("default")
       setBankAccountHelpMessage("Đang xác thực thông tin tài khoản...")
 
@@ -263,7 +255,7 @@ const AvatarDropdown = () => {
         setBankAccountHelpMessage(
           `Xác thực thành công: ${response.data?.ownerName || "Tài khoản hợp lệ"}`
         )
-        
+
         if (response.data?.ownerName) {
           form.setValue("bankAccountName", response.data.ownerName)
         }
@@ -306,7 +298,7 @@ const AvatarDropdown = () => {
 
       setAvatarImageUrl(imageUrl)
       form.setValue("logoUrl", imageUrl)
-      
+
       message.success("Tải ảnh đại diện lên thành công");
       return false
     } catch (error) {
@@ -319,7 +311,7 @@ const AvatarDropdown = () => {
 
   const bankOptions = useMemo<BankOption[]>(() => {
     if (!bankListData?.data) return []
-    
+
     return bankListData.data.map((bank: IBankData) => ({
       value: bank.code,
       label: bank.name,
@@ -452,7 +444,7 @@ const AvatarDropdown = () => {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="address"
@@ -475,11 +467,11 @@ const AvatarDropdown = () => {
               <FormLabel>Loại giấy tờ</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger className="rounded-md">
                     <SelectValue placeholder="CHỌN LOẠI GIẤY TỜ" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+                <SelectContent className="rounded-md">
                   <SelectItem value="cccd">CCCD</SelectItem>
                   <SelectItem value="cmnd">CMND</SelectItem>
                   <SelectItem value="passport">Passport</SelectItem>
@@ -631,7 +623,7 @@ const AvatarDropdown = () => {
                     <SelectValue placeholder="VUI LÒNG CHỌN NGÂN HÀNG" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent className="rounded-[6px]">
+                <SelectContent className="rounded-[6px] max-h-[50vh] md:max-h-[300px]">
                   {isLoadingBanks ? (
                     <div className="p-2 text-center">Đang tải...</div>
                   ) : (
@@ -642,38 +634,37 @@ const AvatarDropdown = () => {
                           className="border border-input rounded-md"
                           onChange={(e) => {
                             const searchTerm = e.target.value.toLowerCase();
-                            // Filter banks is handled automatically since we're filtering directly in the render
                             setBankSearchTerm(searchTerm);
                           }}
                         />
                       </div>
                       {bankOptions
-                        .filter(bank => 
-                          bank.label.toLowerCase().includes(bankSearchTerm) || 
+                        .filter(bank =>
+                          bank.label.toLowerCase().includes(bankSearchTerm) ||
                           bank.shortName.toLowerCase().includes(bankSearchTerm)
                         )
                         .map((bank) => (
                           <SelectItem key={bank.value} value={bank.value} className="flex items-center gap-2">
                             <div className="flex items-center gap-2">
                               {bank.logo && (
-                                <img 
-                                  src={bank.logo} 
-                                  alt={bank.shortName} 
-                                  className="h-12 w-12 object-contain mr-2" 
+                                <img
+                                  src={bank.logo}
+                                  alt={bank.shortName}
+                                  className="h-8 w-8 md:h-12 md:w-12 object-contain mr-2"
                                 />
                               )}
-                              {bank.label}
+                              <span className="text-xs md:text-sm">{bank.label.length > 40 ? `${bank.label.slice(0, 40)}...` : bank.label}</span>
                             </div>
                           </SelectItem>
                         ))}
-                      {bankOptions.filter(bank => 
-                        bank.label.toLowerCase().includes(bankSearchTerm) || 
+                      {bankOptions.filter(bank =>
+                        bank.label.toLowerCase().includes(bankSearchTerm) ||
                         bank.shortName.toLowerCase().includes(bankSearchTerm)
                       ).length === 0 && (
-                        <div className="p-2 text-center text-muted-foreground">
-                          Không tìm thấy ngân hàng
-                        </div>
-                      )}
+                          <div className="p-2 text-center text-muted-foreground">
+                            Không tìm thấy ngân hàng
+                          </div>
+                        )}
                     </>
                   )}
                 </SelectContent>
@@ -690,7 +681,7 @@ const AvatarDropdown = () => {
             <FormItem>
               <FormLabel>Số tài khoản ngân hàng</FormLabel>
               <FormControl>
-                <div className="flex gap-2">
+                <div className="flex flex-col md:flex-row gap-2">
                   <Input
                     placeholder="NHẬP SỐ TÀI KHOẢN NGÂN HÀNG"
                     {...field}
@@ -706,11 +697,12 @@ const AvatarDropdown = () => {
                       bankAccountStatus === "success" && "border-green-500"
                     )}
                   />
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={handleBankAccountVerification}
                     disabled={isUpdating || !form.watch("bankName") || !form.watch("bankAccountNumber")}
+                    className="w-full md:w-auto"
                   >
                     {isUpdating ? (
                       <div className="flex items-center gap-2">
@@ -775,9 +767,9 @@ const AvatarDropdown = () => {
             <FormLabel>Mật khẩu đăng nhập hiện tại</FormLabel>
             <FormControl>
               <div className="relative">
-                <Input 
-                  type={showOldPassword ? "text" : "password"} 
-                  {...field} 
+                <Input
+                  type={showOldPassword ? "text" : "password"}
+                  {...field}
                 />
                 <Button
                   type="button"
@@ -803,9 +795,9 @@ const AvatarDropdown = () => {
             <FormLabel>Mật khẩu đăng nhập mới</FormLabel>
             <FormControl>
               <div className="relative">
-                <Input 
-                  type={showPassword ? "text" : "password"} 
-                  {...field} 
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  {...field}
                 />
                 <Button
                   type="button"
@@ -824,27 +816,29 @@ const AvatarDropdown = () => {
       />
 
       <DialogFooter className="mt-6 pb-6">
-        <Button
-          type="button"
-          variant="outline"
-          className="rounded-sm"
-          onClick={() => {
-            setIsPasswordModalOpen(false)
-            passwordForm.reset()
-          }}
-        >
-          Hủy
-        </Button>
-        <Button type="submit" disabled={isUpdating} className="rounded-sm bg-main-dark-blue !text-white hover:!bg-main-dark-blue/90">
-          {isUpdating ? (
-            <>
-              <div className="h-4 w-4 mr-2 rounded-full border-2 border-current border-t-transparent animate-spin" />
-              Đang lưu...
-            </>
-          ) : (
-            "Đổi mật khẩu đăng nhập"
-          )}
-        </Button>
+        <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-sm w-full sm:w-auto"
+            onClick={() => {
+              setIsPasswordModalOpen(false)
+              passwordForm.reset()
+            }}
+          >
+            Hủy
+          </Button>
+          <Button type="submit" disabled={isUpdating} className="rounded-sm w-full sm:w-auto bg-main-dark-blue !text-white hover:!bg-main-dark-blue/90">
+            {isUpdating ? (
+              <>
+                <div className="h-4 w-4 mr-2 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                Đang lưu...
+              </>
+            ) : (
+              "Đổi mật khẩu đăng nhập"
+            )}
+          </Button>
+        </div>
       </DialogFooter>
     </form>
   ), [passwordForm, handleChangePassword, showOldPassword, showPassword, isUpdating, setIsPasswordModalOpen])
@@ -859,9 +853,9 @@ const AvatarDropdown = () => {
             <FormLabel>Mật khẩu giao dịch hiện tại</FormLabel>
             <FormControl>
               <div className="relative">
-                <Input 
-                  type={showOldWithdrawPassword ? "text" : "password"} 
-                  {...field} 
+                <Input
+                  type={showOldWithdrawPassword ? "text" : "password"}
+                  {...field}
                 />
                 <Button
                   type="button"
@@ -887,9 +881,9 @@ const AvatarDropdown = () => {
             <FormLabel>Mật khẩu giao dịch mới</FormLabel>
             <FormControl>
               <div className="relative">
-                <Input 
-                  type={showWithdrawPassword ? "text" : "password"} 
-                  {...field} 
+                <Input
+                  type={showWithdrawPassword ? "text" : "password"}
+                  {...field}
                 />
                 <Button
                   type="button"
@@ -908,27 +902,29 @@ const AvatarDropdown = () => {
       />
 
       <DialogFooter className="mt-6 pb-6">
-        <Button
-          type="button"
-          variant="outline"
-          className="rounded-sm"
-          onClick={() => {
-            setIsWithdrawPasswordModalOpen(false)
-            withdrawPasswordForm.reset()
-          }}
-        >
-          Hủy
-        </Button>
-        <Button type="submit" disabled={isUpdating} className="rounded-sm bg-main-dark-blue !text-white hover:!bg-main-dark-blue/90">
-          {isUpdating ? (
-            <>
-              <div className="h-4 w-4 mr-2 rounded-full border-2 border-current border-t-transparent animate-spin" />
-              Đang lưu...
-            </>
-          ) : (
-            "Đổi mật khẩu giao dịch"
-          )}
-        </Button>
+        <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-sm w-full sm:w-auto"
+            onClick={() => {
+              setIsWithdrawPasswordModalOpen(false)
+              withdrawPasswordForm.reset()
+            }}
+          >
+            Hủy
+          </Button>
+          <Button type="submit" disabled={isUpdating} className="rounded-sm w-full sm:w-auto bg-main-dark-blue !text-white hover:!bg-main-dark-blue/90">
+            {isUpdating ? (
+              <>
+                <div className="h-4 w-4 mr-2 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                Đang lưu...
+              </>
+            ) : (
+              "Đổi mật khẩu giao dịch"
+            )}
+          </Button>
+        </div>
       </DialogFooter>
     </form>
   ), [withdrawPasswordForm, handleChangeWithdrawPassword, showOldWithdrawPassword, showWithdrawPassword, isUpdating, setIsWithdrawPasswordModalOpen])
@@ -936,20 +932,19 @@ const AvatarDropdown = () => {
   if (!isClient) {
     return <div className="avatar-placeholder h-10 w-10 rounded-full bg-muted animate-pulse"></div>
   }
-
   return (
     <>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <div className="flex items-center gap-2 cursor-pointer rounded-md transition-all p-1 hover:bg-transparent">
+            <div className="flex flex-col">
+              <p className="font-medium text-sm">{user?.username}</p>
+              <p className="text-xs text-end text-main-golden-orange">{user?.role === "admin" ? "Admin" : "Seller"}</p>
+            </div>
             <div className="flex-shrink-0 h-8 w-8 flex items-center justify-center bg-primary rounded-full overflow-hidden">
               <Avatar className="h-full w-full">
                 <AvatarImage src={logoUrl || "/images/icon.png"} alt="User avatar" />
               </Avatar>
-            </div>
-            <div className="flex flex-col">
-              <p className="font-medium text-sm">{user?.username}</p>
-              <p className="text-xs text-muted-foreground">{user?.role === "admin" ? "Admin" : "Seller"}</p>
             </div>
           </div>
         </DropdownMenuTrigger>
@@ -958,10 +953,6 @@ const AvatarDropdown = () => {
             <User className="h-4 w-4 mr-2" />
             Hồ sơ
           </DropdownMenuItem>
-          {/* <DropdownMenuItem onClick={() => setIsPasswordModalOpen(true)} className="cursor-pointer">
-            <Lock className="h-4 w-4 mr-2" />
-            Mật khẩu
-          </DropdownMenuItem> */}
           <Separator className="my-1" />
           <DropdownMenuItem
             onClick={handleClickLogout}
@@ -975,22 +966,23 @@ const AvatarDropdown = () => {
 
       {/* Profile Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 bg-white rounded-md sm:max-w-[1000px]">
-          <div className="px-6 py-4 border-b border-b-gray-200">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold">Quản lý hồ sơ</DialogTitle>
-              <DialogDescription>Cập nhật thông tin cá nhân và cài đặt thanh toán của bạn</DialogDescription>
-            </DialogHeader>
+        <DialogContent
+          className={`sm:max-w-[1000px] p-0 bg-white rounded-md max-h-[90vh] overflow-y-auto ${isMobile ? "max-w-full !rounded-none !h-screen !max-h-screen mt-[70px]" : ""
+            }`}
+          style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
+        >
+          <div className="px-4 sm:px-6 py-4 border-b border-b-gray-200 flex justify-between items-center">
+            <h2 className="text-lg sm:text-xl font-bold">Quản lý hồ sơ</h2>
           </div>
 
-          <div className="px-6">
+          <div className="px-4 md:px-6">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleProfileUpdate)}>
                 <Tabs defaultValue="basic" className="w-full" onValueChange={(value) => setActiveTab(value)}>
-                  <TabsList className="grid grid-cols-2 bg-transparent">
+                  <TabsList className="grid grid-cols-2 bg-transparent w-full">
                     <TabsTrigger
                       value="basic"
-                      className={`p-3 border-none rounded-none text-base font-semibold text-gray-700 relative hover:text-gray-900`}
+                      className={`py-2 md:p-3 border-none rounded-none text-sm md:text-base font-semibold text-gray-700 relative hover:text-gray-900`}
                     >
                       Thông tin cơ bản
                       {activeTab === "basic" && (
@@ -1004,7 +996,7 @@ const AvatarDropdown = () => {
                     </TabsTrigger>
                     <TabsTrigger
                       value="payment"
-                      className={`p-3 text-base font-semibold text-gray-700 relative hover:text-gray-900`}
+                      className={`py-2 md:p-3 text-sm md:text-base font-semibold text-gray-700 relative hover:text-gray-900`}
                     >
                       Cài đặt thanh toán
                       {activeTab === "payment" && (
@@ -1034,19 +1026,21 @@ const AvatarDropdown = () => {
                 </Tabs>
 
                 <DialogFooter className="mt-6 mb-6">
-                  <Button type="button" variant="outline" className="rounded-sm" onClick={() => setIsModalOpen(false)}>
-                    Hủy
-                  </Button>
-                  <Button type="submit" disabled={isUpdating} className="rounded-sm bg-gradient-to-l from-main-dark-blue to-main-dark-blue/80 !text-white hover:!bg-main-dark-blue/80 transition-colors">
-                    {isUpdating ? (
-                      <>
-                        <div className="h-4 w-4 mr-2 rounded-full border-2 border-current border-t-transparent animate-spin" />
-                        Đang lưu...
-                      </>
-                    ) : (
-                      "Lưu thay đổi"
-                    )}
-                  </Button>
+                  <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
+                    <Button type="button" variant="outline" className="rounded-sm w-full sm:w-auto" onClick={() => setIsModalOpen(false)}>
+                      Hủy
+                    </Button>
+                    <Button type="submit" disabled={isUpdating} className="rounded-sm w-full sm:w-auto bg-gradient-to-l from-main-dark-blue to-main-dark-blue/80 !text-white hover:!bg-main-dark-blue/80 transition-colors">
+                      {isUpdating ? (
+                        <>
+                          <div className="h-4 w-4 mr-2 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                          Đang lưu...
+                        </>
+                      ) : (
+                        "Lưu thay đổi"
+                      )}
+                    </Button>
+                  </div>
                 </DialogFooter>
               </form>
             </Form>
@@ -1056,7 +1050,7 @@ const AvatarDropdown = () => {
 
       {/* Password Modal */}
       <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
-        <DialogContent className="max-w-md p-0 bg-white rounded-md">
+        <DialogContent className={`max-w-md p-0 bg-white rounded-md ${isMobile ? "w-[calc(100vw-2rem)] max-w-full" : ""}`}>
           <div className="px-6 py-4 border-b border-b-gray-200">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold">Đổi mật khẩu đăng nhập</DialogTitle>
@@ -1074,7 +1068,7 @@ const AvatarDropdown = () => {
 
       {/* Withdraw Password Modal */}
       <Dialog open={isWithdrawPasswordModalOpen} onOpenChange={setIsWithdrawPasswordModalOpen}>
-        <DialogContent className="max-w-md p-0 bg-white rounded-md">
+        <DialogContent className={`max-w-md p-0 bg-white rounded-md ${isMobile ? "w-[calc(100vw-2rem)] max-w-full" : ""}`}>
           <div className="px-6 py-4 border-b border-b-gray-200">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold">Đổi mật khẩu giao dịch</DialogTitle>
