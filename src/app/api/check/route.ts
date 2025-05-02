@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  console.log('API check request received');
-  
   return NextResponse.json({
     status: 'ok',
     message: 'API is working correctly',
@@ -13,8 +11,6 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log('API check POST request received with body:', body);
-    
     return NextResponse.json({
       status: 'ok',
       message: 'POST request received successfully',

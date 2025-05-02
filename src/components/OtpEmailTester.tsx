@@ -16,7 +16,6 @@ const OtpEmailTester = () => {
   // Sử dụng hook thay vì gọi API trực tiếp
   const { sendVerificationCode, isLoading } = useSendOtp({
     onSuccess: (data) => {
-      console.log('OTP sent successfully:', data);
       setApiResponse(data);
       setApiError(null);
     },
@@ -36,20 +35,11 @@ const OtpEmailTester = () => {
       const date = new Date();
       date.setMinutes(date.getMinutes() + 15);
       const expiryTime = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-      
-      console.log(`Sending direct API request to /api-local/send-otp with: 
-        email: ${email}, 
-        otp: ${otp},
-        expiryTime: ${expiryTime}`
-      );
-      
       const response = await axios.post('/api-local/send-otp', {
         email,
         otp, 
         expiryTime
       });
-      
-      console.log('Direct API response:', response.data);
       setApiResponse(response.data);
       message.success(`Verification code sent successfully to ${email}`);
     } catch (error: any) {

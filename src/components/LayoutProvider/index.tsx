@@ -71,7 +71,7 @@ export const LayoutProvider = ({
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             style={{
               position: "fixed",
-              zIndex: 1000,
+              zIndex: 40,
               padding: 0,
               paddingLeft: '14px',
               background: 'transparent',
@@ -94,7 +94,7 @@ export const LayoutProvider = ({
             onClick={toggleMobileSidebar}
             style={{
               position: "fixed",
-              zIndex: 1000,
+              zIndex: 40,
               padding: 0,
               paddingLeft: '4px',
               background: 'transparent',

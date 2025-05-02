@@ -37,8 +37,6 @@ const SellerPackages = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const purchaseMutation = usePurchaseSellerPackage();
   const { profile } = useUser();
-  console.log("profile", profile);
-
   const handlePurchase = async () => {
     if (!selectedPackage) return;
     try {

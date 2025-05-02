@@ -69,7 +69,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         
         // Check if shop is suspended
         if (profileData.data?.shopStatus === "SUSPENDED") {
-          console.log("Account suspended. Logging out...")
           logoutUser()
         }
       }
@@ -160,9 +159,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const checkShopStatus = async () => {
       try {
         const profileData = await getProfile()
-        console.log("profileData tracking:", profileData)
         if (profileData?.data?.shopStatus === "SUSPENDED") {
-          console.log("Account suspended. Logging out...")
           logoutUser()
         }
       } catch (error) {

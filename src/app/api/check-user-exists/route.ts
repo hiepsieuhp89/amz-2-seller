@@ -23,10 +23,6 @@ export async function GET(request: NextRequest) {
   const username = searchParams.get('username');
   const email = searchParams.get('email');
   const phone = searchParams.get('phone');
-
-  // Log the parameters for debugging
-  console.log('Check user exists params:', { username, email, phone });
-
   // Check if at least one parameter is provided
   if (!username && !email && !phone) {
     return corsHeaders(NextResponse.json(
