@@ -51,7 +51,6 @@ function LayoutPage() {
   const { profileData } = useProfile();
   const [unreadNotifications, setUnreadNotifications] = useState<any>(null);
 
-  // Fetch unread notifications
   const fetchUnreadNotifications = useCallback(async () => {
     try {
       const response = await getUnreadNotifications();
@@ -61,16 +60,13 @@ function LayoutPage() {
     }
   }, []);
 
-  // Setup polling for unread notifications
   useEffect(() => {
     fetchUnreadNotifications();
     
-    // Set up polling every 5 seconds
     const intervalId = setInterval(() => {
       fetchUnreadNotifications();
     }, 5000);
     
-    // Clean up interval on component unmount
     return () => clearInterval(intervalId);
   }, [fetchUnreadNotifications]);
 
@@ -84,25 +80,17 @@ function LayoutPage() {
           case "ORDER_STATUS_UPDATE":
             counts.orders++;
             break;
-
-          // Chat related notifications
           case "NEW_MESSAGE":
             counts.chat++;
             break;
-          // New review notifications
           case "NEW_REVIEW":
             counts.reviews++;
             break;
-
-          // System notifications can be added to another category if needed
           case "ADMIN_NOTIFICATION":
           case "FEDEX_BALANCE_UPDATE":
           case "SYSTEM_NOTIFICATION":
-            // Add to appropriate category or create a new one if needed
             break;
-
           default:
-            // Fallback for any other types using the previous includes logic
             if (notification.type.includes("ORDER")) {
               counts.orders++;
             } else if (
@@ -121,14 +109,10 @@ function LayoutPage() {
     );
   }, [unreadNotifications]);
 
-  // Handler for menu item click to mark notifications as read
   const handleMenuItemClick = useCallback(
     async (menuPath: string) => {
-      // Skip for chat menu
-      if (menuPath === "/seller/chat" || !unreadNotifications?.data?.length)
+      if (!unreadNotifications?.data?.length)
         return;
-
-      // Get notifications IDs based on the clicked menu
       const notificationIds = unreadNotifications.data
         .filter((notification: any) => {
           if (menuPath === "/seller/orders") {
@@ -156,7 +140,6 @@ function LayoutPage() {
             console.error(`Error marking notification ${id} as read:`, error);
           }
         }
-        // After marking notifications as read, refresh the unread notifications
         fetchUnreadNotifications();
       }
     },

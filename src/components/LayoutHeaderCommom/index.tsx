@@ -167,7 +167,7 @@ export default function LayoutHeaderCommon() {
                 onClick={() => setShowBadge(false)}
               >
                 <Bell className="h-5 w-5 text-[#FCAF17]" />
-                {showBadge && unreadCount > 0 && (
+                {unreadCount > 0 && (
                   <Badge
                     variant="destructive"
                     className="absolute rounded-full -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs font-normal"
@@ -209,7 +209,7 @@ export default function LayoutHeaderCommon() {
                             key={notification.id}
                             className={`p-3 hover:bg-muted/50 cursor-pointer transition-colors ${notification.status === "UNREAD" ? "bg-muted/30" : ""
                               }`}
-                            onClick={() => handleNotificationClick(notification.id)}
+                            onClick={() => {handleNotificationClick(notification.id)}}
                           >
                             <div className="flex items-start gap-3">
                               <div className="flex-1 space-y-1">

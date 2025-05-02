@@ -3,14 +3,12 @@ import {
   useDeleteMessage,
   useGetListMessageAvailable,
   useGetMessagesWithUser,
-  useMarkMessageAsRead,
   useMarkAllMessagesWithUserAsRead,
   useSendMessageToUser,
 } from "@/hooks/shop-chat";
 import { useGetShopProductDetail } from "@/hooks/shop-products";
 import {
   MoreVertical,
-  MessageSquare,
   Send,
   Trash2,
   MessageCircle,
@@ -34,6 +32,7 @@ import {
 import { Icon } from "@mdi/react";
 import { mdiChevronLeft, mdiMagnify } from "@mdi/js";
 import { formatDate as formatDateUtil } from "@/utils";
+import { useMarkAsRead } from "@/hooks/notification";
 
 const getInitials = (name: string = "") => {
   if (!name) return "UN"; 
@@ -154,60 +153,74 @@ export default function ChatPage() {
   const { mutate: deleteMessage } = useDeleteMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showMobileSidebar, setShowMobileSidebar] = useState(true);
+  const { mutate: markNotificationAsRead } = useMarkAsRead();
+  const [chatListState, setChatListState] = useState<any[]>([]);
+  useEffect(() => {
+    if (chatList?.data?.data) {
+      const transformed = (
+        chatList.data.data.reduce((acc: any, msg: any) => {
+          if (!msg?.user && msg?.senderRole === "user") return acc;
 
-  const transformedChatList = (
-    chatList?.data?.data?.reduce((acc: any, msg: any) => {
-      if (!msg?.user && msg?.senderRole === "user") return acc;
+          const userId = msg?.user?.id;
+          if (msg?.senderRole === "user" && !userId) return acc;
 
-      const userId = msg?.user?.id;
-      if (msg?.senderRole === "user" && !userId) return acc;
+          const existingChat = acc.find((chat: any) => chat.userId === userId);
 
-      const existingChat = acc.find((chat: any) => chat.userId === userId);
+          const chatItem = {
+            userId: userId,
+            userName:
+              msg.senderRole === "user" ? msg?.user?.fullName || "Unknown User" : msg?.shop?.shopName || "Unknown Shop",
+            userAvatar:
+              msg.senderRole === "user"
+                ? "https://via.placeholder.com/150"
+                : msg?.shop?.logoUrl || "https://via.placeholder.com/150",
+            lastMessage: msg.message || "",
+            lastMessageDate: msg.createdAt,
+            unreadCount: msg.isRead ? 0 : 1,
+            latestMessageId: msg.id, 
+          };
 
-      const chatItem = {
-        userId: userId,
-        userName:
-          msg.senderRole === "user" ? msg?.user?.fullName || "Unknown User" : msg?.shop?.shopName || "Unknown Shop",
-        userAvatar:
-          msg.senderRole === "user"
-            ? "https://via.placeholder.com/150"
-            : msg?.shop?.logoUrl || "https://via.placeholder.com/150",
-        lastMessage: msg.message || "",
-        lastMessageDate: msg.createdAt,
-        unreadCount: msg.isRead ? 0 : 1,
-        latestMessageId: msg.id, 
-      };
+          if (existingChat) {
+            if (new Date(msg.createdAt) > new Date(existingChat.lastMessageDate)) {
+              existingChat.lastMessage = chatItem.lastMessage;
+              existingChat.lastMessageDate = chatItem.lastMessageDate;
+              existingChat.unreadCount += chatItem.unreadCount; // Accumulate unread count correctly
+              existingChat.latestMessageId = chatItem.latestMessageId; // Update latest message ID
+            } else {
+              existingChat.unreadCount += chatItem.unreadCount;
+            }
+          } else {
+            acc.push(chatItem);
+          }
+          return acc;
+        }, [] as any) || []
+      ).sort(
+        (a: any, b: any) =>
+          new Date(b.lastMessageDate).getTime() -
+          new Date(a.lastMessageDate).getTime()
+      );
+      setChatListState(transformed);
+    }
+  }, [chatList]);
 
-      if (existingChat) {
-        if (new Date(msg.createdAt) > new Date(existingChat.lastMessageDate)) {
-          existingChat.lastMessage = chatItem.lastMessage;
-          existingChat.lastMessageDate = chatItem.lastMessageDate;
-          existingChat.unreadCount += chatItem.unreadCount; // Accumulate unread count correctly
-          existingChat.latestMessageId = chatItem.latestMessageId; // Update latest message ID
-        } else {
-          existingChat.unreadCount += chatItem.unreadCount;
-        }
-      } else {
-        acc.push(chatItem);
-      }
-      return acc;
-    }, [] as any) || []
-  ).sort(
-    (a: any, b: any) =>
-      new Date(b.lastMessageDate).getTime() -
-      new Date(a.lastMessageDate).getTime()
-  );
-  const handleUserClick = async (userId: string) => {
-    if (!userId || selectedUser === userId) return; 
+  const handleUserClick = (userId: string) => {
+    if (!userId || selectedUser === userId) return;
 
     setSelectedUser(userId);
 
-    try {
-      await markAllAsRead(userId);
-      refetchChatList();
-    } catch (error) {
-      console.error("Failed to mark messages as read:", error);
-      toast.error("Lỗi đánh dấu đã đọc", { id: "mark-read-error" });
+    setChatListState(prev =>
+      prev.map(item =>
+        item.userId === userId ? { ...item, unreadCount: 0 } : item
+      )
+    );
+
+    const chatItem = chatListState.find((chat: any) => chat.userId === userId);
+    if (chatItem && chatItem.latestMessageId) {
+      markNotificationAsRead({ notificationId: chatItem.latestMessageId }, {
+        onSuccess: () => {
+          refetchChatList();
+        }
+      });
     }
 
     setShowMobileSidebar(false);
@@ -215,15 +228,15 @@ export default function ChatPage() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages?.data]); // Depend on messages.data for accurate scrolling
+  }, [messages?.data]); 
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (selectedUser) {
-        refetchMessages(); // Refetch messages for the selected user
+        refetchMessages(); 
+        refetchChatList(); 
       }
-      refetchChatList(); // Always refetch the chat list
-    }, 10000); // Poll every 10 seconds
+    }, 10000); 
 
     return () => clearInterval(interval);
   }, [selectedUser, refetchMessages, refetchChatList]);
@@ -294,7 +307,7 @@ export default function ChatPage() {
     );
   };
 
-  const selectedUserDetails = transformedChatList.find(
+  const selectedUserDetails = chatListState.find(
     (chat: any) => chat.userId === selectedUser
   );
   return (
@@ -319,7 +332,7 @@ export default function ChatPage() {
           {/* Sidebar Chat List */}
           <ScrollArea className="flex-1 bg-background">
             <div className="flex flex-col p-2">
-              {transformedChatList?.map((item: any) => (
+              {chatListState?.map((item: any) => (
                 <div
                   key={item.userId}
                   className={`flex items-start gap-3 p-3 rounded-md cursor-pointer transition-colors duration-150 ease-in-out ${selectedUser === item.userId
@@ -389,7 +402,7 @@ export default function ChatPage() {
             {/* Mobile Sidebar Chat List */}
             <ScrollArea className="flex-1">
               <div className="flex flex-col p-2">
-                {transformedChatList?.map((item: any) => (
+                {chatListState?.map((item: any) => (
                   <div
                     key={`mobile-${item.userId}`}
                     className={`flex items-start gap-3 p-3 rounded-md cursor-pointer transition-colors duration-150 ease-in-out ${selectedUser === item.userId
