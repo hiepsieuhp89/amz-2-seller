@@ -148,7 +148,7 @@ export default function LayoutHeaderCommon() {
 
   return (
     <header className="!h-[70px] min-h-[70px] bg-main-dark-blue !text-white/80 px-4 py-3 flex justify-between items-center fixed top-0 left-0 w-full z-30">
-      <Link href="/" className="relative h-8 left-8 md:left-[64px] cursor-pointer scale-75 md:scale-100">
+      <Link href={`${process.env.NEXT_PUBLIC_HOME_URL}`} className="relative h-8 left-8 md:left-[64px] cursor-pointer scale-75 md:scale-100">
         <Image
           quality={100}
           draggable={false}
