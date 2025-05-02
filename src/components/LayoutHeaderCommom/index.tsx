@@ -35,11 +35,9 @@ export default function LayoutHeaderCommon() {
 
   const unreadCount = unreadNotifications?.data?.length || 0
 
-  // Fetch notifications
   const fetchNotifications = useCallback(async () => {
     try {
       setIsLoading(true)
-      // Fetch both types of notifications concurrently
       const [allResponse, unreadResponse] = await Promise.all([
         getAllNotifications(),
         getUnreadNotifications()
@@ -54,20 +52,16 @@ export default function LayoutHeaderCommon() {
     }
   }, [])
 
-  // Initialize notifications on component mount
   useEffect(() => {
     fetchNotifications()
     
-    // Set up polling every 5 seconds
     const intervalId = setInterval(() => {
       fetchNotifications()
     }, 5000)
     
-    // Clean up interval on component unmount
     return () => clearInterval(intervalId)
   }, [fetchNotifications])
 
-  // Event listeners for role and department changes
   if (typeof window !== "undefined") {
     window.addEventListener("storage", (event) => {
       if (event.key === "role") {
@@ -100,7 +94,6 @@ export default function LayoutHeaderCommon() {
     })
   }
 
-  // Format date to a readable format for notifications (using date-fns for time ago)
   const formatRelativeDate = (dateString: string) => {
     try {
       const date = new Date(dateString)
@@ -114,7 +107,6 @@ export default function LayoutHeaderCommon() {
     if (notificationId) {
       try {
         await markAsRead({ notificationId })
-        // After marking as read, refresh the notifications
         fetchNotifications()
       } catch (error) {
         console.error("Error marking notification as read:", error)
@@ -126,7 +118,6 @@ export default function LayoutHeaderCommon() {
     try {
       await markAllAsRead()
       setShowBadge(false)
-      // After marking all as read, refresh the notifications
       fetchNotifications()
     } catch (error) {
       console.error("Error marking all notifications as read:", error)
@@ -138,7 +129,6 @@ export default function LayoutHeaderCommon() {
     if (notificationId) {
       try {
         await deleteNotification({ notificationId })
-        // After deleting, refresh the notifications
         fetchNotifications()
       } catch (error) {
         console.error("Error deleting notification:", error)
