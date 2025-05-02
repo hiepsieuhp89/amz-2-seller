@@ -150,20 +150,16 @@ export default function ChatPage() {
     selectedUser || ""
   );
   const { mutate: sendMessage } = useSendMessageToUser();
-  const { mutate: markAsRead } = useMarkMessageAsRead();
   const { mutate: markAllAsRead } = useMarkAllMessagesWithUserAsRead();
   const { mutate: deleteMessage } = useDeleteMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(true);
 
-  // Transform chat list data
   const transformedChatList = (
     chatList?.data?.data?.reduce((acc: any, msg: any) => {
-      // Skip messages with undefined user data
       if (!msg?.user && msg?.senderRole === "user") return acc;
 
       const userId = msg?.user?.id;
-      // Skip messages with no userId when expected
       if (msg?.senderRole === "user" && !userId) return acc;
 
       const existingChat = acc.find((chat: any) => chat.userId === userId);
@@ -175,11 +171,11 @@ export default function ChatPage() {
         userAvatar:
           msg.senderRole === "user"
             ? "https://via.placeholder.com/150"
-            : msg?.shop?.logoUrl || "https://via.placeholder.com/150", // Provide fallback for both
+            : msg?.shop?.logoUrl || "https://via.placeholder.com/150",
         lastMessage: msg.message || "",
         lastMessageDate: msg.createdAt,
         unreadCount: msg.isRead ? 0 : 1,
-        latestMessageId: msg.id, // Store the latest message ID
+        latestMessageId: msg.id, 
       };
 
       if (existingChat) {
@@ -189,7 +185,6 @@ export default function ChatPage() {
           existingChat.unreadCount += chatItem.unreadCount; // Accumulate unread count correctly
           existingChat.latestMessageId = chatItem.latestMessageId; // Update latest message ID
         } else {
-          // If older message, still potentially increment unread count
           existingChat.unreadCount += chatItem.unreadCount;
         }
       } else {
@@ -201,10 +196,9 @@ export default function ChatPage() {
     (a: any, b: any) =>
       new Date(b.lastMessageDate).getTime() -
       new Date(a.lastMessageDate).getTime()
-  ); // Sort by most recent message
-
+  );
   const handleUserClick = async (userId: string) => {
-    if (!userId || selectedUser === userId) return; // Avoid re-selecting the same user or selecting invalid userId
+    if (!userId || selectedUser === userId) return; 
 
     setSelectedUser(userId);
 
@@ -288,10 +282,6 @@ export default function ChatPage() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
-          {/* <DropdownMenuItem onClick={() => {}} className="cursor-pointer">
-            <Check className="mr-2 h-4 w-4" />
-            <span>Đánh dấu đã đọc</span>
-          </DropdownMenuItem> */}
           <DropdownMenuItem
             onClick={() => handleDeleteMessage(messageId)}
             className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
