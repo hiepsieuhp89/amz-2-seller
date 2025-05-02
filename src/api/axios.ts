@@ -34,7 +34,6 @@ instance.interceptors.request.use(
   }
 );
 export function logout() {
-  console.log("logout")
   cookies.remove("accessToken");
   localStorage?.clear();
 

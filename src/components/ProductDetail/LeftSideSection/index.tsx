@@ -13,6 +13,8 @@ import { formatNumber } from '@/utils';
 import { useTopSellingProducts } from '@/hooks/dashboard';
 import { useSelectedProduct } from '@/stores/useSelectedProduct';
 import { useProfile } from '@/hooks/authentication';
+import { useSearchParams } from 'next/navigation';
+import { useProductById } from '@/hooks/products';
 const { Text } = Typography;
 
 const RatingStars = ({ rating }: { rating: number }) => {
@@ -60,7 +62,11 @@ const LeftSideSection = () => {
   };
 
   const { data: topSellingProducts, isLoading } = useTopSellingProducts()
-  const { setSelectedProduct } = useSelectedProduct()
+  const { selectedProduct, setSelectedProduct } = useSelectedProduct()
+  const searchParams = useSearchParams();
+  const productId = searchParams.get('id');
+  const { product, error } = useProductById(productId);
+  console.log(product)
   const { profileData } = useProfile()
   return (
     <div>

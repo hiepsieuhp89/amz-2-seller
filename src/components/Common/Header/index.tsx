@@ -245,14 +245,12 @@ export function Header() {
                                     <>
                                         {!user && <span
                                             onClick={() => {
-                                                console.log("sign-in")
                                                 router.push("/sign-in")
                                             }}
                                             className="text-xs text-gray-400 transition-all duration-300 cursor-pointer">Xin chào. Đăng nhập</span>}
                                         {user && <span
                                             onClick={() => {
                                                 const shopUrl = process.env.NEXT_PUBLIC_SHOP_URL
-                                                console.log(shopUrl)
                                                 window.location.href = `${shopUrl}/seller/products/storehouse`
                                             }}
                                             className="font-bold text-sm text-gray-400 hover:!text-white/80 transition-all duration-300">Bảng điều khiển của tôi</span>}
@@ -454,7 +452,6 @@ export function Header() {
                                 <>
                                     {!user ? (
                                         <div onClick={() => {
-                                            console.log("sign-in")
                                             router.push("/sign-in")
                                             setMobileMenuOpen(false)
                                         }} className="cursor-pointer">
@@ -465,7 +462,6 @@ export function Header() {
                                         <div className="space-y-2">
                                             <div onClick={() => {
                                                 const shopUrl = process.env.NEXT_PUBLIC_SHOP_URL
-                                                console.log(shopUrl)
                                                 window.location.href = `${shopUrl}/seller/products/storehouse`
                                                 setMobileMenuOpen(false)
                                             }} className="cursor-pointer">

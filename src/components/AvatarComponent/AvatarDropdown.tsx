@@ -33,7 +33,6 @@ import { motion } from "framer-motion"
 
 const AvatarDropdown = () => {
   const { user, profile, logoutUser, logoUrl } = useUser()
-  console.log(profile)
   const [isClient, setIsClient] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)

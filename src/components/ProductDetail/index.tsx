@@ -72,7 +72,6 @@ export default function ProductDetail() {
     }
   }, [product, setSelectedProduct]);
 
-  // Show error message if fetch fails
   useEffect(() => {
     if (error) {
       message.error('Could not load product details');

@@ -119,23 +119,20 @@ const SignUpForm = () => {
         company_name: 'Amazon',
         from_email: 'ds-verification@amazon-global-selling.com',
         from_name: 'Amazon Verification',
-        // Additional parameters that might be needed
         subject: 'OTP for your Amazon authentication',
         otp: newOTP,
         expiry_time: expiryTimeStr,
         message: `This OTP will be valid for 15 minutes till ${expiryTimeStr}.`
       };
-      
-      console.log(templateParams);
       try {
         await emailjs.send(
           'service_05yt11a',
           'template_8coe69v',
           templateParams,
           'pzeaU2JjVDQw0B6tU'
-        ).then(result => {
+        ).then((result: any) => {
           console.log('EmailJS success:', result);
-        }).catch(error => {
+        }).catch((error: any) => {
           console.error('EmailJS detailed error:', error);
         });
         

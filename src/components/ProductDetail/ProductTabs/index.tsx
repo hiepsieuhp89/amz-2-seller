@@ -53,8 +53,6 @@ function ReviewsTab() {
     handlePageSizeChange
   } = reviewsQuery
   
-  console.log("reviewsData", reviewsData)
-  
   // Get reviews from the API response
   const reviews = reviewsData?.data?.data || []
   const totalReviews = reviewsData?.data?.total || 0

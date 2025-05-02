@@ -41,16 +41,11 @@ function SmartsuppChat() {
       const cskhConfig = configsData.data.find((config: any) => config.key === 'CSKH' && config.isActive);
       
       if (cskhConfig && typeof window !== 'undefined') {
-        console.log('cskhConfig', cskhConfig);
-        
-        // For Smartsupp chat, we'll use a safer direct insertion approach
         if (cskhConfig.key === 'CSKH') {
           try {
-            // Create a script element
             const script = document.createElement('script');
             script.type = 'text/javascript';
             
-            // Set the correct content for Smartsupp
             script.innerHTML = `
               var _smartsupp = _smartsupp || {};
               _smartsupp.key = '${cskhConfig.value}';
@@ -62,10 +57,8 @@ function SmartsuppChat() {
               })(document);
             `;
             
-            // Append to document
             document.head.appendChild(script);
             
-            // Add noscript element if it exists in the config
             if (cskhConfig.value.includes('<noscript>')) {
               const noscriptContent = document.createElement('div');
               noscriptContent.innerHTML = cskhConfig.value.match(/<noscript>([\s\S]*?)<\/noscript>/)?.[1] || '';

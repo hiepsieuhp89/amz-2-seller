@@ -60,11 +60,6 @@ const SellerOrders = () => {
     setFilteredOrders(filtered);
   };
 
-  // Add this new function to handle currency conversion
-  const handleCurrencyConversion = () => {
-    console.log("Currency conversion clicked");
-  };
-
   // Columns for wallet transactions table
   const walletColumns: ColumnsType<any> = [
     {

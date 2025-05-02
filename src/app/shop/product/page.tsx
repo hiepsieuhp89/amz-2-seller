@@ -4,9 +4,6 @@ import { Header } from "@/components/Common/Header";
 import ProductDetail from "@/components/ProductDetail";
 import LeftSideSection from "@/components/ProductDetail/LeftSideSection";
 import ProductTabs from "@/components/ProductDetail/ProductTabs";
-import { Button, Divider, Rate, Typography } from "antd";
-import Title from "antd/es/typography/Title";
-import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 
