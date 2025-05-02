@@ -2,42 +2,70 @@
 
 import type React from "react"
 
-import { useRouter } from "next/navigation"
-import AvatarDropdown from "../AvatarComponent/AvatarDropdown"
-import Image from "next/image"
+import { openChat } from "@/app/ClientLayout"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import {
+  getAllNotifications,
+  getUnreadNotifications,
+  markAllAsRead,
+  markAsRead,
+  deleteNotification
+} from "@/api/notification"
 import { mdiFaceAgent } from "@mdi/js"
 import Icon from "@mdi/react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { motion } from "framer-motion"
-import {
-  useGetAllNotifications,
-  useGetUnreadNotifications,
-  useMarkAsRead,
-  useMarkAllAsRead,
-  useDeleteNotification,
-} from "@/hooks/notification"
-import { Bell } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 import { formatDistanceToNow } from "date-fns"
 import { vi } from "date-fns/locale"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { motion } from "framer-motion"
+import { Bell } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
-import { formatDate } from "@/utils"
-import { openChat } from "@/app/ClientLayout"
+import { useRouter } from "next/navigation"
+import { useState, useEffect, useCallback } from "react"
+import AvatarDropdown from "../AvatarComponent/AvatarDropdown"
 
 export default function LayoutHeaderCommon() {
   const router = useRouter()
-  const { data: allNotifications } = useGetAllNotifications()
-  const { data: unreadNotifications } = useGetUnreadNotifications()
+  const [allNotifications, setAllNotifications] = useState<any>(null)
+  const [unreadNotifications, setUnreadNotifications] = useState<any>(null)
   const [showBadge, setShowBadge] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   const unreadCount = unreadNotifications?.data?.length || 0
 
-  const { mutate: markAsRead } = useMarkAsRead()
-  const { mutate: markAllAsRead } = useMarkAllAsRead()
-  const { mutate: deleteNotification } = useDeleteNotification()
+  // Fetch notifications
+  const fetchNotifications = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      // Fetch both types of notifications concurrently
+      const [allResponse, unreadResponse] = await Promise.all([
+        getAllNotifications(),
+        getUnreadNotifications()
+      ])
+      
+      setAllNotifications(allResponse)
+      setUnreadNotifications(unreadResponse)
+    } catch (error) {
+      console.error("Error fetching notifications:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  // Initialize notifications on component mount
+  useEffect(() => {
+    fetchNotifications()
+    
+    // Set up polling every 5 seconds
+    const intervalId = setInterval(() => {
+      fetchNotifications()
+    }, 5000)
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId)
+  }, [fetchNotifications])
 
   // Event listeners for role and department changes
   if (typeof window !== "undefined") {
@@ -82,21 +110,39 @@ export default function LayoutHeaderCommon() {
     }
   }
 
-  const handleNotificationClick = (notificationId: string) => {
+  const handleNotificationClick = async (notificationId: string) => {
     if (notificationId) {
-      markAsRead({ notificationId })
+      try {
+        await markAsRead({ notificationId })
+        // After marking as read, refresh the notifications
+        fetchNotifications()
+      } catch (error) {
+        console.error("Error marking notification as read:", error)
+      }
     }
   }
 
-  const handleMarkAllAsRead = () => {
-    markAllAsRead()
-    setShowBadge(false)
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsRead()
+      setShowBadge(false)
+      // After marking all as read, refresh the notifications
+      fetchNotifications()
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error)
+    }
   }
 
-  const handleDeleteNotification = (e: React.MouseEvent, notificationId: string) => {
+  const handleDeleteNotification = async (e: React.MouseEvent, notificationId: string) => {
     e.stopPropagation()
     if (notificationId) {
-      deleteNotification({ notificationId })
+      try {
+        await deleteNotification({ notificationId })
+        // After deleting, refresh the notifications
+        fetchNotifications()
+      } catch (error) {
+        console.error("Error deleting notification:", error)
+      }
     }
   }
 
@@ -162,7 +208,11 @@ export default function LayoutHeaderCommon() {
 
                 <ScrollArea className="h-[300px]">
                   <div className="p-0">
-                    {allNotifications?.data?.data && allNotifications.data.data.length > 0 ? (
+                    {isLoading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin h-5 w-5 border-2 border-[#FCAF17] border-t-transparent rounded-full"></div>
+                      </div>
+                    ) : allNotifications?.data?.data && allNotifications.data.data.length > 0 ? (
                       <div className="divide-y">
                         {allNotifications.data.data?.map((notification: any) => (
                           <div

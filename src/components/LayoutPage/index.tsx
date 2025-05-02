@@ -32,7 +32,7 @@ import { useLayout } from "@/components/LayoutProvider";
 import useSidebar from "@/stores/useSidebar";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useGetUnreadNotifications, useMarkAsRead } from "@/hooks/notification";
+import { getUnreadNotifications, markAsRead } from "@/api/notification";
 import { useProfile } from "@/hooks/authentication";
 
 function LayoutPage() {
@@ -49,8 +49,30 @@ function LayoutPage() {
   const [isClient, setIsClient] = useState(false);
   const { isMobileSidebarOpen, toggleMobileSidebar } = useLayout();
   const { profileData } = useProfile();
-  const { data: unreadNotifications } = useGetUnreadNotifications();
-  const { mutate: markAsRead } = useMarkAsRead();
+  const [unreadNotifications, setUnreadNotifications] = useState<any>(null);
+
+  // Fetch unread notifications
+  const fetchUnreadNotifications = useCallback(async () => {
+    try {
+      const response = await getUnreadNotifications();
+      setUnreadNotifications(response);
+    } catch (error) {
+      console.error("Error fetching unread notifications:", error);
+    }
+  }, []);
+
+  // Setup polling for unread notifications
+  useEffect(() => {
+    fetchUnreadNotifications();
+    
+    // Set up polling every 5 seconds
+    const intervalId = setInterval(() => {
+      fetchUnreadNotifications();
+    }, 5000);
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [fetchUnreadNotifications]);
 
   const notificationCounts = useMemo(() => {
     if (!unreadNotifications?.data) return { orders: 0, chat: 0, reviews: 0 };
@@ -101,7 +123,7 @@ function LayoutPage() {
 
   // Handler for menu item click to mark notifications as read
   const handleMenuItemClick = useCallback(
-    (menuPath: string) => {
+    async (menuPath: string) => {
       // Skip for chat menu
       if (menuPath === "/seller/chat" || !unreadNotifications?.data?.length)
         return;
@@ -127,12 +149,18 @@ function LayoutPage() {
         .map((notification: any) => notification.id);
 
       if (notificationIds.length > 0) {
-        notificationIds.forEach((id: any) => {
-          markAsRead({ notificationId: id });
-        });
+        for (const id of notificationIds) {
+          try {
+            await markAsRead({ notificationId: id });
+          } catch (error) {
+            console.error(`Error marking notification ${id} as read:`, error);
+          }
+        }
+        // After marking notifications as read, refresh the unread notifications
+        fetchUnreadNotifications();
       }
     },
-    [unreadNotifications, markAsRead]
+    [unreadNotifications, fetchUnreadNotifications]
   );
 
   const menu = [
