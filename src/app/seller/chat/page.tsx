@@ -146,7 +146,7 @@ export default function ChatPage() {
   const [message, setMessage] = useState("");
   const { data: chatList, refetch: refetchChatList } = useGetListMessageAvailable({
     page: 1,
-    pageSize: 9999999,
+    take: 9999999,
   });
   const { data: messages, refetch: refetchMessages } = useGetMessagesWithUser(
     selectedUser || ""
