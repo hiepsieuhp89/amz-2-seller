@@ -179,7 +179,7 @@ export default function ChatPage() {
                 : msg?.shop?.logoUrl || "https://via.placeholder.com/150",
             lastMessage: msg.message || "",
             lastMessageDate: msg.createdAt,
-            unreadCount: msg.isRead ? 0 : 1,
+            unreadCount: msg.senderRole === "user" && (msg.isRead ? 0 : 1),
             latestMessageId: msg.id,
           };
 
