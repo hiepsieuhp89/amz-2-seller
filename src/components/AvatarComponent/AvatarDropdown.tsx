@@ -33,7 +33,6 @@ import Image from "next/image"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
-// Add type interface definitions
 interface BankOption {
   value: string;
   label: string;
@@ -971,6 +970,7 @@ const AvatarDropdown = () => {
             }`}
           style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
         >
+          <DialogTitle></DialogTitle>
           <div className="px-4 sm:px-6 py-4 border-b border-b-gray-200 flex justify-between items-center">
             <h2 className="text-lg sm:text-xl font-bold">Quản lý hồ sơ</h2>
           </div>
@@ -1068,6 +1068,7 @@ const AvatarDropdown = () => {
 
       {/* Withdraw Password Modal */}
       <Dialog open={isWithdrawPasswordModalOpen} onOpenChange={setIsWithdrawPasswordModalOpen}>
+        <DialogTitle></DialogTitle>
         <DialogContent className={`max-w-md p-0 bg-white rounded-md ${isMobile ? "w-[calc(100vw-2rem)] max-w-full" : ""}`}>
           <div className="px-6 py-4 border-b border-b-gray-200">
             <DialogHeader>

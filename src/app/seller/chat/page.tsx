@@ -152,7 +152,6 @@ export default function ChatPage() {
     selectedUser || ""
   );
   const { mutate: sendMessage } = useSendMessageToUser();
-  const { mutate: markAllAsRead } = useMarkAllMessagesWithUserAsRead();
   const { mutate: deleteMessage } = useDeleteMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showMobileSidebar, setShowMobileSidebar] = useState(true);

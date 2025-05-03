@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useGetOrderDetail } from "@/hooks/shop-products";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Divider, Badge, Spin } from "antd";
 import JSBarcode from "jsbarcode";
 import { QRCodeCanvas } from "qrcode.react";
@@ -177,6 +177,7 @@ const OrderDetailDialog = ({
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-[1000px] p-0 bg-white rounded-md">
+          <DialogTitle></DialogTitle>
           <div className="flex justify-center items-center h-[300px]">
             <Spin size="small" />
           </div>
@@ -227,10 +228,8 @@ const OrderDetailDialog = ({
 
     switch (type) {
       case "name":
-        // Giữ lại 3 ký tự đầu, còn lại thay bằng *
         return info.substring(0, 3) + "*".repeat(Math.max(0, info.length - 3));
       case "email":
-        // Giữ lại phần đầu trước @ và thay phần còn lại bằng *
         const atIndex = info.indexOf("@");
         if (atIndex === -1)
           return (
@@ -244,14 +243,12 @@ const OrderDetailDialog = ({
           domain
         );
       case "phone":
-        // Giữ lại 3 số đầu và 2 số cuối
         return (
           info.substring(0, 3) +
           "*".repeat(Math.max(0, info.length - 5)) +
           info.slice(-2)
         );
       case "address":
-        // Thay lại 3 số đầu và 2 số cuối
         return info.substring(0, 3) + "**********" + info.slice(-2);
       default:
         return info;
@@ -260,12 +257,14 @@ const OrderDetailDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogTitle></DialogTitle>
       <DialogContent
         className={`sm:max-w-[1000px] p-0 bg-white rounded-md max-h-[90vh] overflow-y-auto ${
           isMobile ? "max-w-full !rounded-none !h-screen !max-h-screen mt-[70px]" : ""
         }`}
         style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
       >
+        <DialogTitle></DialogTitle>
         <div id="preview" ref={previewRef} data-loaded={!!orderDetailData?.data} className="h-auto">
           {!orderDetailData?.data && isPrinting ? (
             <div className="flex justify-center items-center h-[300px]">

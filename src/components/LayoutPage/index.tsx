@@ -4,7 +4,6 @@ import {
   mdiChevronDown,
   mdiChevronRight,
   mdiCogOutline,
-  mdiHome,
   mdiHomeOutline,
   mdiPackageVariant,
   mdiPackageVariantClosed,
@@ -12,7 +11,6 @@ import {
   mdiMessageTextOutline,
   mdiMessageText,
   mdiStar,
-  mdiMenu,
   mdiAccountOutline,
   mdiBullhornOutline,
 } from "@mdi/js";
@@ -21,13 +19,12 @@ import type { MenuProps } from "antd";
 import { Badge, Input, Menu } from "antd";
 import { usePathname, useRouter } from "next/navigation";
 import type React from "react";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import "./styles.css";
 import Image from "next/image";
 import { useUser } from "@/context/useUserContext";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useLayout } from "@/components/LayoutProvider";
 import useSidebar from "@/stores/useSidebar";
 import { Star } from "lucide-react";
@@ -37,7 +34,6 @@ import { useProfile } from "@/hooks/authentication";
 
 function LayoutPage() {
   const { isSidebarOpen } = useSidebar();
-  const router = useRouter();
   const pathname = usePathname();
   const [path, setPath] = useState(`seller/dashboard`);
   const [activeSubMenu, setActiveSubMenu] = useState<string | null>(null);
@@ -47,7 +43,6 @@ function LayoutPage() {
     process.env.NEXT_PUBLIC_HOME_URL + "/shop?id="
   );
   const [isClient, setIsClient] = useState(false);
-  const { isMobileSidebarOpen, toggleMobileSidebar } = useLayout();
   const { profileData } = useProfile();
   const [unreadNotifications, setUnreadNotifications] = useState<any>(null);
 
@@ -401,7 +396,6 @@ function LayoutPage() {
     });
   };
 
-  // Animation variants for consistent timing
   const sidebarVariants = {
     open: { width: 280, transition: { duration: 0.3, ease: "easeInOut" } },
     closed: { width: 60, transition: { duration: 0.3, ease: "easeInOut" } },
@@ -462,221 +456,6 @@ function LayoutPage() {
     );
   };
 
-  const MobileSidebar = () => {
-    const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
-      {}
-    );
-
-    const toggleExpand = (key: string) => {
-      setExpandedItems((prev) => ({
-        ...prev,
-        [key]: !prev[key],
-      }));
-    };
-
-    const mobileSidebarVariants = {
-      open: {
-        opacity: 1,
-        x: 0,
-        transition: { duration: 0.3, ease: "easeOut" },
-      },
-      closed: {
-        opacity: 0,
-        x: -50,
-        transition: { duration: 0.3, ease: "easeIn" },
-      },
-    };
-
-    return (
-      <Sheet open={isMobileSidebarOpen} onOpenChange={toggleMobileSidebar}>
-        <SheetContent
-          side="left"
-          className="w-[280px] p-0 border-r-0 bg-[#131921]"
-        >
-          <div className="flex flex-col h-full">
-            {/* Header */}
-            <div className="p-4 border-b border-gray-800 bg-[#232f3e]">
-              <div className="flex flex-col items-center mb-4">
-                <div className="text-[#ff9900] hover:text-[#FCAF17] transition-all duration-300 flex items-center cursor-pointer mb-3">
-                  <Link
-                    href={shopLink}
-                    className="font-medium text-base flex-shrink-0"
-                  >
-                    Ghé thăm cửa hàng
-                  </Link>
-                  <span className="ml-1 flex-shrink-0 text-base">→</span>
-                </div>
-
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  <span className="text-lg font-medium text-white flex-shrink-0">
-                    {profileData?.data?.shopName || "Cửa hàng chưa có tên"}
-                  </span>
-                  {profileData?.data?.isVerified && (
-                    <div className="h-6 w-6 relative flex-shrink-0">
-                      <Image
-                        draggable={false}
-                        quality={100}
-                        height={100}
-                        width={100}
-                        className="object-cover"
-                        src={"/images/tick-icon.png"}
-                        alt="logo"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {isClient && (
-                  <div className="text-sm text-gray-300 flex-shrink-0 mt-1 flex items-center gap-1">
-                    {profileData?.data?.email}
-                  </div>
-                )}
-
-                <RatingStars rating={profileData?.data?.stars ?? 0} />
-
-                <div className="mt-2">
-                  <span className="text-white/80 font-medium text-sm">
-                    Điểm uy tín:{" "}
-                  </span>
-                  <span className="text-green-400 text-sm">
-                    {profileData?.data?.reputationPoints || 0}
-                  </span>
-                </div>
-              </div>
-
-              <Input
-                placeholder="Tìm kiếm trong menu"
-                style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                  color: "white",
-                  borderRadius: "4px",
-                }}
-                prefix={<Icon path={mdiMenu} size={0.8} color="#FCAF17" />}
-                className="hover:border-[#FCAF17] focus:border-[#FCAF17]"
-                value={searchTerm}
-                onChange={handleSearchChange}
-              />
-            </div>
-
-            {/* Menu Items */}
-            <div className="flex-1 overflow-y-auto py-2">
-              <AnimatePresence>
-                {menu
-                  .filter(
-                    (item) =>
-                      !searchTerm ||
-                      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-                  )
-                  .map((item) => (
-                    <motion.div
-                      key={item.key}
-                      className="w-full px-2 mb-1"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {item.children ? (
-                        <>
-                          <div
-                            className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                              expandedItems[item.key]
-                                ? "bg-[#232f3e] text-[#FCAF17]"
-                                : "text-white hover:bg-[#232f3e] hover:text-[#FCAF17]"
-                            }`}
-                            onClick={() => toggleExpand(item.key)}
-                          >
-                            <div className="flex items-center space-x-3">
-                              {expandedItems[item.key]
-                                ? item.activeIcon
-                                : item.icon}
-                              <span className="!font-normal">{item.name}</span>
-                            </div>
-                            <Icon
-                              path={
-                                expandedItems[item.key]
-                                  ? mdiChevronDown
-                                  : mdiChevronRight
-                              }
-                              size={0.8}
-                              color={
-                                expandedItems[item.key] ? "#FCAF17" : "white"
-                              }
-                            />
-                          </div>
-
-                          <AnimatePresence>
-                            {expandedItems[item.key] && (
-                              <motion.div
-                                className="ml-8 mt-1 border-l border-gray-700 pl-3"
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: "auto" }}
-                                exit={{ opacity: 0, height: 0 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                {item.children.map((child) => (
-                                  <Link
-                                    key={child.key}
-                                    href={child.path}
-                                    className="flex items-center space-x-2 p-2 my-1 text-white/90 hover:text-[#FCAF17] hover:bg-[#232f3e]/50 rounded-md transition-all duration-200"
-                                    onClick={toggleMobileSidebar}
-                                  >
-                                    <span className="font-normal">
-                                      {child.name}
-                                    </span>
-                                  </Link>
-                                ))}
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </>
-                      ) : (
-                        <Link
-                          href={item.path || ""}
-                          className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
-                            isActive(item.path)
-                              ? "bg-[#232f3e] text-[#FCAF17]"
-                              : "text-white hover:bg-[#232f3e] hover:text-[#FCAF17]"
-                          }`}
-                          onClick={toggleMobileSidebar}
-                        >
-                          <div className="flex items-center space-x-3">
-                            {isActive(item.path) ? item.activeIcon : item.icon}
-                            <span className="!font-normal">{item.name}</span>
-                          </div>
-
-                          {item.badge &&
-                            (item.badge.text || item.badge.count > 0) && (
-                              <Badge
-                                count={item.badge.text || item.badge.count}
-                                style={{
-                                  backgroundColor: item.badge.color,
-                                  borderRadius: "10px",
-                                  boxShadow: "0 0 8px rgba(240, 136, 6, 0.5)",
-                                }}
-                                className="ml-auto"
-                              />
-                            )}
-                        </Link>
-                      )}
-                    </motion.div>
-                  ))}
-              </AnimatePresence>
-            </div>
-
-            {/* Footer */}
-            <div className="p-4 border-t border-gray-800 bg-[#232f3e]">
-              <div className="text-white/60 text-xs text-center">
-                © {new Date().getFullYear()} Amazon Global Selling
-              </div>
-            </div>
-          </div>
-        </SheetContent>
-      </Sheet>
-    );
-  };
-
   return (
     <motion.div
       className="!hidden md:!flex"
@@ -696,9 +475,6 @@ function LayoutPage() {
       hidden md:flex
       fixed top-0 left-0 h-full flex-col pt-[68px] overflow-y-auto w-fit"
       >
-        <div className="md:hidden p-2">
-          <MobileSidebar />
-        </div>
         <motion.div
           className="w-full"
           initial={isSidebarOpen ? "open" : "closed"}
@@ -820,7 +596,6 @@ function LayoutPage() {
           </motion.div>
         </motion.div>
       </div>
-      <MobileSidebar />
     </motion.div>
   );
 }

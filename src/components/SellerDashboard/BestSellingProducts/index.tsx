@@ -94,7 +94,7 @@ const BestSellingProducts: React.FC<BestSellingProductsProps> = ({ data }) => {
           indicator: <Spin size="small" />,
         }}
         pagination={false}
-        rowKey={(record: any) => record?.id}
+        rowKey={(record: any) => (record?.product?.id || record?.id)}
         className="best-selling-products-table"
         locale={{ emptyText: <CustomEmpty /> }}
         rowClassName="hover:bg-gray-50 transition-colors cursor-pointer"
