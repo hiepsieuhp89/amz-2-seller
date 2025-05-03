@@ -144,8 +144,10 @@ const ProductCard = ({ productId }: { productId: string }) => {
 export default function ChatPage() {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [message, setMessage] = useState("");
-  const { data: chatList, refetch: refetchChatList } =
-    useGetListMessageAvailable({});
+  const { data: chatList, refetch: refetchChatList } = useGetListMessageAvailable({
+    page: 1,
+    pageSize: 9999999,
+  });
   const { data: messages, refetch: refetchMessages } = useGetMessagesWithUser(
     selectedUser || ""
   );
