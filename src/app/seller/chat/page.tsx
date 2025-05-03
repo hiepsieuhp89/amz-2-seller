@@ -244,8 +244,8 @@ export default function ChatPage() {
     const interval = setInterval(() => {
       if (selectedUser) {
         refetchMessages();
-        refetchChatList();
       }
+      refetchChatList();
     }, 10000);
 
     return () => clearInterval(interval);
