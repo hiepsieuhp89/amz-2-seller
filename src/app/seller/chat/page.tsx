@@ -179,7 +179,7 @@ export default function ChatPage() {
                 : msg?.shop?.logoUrl || "https://via.placeholder.com/150",
             lastMessage: msg.message || "",
             lastMessageDate: msg.createdAt,
-            unreadCount: msg.senderRole === "user" && (msg.isRead ? 0 : 1),
+            unreadCount: msg.senderRole === "user" && (msg.isRead ? 0 : 1) && msg.senderRole !== "shop",
             latestMessageId: msg.id,
           };
 
@@ -187,10 +187,10 @@ export default function ChatPage() {
             if (new Date(msg.createdAt) > new Date(existingChat.lastMessageDate)) {
               existingChat.lastMessage = chatItem.lastMessage;
               existingChat.lastMessageDate = chatItem.lastMessageDate;
-              existingChat.unreadCount += chatItem.unreadCount; // Accumulate unread count correctly
-              existingChat.latestMessageId = chatItem.latestMessageId; // Update latest message ID
+              existingChat.unreadCount += msg.senderRole === "user" && !msg.isRead && msg.senderRole !== "shop" ? 1 : 0;
+              existingChat.latestMessageId = chatItem.latestMessageId;
             } else {
-              existingChat.unreadCount += chatItem.unreadCount;
+              existingChat.unreadCount += msg.senderRole === "user" && !msg.isRead && msg.senderRole !== "shop" ? 1 : 0;
             }
           } else {
             acc.push(chatItem);
