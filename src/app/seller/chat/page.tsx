@@ -1,41 +1,42 @@
 "use client";
-import {
-  useDeleteMessage,
-  useGetListMessageAvailable,
-  useGetMessagesWithUser,
-  useMarkAllMessagesWithUserAsRead,
-  useSendMessageToUser,
-} from "@/hooks/shop-chat";
-import { useGetShopProductDetail } from "@/hooks/shop-products";
-import {
-  MoreVertical,
-  Send,
-  Trash2,
-  MessageCircle,
-  Eye,
-  ShoppingCart,
-} from "lucide-react";
-import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { toast, Toaster } from "react-hot-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Icon } from "@mdi/react";
-import { mdiChevronLeft, mdiMagnify } from "@mdi/js";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  useDeleteMessage,
+  useGetListMessageAvailable,
+  useGetMessagesWithUser,
+  useMarkAllMessagesWithUserAsRead,
+  useMarkMessageAsRead,
+  useSendMessageToUser
+} from "@/hooks/shop-chat";
+import { useGetShopProductDetail } from "@/hooks/shop-products";
 import { formatDate as formatDateUtil } from "@/utils";
-import { useMarkAsRead } from "@/hooks/notification";
+import { mdiChevronLeft, mdiMagnify } from "@mdi/js";
+import { Icon } from "@mdi/react";
+import { motion } from "framer-motion";
+import {
+  Eye,
+  MessageCircle,
+  MoreVertical,
+  Send,
+  ShoppingCart,
+  Trash2,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { toast, Toaster } from "react-hot-toast";
+// import { useMarkAsRead } from "@/hooks/notification";
 
 const getInitials = (name: string = "") => {
-  if (!name) return "UN"; 
+  if (!name) return "UN";
 
   return name
     .split(" ")
@@ -153,7 +154,7 @@ export default function ChatPage() {
   const { mutate: deleteMessage } = useDeleteMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showMobileSidebar, setShowMobileSidebar] = useState(true);
-  const { mutate: markNotificationAsRead } = useMarkAsRead();
+  const { mutate: markMessageAsRead } = useMarkMessageAsRead();
   const [chatListState, setChatListState] = useState<any[]>([]);
   useEffect(() => {
     if (chatList?.data?.data) {
@@ -177,7 +178,7 @@ export default function ChatPage() {
             lastMessage: msg.message || "",
             lastMessageDate: msg.createdAt,
             unreadCount: msg.isRead ? 0 : 1,
-            latestMessageId: msg.id, 
+            latestMessageId: msg.id,
           };
 
           if (existingChat) {
@@ -214,12 +215,19 @@ export default function ChatPage() {
       )
     );
 
-    const chatItem = chatListState.find((chat: any) => chat.userId === userId);
-    if (chatItem && chatItem.latestMessageId) {
-      markNotificationAsRead({ notificationId: chatItem.latestMessageId }, {
-        onSuccess: () => {
-          refetchChatList();
-        }
+    // Lọc ra tất cả các tin nhắn chưa đọc của người dùng được chọn
+    const unreadMessages = chatList?.data?.data.filter(
+      (msg: any) => msg.userId === userId && !msg.isRead
+    );
+
+    // Gọi API markMessageAsRead cho từng tin nhắn chưa đọc
+    if (unreadMessages && unreadMessages.length > 0) {
+      unreadMessages.forEach((msg: any) => {
+        markMessageAsRead(msg.id, {
+          onSuccess: () => {
+            refetchChatList();
+          }
+        });
       });
     }
 
@@ -228,15 +236,15 @@ export default function ChatPage() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages?.data]); 
+  }, [messages?.data]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (selectedUser) {
-        refetchMessages(); 
-        refetchChatList(); 
+        refetchMessages();
+        refetchChatList();
       }
-    }, 10000); 
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [selectedUser, refetchMessages, refetchChatList]);
@@ -463,11 +471,11 @@ export default function ChatPage() {
           <div className="md:hidden flex flex-col bg-background w-full">
             {/* Mobile Chat Header */}
             <header className="p-2 px-4 border-b bg-background h-[80px] flex items-center">
-              <button 
+              <button
                 className="mr-4 rounded-[4px] bg-transparent px-0 hover:bg-transparent flex !justify-start"
                 onClick={() => setShowMobileSidebar(true)}
               >
-               <Icon path={mdiChevronLeft} size={1.3} className="text-gray-500 -ml-2"/>
+                <Icon path={mdiChevronLeft} size={1.3} className="text-gray-500 -ml-2" />
               </button>
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10 border bg-gradient-to-br from-main-gunmetal-blue/50 to-main-gunmetal-blue/70">
