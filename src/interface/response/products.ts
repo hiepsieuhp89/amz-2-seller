@@ -79,6 +79,23 @@ export interface IProduct {
     isNew: boolean
     isFeatured: boolean
     shopProducts: IShopProduct[]
+    reviews: IReview[]
+}
+
+export interface IReview {
+    id: string
+    createdAt: string
+    updatedAt: string
+    deletedAt: string | null
+    userId: string
+    shopProductId: string
+    orderId: string
+    rating: number
+    content: string
+    images: string[]
+    productName: string
+    productImage: string | null
+    quantity: number
 }
 
 export interface IMeta {

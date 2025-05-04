@@ -66,7 +66,6 @@ const LeftSideSection = () => {
   const searchParams = useSearchParams();
   const productId = searchParams.get('id');
   const { product, error } = useProductById(productId);
-  console.log(product)
   const { profileData } = useProfile()
   return (
     <div>

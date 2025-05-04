@@ -44,71 +44,14 @@ function DescriptionTab({ images }: DescriptionTabProps) {
 // Reviews Tab Component
 function ReviewsTab() {
   const { selectedProduct } = useSelectedProduct()
-  const reviewsQuery = useGetShopProductReviews(selectedProduct?.id as string) as any
-  const { 
-    data: reviewsData, 
-    isLoading,
-    params,
-    handlePageChange,
-    handlePageSizeChange
-  } = reviewsQuery
-  
-  // Get reviews from the API response
-  const reviews = reviewsData?.data?.data || []
-  const totalReviews = reviewsData?.data?.total || 0
-  const totalPages = Math.ceil(totalReviews / (params?.take || 10))
-  
-  // Calculate which page numbers to show
-  const currentPage = params?.page || 1
-  const getVisiblePages = () => {
-    const delta = 2; // Number of pages to show on each side of current page
-    const range = [];
-    const rangeWithDots = [];
-    let l;
-    
-    for (let i = 1; i <= Math.min(totalPages, 7); i++) {
-      range.push(i);
-    }
-    
-    if (totalPages <= 7) {
-      // If there are <= 7 pages, show all pages
-      return range;
-    } else {
-      // Determine which page numbers to show
-      if (currentPage > delta + 1) {
-        rangeWithDots.push(1);
-        if (currentPage > delta + 2) {
-          rangeWithDots.push('...');
-        }
-      }
-      
-      const start = Math.max(1, currentPage - delta);
-      const end = Math.min(totalPages, currentPage + delta);
-      
-      for (let i = start; i <= end; i++) {
-        rangeWithDots.push(i);
-      }
-      
-      if (currentPage < totalPages - delta) {
-        if (currentPage < totalPages - delta - 1) {
-          rangeWithDots.push('...');
-        }
-        rangeWithDots.push(totalPages);
-      }
-      
-      return rangeWithDots;
-    }
-  };
-  
-  const visiblePages = getVisiblePages();
-  
+  const reviews = (selectedProduct as any)?.reviews || []
+  const totalReviews = reviews.length
   return (
     <Card className="border-none">
       <CardHeader className="pb-3">
         <h2 className="text-xl font-semibold !text-main-charcoal-blue">Nhận xét ({totalReviews})</h2>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Form thêm nhận xét mới */}
         <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
           <div className="flex gap-3 mb-3 items-center">
             <Avatar className="h-10 w-10 border border-gray-200">
@@ -155,80 +98,74 @@ function ReviewsTab() {
           </div>
         </div>
 
-        {/* Loading state */}
-        {isLoading && (
-          <div className="flex justify-center py-6">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-          </div>
-        )}
-
         {/* Danh sách nhận xét */}
-        {!isLoading && (!reviews || reviews.length === 0) && (
+        {(!reviews || reviews.length === 0) && (
           <div className="text-center py-6 text-gray-500">
             Chưa có nhận xét nào cho sản phẩm này
           </div>
         )}
         
-        {reviews && reviews.map((review: any) => (
-          <div key={review.id} className="border-b border-gray-100 pb-6 mb-6 last:border-0 last:mb-0 last:pb-0">
-            <div className="flex gap-4">
-              <Avatar className="h-12 w-12 border border-gray-200">
-                {review.user?.logoUrl ? (
-                  <AvatarImage src={review.user.logoUrl} alt={review.user?.fullName || ""} />
-                ) : (
-                  <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
-                    {review.user?.fullName
-                      ? `${review.user.fullName.split(' ')[0][0]}${review.user.fullName.split(' ').pop()?.[0] || ''}`
-                      : "UN"}
-                  </AvatarFallback>
-                )}
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                  <h4 className="font-medium text-gray-900">{review.user?.fullName || "Người dùng ẩn danh"}</h4>
-                  <div className="flex items-center">
-                    <span className="text-sm text-gray-500 hidden sm:inline"> • </span>
-                    <span className="text-sm text-gray-500">
-                      {new Date(review.createdAt).toLocaleDateString('vi-VN', {
-                        year: 'numeric',
-                        month: 'numeric',
-                        day: 'numeric'
-                      })}
-                    </span>
+        {reviews && reviews.map((review: any) => {
+          const shopProduct = (selectedProduct as any)?.data?.shopProducts.find((sp: any) => sp.id === review.shopProductId)
+          const user = shopProduct?.user
+          return (
+            // bg-gray-50 rounded-lg p-4 border border-gray-100
+            <div key={review.id} className="bg-gray-50 p-4 rounded-lg border border-gray-100 pb-6 mb-6">
+              <div className="flex gap-4">
+                <Avatar className="h-10 w-10 border border-gray-200">
+                  {user?.logoUrl ? (
+                    <AvatarImage src={user.logoUrl} alt={user?.fullName || ""} />
+                  ) : (
+                    <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
+                      {user?.fullName
+                        ? `${user.fullName.split(' ')[0][0]}${user.fullName.split(' ').pop()?.[0] || ''}`
+                        : "UN"}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <div className="flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                    <h4 className="font-medium text-gray-900">{user?.fullName || "Người dùng ẩn danh"}</h4>
+                    <div className="flex items-center">
+                      <span className="text-sm text-gray-500">
+                        ({new Date(review.createdAt).toLocaleDateString('vi-VN', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit'
+                        })})
+                      </span>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="flex mb-2 mt-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className={`text-lg ${i < review.rating ? "text-yellow-400" : "text-gray-200"}`}>
-                      ★
-                    </span>
-                  ))}
-                </div>
-                
-                <p className="text-sm text-gray-700 mt-2 mb-3">{review.content}</p>
-                
-                {/* Review images */}
-                {review.images && review.images.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {review.images.map((image: string, idx: number) => (
-                      <div key={idx} className="w-16 h-16 md:w-20 md:h-20 overflow-hidden rounded border border-gray-200">
-                        <img 
-                          src={image} 
-                          alt={`Hình ảnh đánh giá ${idx + 1}`} 
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-200" 
-                        />
-                      </div>
+                  <div className="flex mb-2 mt-1">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className={`text-lg ${i < review.rating ? "text-yellow-400" : "text-gray-200"}`}>
+                        ★
+                      </span>
                     ))}
                   </div>
-                )}
+                  <p className="text-sm text-gray-700 mt-2 mb-3">{review.content}</p>
+                  {/* Review images */}
+                  {review.images && review.images.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {review.images.map((image: string, idx: number) => (
+                        <div key={idx} className="w-16 h-16 md:w-20 md:h-20 overflow-hidden rounded border border-gray-200">
+                          <img
+                            src={image}
+                            alt={`Hình ảnh đánh giá ${idx + 1}`}
+                            className="w-full h-full object-contain hover:scale-105 transition-transform duration-200"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
         
         {/* Pagination */}
-        {totalPages > 1 && (
+        {/* {totalPages > 1 && (
           <div className="flex justify-center mt-6">
             <div className="flex space-x-1">
               <Button 
@@ -265,10 +202,10 @@ function ReviewsTab() {
               </Button>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Items per page selector */}
-        {totalReviews > 0 && (
+        {/* {totalReviews > 0 && (
           <div className="flex justify-end items-center space-x-2 text-sm">
             <span>Hiển thị</span>
             <select 
@@ -283,7 +220,7 @@ function ReviewsTab() {
             </select>
             <span>nhận xét mỗi trang</span>
           </div>
-        )}
+        )} */}
       </CardContent>
     </Card>
   )
@@ -354,33 +291,11 @@ ProductTabs.createDescriptionTab = (images: string[]) => {
   return <DescriptionTab images={images} />
 }
 
-// Dữ liệu mẫu cho các nhận xét
-const comments = [
-  {
-    id: 1,
-    user: {
-      name: "Nguyễn Văn A",
-      avatar: "/avatars/1.jpg"
-    },
-    content: "Sản phẩm rất tốt, giao hàng nhanh chóng!",
-    timestamp: "2 giờ trước"
-  },
-  {
-    id: 2,
-    user: {
-      name: "Trần Thị B",
-      avatar: "/avatars/2.jpg"
-    },
-    content: "Chất lượng đúng như mô tả, sẽ ủng hộ shop dài dài.",
-    timestamp: "1 ngày trước"
-  }
-]
-
 export function CommentTab() {
   return (
     <Card className="!rounded-none border-none">
       <CardHeader>
-        <h2 className="text-xl font-semibold">Nhận xét ({comments.length})</h2>
+        {/* <h2 className="text-xl font-semibold">Nhận xét ({comments.length})</h2> */}
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Form thêm nhận xét mới */}
@@ -396,7 +311,7 @@ export function CommentTab() {
         </div>
 
         {/* Danh sách nhận xét */}
-        {comments.map(comment => (
+        {/* {comments.map(comment => (
           <div key={comment.id} className="flex gap-4">
             <Avatar>
               <AvatarImage src={comment.user.avatar} />
@@ -410,7 +325,7 @@ export function CommentTab() {
               <p className="text-sm mt-1">{comment.content}</p>
             </div>
           </div>
-        ))}
+        ))} */}
       </CardContent>
     </Card>
   )
