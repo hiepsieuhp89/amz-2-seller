@@ -1,6 +1,6 @@
 'use client';
 import styles from './styles.module.scss';
-import { lazy, useState, createContext, useContext, useEffect, useCallback, useRef } from 'react';
+import { lazy, useState, createContext, useContext, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Button } from 'antd';
 import Icon from '@mdi/react';
 import { mdiMenu, mdiWindowClose, mdiChevronDown, mdiChevronRight, mdiHomeOutline, mdiStoreOutline, mdiPackageVariant, mdiStar, mdiCartOutline, mdiAccountOutline, mdiBullhornOutline, mdiMessageTextOutline, mdiMessageText, mdiPackageVariantClosed, mdiCogOutline } from '@mdi/js';
@@ -15,6 +15,7 @@ import { useUser } from '@/context/useUserContext';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge, Input, Menu } from "antd";
+import { getUnreadNotifications, markAsRead } from "@/api/notification";
 
 const LayoutPage = lazy(() => import('@/components/LayoutPage'));
 const LayoutHeaderCommon = lazy(() => import('@/components/LayoutHeaderCommom'));
@@ -47,6 +48,7 @@ export const LayoutProvider = ({
   const [shopLink, setShopLink] = useState(
     process.env.NEXT_PUBLIC_HOME_URL + "/shop?id="
   );
+  const [unreadNotifications, setUnreadNotifications] = useState<any>(null);
   const { profileData } = useProfile();
   const { user } = useUser();
   const pathname = usePathname();
@@ -54,6 +56,64 @@ export const LayoutProvider = ({
   const [isClient, setIsClient] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+
+  const fetchUnreadNotifications = useCallback(async () => {
+    try {
+      const response = await getUnreadNotifications();
+      setUnreadNotifications(response);
+    } catch (error) {
+      console.error("Error fetching unread notifications:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUnreadNotifications();
+
+    const intervalId = setInterval(() => {
+      fetchUnreadNotifications();
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [fetchUnreadNotifications]);
+
+  const notificationCounts = useMemo(() => {
+    if (!unreadNotifications?.data) return { orders: 0, chat: 0, reviews: 0 };
+
+    return unreadNotifications.data.reduce(
+      (counts: { orders: number; chat: number; reviews: number }, notification: any) => {
+        switch (notification.type) {
+          case "NEW_ORDER":
+          case "ORDER_STATUS_UPDATE":
+            counts.orders++;
+            break;
+          case "NEW_MESSAGE":
+            counts.chat++;
+            break;
+          case "NEW_REVIEW":
+            counts.reviews++;
+            break;
+          case "ADMIN_NOTIFICATION":
+          case "FEDEX_BALANCE_UPDATE":
+          case "SYSTEM_NOTIFICATION":
+            break;
+          default:
+            if (notification.type.includes("ORDER")) {
+              counts.orders++;
+            } else if (
+              notification.type.includes("CHAT") ||
+              notification.type.includes("MESSAGE")
+            ) {
+              counts.chat++;
+            } else if (notification.type.includes("REVIEW")) {
+              counts.reviews++;
+            }
+            break;
+        }
+        return counts;
+      },
+      { orders: 0, chat: 0, reviews: 0 }
+    );
+  }, [unreadNotifications]);
   const menu = [
     {
       key: "/seller/dashboard",
@@ -86,7 +146,7 @@ export const LayoutProvider = ({
       path: `/seller/reviews`,
       badge: {
         text: "",
-        count: 0,
+        count: notificationCounts.reviews,
         color: "#f08806",
       },
     },
@@ -98,7 +158,7 @@ export const LayoutProvider = ({
       path: `/seller/orders`,
       badge: {
         text: "",
-        count: 0,
+        count: notificationCounts.orders,
         color: "#f08806",
       },
     },
@@ -150,7 +210,7 @@ export const LayoutProvider = ({
       path: `/seller/chat`,
       badge: {
         text: "",
-        count: 0,
+        count: notificationCounts.chat,
         color: "#f08806",
       },
     },
@@ -243,6 +303,42 @@ export const LayoutProvider = ({
     return path.startsWith(menuPath) && path.charAt(menuPath.length) === "/";
   };
 
+  const handleMenuItemClick = useCallback(
+    async (menuPath: string) => {
+      if (!unreadNotifications?.data?.length)
+        return;
+      const notificationIds = unreadNotifications.data
+        .filter((notification: any) => {
+          if (menuPath === "/seller/orders") {
+            return (
+              ["NEW_ORDER", "ORDER_STATUS_UPDATE"].includes(
+                notification.type
+              ) || notification.type.includes("ORDER")
+            );
+          }
+          if (menuPath === "/seller/reviews") {
+            return notification.type.includes("NEW_REVIEW");
+          }
+          if (menuPath === "/seller/chat") {
+            return notification.type.includes("NEW_MESSAGE");
+          }
+          return false;
+        })
+        .map((notification: any) => notification.id);
+
+      if (notificationIds.length > 0) {
+        for (const id of notificationIds) {
+          try {
+            await markAsRead({ notificationId: id });
+          } catch (error) {
+            console.error(`Error marking notification ${id} as read:`, error);
+          }
+        }
+        fetchUnreadNotifications();
+      }
+    },
+    [unreadNotifications, fetchUnreadNotifications]
+  );
   return (
     <LayoutContext.Provider value={{ isMobileSidebarOpen, toggleMobileSidebar }}>
       <div className={styles.root} suppressHydrationWarning>
@@ -432,7 +528,7 @@ export const LayoutProvider = ({
                                       key={child.key}
                                       href={child.path}
                                       className="flex items-center space-x-2 p-2 my-1 text-white/90 hover:text-[#FCAF17] hover:bg-[#232f3e]/50 rounded-md transition-all duration-200"
-                                      onClick={handleLinkClick}
+                                      onClick={() => { handleLinkClick(); handleMenuItemClick(child.path) }}
                                     >
                                       <span className="font-normal">
                                         {child.name}
@@ -450,7 +546,7 @@ export const LayoutProvider = ({
                               ? "bg-[#232f3e] text-[#FCAF17]"
                               : "text-white hover:bg-[#232f3e] hover:text-[#FCAF17]"
                               }`}
-                            onClick={handleLinkClick}
+                            onClick={() => { handleLinkClick(); handleMenuItemClick(item.path) }}
                           >
                             <div className="flex items-center space-x-3">
                               {isActive(item.path) ? item.activeIcon : item.icon}

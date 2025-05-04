@@ -246,8 +246,6 @@ export default function ClientLayout({
   };
   
   useEffect(() => {
-    console.log('pathname changed:', pathname);
-    
     // Làm sạch widgets khi pathname thay đổi
     if (prevPathRef.current !== pathname) {
       cleanupWidgets();
@@ -256,7 +254,6 @@ export default function ClientLayout({
     
     // Cập nhật trạng thái hiển thị menu
     const shouldDisplayMenu = pathname?.includes('/seller') && !pathname?.includes('seller-policy');
-    console.log('shouldDisplayMenu:', shouldDisplayMenu);
     setIsDisplayMenu(shouldDisplayMenu);
     
   }, [pathname]);
