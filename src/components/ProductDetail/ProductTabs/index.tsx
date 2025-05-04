@@ -53,13 +53,11 @@ function ReviewsTab() {
   const [openLightbox, setOpenLightbox] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
   const [currentReviewImages, setCurrentReviewImages] = useState<string[]>([])
-
   const handleImageClick = (images: string[], startIndex: number) => {
     setCurrentReviewImages(images)
     setLightboxIndex(startIndex)
     setOpenLightbox(true)
   }
-
   return (
     <Card className="border-none">
       <CardHeader className="pb-3">
@@ -128,18 +126,18 @@ function ReviewsTab() {
               <div className="flex gap-4">
                 <Avatar className="h-10 w-10 border border-gray-200">
                   {user?.logoUrl ? (
-                    <AvatarImage src={user.logoUrl} alt={user?.fullName || ""} />
+                    <AvatarImage src={review?.user?.logoUrl} alt={review?.user?.fullName || ""} />
                   ) : (
                     <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
-                      {user?.fullName
-                        ? `${user.fullName.split(' ')[0][0]}${user.fullName.split(' ').pop()?.[0] || ''}`
+                      {review?.user?.fullName
+                        ? `${review?.user?.fullName.split(' ')[0][0]}${review?.user?.fullName.split(' ').pop()?.[0] || ''}`
                         : "UN"}
                     </AvatarFallback>
                   )}
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                    <h4 className="font-medium text-gray-900">{user?.fullName || "Người dùng ẩn danh"}</h4>
+                    <h4 className="font-medium text-gray-900">{review?.user?.fullName || "Người dùng ẩn danh"}</h4>
                     <div className="flex items-center">
                       <span className="text-sm text-gray-500">
                         ({new Date(review.createdAt).toLocaleDateString('vi-VN', {
