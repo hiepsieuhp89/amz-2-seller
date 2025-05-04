@@ -62,6 +62,7 @@ const LeftSideSection = () => {
   };
 
   const { data: topSellingProducts, isLoading } = useTopSellingProducts()
+  console.log("topSellingProducts",topSellingProducts)
   const { selectedProduct, setSelectedProduct } = useSelectedProduct()
   const searchParams = useSearchParams();
   const productId = searchParams.get('id');

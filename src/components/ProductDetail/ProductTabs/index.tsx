@@ -9,6 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useSelectedProduct } from "@/stores/useSelectedProduct"
 import { useGetShopProductReviews } from "@/hooks/shop-products"
+import Lightbox from "yet-another-react-lightbox"
+import "yet-another-react-lightbox/styles.css"
+import Zoom from "yet-another-react-lightbox/plugins/zoom"
+import Download from "yet-another-react-lightbox/plugins/download"
 
 // Types
 interface ProductTabsProps {
@@ -46,6 +50,16 @@ function ReviewsTab() {
   const { selectedProduct } = useSelectedProduct()
   const reviews = (selectedProduct as any)?.reviews || []
   const totalReviews = reviews.length
+  const [openLightbox, setOpenLightbox] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState(0)
+  const [currentReviewImages, setCurrentReviewImages] = useState<string[]>([])
+
+  const handleImageClick = (images: string[], startIndex: number) => {
+    setCurrentReviewImages(images)
+    setLightboxIndex(startIndex)
+    setOpenLightbox(true)
+  }
+
   return (
     <Card className="border-none">
       <CardHeader className="pb-3">
@@ -148,7 +162,11 @@ function ReviewsTab() {
                   {review.images && review.images.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-3">
                       {review.images.map((image: string, idx: number) => (
-                        <div key={idx} className="w-16 h-16 md:w-20 md:h-20 overflow-hidden rounded border border-gray-200">
+                        <div 
+                          key={idx} 
+                          className="w-16 h-16 md:w-20 md:h-20 overflow-hidden rounded border border-gray-200 cursor-pointer" 
+                          onClick={() => handleImageClick(review.images, idx)}
+                        >
                           <img
                             src={image}
                             alt={`Hình ảnh đánh giá ${idx + 1}`}
@@ -164,63 +182,21 @@ function ReviewsTab() {
           )
         })}
         
-        {/* Pagination */}
-        {/* {totalPages > 1 && (
-          <div className="flex justify-center mt-6">
-            <div className="flex space-x-1">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => handlePageChange?.(Math.max(1, (params?.page || 1) - 1))}
-                disabled={(params?.page || 1) === 1}
-              >
-                Trước
-              </Button>
-              
-              {visiblePages.map((page, i) => 
-                page === '...' ? (
-                  <span key={`ellipsis-${i}`} className="px-3 py-1">...</span>
-                ) : (
-                  <Button
-                    key={`page-${page}`}
-                    variant={params?.page === page ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handlePageChange?.(page as number)}
-                  >
-                    {page}
-                  </Button>
-                )
-              )}
-              
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => handlePageChange?.(Math.min(totalPages, (params?.page || 1) + 1))}
-                disabled={(params?.page || 1) === totalPages}
-              >
-                Sau
-              </Button>
-            </div>
-          </div>
-        )} */}
-
-        {/* Items per page selector */}
-        {/* {totalReviews > 0 && (
-          <div className="flex justify-end items-center space-x-2 text-sm">
-            <span>Hiển thị</span>
-            <select 
-              className="border rounded px-2 py-1"
-              value={params?.take || 10}
-              onChange={(e) => handlePageSizeChange?.(Number(e.target.value))}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-            </select>
-            <span>nhận xét mỗi trang</span>
-          </div>
-        )} */}
+        {/* Lightbox cho hình ảnh review */}
+        <Lightbox
+          open={openLightbox}
+          close={() => setOpenLightbox(false)}
+          slides={currentReviewImages.map(image => ({ src: image, download: image }))}
+          plugins={[Zoom, Download]}
+          index={lightboxIndex}
+          zoom={{
+            maxZoomPixelRatio: 3,
+            zoomInMultiplier: 2,
+            doubleTapDelay: 300,
+            doubleClickDelay: 300,
+            keyboardMoveDistance: 50
+          }}
+        />
       </CardContent>
     </Card>
   )
