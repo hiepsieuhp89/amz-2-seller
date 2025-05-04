@@ -1,13 +1,13 @@
 "use client"
 
 import Icon from "@mdi/react"
-import { mdiArrowTopRightThin } from "@mdi/js"
+import { mdiCommentTextMultipleOutline } from "@mdi/js"
 import type React from "react"
 import { useState } from "react"
 import { Table, Input, Button, Space, Typography, Row, Col, Pagination, Tooltip, Badge } from "antd"
 import { SearchOutlined, FilterOutlined, ReloadOutlined } from "@ant-design/icons"
 import type { IShopProduct } from "@/interface/response/shop-products"
-import { useGetMyShopProducts } from "@/hooks/shop-products"
+import { useGetMyShopProducts, useGetShopProductReviews } from "@/hooks/shop-products"
 import Image from "next/image"
 import Link from "next/link"
 import Lightbox from "yet-another-react-lightbox"
@@ -30,20 +30,20 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [searchText, setSearchText] = useState<string>("")
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
   const { data: shopProductsData, isLoading } = useGetMyShopProducts({
     page: currentPage,
     onlyHaveReview: true,
   })
+  const { data: ordersData } = useGetShopProductReviews(selectedProductId || "")
   const [openLightbox, setOpenLightbox] = useState(false)
   const [currentImage, setCurrentImage] = useState("")
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const products = shopProductsData?.data?.data || []
   const totalItems = shopProductsData?.data?.meta?.itemCount || 0
   const productImages = products.map((product: any) => product.product.imageUrls[0]).filter(Boolean)
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null)
   const [selectedProductReviews, setSelectedProductReviews] = useState<any[]>([])
   const { setSelectedProduct } = useSelectedProduct()
-
   const handleSearch = (value: string) => {
     setSearchText(value)
     onSearch(value)
@@ -76,10 +76,10 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
   const columns = [
     {
       title: "Hình ảnh",
-      dataIndex: ["product", "imageUrl"],
       key: "image",
-      render: (imageUrl: string) =>
-        imageUrl ? (
+      render: (_: any, record: any) => {
+        const imageUrl = record.product?.imageUrls && record.product.imageUrls.length > 0 ? record.product.imageUrls[0] : null;
+        return imageUrl ? (
           <div
             style={{
               width: "80px",
@@ -117,7 +117,8 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
           >
             <Text type="secondary">No Image</Text>
           </div>
-        ),
+        );
+      },
       width: 80,
       maxWidth: 80,
       align: "center" as const,
@@ -180,9 +181,9 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
       key: "action",
       render: (_: any, record: IShopProduct) => (
         <Button
-          icon={<Icon path={mdiArrowTopRightThin} size={0.7} color={"#ffffff"} />}
+          icon={<Icon path={mdiCommentTextMultipleOutline} size={0.7} color={"#ffffff"} />}
           iconPosition="end"
-          className="!bg-main-golden-orange !rounded-[4px]"
+          className="!bg-main-golden-orange !rounded-[4px] flex items-center"
           type="primary"
           size="small"
           onClick={() => handleViewReviews(record.productId)}
@@ -241,7 +242,7 @@ const ProductsTable = ({ onSearch, selectedRowKeys, onSelectChange }: ProductsTa
 
           <Table
             rowKey="productId"
-            columns={columns}
+            columns={columns as any}
             dataSource={products as any}
             loading={isLoading}
             pagination={false}
