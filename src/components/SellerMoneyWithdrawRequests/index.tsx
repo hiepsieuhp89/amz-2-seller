@@ -15,6 +15,7 @@ import {
 import { useEffect, useState } from "react";
 import { useUserWithdrawals } from "@/hooks/withdrawals";
 import { getUserWithdrawals } from "@/api/withdrawals";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const SellerMoneyWithdrawRequests = () => {
   const [currentTransactionPage, setCurrentTransactionPage] = useState(1);
@@ -54,23 +55,36 @@ const SellerMoneyWithdrawRequests = () => {
   const withdrawalTotal = withdrawals?.data?.total || 0;
   const withdrawalData = withdrawals?.data?.data || [];
 
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   const columns: ColumnsType<any> = [
-    { title: "ID", dataIndex: "id" },
     {
-      title: "Ngày tạo",
-      dataIndex: "createdAt",
-      render: (text) => new Date(text).toLocaleDateString(),
+      title: "ID",
+      dataIndex: "id",
+      className: isMobile ? "text-xs px-1 py-1" : "",
+      width: isMobile ? 60 : undefined,
     },
     {
-      title: "Số tiền",
+      title: isMobile ? "Ngày" : "Ngày tạo",
+      dataIndex: "createdAt",
+      className: isMobile ? "text-xs px-1 py-1" : "",
+      width: isMobile ? 70 : undefined,
+      render: (text: string) => new Date(text).toLocaleDateString(),
+    },
+    {
+      title: isMobile ? "Số tiền" : "Số tiền",
       dataIndex: "money",
-      render: (text) => `${formatNumber(Math.abs(parseFloat(text)))} USD`,
+      className: isMobile ? "text-xs px-1 py-1 text-right" : "",
+      width: isMobile ? 80 : undefined,
+      render: (text: string) => `${formatNumber(Math.abs(parseFloat(text)))} USD`,
       align: "right",
     },
     {
-      title: "Trạng thái",
+      title: isMobile ? "TT" : "Trạng thái",
       dataIndex: "status",
-      render: (text) => {
+      className: isMobile ? "text-xs px-1 py-1 text-center" : "",
+      width: isMobile ? 70 : undefined,
+      render: (text: string) => {
         const statusMap = {
           completed: { label: "Hoàn thành", color: "green" },
           rejected: { label: "Bị từ chối", color: "red" },
@@ -82,86 +96,120 @@ const SellerMoneyWithdrawRequests = () => {
           label: text,
           color: "gray",
         };
-        return <span className="line-clamp-1 truncate" style={{ color: "white", backgroundColor: status.color, padding: "4px", borderRadius: "4px" }}>{status.label}</span>;
+        return (
+          <span
+            className="line-clamp-1 truncate"
+            style={{
+              color: "white",
+              backgroundColor: status.color,
+              padding: "4px",
+              borderRadius: "4px",
+              fontSize: isMobile ? "12px" : undefined,
+              display: "inline-block",
+              minWidth: isMobile ? "60px" : undefined,
+              textAlign: "center",
+            }}
+          >
+            {status.label}
+          </span>
+        );
       },
     },
-    { title: "Mô tả", dataIndex: "description" },
-    {
-      title: "Loại giao dịch",
-      dataIndex: "type",
-      render: (text) => {
-        switch (text) {
-          case "completed_order":
-            return "Hoàn thành đơn hàng";
-          case "withdraw":
-            return "Rút tiền";
-          case "fedex_payment":
-            return "Thanh toán";
-          case "package_purchase":
-            return "Mua gói";
-          case "manual_fedex_amount":
-            return "Quy đổi";
-          case "manual_total_profit_amount":
-            return "Lợi nhuận";
-          case "manual_balance_amount":
-            return "Quy đổi";
-          default:
-            return text;
-        }
-      },
-    },
-    {
-      title: "Mã tham chiếu",
-      dataIndex: "referenceId",
-      render: (text) =>
-        text ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span>{text}</span>
-            <button
-              onClick={() => navigator.clipboard.writeText(text)}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: "0",
-                display: "inline-flex",
-                alignItems: "center",
-              }}
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path d="M8 17.929H6c-1.105 0-2-.895-2-2V6c0-1.105.895-2 2-2h8c1.105 0 2 .895 2 2v2M16 6h4c1.105 0 2 .895 2 2v10c0 1.105-.895 2-2 2h-8c-1.105 0-2-.895-2-2V8c0-1.105.895-2 2-2z" />
-              </svg>
-            </button>
-          </div>
-        ) : (
-          "N/A"
-        ),
-    },
+    ...(!isMobile
+      ? [
+          {
+            title: "Mô tả",
+            dataIndex: "description",
+          },
+          {
+            title: "Loại giao dịch",
+            dataIndex: "type",
+            render: (text: string) => {
+              switch (text) {
+                case "completed_order":
+                  return "Hoàn thành đơn hàng";
+                case "withdraw":
+                  return "Rút tiền";
+                case "fedex_payment":
+                  return "Thanh toán";
+                case "package_purchase":
+                  return "Mua gói";
+                case "manual_fedex_amount":
+                  return "Quy đổi";
+                case "manual_total_profit_amount":
+                  return "Lợi nhuận";
+                case "manual_balance_amount":
+                  return "Quy đổi";
+                default:
+                  return text;
+              }
+            },
+          },
+          {
+            title: "Mã tham chiếu",
+            dataIndex: "referenceId",
+            render: (text: string) =>
+              text ? (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span>{text}</span>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(text)}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: "0",
+                      display: "inline-flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <path d="M8 17.929H6c-1.105 0-2-.895-2-2V6c0-1.105.895-2 2-2h8c1.105 0 2 .895 2 2v2M16 6h4c1.105 0 2 .895 2 2v10c0 1.105-.895 2-2 2h-8c-1.105 0-2-.895-2-2V8c0-1.105.895-2 2-2z" />
+                    </svg>
+                  </button>
+                </div>
+              ) : (
+                "N/A"
+              ),
+          },
+        ]
+      : []),
   ];
 
   const withdrawalColumns: ColumnsType<any> = [
-    { title: "ID", dataIndex: "id" },
     {
-      title: "Ngày yêu cầu",
-      dataIndex: "createdAt",
-      render: (text) => new Date(text).toLocaleDateString(),
+      title: "ID",
+      dataIndex: "id",
+      className: isMobile ? "text-xs px-1 py-1" : "",
+      width: isMobile ? 60 : undefined,
     },
     {
-      title: "Số tiền rút",
+      title: isMobile ? "Ngày" : "Ngày yêu cầu",
+      dataIndex: "createdAt",
+      className: isMobile ? "text-xs px-1 py-1" : "",
+      width: isMobile ? 70 : undefined,
+      render: (text: string) => new Date(text).toLocaleDateString(),
+    },
+    {
+      title: isMobile ? "Số tiền" : "Số tiền rút",
       dataIndex: "amount",
-      render: (text) => `${formatNumber(Math.abs(parseFloat(text)))} USD`,
+      className: isMobile ? "text-xs px-1 py-1 text-right" : "",
+      width: isMobile ? 80 : undefined,
+      render: (text: string) => `${formatNumber(Math.abs(parseFloat(text)))} USD`,
       align: "right",
     },
     {
-      title: "Trạng thái",
+      title: isMobile ? "TT" : "Trạng thái",
       dataIndex: "status",
-      render: (text) => {
+      className: isMobile ? "text-xs px-1 py-1 text-center" : "",
+      width: isMobile ? 70 : undefined,
+      render: (text: string) => {
         const statusMap = {
           COMPLETED: { label: "Hoàn thành", color: "green" },
           PENDING: { label: "Đang chờ", color: "orange" },
@@ -173,28 +221,34 @@ const SellerMoneyWithdrawRequests = () => {
           label: text,
           color: "gray",
         };
-        return <span className="line-clamp-1 truncate" style={{ color: "white", backgroundColor: status.color, padding: "4px", borderRadius: "4px" }}>{status.label}</span>;
+        return (
+          <span
+            className="line-clamp-1 truncate"
+            style={{
+              color: "white",
+              backgroundColor: status.color,
+              padding: "4px",
+              borderRadius: "4px",
+              fontSize: isMobile ? "12px" : undefined,
+              display: "inline-block",
+              minWidth: isMobile ? "60px" : undefined,
+              textAlign: "center",
+            }}
+          >
+            {status.label}
+          </span>
+        );
       },
     },
-    {
-      title: "Ghi chú",
-      dataIndex: "adminNote",
-      render: (text) => text || "N/A"
-    },
-    // {
-    //   title: "Lý do từ chối",
-    //   dataIndex: "rejectionReason",
-    //   render: (text) => text || "N/A"
-    // },
-    // {
-    //   title: "Ngày xử lý",
-    //   dataIndex: "completedAt",
-    //   render: (text, record) => {
-    //     if (record.completedAt) return new Date(record.completedAt).toLocaleDateString();
-    //     if (record.rejectedAt) return new Date(record.rejectedAt).toLocaleDateString();
-    //     return "Chưa xử lý";
-    //   }
-    // },
+    ...(!isMobile
+      ? [
+          {
+            title: "Ghi chú",
+            dataIndex: "adminNote",
+            render: (text: string) => text || "N/A",
+          },
+        ]
+      : []),
   ];
 
   const handleTransactionPaginationChange = (page: number, pageSize?: number) => {

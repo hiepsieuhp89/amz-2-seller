@@ -63,7 +63,6 @@ const OrdersTable = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [excludeFutureOrders, setExcludeFutureOrders] = useState(true);
 
-  // Memoize the current date to prevent it from changing on every render
   const currentDateISO = useMemo(() => new Date().toISOString(), []);
 
   const { data: ordersData, isLoading } = useGetMyOrders({
@@ -96,36 +95,25 @@ const OrdersTable = () => {
     setCurrentPage(1);
   };
 
-  const handleExcludeFutureOrders = (checked: boolean) => {
-    setExcludeFutureOrders(checked);
-    setCurrentPage(1);
-  };
-
   const handleExpandRow = (expanded: boolean, record: OrderData) => {
     setExpandedRowKeys(expanded ? [record.key] : []);
   };
 
   const handlePrintInvoice = async (orderId: string) => {
     try {
-      // Set the order for the detail dialog
       setSelectedOrderId(orderId);
       setIsDetailOpen(true);
 
-      // Set printing state to true
       setIsPrinting(true);
 
-      // Wait for the dialog to open and render
-      // Using a longer timeout to ensure content is fully loaded
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Use a polling mechanism to check if the preview element is ready with content
       let maxAttempts = 20; // Increase max attempts
       let attempt = 0;
       let input = null;
 
       while (attempt < maxAttempts) {
         input = document.getElementById("preview");
-        // Check for the data-loaded attribute that we added to the preview div
         const isLoaded = input && input.getAttribute('data-loaded') === 'true';
         const hasContent = input && input.children.length > 0 && input.getBoundingClientRect().height > 100;
 
@@ -133,7 +121,6 @@ const OrdersTable = () => {
           break;
         }
 
-        // Wait a bit more between checks
         await new Promise((resolve) => setTimeout(resolve, 500));
         attempt++;
       }
@@ -143,7 +130,6 @@ const OrdersTable = () => {
       }
 
       try {
-        // Display processing message
         const processingMsg = document.createElement("div");
         processingMsg.style.position = "fixed";
         processingMsg.style.top = "50%";
@@ -157,10 +143,8 @@ const OrdersTable = () => {
         processingMsg.textContent = "Đang tạo PDF...";
         document.body.appendChild(processingMsg);
 
-        // Give the browser one more moment to completely render everything
         await new Promise((resolve) => setTimeout(resolve, 500));
 
-        // Convert DOM to canvas
         const canvas = await html2canvas(input, {
           scale: 1.5,
           logging: false,
@@ -169,7 +153,6 @@ const OrdersTable = () => {
           scrollY: -window.scrollY,
         });
 
-        // Create PDF from canvas
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF({
           orientation: "portrait",
@@ -235,18 +218,23 @@ const OrdersTable = () => {
       title: "Ngày đặt hàng",
       dataIndex: "time",
       key: "time",
-      width: "15%",
+      width: isMobile ? 100 : "15%",
+      className: isMobile ? "text-xs px-1 py-1 whitespace-nowrap" : "",
+      align: isMobile ? "center" : "left",
       sorter: (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
       responsive: ["md"],
+      render: (text) => (
+        <span className={isMobile ? "text-xs" : ""}>{text}</span>
+      ),
     },
     {
       title: "Mã đặt hàng",
       dataIndex: "orderCode",
       key: "orderCode",
-      width: "15%",
-      sorter: (a, b) => a.orderCode.localeCompare(b.orderCode),
+      width: isMobile ? 100 : "15%",
+      className: isMobile ? "text-xs px-1 py-1" : "",
       render: (text, record) => (
-        <div className="flex items-center">
+        <div className={isMobile ? "flex items-center text-xs" : "flex items-center"}>
           {isMobile && (
             <Button
               type="text"
@@ -262,6 +250,7 @@ const OrdersTable = () => {
                   : "mr-2"
               }
               style={{ transition: "transform 0.3s" }}
+              size="small"
             />
           )}
           <span>{text}</span>
@@ -272,39 +261,51 @@ const OrdersTable = () => {
       title: "Số sản phẩm",
       dataIndex: "itemsCount",
       key: "itemsCount",
-      width: 80,
+      width: isMobile ? 60 : 80,
+      className: isMobile ? "text-xs px-1 py-1 text-center" : "",
+      align: isMobile ? "center" : "left",
       sorter: (a, b) => a.itemsCount - b.itemsCount,
+      render: (text) => <span className="font-semibold">{text}</span>,
     },
     {
       title: "Khách hàng",
       dataIndex: "user",
       key: "user",
-      width: 120,
-      render: (user) => user?.fullName || "-",
+      width: isMobile ? 90 : 120,
+      className: isMobile ? "text-xs px-1 py-1" : "",
+      render: (user) => <span className={isMobile ? "text-xs" : ""}>{user?.fullName || "-"}</span>,
       sorter: (a, b) => a.user?.fullName.localeCompare(b.user?.fullName),
     },
     {
       title: "Tổng tiền",
       dataIndex: "totalAmount",
       key: "totalAmount",
-      width: 80,
-      render: (text) => `$${formatNumber(parseFloat(text))}`,
+      width: isMobile ? 80 : 80,
+      className: isMobile ? "text-xs px-1 py-1 text-right" : "",
+      align: isMobile ? "right" : "left",
+      render: (text) => <span className={isMobile ? "text-xs" : ""}>${formatNumber(parseFloat(text))}</span>,
       sorter: (a, b) => parseFloat(a.totalAmount) - parseFloat(b.totalAmount),
     },
     {
       title: "Tổng tiền cần thanh toán",
       dataIndex: "totalPaidAmount",
       key: "totalPaidAmount",
-      width: 80,
-      render: (text) => `$${formatNumber(parseFloat(text))}`,
+      width: isMobile ? 80 : 80,
+      className: isMobile ? "text-xs px-1 py-1 text-right" : "",
+      align: isMobile ? "right" : "left",
+      render: (text) => <span className={isMobile ? "text-xs" : ""}>${formatNumber(parseFloat(text))}</span>,
       sorter: (a, b) => parseFloat(a.totalPaidAmount) - parseFloat(b.totalPaidAmount),
     },
     {
       title: "Lợi nhuận",
       dataIndex: "totalProfit",
       key: "totalProfit",
-      width: 80,
-      render: (text) => (text ? `$${formatNumber(parseFloat(text))}` : "-"),
+      width: isMobile ? 70 : 80,
+      className: isMobile ? "text-xs px-1 py-1 text-right" : "",
+      align: isMobile ? "right" : "left",
+      render: (text) => (
+        <span className={isMobile ? "text-xs" : ""}>{text ? `$${formatNumber(parseFloat(text))}` : "-"}</span>
+      ),
       sorter: (a, b) => {
         const profitA = a.totalProfit ? parseFloat(a.totalProfit) : 0;
         const profitB = b.totalProfit ? parseFloat(b.totalProfit) : 0;
@@ -315,7 +316,8 @@ const OrdersTable = () => {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      width: 110,
+      width: isMobile ? 90 : 110,
+      className: isMobile ? "text-xs px-1 py-1" : "",
       render: (status) => {
         const statusMap: Record<
           string,
@@ -356,6 +358,7 @@ const OrdersTable = () => {
           <Badge
             status={statusInfo.status}
             text={isMobile ? statusInfo.shortText : statusInfo.text}
+            className={isMobile ? "text-xs" : ""}
           />
         );
       },
@@ -365,7 +368,8 @@ const OrdersTable = () => {
       title: "Thanh toán",
       dataIndex: "paymentStatus",
       key: "paymentStatus",
-      width: 110,
+      width: isMobile ? 90 : 110,
+      className: isMobile ? "text-xs px-1 py-1" : "",
       render: (paymentStatus) => {
         return (
           <Badge
@@ -379,6 +383,7 @@ const OrdersTable = () => {
                   ? "Chưa TT"
                   : "Chưa thanh toán"
             }
+            className={isMobile ? "text-xs" : ""}
           />
         );
       },
@@ -388,9 +393,14 @@ const OrdersTable = () => {
       title: "Ngày thanh toán",
       dataIndex: "confirmedAt",
       key: "confirmedAt",
-      width: 120,
-      render: (confirmedAt) =>
-        confirmedAt ? new Date(confirmedAt).toLocaleString() : "-",
+      width: isMobile ? 90 : 120,
+      className: isMobile ? "text-xs px-1 py-1 whitespace-nowrap" : "",
+      align: isMobile ? "center" : "left",
+      render: (confirmedAt) => (
+        <span className={isMobile ? "text-xs" : ""}>
+          {confirmedAt ? new Date(confirmedAt).toLocaleString() : "-"}
+        </span>
+      ),
       sorter: (a, b) => {
         if (!a.confirmedAt) return 1;
         if (!b.confirmedAt) return -1;
@@ -402,9 +412,10 @@ const OrdersTable = () => {
     {
       title: "Hành động",
       key: "action",
-      width: 110,
+      width: isMobile ? 80 : 110,
+      className: isMobile ? "px-1 py-1" : "",
       render: (_, record) => (
-        <div className="flex items-center justify-center gap-6">
+        <div className={isMobile ? "flex items-center justify-center gap-2" : "flex items-center justify-center gap-6"}>
           {!isMobile ? <Tooltip title="Xem chi tiết">
             <span
               onClick={() => handleOpenDetail(record.orderCode)}

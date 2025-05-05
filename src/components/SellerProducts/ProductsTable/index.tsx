@@ -38,6 +38,7 @@ import "./styles.css";
 import { checkImageUrl } from "@/lib/utils";
 import Link from "next/link";
 import { useSelectedProduct } from "@/stores/useSelectedProduct";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const { Title, Text } = Typography;
 type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";
@@ -72,6 +73,7 @@ const ProductsTable = ({
   const [expandedDescriptions, setExpandedDescriptions] = useState<
     Record<string, boolean>
   >({});
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   const handleSearch = (value: string) => {
     setSearchText(value);
@@ -120,8 +122,8 @@ const ProductsTable = ({
         imageUrls ? (
           <div
             style={{
-              width: "80px",
-              height: "80px",
+              width: isMobile ? "40px" : "80px",
+              height: isMobile ? "40px" : "80px",
               position: "relative",
               borderRadius: "4px",
               overflow: "hidden",
@@ -132,8 +134,8 @@ const ProductsTable = ({
             <Image
               src={checkImageUrl(imageUrls)}
               alt="Product"
-              width={80}
-              height={80}
+              width={isMobile ? 40 : 80}
+              height={isMobile ? 40 : 80}
               quality={100}
               draggable={false}
               style={{ objectFit: "cover" }}
@@ -142,8 +144,8 @@ const ProductsTable = ({
         ) : (
           <div
             style={{
-              width: "50px",
-              height: "50px",
+              width: isMobile ? "40px" : "50px",
+              height: isMobile ? "40px" : "50px",
               backgroundColor: "#f0f0f0",
               borderRadius: "4px",
               display: "flex",
@@ -151,11 +153,12 @@ const ProductsTable = ({
               justifyContent: "center",
             }}
           >
-            <Text type="secondary">No Image</Text>
+            <Text type="secondary" style={{ fontSize: isMobile ? 10 : 12 }}>No Image</Text>
           </div>
         ),
-      width: 80,
+      width: isMobile ? 40 : 80,
       align: "center" as const,
+      className: isMobile ? "text-xs px-1 py-1" : "",
       responsive: ["xs", "sm"] as Breakpoint[],
     },
     {
@@ -174,42 +177,45 @@ const ProductsTable = ({
             <Text
               strong
               style={{
-                fontSize: "14px",
+                fontSize: isMobile ? "12px" : "14px",
                 wordWrap: "break-word",
                 whiteSpace: "normal",
               }}
             >
               {text}
             </Text>
-            <div style={{ position: "relative" }}>
-              <div
-                className={`description-container ${
-                  isExpanded ? "expanded" : ""
-                }`}
-                style={{
-                  fontSize: "12px",
-                  wordWrap: "break-word",
-                  overflow: isExpanded ? "visible" : "hidden",
-                  maxHeight: isExpanded ? "none" : "60px",
-                  position: "relative",
-                }}
-              >
+            {!isMobile && (
+              <div style={{ position: "relative" }}>
                 <div
-                  className="description-content"
-                  dangerouslySetInnerHTML={{ __html: description }}
-                />
+                  className={`description-container ${
+                    isExpanded ? "expanded" : ""
+                  }`}
+                  style={{
+                    fontSize: "12px",
+                    wordWrap: "break-word",
+                    overflow: isExpanded ? "visible" : "hidden",
+                    maxHeight: isExpanded ? "none" : "60px",
+                    position: "relative",
+                  }}
+                >
+                  <div
+                    className="description-content"
+                    dangerouslySetInnerHTML={{ __html: description }}
+                  />
+                </div>
+                {description && (
+                  <ShowMoreButton
+                    description={description}
+                    isExpanded={isExpanded}
+                    toggleDescription={() => toggleDescription(productId)}
+                  />
+                )}
               </div>
-              {description && (
-                <ShowMoreButton
-                  description={description}
-                  isExpanded={isExpanded}
-                  toggleDescription={() => toggleDescription(productId)}
-                />
-              )}
-            </div>
+            )}
           </Space>
         );
       },
+      className: isMobile ? "text-xs px-1 py-1" : "",
       responsive: ["xs", "sm", "md"] as Breakpoint[],
     },
     {
@@ -225,14 +231,15 @@ const ProductsTable = ({
           overflowCount={999}
           style={{
             backgroundColor: stock > 0 ? "#1890ff" : "#f5222d",
-            fontSize: "12px",
+            fontSize: isMobile ? "10px" : "12px",
             fontWeight: "bold",
           }}
         />
       ),
-      responsive: ["md" as Breakpoint],
       align: "center" as const,
-      width: 110,
+      width: isMobile ? 50 : 110,
+      className: isMobile ? "text-xs px-1 py-1" : "",
+      responsive: ["md" as Breakpoint],
     },
     {
       title: "Giá nhập",
@@ -302,29 +309,31 @@ const ProductsTable = ({
     {
       title: "Trạng thái",
       key: "status",
-      responsive: ["md" as Breakpoint],
       render: (_: any, record: IShopProduct) => (
         <Button
           style={{
-            backgroundColor: "#ECFFF3",
-            color: "#5AC48A",
+            backgroundColor: record?.isActive ? "#ECFFF3" : "#FFF1F0",
+            color: record?.isActive ? "#5AC48A" : "#FF4D4F",
             borderRadius: "4px",
-            padding: "0 10px",
-            fontSize: "12px",
+            padding: "0 8px",
+            fontSize: isMobile ? "10px" : "12px",
             fontWeight: "bold",
             cursor: "default",
-            height: 22,
+            height: isMobile ? 18 : 22,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             border: "none",
           }}
+          size={isMobile ? "small" : "middle"}
         >
           {record?.isActive ? "Đang bán" : "Ngừng bán"}
         </Button>
       ),
       align: "center" as const,
-      width: 110,
+      width: isMobile ? 60 : 110,
+      className: isMobile ? "text-xs px-1 py-1" : "",
+      responsive: ["md" as Breakpoint],
     },
     {
       title: "Hành động",
@@ -343,10 +352,10 @@ const ProductsTable = ({
               icon={<Icon path={mdiTrashCan} size={0.7} color={"#ffffff"} />}
               className="!bg-red-500 !rounded-[4px] w-full"
               type="primary"
-              size="small"
+              size={isMobile ? "small" : "small"}
               danger
             >
-              Xóa sản phẩm
+              Xóa
             </Button>
           </Popconfirm>
           <Link
@@ -361,17 +370,24 @@ const ProductsTable = ({
               iconPosition="end"
               className="!bg-main-golden-orange !rounded-[4px] w-full"
               type="primary"
-              size="small"
+              size={isMobile ? "small" : "small"}
             >
-              Chi tiết sản phẩm
+              Chi tiết
             </Button>
           </Link>
         </Space>
       ),
       align: "center" as const,
-      width: 150,
+      width: isMobile ? 90 : 150,
+      className: isMobile ? "text-xs px-1 py-1" : "",
     },
   ];
+
+  // Lọc cột hiển thị trên mobile
+  const mobileColumnKeys = ["image", "name", "quantity", "status", "action"];
+  const visibleColumns = isMobile
+    ? columns.filter(col => mobileColumnKeys.includes(col.key))
+    : columns;
 
   return (
     <div className="border p-4 bg-white rounded-md">
@@ -436,7 +452,7 @@ const ProductsTable = ({
       <div className="table-responsive-container">
         <Table
           rowKey="id"
-          columns={columns}
+          columns={visibleColumns}
           dataSource={products as any}
           loading={isLoading}
           pagination={false}

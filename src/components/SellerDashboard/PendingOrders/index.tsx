@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react"
 import { useGetMyOrders } from "@/hooks/shop-products"
 import dayjs from "dayjs"
 import { ClipboardCopy, Clock, CheckCheck, AlertCircle, User } from "lucide-react"
+import { useMediaQuery } from "@/hooks/use-media-query"
 
 const PendingOrders = () => {
   const { data, isLoading } = useGetMyOrders({
@@ -14,6 +15,9 @@ const PendingOrders = () => {
 
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const tableContainerRef = useRef<HTMLDivElement>(null)
+
+  // Thêm hook kiểm tra mobile
+  const isMobile = useMediaQuery("(max-width: 768px)")
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text)
@@ -92,113 +96,108 @@ const PendingOrders = () => {
 
   const columns: ColumnsType<any> = [
     {
-      title: "Mã đặt hàng",
+      title: isMobile ? "Mã" : "Mã đặt hàng",
       dataIndex: "id",
       key: "id",
-      className: "text-left",
-      width: 200,
+      className: isMobile ? "text-xs px-1 py-1" : "text-left",
+      width: isMobile ? 90 : 200,
       render: (text) => (
-        <div className="flex items-center space-x-2">
+        <div className={isMobile ? "flex items-center text-xs" : "flex items-center space-x-2"}>
           <span className="font-medium text-gray-800">{text.substring(0, 8)}...</span>
-          <Tooltip title={copiedId === text ? "Đã sao chép!" : "Sao chép"}>
-            <Button
-              type="text"
-              className="flex items-center justify-center p-1 hover:bg-gray-50 rounded-full"
-              onClick={() => handleCopy(text)}
-              icon={
-                copiedId === text ? (
-                  <CheckCheck className="h-4 w-4 text-green-500" />
-                ) : (
-                  <ClipboardCopy className="h-4 w-4 text-gray-400" />
-                )
-              }
-            />
-          </Tooltip>
+          {!isMobile && (
+            <Tooltip title={copiedId === text ? "Đã sao chép!" : "Sao chép"}>
+              <Button
+                type="text"
+                className="flex items-center justify-center p-1 hover:bg-gray-50 rounded-full"
+                onClick={() => handleCopy(text)}
+                icon={
+                  copiedId === text ? (
+                    <CheckCheck className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <ClipboardCopy className="h-4 w-4 text-gray-400" />
+                  )
+                }
+              />
+            </Tooltip>
+          )}
         </div>
       ),
     },
     {
-      title: "Khách hàng",
+      title: isMobile ? "Khách" : "Khách hàng",
       dataIndex: ["user", "fullName"],
       key: "customer",
-      className: "text-left",
-      width: 250,
+      className: isMobile ? "text-xs px-1 py-1" : "text-left",
+      width: isMobile ? 100 : 250,
       render: (text, record) => (
-        <div className="flex items-start space-x-3">
-          <div className="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-            <User className="h-5 w-5 text-gray-500" />
+        <div className={isMobile ? "flex items-center text-xs" : "flex items-start space-x-3"}>
+          <div className="h-7 w-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+            <User className="h-4 w-4 text-gray-500" />
           </div>
           <div className="flex flex-col">
             <div className="font-medium text-gray-800">{text}</div>
-            {/* <div className="text-gray-500 text-xs">{record?.user?.email}</div>
-            {record?.user?.phone && <div className="text-gray-500 text-xs">{record?.user?.phone}</div>} */}
           </div>
         </div>
       ),
     },
     {
-      title: "Thời gian",
+      title: isMobile ? "Thời gian" : "Thời gian",
       dataIndex: "orderTime",
       key: "orderTime",
-      className: "text-left",
-      width: 180,
+      className: isMobile ? "text-xs px-1 py-1" : "text-left",
+      width: isMobile ? 90 : 180,
       render: (value, record) => (
-        <div className="flex flex-col">
+        <div className={isMobile ? "flex flex-col text-xs" : "flex flex-col"}>
           <div className="font-medium text-gray-800">
-            {value ? dayjs(value).format("DD/MM/YYYY") : "N/A"}
+            {value ? dayjs(value).format("DD/MM") : "N/A"}
           </div>
-          <div className="text-gray-500 text-xs">
-            {value ? dayjs(value).format("HH:mm") : ""}
-          </div>
-          <Tooltip title="Thời gian chờ xử lý">
-            <div className="flex items-center mt-1 space-x-1">
-              <Clock className="h-3 w-3 text-amber-500" />
-              <span className="text-xs text-amber-600">{formatDelayStatus(record?.delayStatus)}</span>
+          {!isMobile && (
+            <div className="text-gray-500 text-xs">
+              {value ? dayjs(value).format("HH:mm") : ""}
             </div>
-          </Tooltip>
+          )}
         </div>
       ),
     },
     {
-      title: "Tổng tiền",
+      title: isMobile ? "Tổng" : "Tổng tiền",
       dataIndex: "totalAmount",
       key: "totalAmount",
-      className: "text-right",
-      width: 150,
+      className: isMobile ? "text-xs px-1 py-1 text-right" : "text-right",
+      width: isMobile ? 80 : 150,
       render: (value, record) => (
-        <div className="flex flex-col items-end">
+        <div className={isMobile ? "flex flex-col items-end text-xs" : "flex flex-col items-end"}>
           <span className="font-bold text-gray-800">${Number(value).toLocaleString('vi-VN')}</span>
-          <span className="text-green-600 text-xs">Lợi nhuận: ${Number(record?.totalProfit).toLocaleString('vi-VN')}</span>
+          {!isMobile && (
+            <span className="text-green-600 text-xs">Lợi nhuận: ${Number(record?.totalProfit).toLocaleString('vi-VN')}</span>
+          )}
         </div>
       ),
     },
     {
-      title: "Trạng thái",
+      title: isMobile ? "TT" : "Trạng thái",
       key: "status",
-      className: "text-center",
-      width: 150,
+      className: isMobile ? "text-xs px-1 py-1 text-center" : "text-center",
+      width: isMobile ? 70 : 150,
       render: (_, record) => (
-        <div className="flex flex-col gap-2">
+        <div className={isMobile ? "flex flex-col gap-1 text-xs" : "flex flex-col gap-2"}>
           <div className={`px-2 py-1 rounded-full text-xs font-medium inline-flex items-center justify-center ${getStatusColor(record?.status)}`}>
             {record?.status === "PENDING" ? (
               <AlertCircle className="h-3 w-3 mr-1" />
             ) : (
               <CheckCircleOutlined className="mr-1 text-xs" />
             )}
-            {getStatusText(record?.status)}
+            {isMobile ? "" : getStatusText(record?.status)}
           </div>
-          {/* <div className={`px-2 py-1 rounded-full text-xs font-medium inline-flex items-center justify-center ${getStatusColor(record?.paymentStatus)}`}>
-            {record?.paymentStatus === "PENDING" ? (
-              <Clock className="h-3 w-3 mr-1" />
-            ) : (
-              <CheckCircleOutlined className="mr-1 text-xs" />
-            )}
-            {getStatusText(record?.paymentStatus)}
-          </div> */}
         </div>
       ),
     },
   ]
+
+  // Lọc cột hiển thị trên mobile
+  const visibleColumns = isMobile
+    ? columns.filter(col => ["id", "customer", "orderTime", "totalAmount", "status"].includes(String(col.key)))
+    : columns;
 
   const CustomEmpty = () => (
     <Empty
@@ -229,7 +228,7 @@ const PendingOrders = () => {
         className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-50"
       >
         <Table
-          columns={columns as any}
+          columns={visibleColumns as any}
           dataSource={Array.isArray(data?.data?.data) ? data.data.data : []}
           rowKey="id"
           pagination={false}
