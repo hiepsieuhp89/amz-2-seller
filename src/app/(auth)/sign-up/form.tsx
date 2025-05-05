@@ -65,7 +65,6 @@ const SignUpForm = () => {
   const [userToken, setUserToken] = useState<string | null>(null);
   const [registrationPayload, setRegistrationPayload] = useState<IRegister | null>(null);
 
-  // Cleanup timer on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -78,17 +77,14 @@ const SignUpForm = () => {
     try {
       setSendingOTP(true);
       
-      // Generate OTP
       const newOTP = generateOTP();
       setGeneratedOTP(newOTP);
       
-      // Set expiry time - 15 minutes from now
       const expiryTime = new Date();
       expiryTime.setMinutes(expiryTime.getMinutes() + 15);
       setOtpExpiry(expiryTime);
-      setTimeLeft(15 * 60); // 15 minutes in seconds
+      setTimeLeft(15 * 60); 
       
-      // Start the countdown timer
       if (timerRef.current) clearInterval(timerRef.current);
       timerRef.current = setInterval(() => {
         setTimeLeft(prev => {
@@ -100,14 +96,11 @@ const SignUpForm = () => {
         });
       }, 1000);
       
-      // Format time as "HH:MM"
       const currentTime = new Date();
       const formattedTime = `${currentTime.getHours().toString().padStart(2, '0')}:${currentTime.getMinutes().toString().padStart(2, '0')}`;
       
-      // Calculate expiry time string
       const expiryTimeStr = `${expiryTime.getHours().toString().padStart(2, '0')}:${expiryTime.getMinutes().toString().padStart(2, '0')}`;
       
-      // Send email using emailjs
       const templateParams = {
         recipient: emailAddress,
         email: emailAddress,
