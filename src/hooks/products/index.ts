@@ -29,6 +29,7 @@ export const useProducts = (params?: IProductSearchParams) => {
     const queryParams = {
         order: "DESC",
         page: 1,
+        sortBy: "shopProduct.soldCount",
         ...params,
     }
     const {

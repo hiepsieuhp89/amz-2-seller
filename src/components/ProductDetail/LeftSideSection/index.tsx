@@ -13,6 +13,7 @@ import { formatNumber } from '@/utils';
 import { useTopSellingProducts } from '@/hooks/dashboard';
 import { useSelectedProduct } from '@/stores/useSelectedProduct';
 import { useProfile } from '@/hooks/authentication';
+import { useProducts } from '@/hooks/products';
 const { Text } = Typography;
 
 const RatingStars = ({ rating }: { rating: number }) => {
@@ -59,9 +60,14 @@ const LeftSideSection = () => {
     }
   };
 
-  const { data: topSellingProducts, isLoading } = useTopSellingProducts()
   const { selectedProduct, setSelectedProduct } = useSelectedProduct()
-  const { profileData } = useProfile()
+  const {data: topSellingProducts} = useProducts({
+    shopId: (selectedProduct?.shopProducts[selectedProduct.shopProducts.length-1] as any)?.userId,
+    order: "DESC",
+    page: 1,
+    sortBy: "shopProduct.soldCount"
+  })
+  const topUser = topSellingProducts?.data?.data?.[0]?.shopProducts?.[0]?.user;
   return (
     <div>
       <motion.div
@@ -79,16 +85,16 @@ const LeftSideSection = () => {
                 Được bán bởi
               </div>
               <div className='p-4'>
-                <div className="flex items-start mb-3">
+                <div className="flex items-center mb-3">
                   {/* Shop Logo */}
-                  <Link href={"/shop?id=" + profileData?.data?.id}>
+                  <Link href={topUser ? "/shop?id=" + topUser.id : "#"}>
                     <motion.div
-                      className="mr-3 w-14 h-14 bg-white border relative rounded-full"
+                      className="mr-3 w-10 h-10 bg-white border relative rounded-full"
                     >
                       <Image
                         draggable={false}
-                        src={profileData?.data?.logoUrl || "/images/default-avatar.jpg"}
-                        alt={profileData?.data?.shopName || "Amazon"}
+                        src={topUser?.logoUrl || "/images/default-avatar.jpg"}
+                        alt={topUser?.fullName || "Amazon"}
                         height={56}
                         width={56}
                         quality={100}
@@ -99,8 +105,8 @@ const LeftSideSection = () => {
 
                   {/* Shop Name & Location */}
                   <div>
-                    <Link href={"/shop?id=" + profileData?.data?.id} className="text-sm flex items-center font-semibold">
-                      {profileData?.data?.shopName || "Amazon"}
+                    <Link href={topUser ? "/shop?id=" + topUser.id : "#"} className="text-sm flex items-center font-semibold">
+                      {topUser?.fullName || "Amazon"}
                       <motion.span
                         className="ml-2 text-blue-500"
                       >
@@ -111,7 +117,7 @@ const LeftSideSection = () => {
                           xmlSpace="preserve"
                           viewBox="0 0 287.5 442.2"
                           width="22"
-                          height="34"
+                          height="24"
                           className="inline-block"
                         >
                           <polygon style={{ fill: '#F8B517' }} points="223.4,442.2 143.8,376.7 64.1,442.2 64.1,215.3 223.4,215.3" />
@@ -124,8 +130,9 @@ const LeftSideSection = () => {
                         </svg>
                       </motion.span>
                     </Link>
-                    <Text className="text-xs !text-gray-400">{profileData?.data?.shopAddress || profileData?.data?.address}</Text>
                   </div>
+                  {/* <Text className="text-xs !text-gray-400">{profileData?.data?.
+                    shopAddress || profileData?.data?.address}</Text> */}
                 </div>
                 {/* Rating */}
                 <div className="mb-3 flex flex-col items-center p-2 border">
@@ -159,15 +166,13 @@ const LeftSideSection = () => {
 
         {/* Top Selling Products */}
         <motion.div variants={itemVariants} className="hidden lg:block mt-4 bg-white">
-          <div
-            className="top-selling-card border border-solid border-gray-200"
-          >
+          <div className="top-selling-card border border-solid border-gray-200">
             <div className="font-semibold text-lg border-b p-4">
               Sản phẩm bán chạy nhất
             </div>
             <List
               itemLayout="horizontal"
-              dataSource={topSellingProducts}
+              dataSource={topSellingProducts?.data?.data}
               renderItem={(product: any) => (
                 <motion.div
                   variants={hoverVariants}
@@ -175,18 +180,20 @@ const LeftSideSection = () => {
                   className="p-4"
                 >
                   <Link
-                    onClick={() => setSelectedProduct(product?.product)}
-                    href={"/product?id=" + product?.product.id} className="block">
+                    onClick={() => setSelectedProduct(product)}
+                    href={"/product?id=" + product.id}
+                    className="block"
+                  >
                     <div className="flex items-center">
-                      {/* Product Image */}
+                      {/* Ảnh sản phẩm */}
                       <div className="w-1/4 xl:w-1/3 overflow-hidden">
                         <motion.div
                           whileHover={{ scale: 1.1 }}
                           transition={{ duration: 0.5 }}
                         >
                           <Image
-                            src={product?.product?.imageUrls[0]}
-                            alt={product?.product?.name}
+                            src={product?.imageUrls?.[0] || "/images/default-avatar.jpg"}
+                            alt={product?.name}
                             width={200}
                             height={200}
                             className="w-full h-20 object-cover"
@@ -194,17 +201,29 @@ const LeftSideSection = () => {
                           />
                         </motion.div>
                       </div>
-
-                      {/* Product Details */}
+                      {/* Thông tin sản phẩm */}
                       <div className="w-3/4 xl:w-2/3 pl-3">
-                        <div className="hidden xl:block mb-2">
+                        <div className="mb-1">
                           <Text className="text-sm line-clamp-2 hover:transition-colors">
-                            {product?.product?.name && product?.product?.name.length > 20 ? product?.product?.name.slice(0, 20) + "..." : product?.product?.name}
+                            {product?.name && product?.name.length > 40
+                              ? product?.name.slice(0, 40) + "..."
+                              : product?.name}
                           </Text>
                         </div>
-                        <Text className=" font-bold">
-                          ${formatNumber(product?.product?.price)}
-                        </Text>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Text className="font-bold text-base text-red-500">
+                            {Number(product?.price) > 0 ? `$${formatNumber(product?.price)}` : "Liên hệ"}
+                          </Text>
+                          <span className="text-xs text-gray-400">
+                            Đã bán: {product?.soldCount}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <RatingStars rating={parseFloat(product?.averageRating) || 0} />
+                          <span className="text-xs text-gray-500">
+                            ({product?.averageRating || 0}★)
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </Link>

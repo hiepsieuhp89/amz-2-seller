@@ -29,6 +29,7 @@ export interface IProductSearchParams {
     isHot?: boolean 
     limit?: number
     categoryId?: string
+    sortBy?: string
 }
 
 export interface IAddShopProductsRequest {

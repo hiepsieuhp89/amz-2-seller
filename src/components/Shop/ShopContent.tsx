@@ -1,9 +1,16 @@
-import { Empty, Select, Spin } from "antd";
+import { Empty, Spin } from "antd";
 import Link from "next/link";
 import Image from "next/image";
 import "./styles.css";
 import { formatNumber } from "@/utils";
 import { useEffect, useState } from "react";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from "@/components/ui/select";
 
 interface ShopContentProps {
   shopProducts: any[];
@@ -29,7 +36,6 @@ export default function ShopContent({
   handlePageChange,
 }: ShopContentProps) {
   const [allProducts, setAllProducts] = useState<any[]>([]);
-  
   useEffect(() => {
     if (page === 1) {
       setAllProducts(shopProducts);
@@ -39,7 +45,6 @@ export default function ShopContent({
   }, [shopProducts, page]);
   
   useEffect(() => {
-    // Reset all products when the component is unmounted or when sort changes
     return () => {
       setAllProducts([]);
     };
@@ -54,28 +59,28 @@ export default function ShopContent({
   return (
     <main className="w-full flex justify-center px-4 sm:px-6 md:px-8 lg:px-[104px] py-6 bg-[#E3E6E6]">
       <div className="w-full max-w-[1440px] bg-[#E3E6E6]">
-        {/* Filters & Sort */}
-        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-start space-y-2 sm:space-y-0">
           <div>
-            <span className="mr-2 font-medium text-sm block sm:inline mb-1 sm:mb-0">Sắp xếp theo:</span>
+            <span className="font-medium text-sm">Sắp xếp theo:</span>
             <Select
-              defaultValue={`${sortField}:${sortOrder}`}
-              onChange={handleSortChange}
-              options={[
-                { value: 'createdAt:DESC', label: 'Mới nhất' },
-                { value: 'price:ASC', label: 'Giá: Thấp đến cao' },
-                { value: 'price:DESC', label: 'Giá: Cao đến thấp' },
-              ]}
-              style={{ width: '100%', maxWidth: '180px' }}
-            />
+              value={`${sortField}:${sortOrder}`}
+              onValueChange={handleSortChange}
+            >
+              <SelectTrigger className="max-w-[180px] w-[180px] bg-white rounded-sm mt-4">
+                <SelectValue placeholder="Chọn sắp xếp" />
+              </SelectTrigger>
+              <SelectContent className="bg-white rounded-sm">
+                <SelectItem value="createdAt:DESC">Mới nhất</SelectItem>
+                <SelectItem value="price:ASC">Giá: Thấp đến cao</SelectItem>
+                <SelectItem value="price:DESC">Giá: Cao đến thấp</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <div className="mt-2 sm:mt-0">
             {meta && (
               <span className="font-medium text-sm">
-                Hiển thị {allProducts.length} trên {meta.itemCount} sản phẩm
+                Hiển thị {allProducts.length} / {meta.itemCount} sản phẩm
               </span>
             )}
-          </div>
         </div>
 
         {/* Products Section Title */}
