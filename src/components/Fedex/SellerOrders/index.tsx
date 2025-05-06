@@ -462,7 +462,7 @@ const SellerOrders = () => {
       <div className="mt-2">
         {isLoadingStats ? (
           <div className="flex justify-center items-center py-10">
-            <Spin size="large" tip="Loading statistics..." />
+            <Spin size="small" tip="Loading statistics..." />
           </div>
         ) : (
           <>
