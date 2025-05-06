@@ -56,7 +56,7 @@ const nextConfig = {
     unoptimized: true,
   },
   async rewrites() {
-    const domain = process.env.NEXT_PUBLIC_API_URL || "amz.dunghaysai.site";
+    const domain = process.env.NEXT_PUBLIC_API_URL || "amz2.dunghaysai.site";
     
     return [
       // QUAN TRỌNG: Thứ tự của rewrites rất quan trọng!

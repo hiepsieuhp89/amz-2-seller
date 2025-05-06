@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // Forward the request to the actual backend API
-    const apiBaseUrl = 'https://amz.dunghaysai.site';
+    const apiBaseUrl = 'https://amz2.dunghaysai.site';
     
     // Construct query parameters
     const queryParams = new URLSearchParams();
