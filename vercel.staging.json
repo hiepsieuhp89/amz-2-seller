@@ -7,7 +7,7 @@
     }
   ],
   "env": {
-    "NEXT_PUBLIC_API_URL": "amz.dunghaysai.site"
+    "NEXT_PUBLIC_API_URL": "amz2.dunghaysai.site"
 
   }
 }

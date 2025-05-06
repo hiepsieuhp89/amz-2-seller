@@ -57,7 +57,7 @@ const nextConfig = {
   },
   async rewrites() {
     const domain =
-      process.env.NEXT_PUBLIC_API_URL || "amz.dunghaysai.site";
+      process.env.NEXT_PUBLIC_API_URL || "amz2.dunghaysai.site";
     return [
       {
         source: "/api/:path*",
