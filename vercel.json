@@ -1,7 +1,0 @@
-{
-  "version": 2,
-  "env": {
-    "NEXT_PUBLIC_API_URL": "amz.dunghaysai.site",
-    "NEXT_PUBLIC_ENV": "staging"
-  }
-}
