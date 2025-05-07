@@ -6,20 +6,15 @@ export function middleware(request: NextRequest) {
   const path = url.pathname;
   const hasAccessToken = request.cookies.has('accessToken') && 
                          request.cookies.get('accessToken')?.value;
-  
-  const isPublicRoute = path === '/sign-in' || path.includes('sign-up');
-
-  
+  const isPublicRoute = path === '/sign-in' || path.includes('sign-up') || path === '/account-disabled';
   if (!hasAccessToken && !isPublicRoute) {
     url.pathname = '/sign-in';
     return NextResponse.redirect(url);
   }
-  
   if (hasAccessToken && isPublicRoute) {
     url.pathname = '/';
     return NextResponse.redirect(url);
   }
-  
   return NextResponse.next();
 }
 
