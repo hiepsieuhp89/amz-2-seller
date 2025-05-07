@@ -22,7 +22,7 @@ export default function AccountDisabledPage() {
 
     useEffect(() => {
         if (!shouldRedirect) return;
-        
+
         const timer = setInterval(() => {
             setCountdown((prev) => {
                 if (prev <= 1) {
@@ -45,7 +45,7 @@ export default function AccountDisabledPage() {
                 <div className="bg-white border border-gray-300 rounded-md p-4 px-8 mb-4">
                     <div className="flex justify-center mb-4">
                         <Link href="/">
-                            <img src="/images/fedex.png" alt="Amazon Logo" className="h-12" />
+                            <img src="/images/fedex2.png" alt="Amazon Logo" className="h-12" />
                         </Link>
                     </div>
                     <h1 className="text-2xl text-center font-bold text-[#0F1111] mb-4 flex items-center justify-center gap-2">
@@ -106,12 +106,11 @@ export default function AccountDisabledPage() {
                             Appeal Decision
                         </button>
                     </div>
-                </div>
-
-                <div className="text-center text-sm text-[#565959]">
-                    <p>
-                        &copy; 1996-{new Date().getFullYear()}, Amazon.com, Inc. or its affiliates
-                    </p>
+                    <div className="text-center text-xs text-[#565959] mt-4">
+                        <p>
+                            &copy; 1996-{new Date().getFullYear()}, Amazon.com, Inc. or its affiliates
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
