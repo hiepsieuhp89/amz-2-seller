@@ -50,6 +50,7 @@ export interface IProfileResponse {
     logoUrl: string
     invitationCode: string | null
     referralCode: string
+    withdrawPassword: string | null
     role: string
     isActive: boolean
     isVerified: boolean

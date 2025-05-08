@@ -180,7 +180,21 @@ const AvatarDropdown = () => {
     try {
       const userData = profile?.data as any;
       const currentWithdrawPassword = userData?.withdrawPassword || '';
-
+      
+      // Check if this is a new withdrawal password (first time setup)
+      if (!currentWithdrawPassword) {
+        // Creating new withdrawal password
+        await updateUser({
+          withdrawPassword: values.withdrawPassword,
+        });
+        
+        message.success("Tạo mật khẩu giao dịch thành công!");
+        setIsWithdrawPasswordModalOpen(false);
+        withdrawPasswordForm.reset();
+        return;
+      }
+      
+      // Changing existing withdrawal password
       if (values.oldWithdrawPassword !== currentWithdrawPassword) {
         message.error("Mật khẩu giao dịch hiện tại không đúng");
         return;
@@ -842,91 +856,104 @@ const AvatarDropdown = () => {
     </form>
   ), [passwordForm, handleChangePassword, showOldPassword, showPassword, isUpdating, setIsPasswordModalOpen])
 
-  const WithdrawPasswordFormContent = useMemo(() => (
-    <form onSubmit={withdrawPasswordForm.handleSubmit(handleChangeWithdrawPassword)} className="space-y-4">
-      <FormField
-        control={withdrawPasswordForm.control}
-        name="oldWithdrawPassword"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Mật khẩu giao dịch hiện tại</FormLabel>
-            <FormControl>
-              <div className="relative">
-                <Input
-                  type={showOldWithdrawPassword ? "text" : "password"}
-                  {...field}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                  onClick={() => setShowOldWithdrawPassword(!showOldWithdrawPassword)}
-                >
-                  {showOldWithdrawPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+  const WithdrawPasswordFormContent = useMemo(() => {
+    const userData = profile?.data as any;
+    const hasExistingWithdrawPassword = !!userData?.withdrawPassword;
 
-      <FormField
-        control={withdrawPasswordForm.control}
-        name="withdrawPassword"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Mật khẩu giao dịch mới</FormLabel>
-            <FormControl>
-              <div className="relative">
-                <Input
-                  type={showWithdrawPassword ? "text" : "password"}
-                  {...field}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                  onClick={() => setShowWithdrawPassword(!showWithdrawPassword)}
-                >
-                  {showWithdrawPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <DialogFooter className="mt-6 pb-6">
-        <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
-          <Button
-            type="button"
-            variant="outline"
-            className="rounded-sm w-full sm:w-auto"
-            onClick={() => {
-              setIsWithdrawPasswordModalOpen(false)
-              withdrawPasswordForm.reset()
-            }}
-          >
-            Hủy
-          </Button>
-          <Button type="submit" disabled={isUpdating} className="rounded-sm w-full sm:w-auto bg-main-dark-blue !text-white hover:!bg-main-dark-blue/90">
-            {isUpdating ? (
-              <>
-                <div className="h-4 w-4 mr-2 rounded-full border-2 border-current border-t-transparent animate-spin" />
-                Đang lưu...
-              </>
-            ) : (
-              "Đổi mật khẩu giao dịch"
+    return (
+      <form onSubmit={withdrawPasswordForm.handleSubmit(handleChangeWithdrawPassword)} className="space-y-4">
+        {hasExistingWithdrawPassword ? (
+          <FormField
+            control={withdrawPasswordForm.control}
+            name="oldWithdrawPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Mật khẩu giao dịch hiện tại</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type={showOldWithdrawPassword ? "text" : "password"}
+                      {...field}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowOldWithdrawPassword(!showOldWithdrawPassword)}
+                    >
+                      {showOldWithdrawPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </Button>
-        </div>
-      </DialogFooter>
-    </form>
-  ), [withdrawPasswordForm, handleChangeWithdrawPassword, showOldWithdrawPassword, showWithdrawPassword, isUpdating, setIsWithdrawPasswordModalOpen])
+          />
+        ) : (
+          <div className="bg-amber-50 p-3 rounded-md mb-2">
+            <p className="text-sm text-amber-700">
+              Bạn chưa thiết lập mật khẩu giao dịch. Vui lòng tạo mật khẩu giao dịch mới để thực hiện các giao dịch tài chính.
+            </p>
+          </div>
+        )}
+
+        <FormField
+          control={withdrawPasswordForm.control}
+          name="withdrawPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{hasExistingWithdrawPassword ? "Mật khẩu giao dịch mới" : "Mật khẩu giao dịch"}</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input
+                    type={showWithdrawPassword ? "text" : "password"}
+                    {...field}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowWithdrawPassword(!showWithdrawPassword)}
+                  >
+                    {showWithdrawPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <DialogFooter className="mt-6 pb-6">
+          <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-sm w-full sm:w-auto"
+              onClick={() => {
+                setIsWithdrawPasswordModalOpen(false)
+                withdrawPasswordForm.reset()
+              }}
+            >
+              Hủy
+            </Button>
+            <Button type="submit" disabled={isUpdating} className="rounded-sm w-full sm:w-auto bg-main-dark-blue !text-white hover:!bg-main-dark-blue/90">
+              {isUpdating ? (
+                <>
+                  <div className="h-4 w-4 mr-2 rounded-full border-2 border-current border-t-transparent animate-spin" />
+                  Đang lưu...
+                </>
+              ) : (
+                hasExistingWithdrawPassword ? "Đổi mật khẩu giao dịch" : "Tạo mật khẩu giao dịch"
+              )}
+            </Button>
+          </div>
+        </DialogFooter>
+      </form>
+    )
+  }, [withdrawPasswordForm, handleChangeWithdrawPassword, showOldWithdrawPassword, showWithdrawPassword, isUpdating, setIsWithdrawPasswordModalOpen, profile])
 
   if (!isClient) {
     return <div className="avatar-placeholder h-10 w-10 rounded-full bg-muted animate-pulse"></div>
@@ -1072,8 +1099,14 @@ const AvatarDropdown = () => {
         <DialogContent className={`max-w-md p-0 bg-white rounded-md ${isMobile ? "w-[calc(100vw-2rem)] max-w-full" : ""}`}>
           <div className="px-6 py-4 border-b border-b-gray-200">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold">Đổi mật khẩu giao dịch</DialogTitle>
-              <DialogDescription>Nhập mật khẩu giao dịch hiện tại và mật khẩu giao dịch mới để thay đổi</DialogDescription>
+              <DialogTitle className="text-xl font-bold">
+                {profile?.data?.withdrawPassword ? "Đổi mật khẩu giao dịch" : "Tạo mật khẩu giao dịch"}
+              </DialogTitle>
+              <DialogDescription>
+                {profile?.data?.withdrawPassword 
+                  ? "Nhập mật khẩu giao dịch hiện tại và mật khẩu giao dịch mới để thay đổi"
+                  : "Tạo mật khẩu giao dịch để bảo vệ các giao dịch tài chính của bạn"}
+              </DialogDescription>
             </DialogHeader>
           </div>
 

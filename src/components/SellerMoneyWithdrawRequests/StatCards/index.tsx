@@ -72,12 +72,41 @@ const StatCards = () => {
       )
       return
     }
+
+    // Check if user has set a withdraw password
+    const userData = profile?.data as any;
+    if (!userData?.withdrawPassword) {
+      Modal.confirm({
+        title: 'Chưa thiết lập mật khẩu giao dịch',
+        content: (
+          <div>
+            <p>Bạn cần thiết lập mật khẩu giao dịch trước khi có thể rút tiền.</p>
+            <p>Mật khẩu giao dịch được sử dụng để bảo vệ các giao dịch tài chính của bạn.</p>
+          </div>
+        ),
+        okText: 'Thiết lập ngay',
+        cancelText: 'Để sau',
+        onOk: () => {
+          // Redirect to profile page with tab set to payment settings
+          window.location.href = '/seller/shop?tab=payment'
+        }
+      })
+      return
+    }
+
     setIsModalVisible(true)
   }
 
   const handleWithdraw = () => {
     if (!withdrawPassword) {
       message.error("Vui lòng nhập Mật khẩu giao dịch")
+      return
+    }
+
+    // Check if password matches the one in profile
+    const userData = profile?.data as any;
+    if (withdrawPassword !== userData?.withdrawPassword) {
+      message.error("Mật khẩu giao dịch không đúng")
       return
     }
 
