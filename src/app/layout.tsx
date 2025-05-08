@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import NextTopLoader from 'nextjs-toploader';
-import ClientLayout from './ClientLayout';
+import dynamic from 'next/dynamic';
 import './globals.css';
+
+const ClientLayout = dynamic(() => import('./ClientLayout'), { ssr: false });
 
 export const metadata: Metadata = {
   title: 'FedEx Global Home',
@@ -17,18 +19,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClientLayout>
-      <NextTopLoader
-        color="#2299DD"
-        initialPosition={0.08}
-        crawlSpeed={200}
-        height={3}
-        crawl={true}
-        // showSpinner={true}
-        easing="ease"
-        speed={200}
-      />
-      {children}
-    </ClientLayout>
+    <html lang="en">
+      <body>
+        <ClientLayout>
+          <NextTopLoader
+            color="#2299DD"
+            initialPosition={0.08}
+            crawlSpeed={200}
+            height={3}
+            crawl={true}
+            easing="ease"
+            speed={200} 
+          />
+          {children}
+        </ClientLayout>
+      </body>
+    </html>
   );
 }

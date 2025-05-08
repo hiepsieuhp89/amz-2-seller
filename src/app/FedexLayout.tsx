@@ -9,7 +9,7 @@ import styles from '@/components/Fedex/LayoutProvider/styles.module.scss';
 
 function FedexLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isDisplayMenu = !pathname?.includes('/sign-in');
+  const isDisplayMenu = !pathname?.includes('/sign-in') && !pathname?.includes('/account-disabled');
   
   if (isDisplayMenu) {
     return (

@@ -10,43 +10,11 @@ import { Button, Form, Input } from 'antd';
 import { FormProps } from 'antd/lib';
 import { useRouter } from 'next/navigation';
 import { useContext, useState } from 'react';
-import Image from 'next/image';
 
 type FieldType = {
   username: string;
   password: string;
 };
-
-// Updated with lower resolution images
-const captchaImages = [
-  { id: 1, src: 'https://source.unsplash.com/100x100/?cat', type: 'cat' },
-  { id: 2, src: 'https://source.unsplash.com/100x100/?dog', type: 'dog' },
-  { id: 3, src: 'https://source.unsplash.com/100x100/?koala', type: 'koala' },
-  { id: 4, src: 'https://source.unsplash.com/100x100/?bird', type: 'bird' },
-  { id: 5, src: 'https://source.unsplash.com/100x100/?fish', type: 'fish' },
-  { id: 6, src: 'https://source.unsplash.com/100x100/?rabbit', type: 'rabbit' },
-];
-
-// Add new captcha types
-type CaptchaType = 'image' | 'audio' | 'text';
-
-const generateTextCaptcha = () => {
-  const operators = ['+', '-', '*'];
-  const num1 = Math.floor(Math.random() * 10);
-  const num2 = Math.floor(Math.random() * 10);
-  const operator = operators[Math.floor(Math.random() * operators.length)];
-  const question = `${num1} ${operator} ${num2}`;
-  const answer = eval(question).toString();
-  return { question, answer };
-};
-
-const generateAudioCaptcha = () => {
-  const numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-  const randomNumbers = Array.from({length: 3}, () => Math.floor(Math.random() * 10));
-  const audioText = randomNumbers.map(num => numbers[num]).join(' ');
-  return { audioText, answer: randomNumbers.join('') };
-};
-
 const SignInForm = () => {
   const router = useRouter();
   const { mutateAsync, isPending } = useSignIn();
@@ -57,28 +25,18 @@ const SignInForm = () => {
   const [captchaTarget, setCaptchaTarget] = useState('');
   const [captchaImages, setCaptchaImages] = useState<Array<{ id: number, src: string, type: string }>>([]);
   const [formValues, setFormValues] = useState<FieldType | null>(null);
-  const [captchaType, setCaptchaType] = useState<CaptchaType>('image');
-  const [textCaptcha, setTextCaptcha] = useState({ question: '', answer: '' });
-  const [audioCaptcha, setAudioCaptcha] = useState({ audioText: '', answer: '' });
 
-  // Generate random captcha challenge
   const generateCaptcha = () => {
     setCaptchaLoading(true);
-
     const types = ['cat', 'dog', 'koala', 'bird', 'fish', 'rabbit'];
     const randomType = types[Math.floor(Math.random() * types.length)];
-
-    // Create unique image URLs using timestamp to prevent caching
     const timestamp = Date.now();
-
-    // Generate 1 correct image
     const correctImage = {
       id: 1,
       src: `https://source.unsplash.com/100x100/?${randomType}&${timestamp}`,
       type: randomType
     };
 
-    // Generate 5 unique wrong images
     const wrongTypes = types.filter(t => t !== randomType);
     const wrongImages: { id: number; src: string; type: string }[] = [];
 
@@ -92,8 +50,6 @@ const SignInForm = () => {
         });
       }
     }
-
-    // Combine and shuffle images
     const allImages = [correctImage, ...wrongImages];
     const shuffled = allImages.sort(() => 0.5 - Math.random());
 
@@ -105,20 +61,6 @@ const SignInForm = () => {
     }, 500);
   };
 
-  const generateRandomCaptcha = () => {
-    const types: CaptchaType[] = ['image', 'audio', 'text'];
-    const randomType = types[Math.floor(Math.random() * types.length)];
-    setCaptchaType(randomType);
-
-    if (randomType === 'image') {
-      generateCaptcha();
-    } else if (randomType === 'text') {
-      setTextCaptcha(generateTextCaptcha());
-    } else if (randomType === 'audio') {
-      setAudioCaptcha(generateAudioCaptcha());
-    }
-  };
-
   const handleCaptchaSuccess = async () => {
     setShowCaptcha(false);
     if (formValues) {
@@ -126,7 +68,6 @@ const SignInForm = () => {
         const payload: ISignIn = {
           username: formValues.username,
           password: formValues.password,
-          // gate: "website"
         };
         const { data } = await mutateAsync(payload);
         if (data?.accessToken) {
@@ -135,6 +76,10 @@ const SignInForm = () => {
           router.push('/');
         }
       } catch (error: any) {
+        if (error?.response?.data?.statusCode === 423) {
+          router.push('/account-disabled');
+          return;
+        }
         handleErrorMessage(error?.response?.data?.message || 'Login failed');
       }
     }

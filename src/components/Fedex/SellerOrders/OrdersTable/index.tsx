@@ -12,7 +12,6 @@ import {
   Empty,
   Input,
   Modal,
-  Select,
   Spin,
   Table,
   message,
@@ -22,8 +21,6 @@ import type { ColumnsType } from "antd/es/table";
 import type React from "react";
 import type { Key } from 'react';
 import { useMemo, useState } from "react";
-
-const { Option } = Select;
 
 interface OrderData {
   key: string;
@@ -38,11 +35,9 @@ interface OrderData {
     id: string;
     shopProduct: {
       profit: string;
-      // Add other shopProduct fields as needed
     };
     quantity: number;
     price: string;
-    // Add other item fields as needed
   }[];
   totalProfit: string;
   paymentStatus: string;
@@ -52,7 +47,6 @@ interface OrderData {
   delayTime?: string;
   user?: {
     fullName: string;
-    // Add other user fields as needed
   };
 }
 
@@ -109,9 +103,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
   };
 
   const handleSearch = (value: string) => {
-    // Implement your search logic here
     console.log("Search value:", value);
-    // You might want to update the API call with the search term
   };
 
   const handlePayOrders = async () => {
@@ -282,12 +274,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
         width: isMobile ? "30%" : "15%",
         render: (text) => (
           <span className="whitespace-nowrap text-xs sm:text-sm">
-            {new Date(text).toLocaleDateString('vi-VN', {
+            {new Date(text).toLocaleTimeString('vi-VN', {
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit'
+            })} {new Date(text).toLocaleDateString('vi-VN', {
               year: 'numeric',
               month: '2-digit',
-              day: '2-digit',
-              hour: isMobile ? undefined : '2-digit',
-              minute: isMobile ? undefined : '2-digit'
+              day: '2-digit'
             })}
           </span>
         ),
@@ -668,7 +662,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
                 />
                 <div>
                   <div className="text-xs font-medium">
-                    {new Date(order.orderTime).toLocaleDateString('vi-VN', {
+                    {new Date(order.orderTime).toLocaleTimeString('vi-VN', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit'
+                    })} {new Date(order.orderTime).toLocaleDateString('vi-VN', {
                       year: 'numeric',
                       month: '2-digit',
                       day: '2-digit'
@@ -695,20 +693,26 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
               <div className="px-3 py-2 bg-gray-50 border-t">
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <div className="text-gray-500">Giá nhập:</div>
+                    <div className="text-gray-500 font-semibold">Giá nhập:</div>
                     <div>${formatNumber(order.totalPaidAmount)}</div>
                   </div>
                   <div>
-                    <div className="text-gray-500">Lợi nhuận:</div>
+                    <div className="text-gray-500 font-semibold">Lợi nhuận:</div>
                     <div className="text-green-500">${order.totalProfit}</div>
                   </div>
                   {order.user && (
                     <>
-                      <div className="col-span-2">
-                        <div className="text-gray-500">Khách hàng:</div>
+                      <div>
+                        <div className="text-gray-500 font-semibold">Khách hàng:</div>
                         <div>{order.user.fullName || "—"}</div>
                       </div>
                     </>
+                  )}
+                  {order.address && (
+                    <div>
+                      <div className="text-gray-500 font-semibold">Địa chỉ:</div>
+                      <div>{order.address}</div>
+                    </div>
                   )}
                 </div>
               </div>
