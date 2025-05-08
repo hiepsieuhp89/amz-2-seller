@@ -14,6 +14,8 @@ interface AvatarDropdownProps {
   onClose?: () => void;
 }
 
+const FEDEX_PASSWORD_MODE = false; // Thêm constant này để bật/tắt chế độ nhập mật khẩu giao dịch
+
 const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
   const router = useRouter()
   const { user, logoutUser, profile } = useUser()
@@ -40,6 +42,23 @@ const AvatarDropdown = ({ isMobile, onClose }: AvatarDropdownProps) => {
   }
 
   const handleChangePassword = (values: { oldFedexPassword: string; fedexPassword: string }) => {
+    if (!FEDEX_PASSWORD_MODE) { // Sử dụng constant để kiểm soát chế độ nhập mật khẩu
+      updateUser(
+        { fedexPassword: values.fedexPassword },
+        {
+          onSuccess: () => {
+            message.success("Đặt mật khẩu giao dịch thành công")
+            setIsModalOpen(false)
+            form.resetFields()
+          },
+          onError: (error) => {
+            message.error(error.message || "Đặt mật khẩu thất bại")
+          },
+        }
+      )
+      return
+    }
+
     // Check if user already has a fedexPassword
     const hasFedexPassword = Boolean(profile?.data?.fedexPassword)
     

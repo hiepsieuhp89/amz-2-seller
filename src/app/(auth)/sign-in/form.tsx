@@ -15,6 +15,9 @@ type FieldType = {
   username: string;
   password: string;
 };
+
+const CAPTCHA_MODE = false;
+
 const SignInForm = () => {
   const router = useRouter();
   const { mutateAsync, isPending } = useSignIn();
@@ -87,7 +90,11 @@ const SignInForm = () => {
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values: FieldType) => {
     setFormValues(values);
-    setShowCaptcha(true);
+    if (CAPTCHA_MODE) {
+      setShowCaptcha(true);
+    } else {
+      handleCaptchaSuccess();
+    }
   };
 
   return (

@@ -56,6 +56,8 @@ interface OrdersTableProps {
   onSearch?: (value: string) => void;
 }
 
+const FEDEX_PASSWORD_MODE = false;
+
 const generateOrderCode = (orderTime: string) => {
   // Convert order time to timestamp
   const timestamp = new Date(orderTime).getTime()
@@ -108,9 +110,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
 
   const handlePayOrders = async () => {
     try {
+      if (FEDEX_PASSWORD_MODE && !fedexPassword) {
+        message.error('Vui lòng nhập mật khẩu giao dịch!');
+        return;
+      }
+
       await payOrdersMutation.mutateAsync({
         orderIds: selectedRowKeys,
-        fedexPassword,
+        fedexPassword: FEDEX_PASSWORD_MODE ? fedexPassword : undefined,
       });
       message.success('Thanh toán đơn hàng thành công!');
       setIsPaymentModalVisible(false);

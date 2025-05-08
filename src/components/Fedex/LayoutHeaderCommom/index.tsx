@@ -1,16 +1,15 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import AvatarDropdown from '@/components/AvatarComponent/AvatarDropdown';
-import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { FaHeadset, FaGlobe, FaBars, FaTimes, FaLock } from 'react-icons/fa';
-import { Dropdown, Drawer, Form, Input, Modal, message } from 'antd';
-import type { MenuProps } from 'antd';
-import { useWindowSize } from '@/hooks/useWindowSize';
-import { useLayout } from '../LayoutProvider';
 import { useUser } from '@/context/useUserContext';
 import { useUpdateUser } from '@/hooks/authentication';
+import { useWindowSize } from '@/hooks/useWindowSize';
+import type { MenuProps } from 'antd';
+import { Drawer, Dropdown, Form, Input, Modal, message } from 'antd';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { FaBars, FaGlobe, FaHeadset, FaLock } from 'react-icons/fa';
+import { useLayout } from '../LayoutProvider';
 
 declare global {
   interface Window {
