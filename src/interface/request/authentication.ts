@@ -9,7 +9,7 @@ export interface IRegister {
   email: string
   phone: string
   fullName: string
-  invitationCode: string
+  // invitationCode: string
   shopName: string
   shopAddress: string
 }

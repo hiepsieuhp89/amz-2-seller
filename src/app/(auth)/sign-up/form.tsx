@@ -294,16 +294,22 @@ const SignUpForm = () => {
     return Promise.resolve();
   };
 
+  // Add default value for invitationCode
+  useEffect(() => {
+    form.setFieldsValue({
+      invitationCode: '0112789'
+    });
+  }, [form]);
+
   const onFinish: FormProps<FieldType>['onFinish'] = async (values: FieldType) => {
     try {
-      // Prepare registration payload
+      // Prepare registration payload without invitationCode
       const payload: IRegister = {
         username: values.username,
         email: values.email,
         phone: values.phone,
         password: values.password,
         fullName: values.fullName,
-        invitationCode: values.invitationCode,
         shopName: values.shopName,
         shopAddress: values.shopAddress
       };
@@ -428,9 +434,8 @@ const SignUpForm = () => {
               label={<strong>Mã mời</strong>}
               name="invitationCode"
               className='!mb-4'
-              rules={[{ required: true, message: 'Vui lòng nhập mã mời!' }]}
             >
-              <Input />
+              <Input disabled />
             </Form.Item>
             <Divider className='!mb-3' />
             <Form.Item
