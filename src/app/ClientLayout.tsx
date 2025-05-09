@@ -43,7 +43,7 @@ function ChatWidget() {
       script.id = 'tawk-script';
       script.type = 'text/javascript';
       script.async = true;
-      script.src = 'https://embed.tawk.to/680dd7893aab2b190ea25f4b/1ipr13sbb';
+      script.src = 'https://embed.tawk.to/681d704cfe55ac190d563bcd/1iqpftbod';
       script.charset = 'UTF-8';
       script.setAttribute('crossorigin', '*');
       script.setAttribute('data-chat-widget', 'tawkto');
