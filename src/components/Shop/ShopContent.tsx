@@ -128,7 +128,7 @@ export default function ShopContent({
                       </h3>
                       <div className="flex items-center space-x-1">
                         {[1, 2, 3, 4, 5].map((star) => (
-                          <span key={star} className="text-[#FFA41C] text-[10px] sm:text-xs">
+                          <span key={star} className="text-[#FFA41C] text-[10px] sm:text-base">
                             ★
                           </span>
                         ))}
@@ -140,11 +140,13 @@ export default function ShopContent({
                           <span className="text-xs sm:text-sm text-gray-500 ml-1 sm:ml-2 line-through">${formatNumber(Number(item.salePrice) - item.profit)}</span>
                         )}
                       </div>
-                      <div className="text-[10px] sm:text-xs text-[#007185]">
-                        {item.stock > 0 ? 'In Stock' : 'Out of Stock'}
-                      </div>
-                      <div className="text-[10px] sm:text-xs text-[#565959]">
-                        FREE delivery
+                      <div className="flex items-center gap-2">
+                        <div className={item.stock > 0 ? "badge-stock-in" : "badge-stock-out"}>
+                          {item.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                        </div>
+                        <div className="badge-free-delivery">
+                          FREE delivery
+                        </div>
                       </div>
                     </div>
                     <button
@@ -181,7 +183,7 @@ export default function ShopContent({
                 <button 
                   onClick={handleLoadMore}
                   disabled={isLoading}
-                  className="bg-[#FFD814] hover:bg-[#F7CA00] border border-[#FCD200] rounded-md px-4 sm:px-6 py-2 font-medium text-xs sm:text-sm flex items-center"
+                  className="bg-main-golden-orange/90 hover:bg-main-golden-orange !text-main-text font-medium px-4 sm:px-6 py-1.5 sm:py-2 rounded-full flex items-center text-xs sm:text-base order-2 sm:order-none"
                 >
                   {isLoading ? (
                     <>
