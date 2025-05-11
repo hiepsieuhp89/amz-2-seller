@@ -20,9 +20,6 @@ function ShopContentWrapper() {
   const [pageSize, setPageSize] = useState(10);
   const [sortField, setSortField] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("DESC");
-  const [status, setStatus] = useState<string | undefined>(undefined);
-  const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
-  const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
   const [showScroll, setShowScroll] = useState(false);
   const { scrollY } = useScroll();
   const opacity = useTransform(scrollY, [400, 500], [0, 1]);
@@ -73,10 +70,6 @@ function ShopContentWrapper() {
     return () => window.removeEventListener('scroll', checkScrollTop);
   }, [showScroll]);
 
-  const handleSearch = (value: string) => {
-    setSearch(value);
-    setPage(1);
-  };
 
   const handleSortChange = (value: string) => {
     const [field, order] = value.split(":");
@@ -94,7 +87,6 @@ function ShopContentWrapper() {
       <Header />
       <ShopNavigation />
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >

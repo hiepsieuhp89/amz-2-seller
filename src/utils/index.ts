@@ -136,7 +136,7 @@ export const formatNumber = (number: number | undefined | null): string => {
   // Format with 1 decimal place only if needed
   const formatted = Number.isInteger(numValue) 
     ? numValue.toString() 
-    : numValue.toFixed(1);
+    : numValue.toFixed(2);
   
   // Add thousand separators
   return formatted.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
