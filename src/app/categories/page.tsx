@@ -22,7 +22,7 @@ import Icon from "@mdi/react";
 export default function CategoriesPage() {
     const { categoriesData, isLoading, isFetching, refetch } = useCategories({
         order: "DESC",
-        take: 9999999
+        take: 1000
     })
     const [showScroll, setShowScroll] = useState(false);
     const { scrollY } = useScroll();
